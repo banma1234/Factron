@@ -4,28 +4,46 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base.html}">
 <head>
+    <title>test page</title>
+    <th:block layout:fragment="style">
+        <link rel="stylesheet" th:href="@{/css/test.css}" />
+    </th:block>
 </head>
 <body>
 <div layout:fragment="content">
-    <h4>검색</h4>
-    <form>
-        Text: <input type="text" name="srhName"><br/>
-        Check: <input type="checkbox" name="srhChkType"><br/>
-        Date: <input type="date" name="srhStrBirth">
-        &nbsp;~&nbsp;
-        <input type="date" name="srhEndBirth"><br/>
-        Select: <select name="srhAddress">
-        <option value="">전체</option>
-        <option value="busan">부산</option>
-        <option value="seoul">서울</option>
-        <option value="gyeongnam">경남</option>
-        <option value="gyeonggi">경기</option>
-    </select><br/>
-        <button type="button" class="searchBtn">검색</button>
-    </form>
-    <h1>List</h1>
-    <!-- list grid -->
-    <div id="grid"></div>
+    <section>
+        <h4 class="wow">검색</h4>
+        <form class="test__form">
+            <div class="test__select__container">
+                <input class="form-control" type="date">
+                <input class="form-control" type="date"><br/>
+                <select class="form-select" name="srhAddress">
+                    <option value="">전체</option>
+                    <option value="busan">부산</option>
+                    <option value="seoul">서울</option>
+                    <option value="gyeongnam">경남</option>
+                    <option value="gyeonggi">경기</option>
+                </select>
+                <select class="form-select" name="wow">
+                    <option value="">전체</option>
+                    <option value="busan">부산</option>
+                    <option value="seoul">서울</option>
+                    <option value="gyeongnam">경남</option>
+                    <option value="gyeonggi">경기</option>
+                </select>
+            </div>
+            <div class="input-group mb-3">
+                <input class="form-control" type="text" name="srhName"><br/>
+                <button class="btn btn-outline-secondary" type="button">검색</button>
+            </div>
+        </form>
+        <!-- list grid -->
+        <article>
+            <div id="grid">
+
+            </div>
+        </article>
+    </section>
 </div>
 
 <th:block layout:fragment="javascript">

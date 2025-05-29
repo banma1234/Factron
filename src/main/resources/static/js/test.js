@@ -93,6 +93,35 @@ const initGrid = () => {
                     return "";
                 }
             }
+        ],
+        data: [
+            {
+                id: 1,
+                name: '계두식',
+                chkType: false,
+                birth: new Date(),
+                address: '부산광역시 XX구 XX동',
+                filePath: ' ',
+                regDate: new Date(),
+            },
+            {
+                id: 2,
+                name: '강철중',
+                chkType: true,
+                birth: new Date(),
+                address: '서울특별시 XX구 XX동',
+                filePath: ' ',
+                regDate: new Date(),
+            },
+            {
+                id: 3,
+                name: '김갑환',
+                chkType: false,
+                birth: new Date(),
+                address: '대구광역시 XX구 XX동',
+                filePath: ' ',
+                regDate: new Date(),
+            }
         ]
     });
 }
@@ -100,6 +129,48 @@ const initGrid = () => {
 const init = () => {
     // grid 초기 세팅
     const testGrid = initGrid();
+
+    // 검색
+    document.querySelector(".searchBtn").addEventListener("click", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // 조회
+        getData();
+    }, false);
+
+    // 목록 조회
+    async function getData() {
+        // validation
+        const strBirth = document.querySelector("input[name='srhStrBirth']").value;
+        const endBirth = document.querySelector("input[name='srhEndBirth']").value;
+        if (new Date(strBirth) > new Date(endBirth)) {
+            alert("시작 날짜는 종료 날짜보다 이전이어야 합니다.");
+            return;
+        }
+
+        // fetch data
+        const data = {
+            srhName: document.querySelector("input[name='srhName']").value,
+            srhStrBirth: strBirth,
+            srhEndBirth: endBirth,
+            srhAddress: document.querySelector("select[name='srhAddress']").value
+        };
+
+        try {
+            const res = await fetch(`/test/getTestList`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data),
+            });
+
+            testGrid.resetData(res.data); // grid에 세팅
+        } catch (e) {
+            console.error(e);
+        }
+    }
 
     // 지역 세팅(공통코드 세팅)
     // getRegionList().then(data => {
@@ -117,14 +188,6 @@ const init = () => {
     //     console.error(e);
     // });
 
-    // 검색
-    document.querySelector(".searchBtn").addEventListener("click", function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        // 조회
-        getData();
-    }, false);
 
     // 지역 목록 조회 (공통코드 조회)
     // async function getRegionList() {
@@ -140,33 +203,6 @@ const init = () => {
     //     return res.data;
     // }
 
-    // 목록 조회
-    async function getData() {
-        // validation
-        const strBirth = document.querySelector("input[name='srhStrBirth']").value;
-        const endBirth = document.querySelector("input[name='srhEndBirth']").value;
-        if (new Date(strBirth) > new Date(endBirth)) {
-            alert("시작 날짜는 종료 날짜보다 이전이어야 합니다.");
-            return;
-        }
-        // axios
-        const data = {
-            srhName: document.querySelector("input[name='srhName']").value,
-            srhChkType: document.querySelector("input[name='srhChkType']").checked,
-            srhStrBirth: strBirth,
-            srhEndBirth: endBirth,
-            srhAddress: document.querySelector("select[name='srhAddress']").value
-        };
-        console.log(data);
-
-        try {
-            const res = await axios.post(`/test/getTestList`, data);
-            console.log(res);
-            testGrid.resetData(res.data); // grid에 세팅
-        } catch (e) {
-            console.error(e);
-        }
-    }
 }
 
 window.onload = () => {
