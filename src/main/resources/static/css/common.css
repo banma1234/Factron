@@ -1,8 +1,3 @@
-body {
-    margin: 0;
-    padding: 0;
-}
-
 .sidebar {
     width: 300px;
     background-color: #f8f9fa;
@@ -43,6 +38,11 @@ body {
         display: block;
     }
 }
+@media (max-width: 800px) {
+    .navbar-text {
+        display: none;
+    }
+}
 
 .navbar {
     position: fixed;
@@ -51,8 +51,7 @@ body {
     right: 0;
     z-index: 1050;
     height: 70px;
-    padding-top: 0;
-    padding-bottom: 0;
+    padding-right: 15px;
 }
 
 .navbar .container-fluid {
@@ -74,6 +73,10 @@ body {
 .nav-item.open > .submenu {
     display: block;
 }
+.nav-item span {
+    /*font-weight: 700;*/
+    padding: 0;
+}
 
 .nav-link {
     color: #000;
@@ -87,7 +90,6 @@ body {
 
 .nav-link.active {
     color: #007bff;
-    font-size: 1.1rem;
     font-weight: bold;
 }
 
@@ -113,4 +115,9 @@ body {
     bottom: 0;
     background-color: rgba(0,0,0,0.5);
     z-index: 1030;
+}
+
+/* 상속할 속성값 */
+.border__none {
+    border: none;
 }

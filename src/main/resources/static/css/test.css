@@ -27,7 +27,7 @@
 
 .input-group{
     display: flex;
-    max-width: 350px;
+    max-width: 300px;
     align-items: center;
     margin-top: 14px;
 }
