@@ -38,6 +38,11 @@
         display: block;
     }
 }
+@media (max-width: 800px) {
+    .navbar-text {
+        display: none;
+    }
+}
 
 .navbar {
     position: fixed;
@@ -46,8 +51,7 @@
     right: 0;
     z-index: 1050;
     height: 70px;
-    padding-top: 0;
-    padding-bottom: 0;
+    padding-right: 15px;
 }
 
 .navbar .container-fluid {
@@ -69,6 +73,10 @@
 .nav-item.open > .submenu {
     display: block;
 }
+.nav-item span {
+    /*font-weight: 700;*/
+    padding: 0;
+}
 
 .nav-link {
     color: #000;
@@ -82,7 +90,6 @@
 
 .nav-link.active {
     color: #007bff;
-    font-size: 1.1rem;
     font-weight: bold;
 }
 
@@ -108,4 +115,9 @@
     bottom: 0;
     background-color: rgba(0,0,0,0.5);
     z-index: 1030;
+}
+
+/* 상속할 속성값 */
+.border__none {
+    border: none;
 }
