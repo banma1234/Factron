@@ -1,4 +1,4 @@
-package com.itwillbs.factron;
+package com.itwillbs.factron.controller.test;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
