@@ -32,7 +32,7 @@ public class VacationHistory {
     @JoinColumn(name = "employee_id", referencedColumnName = "id")
     private Employee employee; // 휴가 신청자
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "approval_id", referencedColumnName = "id", nullable = false)
     private Approval approval; // 결재 정보
 }

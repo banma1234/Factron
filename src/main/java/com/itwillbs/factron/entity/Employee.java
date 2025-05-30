@@ -30,9 +30,6 @@ public class Employee extends BaseEntity {
     @Column(name = "name", length = 30, nullable = false)
     private String name;
 
-    @Column(name = "uuid", length = 50, nullable = false)
-    private String uuid;
-
     @Column(name = "address", length = 200, nullable = false)
     private String address;
 
