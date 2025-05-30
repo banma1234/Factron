@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base.html}">
+<head>
+    <title>commute_history page</title>
+    <th:block layout:fragment="style">
+        <link rel="stylesheet" th:href="@{/css/work/commute_history.css}" />
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <section>
+        <h4 class="wow">검색 (Search)</h4>
+
+        <form class="test__form">
+            <div class="test__select__container">
+                <div>
+                    <label for="srhStrBirth">시작날짜</label>
+                </div>
+                <div>
+                    <input class="form-control" type="date" id="srhStrBirth" name="srhStrBirth">
+                </div>
+
+                <div>
+                    <label for="srhEndBirth">종료날짜</label>
+                </div>
+                <div>
+                    <input class="form-control" type="date" id="srhEndBirth" name="srhEndBirth">
+                </div>
+                <div>
+                <select class="form-select" name="srhAddress">
+                    <option value="">전체</option>
+                    <option value="busan">부산</option>
+                    <option value="seoul">서울</option>
+                    <option value="gyeongnam">경남</option>
+                    <option value="gyeonggi">경기</option>
+                </select>
+                </div>
+                <div>
+                <select class="form-select" name="wow">
+                    <option value="">전체</option>
+                    <option value="busan">부산</option>
+                    <option value="seoul">서울</option>
+                    <option value="gyeongnam">경남</option>
+                    <option value="gyeonggi">경기</option>
+                </select></div>
+            </div>
+            <div class="input-group mb-3">
+                <input class="form-control" type="text" name="srhName"><br/>
+                <button class="btn btn-outline-secondary" type="button">검색</button>
+            </div>
+        </form>
+        <!-- list grid -->
+        <article>
+            <div id="commute_history_grid">
+
+            </div>
+        </article>
+    </section>
+</div>
+
+<th:block layout:fragment="javascript">
+    <!-- js import -->
+    <script th:src="@{/js/work/commute_history.js}"></script>
+</th:block>
+</body>
+</html>

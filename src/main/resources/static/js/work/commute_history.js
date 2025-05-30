@@ -1,0 +1,182 @@
+// grid 초기화
+const initGrid = () => {
+    const Grid = tui.Grid;
+
+    // 테마
+    Grid.applyTheme('default',  {
+        cell: {
+            normal: {
+                border: 'gray'
+            },
+            header: {
+                background: 'gray',
+                text: 'white',
+                border: 'gray'
+            },
+            rowHeaders: {
+                header: {
+                    background: 'gray',
+                    text: 'white'
+                }
+            }
+        }
+    });
+
+    // 세팅
+    return new Grid({
+        el: document.getElementById('commute_history_grid'),
+        scrollX: false,
+        scrollY: false,
+        minBodyHeight: 30,
+        rowHeaders: ['rowNum'],
+        columns: [
+            {
+                header: '사원번호',
+                name: 'id',
+                hidden: true
+            },
+            {
+                header: '사원이름',
+                name: 'name',
+                align: 'center'
+            },
+            {
+                header: '직급',
+                name: 'position',
+                align: 'center'
+            },
+            {
+                header: '부서',
+                name: 'department',
+                align: 'center'
+            },
+            {
+                header: '일자',
+                name: 'department',
+                align: 'center'
+            },
+            {
+                header: '출근 시간',
+                name: 'department',
+                align: 'center'
+            },
+            {
+                header: '퇴근 시간',
+                name: 'department',
+                align: 'center'
+            }
+        ],
+        data: [
+            {
+                id: 1,
+                name: '계두식',
+                chkType: false,
+                birth: new Date(),
+                address: '부산광역시 XX구 XX동',
+                filePath: ' ',
+                regDate: new Date(),
+            },
+            {
+                id: 2,
+                name: '강철중',
+                chkType: true,
+                birth: new Date(),
+                address: '서울특별시 XX구 XX동',
+                filePath: ' ',
+                regDate: new Date(),
+            },
+            {
+                id: 3,
+                name: '김갑환',
+                chkType: false,
+                birth: new Date(),
+                address: '대구광역시 XX구 XX동',
+                filePath: ' ',
+                regDate: new Date(),
+            }
+        ]
+    });
+}
+
+const init = () => {
+    // grid 초기 세팅
+    const testGrid = initGrid();
+
+    // 검색
+    document.querySelector(".searchBtn").addEventListener("click", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // 조회
+        getData();
+    }, false);
+
+    // 목록 조회
+    async function getData() {
+        // validation
+        const strBirth = document.querySelector("input[name='srhStrBirth']").value;
+        const endBirth = document.querySelector("input[name='srhEndBirth']").value;
+        if (new Date(strBirth) > new Date(endBirth)) {
+            alert("시작 날짜는 종료 날짜보다 이전이어야 합니다.");
+            return;
+        }
+
+        // fetch data
+        const data = {
+            srhName: document.querySelector("input[name='srhName']").value,
+            srhStrBirth: strBirth,
+            srhEndBirth: endBirth,
+            srhAddress: document.querySelector("select[name='srhAddress']").value
+        };
+
+        try {
+            const res = await fetch(`/test/getTestList`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data),
+            });
+
+            testGrid.resetData(res.data); // grid에 세팅
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    // 지역 세팅(공통코드 세팅)
+    // getRegionList().then(data => {
+    //     console.log(data);
+    //     const selectElement = document.querySelector("select[name='address']");
+    //
+    //     for(const region of data) {
+    //         const optionElement = document.createElement("option");
+    //         optionElement.value = region.code;  // 코드
+    //         optionElement.textContent = region.codeName;  // 이름
+    //
+    //         selectElement.appendChild(optionElement);
+    //     }
+    // }).catch(e => {
+    //     console.error(e);
+    // });
+
+
+    // 지역 목록 조회 (공통코드 조회)
+    // async function getRegionList() {
+    //     const mainCode = 'RGN';
+    //
+    //     const res = await fetch(`/sys/getList${mainCode}`, {
+    //         method: 'get',
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         }
+    //     });
+    //
+    //     return res.data;
+    // }
+
+}
+
+window.onload = () => {
+    init();
+}
