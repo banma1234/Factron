@@ -55,13 +55,13 @@ const initGrid = () => {
             {
                 header: '생일',
                 name: 'birth',
-                formatter: (value) => {
-                    if (value) {
-                        const data = value.value;
-                        return `${data[0]}-${data[1]}-${data[2]}`;
-                    }
-                    return "";
-                }
+                // formatter: (value) => {
+                //     if (value) {
+                //         const data = value.value;
+                //         return `${data[0]}-${data[1]}-${data[2]}`;
+                //     }
+                //     return "";
+                // }
             },
             {
                 header: '주소',
@@ -85,44 +85,44 @@ const initGrid = () => {
             {
                 header: '등록일',
                 name: 'regDate',
-                formatter: (value) => {
-                    if (value) {
-                        const data = value.value;
-                        return `${data[0]}-${data[1]}-${data[2]}`;
-                    }
-                    return "";
-                }
+                // formatter: (value) => {
+                //     if (value) {
+                //         const data = value.value;
+                //         return `${data[0]}-${data[1]}-${data[2]}`;
+                //     }
+                //     return "";
+                // }
             }
         ],
-        data: [
-            {
-                id: 1,
-                name: '계두식',
-                chkType: false,
-                birth: new Date(),
-                address: '부산광역시 XX구 XX동',
-                filePath: ' ',
-                regDate: new Date(),
-            },
-            {
-                id: 2,
-                name: '강철중',
-                chkType: true,
-                birth: new Date(),
-                address: '서울특별시 XX구 XX동',
-                filePath: ' ',
-                regDate: new Date(),
-            },
-            {
-                id: 3,
-                name: '김갑환',
-                chkType: false,
-                birth: new Date(),
-                address: '대구광역시 XX구 XX동',
-                filePath: ' ',
-                regDate: new Date(),
-            }
-        ]
+        // data: [
+        //     {
+        //         id: 1,
+        //         name: '계두식',
+        //         chkType: false,
+        //         birth: new Date(),
+        //         address: '부산광역시 XX구 XX동',
+        //         filePath: ' ',
+        //         regDate: new Date(),
+        //     },
+        //     {+
+        //         id: 2,
+        //         name: '강철중',
+        //         chkType: true,
+        //         birth: new Date(),
+        //         address: '서울특별시 XX구 XX동',
+        //         filePath: ' ',
+        //         regDate: new Date(),
+        //     },
+        //     {
+        //         id: 3,
+        //         name: '김갑환',
+        //         chkType: false,
+        //         birth: new Date(),
+        //         address: '대구광역시 XX구 XX동',
+        //         filePath: ' ',
+        //         regDate: new Date(),
+        //     }
+        // ]
     });
 }
 
@@ -131,7 +131,7 @@ const init = () => {
     const testGrid = initGrid();
 
     // 검색
-    document.querySelector(".searchBtn").addEventListener("click", function(e) {
+    document.querySelector(".srhBtn").addEventListener("click", function(e) {
         e.preventDefault();
         e.stopPropagation();
 
@@ -150,23 +150,33 @@ const init = () => {
         }
 
         // fetch data
-        const data = {
+        // parameter로 보내는 경우
+        const data = new URLSearchParams({
             srhName: document.querySelector("input[name='srhName']").value,
             srhStrBirth: strBirth,
             srhEndBirth: endBirth,
             srhAddress: document.querySelector("select[name='srhAddress']").value
-        };
+        });
+
+        // body로 보내는 경우
+        // const data = {
+        //     srhName: document.querySelector("input[name='srhName']").value,
+        //     srhStrBirth: strBirth,
+        //     srhEndBirth: endBirth,
+        //     srhAddress: document.querySelector("select[name='srhAddress']").value
+        // };
 
         try {
-            const res = await fetch(`/test/getTestList`, {
-                method: "POST",
+            const res = await fetch(`/testList?${data.toString()}`, {
+                method: "GET",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(data),
+                // body: JSON.stringify(data),
             });
-
-            testGrid.resetData(res.data); // grid에 세팅
+            res.json().then(res => {
+                testGrid.resetData(res.data); // grid에 세팅
+            });
         } catch (e) {
             console.error(e);
         }
@@ -194,7 +204,7 @@ const init = () => {
     //     const mainCode = 'RGN';
     //
     //     const res = await fetch(`/sys/getList${mainCode}`, {
-    //         method: 'get',
+    //         method: 'GET',
     //         headers: {
     //             'Content-Type': 'application/json'
     //         }
