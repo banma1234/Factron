@@ -16,6 +16,11 @@ public class ResponseDTO<T> {
         return new ResponseDTO<>(200, "정보를 가져오는 데 성공했습니다.", data);
     }
 
+    // 성공 (커스텀 메시지)
+    public static <T> ResponseDTO<T> success(String message, T data) {
+        return new ResponseDTO<>(200, message, data);
+    }
+
     // 실패
     public static <T> ResponseDTO<T> fail(int status, String message, T data) {
         return new ResponseDTO<>(status, message, data);
