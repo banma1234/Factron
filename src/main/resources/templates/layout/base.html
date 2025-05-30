@@ -20,8 +20,8 @@
     <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
     <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
 
-    <!-- COMMON JS -->
-    <script th:src="@{/js/common.js}"></script>
+<!--    &lt;!&ndash; COMMON JS &ndash;&gt;-->
+<!--    <script th:src="@{/js/common.js}"></script>-->
 </head>
 <body>
 <div>
@@ -29,30 +29,52 @@
     <div class="sidebar" id="sidebar">
         <ul class="nav flex-column px-3">
             <li class="nav-item">
-                <a class="nav-link menu-toggle" href="#">인사 관리</a>
+                <a class="nav-link menu-toggle" href="#">
+                    <span>인사 관리</span>
+                </a>
                 <ul class="submenu nav flex-column">
-                    <li><a class="nav-link sub-link" href="#">사원 목록</a></li>
-                    <li><a class="nav-link sub-link" href="#">인사발령 관리</a></li>
+                    <li><a class="nav-link sub-link" href="#">
+                        <span>사원 목록</span>
+                    </a></li>
+                    <li><a class="nav-link sub-link" href="#">
+                        <span>인사발령 관리</span>
+                    </a></li>
                 </ul>
             </li>
             <li class="nav-item">
-                <a class="nav-link menu-toggle" href="#">근태 관리</a>
+                <a class="nav-link menu-toggle" href="#">
+                    <span>근태 관리</span>
+                </a>
                 <ul class="submenu nav flex-column">
-                    <li><a class="nav-link sub-link" href="#">출퇴근 현황</a></li>
-                    <li><a class="nav-link sub-link" href="#">근무 현황</a></li>
-                    <li><a class="nav-link sub-link" href="#">휴가 관리</a></li>
+                    <li><a class="nav-link sub-link" href="#">
+                        <span>출퇴근 현황</span>
+                    </a></li>
+                    <li><a class="nav-link sub-link" href="#">
+                        <span>근무 현황</span>
+                    </a></li>
+                    <li><a class="nav-link sub-link" href="#">
+                        <span>휴가 관리</span>
+                    </a></li>
                 </ul>
             </li>
             <li class="nav-item">
-                <a class="nav-link menu-toggle" href="#">전자결재</a>
+                <a class="nav-link menu-toggle" href="#">
+                    <span>전자결재</span>
+                </a>
                 <ul class="submenu nav flex-column">
-                    <li><a class="nav-link sub-link" href="#">결재 목록</a></li>
+                    <li><a class="nav-link sub-link" href="#">
+                        <span>결재 목록</span>
+                    </a></li>
                 </ul>
             </li>
             <li class="nav-item">
-                <a class="nav-link menu-toggle" href="#">관리자</a>
+                <a class="nav-link menu-toggle" href="#">
+                    <span>관리자</span>
+                </a>
                 <ul class="submenu nav flex-column">
-                    <li><a class="nav-link sub-link" href="#">공통코드 관리</a></li>
+                    <li><a class="nav-link sub-link" href="#">
+                        <span>공통코드 관리</span>
+                    </a></li>
                 </ul>
             </li>
         </ul>
@@ -65,7 +87,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
             <!-- 햄버거 버튼은 모바일에서만 보임 -->
-            <button class="btn btn-outline-secondary d-xl-none me-2" type="button" onclick="toggleSidebar()">
+            <button class="btn btn-outline-secondary d-xl-none me-2 border__none" type="button" onclick="toggleSidebar()">
                 ☰
             </button>
             <a class="navbar-brand" href="#">Factron</a>
@@ -87,37 +109,10 @@
 
     <!-- POSTCODE API -->
     <script th:src="@{//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js}"></script>
-
+    <script type="module" th:src="@{/js/common.js}"></script>
     <th:block layout:fragment="javascript"></th:block>
 </div>
+<!--<script type="module" th:src="@{/js/common.js}"></script>-->
+
 </body>
-<script>
-    // 사이드바 토글
-    function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
-
-        sidebar.classList.toggle('active');
-        overlay.classList.toggle('active');
-    }
-
-    // 대메뉴 열고 닫기
-    document.querySelectorAll('.menu-toggle').forEach(menu => {
-        menu.addEventListener('click', function (e) {
-            e.preventDefault();
-            const parent = this.closest('.nav-item');
-            parent.classList.toggle('open');
-        });
-    });
-
-    // 메뉴 클릭 시 활성화 스타일 적용
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', function () {
-            // 기존 active 제거
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            // 현재 클릭된 링크에 active 추가
-            this.classList.add('active');
-        });
-    });
-</script>
 </html>
