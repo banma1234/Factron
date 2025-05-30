@@ -39,7 +39,7 @@ public class Transfer {
     @Column(name = "curr_dept_code", length = 6, nullable = false)
     private String currDeptCode; // 현재 부서 코드
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "approval_id", referencedColumnName = "id", nullable = false)
     private Approval approval; // 결재 정보, 인사발령에 대한 결재 정보
 }

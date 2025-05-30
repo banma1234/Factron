@@ -39,4 +39,7 @@ public class Approval {
 
     @Column(name = "approval_status_code", length = 6, nullable = false)
     private String approvalStatusCode; // 결재 상태 코드 (예: 승인, 반려 등)
+
+    @Column(name = "reject_reason", length = 2000)
+    private String rejectReason; // 반려 사유
 }
