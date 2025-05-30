@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base.html}">
+<head>
+    <title>test page</title>
+    <th:block layout:fragment="style">
+        <link rel="stylesheet" th:href="@{/css/approval/approval.css}" />
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <section>
+        <h4 class="wow">전자 결재</h4>
+        <form class="test__form">
+            <div class="test__select__container">
+                <div class="mb-2">
+                    <label class="form-label">발행일자</label>
+                </div>
+                <div class="mb-2">
+                    <input class="form-control" type="date" name="srhStrBirth">
+                </div>
+
+                <div class="mb-2">
+                    <label class="form-label">결제유형</label>
+                </div>
+                <div class="mb-2">
+                    <select class="form-select" name="srhAddress">
+                        <option value="">결제유형</option>
+                        <option value="busan">부산</option>
+                        <option value="seoul">서울</option>
+                        <option value="gyeongnam">경남</option>
+                        <option value="gyeonggi">경기</option>
+                    </select>
+                </div>
+
+                <div class="mb-2">
+                    <label class="form-label">부서</label>
+                </div>
+                <div class="mb-2">
+                    <select class="form-select" name="department">
+                        <option value="">부서</option>
+                        <option value="busan">부산</option>
+                        <option value="seoul">서울</option>
+                        <option value="gyeongnam">경남</option>
+                        <option value="gyeonggi">경기</option>
+                    </select>
+                </div>
+
+                <div class="mb-2">
+                    <label class="form-label">직급</label>
+                </div>
+                <div class="mb-2">
+                    <select class="form-select" name="position">
+                        <option value="">직급</option>
+                        <option value="busan">부산</option>
+                        <option value="seoul">서울</option>
+                        <option value="gyeongnam">경남</option>
+                        <option value="gyeonggi">경기</option>
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">사원번호/사원명</label>
+                </div>
+                <div class="mb-2">
+                    <input class="form-control" type="text" name="srhName">
+                </div>
+                <div class="mb-2">
+                    <button class="btn btn-outline-secondary searchBtn" type="button">검색</button>
+                </div>
+            </div>
+
+            <!-- 사원번호/사원명 -->
+<!--            <div class="input-group mb-3">-->
+<!--                <label class="input-group-text">사원번호/사원명</label>-->
+<!--                <input class="form-control" type="text" name="srhName">-->
+<!--                <button class="btn btn-outline-secondary searchBtn" type="button">검색</button>-->
+<!--            </div>-->
+
+        </form>
+        <!-- list grid -->
+        <article>
+            <div id="grid">
+
+            </div>
+        </article>
+    </section>
+</div>
+
+<th:block layout:fragment="javascript">
+    <!-- js import -->
+    <script th:src="@{/js/approval/approval.js}"></script>
+</th:block>
+</body>
+</html>
