@@ -28,12 +28,12 @@ const initGrid = () => {
         scrollX: false,
         scrollY: false,
         minBodyHeight: 30,
-        rowHeaders: ['rowNum'],
+        // rowHeaders: ['rowNum'],
         columns: [
             {
                 header: '사원번호',
                 name: 'id',
-                hidden: true
+                align: 'center'
             },
             {
                 header: '사원이름',

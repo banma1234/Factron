@@ -2,11 +2,11 @@ package com.itwillbs.factron.controller.commute;
 
 import com.itwillbs.factron.dto.ResponseDTO;
 import com.itwillbs.factron.service.commute.CommuteService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.NoSuchElementException;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,14 +19,38 @@ public class CommuteRestController {
     @PostMapping()
     public ResponseDTO<Void> commuteIn(@RequestHeader("empId") String employeeId) {
 
-        commuteService.commuteIn(employeeId);
+        try {
 
-//        try {
-//            return ResponseDTO.success(null);
-//        } catch (Exception e) {
-//            return ResponseDTO.fail(800, "퇴사 처리된 사원입니다.", testService.getTestList(srhTest));
-//        }
+            commuteService.commuteIn(employeeId);
 
-        return ResponseDTO.success("출근이 완료되었습니다", null);
+            return ResponseDTO.success("출근이 완료되었습니다", null);
+        } catch (EntityNotFoundException e) {
+
+            return ResponseDTO.fail(800, "해당 사원이 없습니다", null);
+        } catch (IllegalArgumentException e) {
+
+            return ResponseDTO.fail(801, "이미 출근한 상태입니다", null);
+        }
+    }
+
+    // 퇴근
+    @PutMapping()
+    public ResponseDTO<Void> commuteOut(@RequestHeader("empId") String employeeId) {
+
+        try {
+
+            commuteService.commuteOut(employeeId);
+
+            return ResponseDTO.success("퇴근이 완료되었습니다", null);
+        } catch (EntityNotFoundException e) {
+
+            return ResponseDTO.fail(800, "해당 사원이 없습니다", null);
+        } catch (NoSuchElementException e) {
+
+            return ResponseDTO.fail(801, "오늘 출근 기록이 없습니다", null);
+        } catch (IllegalArgumentException e) {
+
+            return ResponseDTO.fail(802, "이미 퇴근한 상태입니다", null);
+        }
     }
 }
