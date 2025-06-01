@@ -37,6 +37,6 @@ public class WorkHistory {
     private Employee employee;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "approval_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "approval_id", referencedColumnName = "id")
     private Approval approval; // 결재 정보
 }
