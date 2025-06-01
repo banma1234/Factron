@@ -1,6 +1,6 @@
 @charset "UTF-8";
 
-.test__form {
+.commute__form {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -8,7 +8,7 @@
     padding: 0 20px;
 }
 
-.test__select__container {
+.commute__filter-container {
     display: flex;
     flex-direction: row;
     gap: 15px;

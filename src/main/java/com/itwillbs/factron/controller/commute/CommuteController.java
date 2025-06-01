@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class CommuteController {
 
     @GetMapping()
-    public String test() {
+    public String commute_history() {
+
         return "work/commute_history";
     }
 }

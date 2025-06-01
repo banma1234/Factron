@@ -38,7 +38,7 @@
                 AND ch.commute_in &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
             </if>
         </where>
-        ORDER BY ch.commute_in DESC
+        ORDER BY ch.commute_in ASC
     </select>
 
 </mapper>
