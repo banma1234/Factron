@@ -19,9 +19,6 @@
     <!-- TOAST UI -->
     <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
     <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
-
-<!--    &lt;!&ndash; COMMON JS &ndash;&gt;-->
-<!--    <script th:src="@{/js/common.js}"></script>-->
 </head>
 <body>
 <main>
@@ -114,12 +111,10 @@
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
             crossorigin="anonymous"></script>
 
-    <!-- POSTCODE API -->
-    <script th:src="@{//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js}"></script>
+    <!-- COMMON JS -->
     <script type="module" th:src="@{/js/common.js}"></script>
     <th:block layout:fragment="javascript"></th:block>
 </main>
-<!--<script type="module" th:src="@{/js/common.js}"></script>-->
 
 </body>
 </html>

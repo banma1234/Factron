@@ -3,6 +3,7 @@ package com.itwillbs.factron.service.test;
 import com.itwillbs.factron.dto.test.RequestTest;
 import com.itwillbs.factron.dto.test.Test;
 import com.itwillbs.factron.mapper.test.TestMapper;
+import com.itwillbs.factron.repository.test.TestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TestServiceImpl implements TestService {
 
-//    private final TestRepository testRepository;
+    private final TestRepository testRepository;
     private final TestMapper testMapper;
 
     /*
@@ -41,5 +42,13 @@ public class TestServiceImpl implements TestService {
         }
 
         return testList;
+    }
+
+    /*
+     * 테스트 저장
+     */
+    @Override
+    public void registTest(Test test) {
+//        testRepository.save(test);
     }
 }
