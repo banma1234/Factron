@@ -72,57 +72,28 @@ const initGrid = () => {
                 header: '이미지',
                 name: 'filePath',
                 align: 'center',
-                formatter: (value) => {
-                    if (value.value) {
-                        const imageUrl = value.value;
-                        console.log("이미지경로:"+imageUrl)
-                        const absoluteImageUrl = `/test/uploads/${imageUrl}`;
-                        return `<img src="${absoluteImageUrl}" alt="이미지" style="max-width: 100px; max-height: 25px;">`;
-                    }
-                    return "";
-                }
+                // formatter: (value) => {
+                //     if (value.value) {
+                //         const imageUrl = value.value;
+                //         console.log("이미지경로:"+imageUrl)
+                //         const absoluteImageUrl = `/test/uploads/${imageUrl}`;
+                //         return `<img src="${absoluteImageUrl}" alt="이미지" style="max-width: 100px; max-height: 25px;">`;
+                //     }
+                //     return "";
+                // }
             },
             {
                 header: '등록일',
                 name: 'regDate',
-                // formatter: (value) => {
-                //     if (value) {
-                //         const data = value.value;
-                //         return `${data[0]}-${data[1]}-${data[2]}`;
-                //     }
-                //     return "";
-                // }
+                formatter: (value) => {
+                    if (value) {
+                        const data = value.value;
+                        return data.split('T')[0];
+                    }
+                    return "";
+                }
             }
         ],
-        // data: [
-        //     {
-        //         id: 1,
-        //         name: '계두식',
-        //         chkType: false,
-        //         birth: new Date(),
-        //         address: '부산광역시 XX구 XX동',
-        //         filePath: ' ',
-        //         regDate: new Date(),
-        //     },
-        //     {+
-        //         id: 2,
-        //         name: '강철중',
-        //         chkType: true,
-        //         birth: new Date(),
-        //         address: '서울특별시 XX구 XX동',
-        //         filePath: ' ',
-        //         regDate: new Date(),
-        //     },
-        //     {
-        //         id: 3,
-        //         name: '김갑환',
-        //         chkType: false,
-        //         birth: new Date(),
-        //         address: '대구광역시 XX구 XX동',
-        //         filePath: ' ',
-        //         regDate: new Date(),
-        //     }
-        // ]
     });
 }
 
@@ -136,11 +107,40 @@ const init = () => {
         e.stopPropagation();
 
         // 조회
-        getData();
+        getData().then(res => {
+            testGrid.resetData(res.data); // grid에 세팅
+        });
     }, false);
 
+    // form 창 오픈
+    testGrid.on('dblclick', (e) => {
+        const rowKey = e.rowKey;
+        const rowData = testGrid.getRow(rowKey);
+
+        // 새 창에서 해당 ID를 기반으로 상세페이지 오픈
+        if (rowData && rowData.id) {
+            const popup = window.open('/test-form', '_blank', 'width=800,height=600');
+
+            // 자식 창으로부터 'ready' 먼저 수신 후 postMessage 실행
+            const messageHandler = (event) => {
+                if (event.data === 'ready') {
+                    popup.postMessage({
+                        name: rowData.name,
+                        age: rowData.id,
+                        birth: rowData.birth,
+                        regDate: rowData.regDate,
+                        remark: rowData.address
+                    }, "*");
+                    window.removeEventListener("message", messageHandler);
+                }
+            };
+            window.addEventListener("message", messageHandler);
+        }
+    });
+
     // 목록 조회
-    async function getData() {
+    window.getData = async function () {
+        console.log("getData")
         // validation
         const strBirth = document.querySelector("input[name='srhStrBirth']").value;
         const endBirth = document.querySelector("input[name='srhEndBirth']").value;
@@ -150,7 +150,6 @@ const init = () => {
         }
 
         // fetch data
-        // parameter로 보내는 경우
         const data = new URLSearchParams({
             srhName: document.querySelector("input[name='srhName']").value,
             srhStrBirth: strBirth,
@@ -158,25 +157,15 @@ const init = () => {
             srhAddress: document.querySelector("select[name='srhAddress']").value
         });
 
-        // body로 보내는 경우
-        // const data = {
-        //     srhName: document.querySelector("input[name='srhName']").value,
-        //     srhStrBirth: strBirth,
-        //     srhEndBirth: endBirth,
-        //     srhAddress: document.querySelector("select[name='srhAddress']").value
-        // };
-
         try {
             const res = await fetch(`/testList?${data.toString()}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                // body: JSON.stringify(data),
             });
-            res.json().then(res => {
-                testGrid.resetData(res.data); // grid에 세팅
-            });
+            return res.json();
+
         } catch (e) {
             console.error(e);
         }
@@ -212,7 +201,6 @@ const init = () => {
     //
     //     return res.data;
     // }
-
 }
 
 window.onload = () => {
