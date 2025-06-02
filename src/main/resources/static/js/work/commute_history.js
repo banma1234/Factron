@@ -32,37 +32,37 @@ const initGrid = () => {
         columns: [
             {
                 header: '사원번호',
-                name: 'id',
+                name: 'empId',
                 align: 'center'
             },
             {
                 header: '사원이름',
-                name: 'name',
+                name: 'empName',
                 align: 'center'
             },
             {
                 header: '직급',
-                name: 'position',
+                name: 'positionName',
                 align: 'center'
             },
             {
                 header: '부서',
-                name: 'department',
+                name: 'deptName',
                 align: 'center'
             },
             {
                 header: '일자',
-                name: 'date',
+                name: 'commuteDate',
                 align: 'center'
             },
             {
                 header: '출근 시간',
-                name: 'inTime',
+                name: 'commuteIn',
                 align: 'center'
             },
             {
                 header: '퇴근 시간',
-                name: 'outTime',
+                name: 'commuteOut',
                 align: 'center'
             }
         ],
@@ -73,9 +73,14 @@ const init = () => {
     const testGrid = initGrid();
     const getEmployeeId = () => document.getElementById('employeeId').value;
 
-    // 오늘 날짜 구하기 (yyyy-mm-dd)
+    // 초기 값 설정
     const today = new Date().toISOString().slice(0, 10);
-    const empId = "3"; // 임의의 사번
+    const empId = "5"; // 임의의 사번
+
+    // 폼에 값 세팅
+    document.querySelector("input[name='srhNameOrId']").value = empId;
+    document.querySelector("input[name='srhStrBirth']").value = today;
+    document.querySelector("input[name='srhEndBirth']").value = today;
 
     // 검색
     document.querySelector(".srhBtn").addEventListener("click", function(e) {
@@ -84,38 +89,33 @@ const init = () => {
 
         // 조회
         getData().then(res => {
-            // key 매핑
-            const mapped = (res.data || []).map(item => ({
-                id: item.empId,
-                name: item.empName,
-                position: item.positionName,
-                department: item.deptName,
-                date: item.commuteDate,
-                inTime: item.commuteIn,
-                outTime: item.commuteOut
-            }));
-            testGrid.resetData(mapped);
+            testGrid.resetData(res.data);
         });
     }, false);
 
-    async function getData() {
-        const nameOrId = document.querySelector("input[name='srhNameOrId']").value;
+    async function getData(extraParams = {}) {
+        let nameOrId = document.querySelector("input[name='srhNameOrId']").value;
         const dept = document.querySelector("select[name='srhDepartment']").value;
-        const strBirth = document.querySelector("input[name='srhStrBirth']").value;
-        const endBirth = document.querySelector("input[name='srhEndBirth']").value;
+        let strBirth = document.querySelector("input[name='srhStrBirth']").value;
+        let endBirth = document.querySelector("input[name='srhEndBirth']").value;
 
         if (strBirth && endBirth && new Date(strBirth) > new Date(endBirth)) {
             alert("시작 날짜는 종료 날짜보다 이전이어야 합니다.");
             return;
         }
 
-        const params = new URLSearchParams();
-        if (nameOrId) params.append("nameOrId", nameOrId);
-        if (dept) params.append("dept", dept);
-        if (strBirth) params.append("startDate", strBirth);
-        if (endBirth) params.append("endDate", endBirth);
+        // 파라미터 객체 생성
+        const paramsObj = {
+            ...extraParams // empId 등 외부에서 전달된 파라미터
+        };
+        if (nameOrId) paramsObj.nameOrId = nameOrId;
+        if (dept) paramsObj.dept = dept;
+        if (strBirth) paramsObj.startDate = strBirth;
+        if (endBirth) paramsObj.endDate = endBirth;
 
-        let url = "/api/commute"; // 엔드포인트 확인
+        const params = new URLSearchParams(paramsObj);
+
+        let url = "/api/commute";
         if ([...params].length > 0) {
             url += "?" + params.toString();
         }
@@ -123,13 +123,12 @@ const init = () => {
         try {
             const res = await fetch(url, {
                 method: "GET",
-                headers: { "Content-Type": "application/json", "empId": "3"}
+                headers: { "Content-Type": "application/json"}
             });
             if (!res.ok) {
-                // 에러 응답일 때 텍스트로 받아서 콘솔에 출력
                 const errorText = await res.text();
                 console.error("API Error:", res.status, errorText);
-                alert("데이터 조회 중 오류가 발생했습니다.");
+                alert("데이터 조회 중 오류가 발생했습니다.");ㅛ
                 return { data: [] };
             }
             return res.json();
@@ -147,19 +146,12 @@ const init = () => {
     //     getData();
     // }, false);
 
-    // 페이지 로드시 자동 조회 (당일, 본인)
-    // getData().then(res => {
-    //     const mapped = (res.data || []).map(item => ({
-    //         id: item.empId,
-    //         name: item.empName,
-    //         position: item.positionName,
-    //         department: item.deptName,
-    //         date: item.commuteDate,
-    //         inTime: item.commuteIn,
-    //         outTime: item.commuteOut
-    //     }));
-    //     testGrid.resetData(mapped);
-    // });
+
+
+    // 최초 진입 시 empId=3, 오늘 날짜로 조회
+    getData({ empId, startDate: today, endDate: today }).then(res => {
+        testGrid.resetData(res.data);
+    });
 }
 
 window.onload = () => {
