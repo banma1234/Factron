@@ -1,5 +1,6 @@
 package com.itwillbs.factron.service.commute;
 
+import com.itwillbs.factron.dto.commute.CommuteRequestDto;
 import com.itwillbs.factron.dto.commute.CommuteResponseDto;
 import com.itwillbs.factron.entity.CommuteHistory;
 import com.itwillbs.factron.entity.Employee;
@@ -105,46 +106,24 @@ public class CommuteServiceImpl implements CommuteService {
 
     /**
      * 출근 기록 조회 메소드
-     * @param params 조회 조건 파라미터
+     * @param requestDto 조회 요청 DTO
      * @return 출퇴근 기록 DTO 리스트
      */
     @Override
-    public List<CommuteResponseDto> getCommuteHistories(Map<String, String> params) {
+    public List<CommuteResponseDto> getCommuteHistories(CommuteRequestDto requestDto) {
 
         Map<String, Object> queryParams = new HashMap<>();
 
-        // empId 변환
-        String empIdStr = params.get("empId");
+        // nameOrId(사번 또는 이름) 하나로 받음
+        String nameOrId = requestDto.getNameOrId();
 
-        // empId가 null이 아니고 빈 문자열이 아닐 때
-        if (empIdStr != null && !empIdStr.isEmpty()) {
+        if (nameOrId != null && !nameOrId.isEmpty()) {
 
-            // empId가 숫자인지 확인하고 변환
-            try {
-
-                // empId를 Long 타입으로 변환 후 공백 제거
-                // 마이바티스 쿼리에서 사용하는 파라미터 이름을 "empId"로 변경
-                Long employeeId = Long.parseLong(empIdStr.trim());
-                queryParams.put("empId", employeeId);
-            } catch (NumberFormatException e) {
-
-                throw new NumberFormatException("empId는 숫자여야 합니다.");
-            }
-        }
-
-        // 사원 이름
-        String employeeName = params.get("name");
-
-        // 사원 이름이 null이 아니고 빈 문자열이 아닐 때
-        if (employeeName != null && !employeeName.isEmpty()) {
-
-            // 마이바티스 쿼리에서 사용하는 파라미터 이름을 "empName"으로 변경
-            // 공백 제거 후 저장
-            queryParams.put("empName", employeeName.trim());  // "name" → "empName"
+            queryParams.put("nameOrId", nameOrId.trim());
         }
 
         // 부서 코드
-        String departmentCode = params.get("dept");
+        String departmentCode = requestDto.getDept();
 
         // 부서 코드가 null이 아니고 빈 문자열이 아닐 때
         if (departmentCode != null && !departmentCode.isEmpty()) {
@@ -155,7 +134,7 @@ public class CommuteServiceImpl implements CommuteService {
         }
 
         // 시작 일자
-        String startDate = params.get("startDate");
+        String startDate = requestDto.getStartDate();
 
         // 시작 일자가 null이 아니고 빈 문자열이 아닐 때
         if (startDate != null && !startDate.isEmpty()) {
@@ -170,7 +149,7 @@ public class CommuteServiceImpl implements CommuteService {
         }
 
         // 종료 일자
-        String endDate = params.get("endDate");
+        String endDate = requestDto.getEndDate();
 
         // 종료 일자가 null이 아니고 빈 문자열이 아닐 때
         if (endDate != null && !endDate.isEmpty()) {

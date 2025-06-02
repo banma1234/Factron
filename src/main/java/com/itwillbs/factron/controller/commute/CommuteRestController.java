@@ -1,6 +1,7 @@
 package com.itwillbs.factron.controller.commute;
 
 import com.itwillbs.factron.dto.ResponseDTO;
+import com.itwillbs.factron.dto.commute.CommuteRequestDto;
 import com.itwillbs.factron.dto.commute.CommuteResponseDto;
 import com.itwillbs.factron.service.commute.CommuteService;
 import jakarta.persistence.EntityNotFoundException;
@@ -58,21 +59,18 @@ public class CommuteRestController {
         }
     }
 
-    // 출근 기록 조회
+    // 출퇴근 기록 조회
     @GetMapping()
     public ResponseDTO<List<CommuteResponseDto>> getCommuteHistories(
-            @RequestParam Map<String, String> params) {
+            @ModelAttribute CommuteRequestDto requestDto) {
 
         List<CommuteResponseDto> results = new ArrayList<>();
 
         try {
 
-            results = commuteService.getCommuteHistories(params);
+            results = commuteService.getCommuteHistories(requestDto);
 
             return ResponseDTO.success(results);
-        } catch (NumberFormatException e) {
-
-            return ResponseDTO.fail(800, "empId는 숫자여야 합니다", null);
         } catch (IllegalArgumentException e) {
 
             return ResponseDTO.fail(801, "날짜 입력 형식이 잘못되었습니다", null);

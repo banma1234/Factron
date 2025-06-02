@@ -1,5 +1,6 @@
 package com.itwillbs.factron.service.commute;
 
+import com.itwillbs.factron.dto.commute.CommuteRequestDto;
 import com.itwillbs.factron.dto.commute.CommuteResponseDto;
 
 import java.util.List;
@@ -14,5 +15,5 @@ public interface CommuteService {
     void commuteOut(String employeeId);
 
     // 출근 기록을 조회하는 메서드
-    List<CommuteResponseDto> getCommuteHistories(Map<String, String> params);
+    List<CommuteResponseDto> getCommuteHistories(CommuteRequestDto commuteRequestDto);
 }

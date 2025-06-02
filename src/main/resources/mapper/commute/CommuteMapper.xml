@@ -22,11 +22,11 @@
         LEFT JOIN detail_sys_code pos ON e.position_code = pos.detail_code AND pos.main_code = 'POS'
         LEFT JOIN detail_sys_code dept ON e.dept_code = dept.detail_code AND dept.main_code = 'DEP'
         <where>
-            <if test="empId != null">
-                AND e.id = #{empId}
-            </if>
-            <if test="empName != null and empName != ''">
-                AND e.name LIKE '%' || #{empName} || '%'
+            <if test="nameOrId != null and nameOrId != ''">
+                AND (
+                TO_CHAR(e.id) LIKE '%' || #{nameOrId} || '%'
+                OR e.name LIKE '%' || #{nameOrId} || '%'
+                )
             </if>
             <if test="deptCode != null and deptCode != ''">
                 AND e.dept_code = #{deptCode}
@@ -38,7 +38,7 @@
                 AND ch.commute_in &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
             </if>
         </where>
-        ORDER BY ch.commute_in ASC
+        ORDER BY ch.commute_in DESC
     </select>
 
 </mapper>

@@ -4,7 +4,6 @@ import lombok.*;
 
 @Data
 @Builder
-@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommuteResponseDto {

@@ -1,44 +1,5 @@
 @charset "UTF-8";
 
-.commute__form {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-}
-
-.commute__filter-container {
-    display: flex;
-    flex-direction: row;
-    gap: 15px;
-    text-align: center;
-}
-
-.wow {
-    padding: 10px;
-    font-weight: 900;
-    width: 200px;
-}
-
-.form-select {
-    max-width: 200px;
-}
-
-.input-group{
-    display: flex;
-    max-width: 300px;
-    align-items: center;
-    margin-top: 14px;
-}
-
-.test__select__container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    align-items: center;
-}
-
 .form-row {
     display: flex;
     /*align-items: center;*/

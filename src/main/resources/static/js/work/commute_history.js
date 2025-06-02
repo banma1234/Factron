@@ -65,7 +65,7 @@ const initGrid = () => {
                 name: 'outTime',
                 align: 'center'
             }
-        ]
+        ],
     });
 }
 
@@ -73,34 +73,70 @@ const init = () => {
     const testGrid = initGrid();
     const getEmployeeId = () => document.getElementById('employeeId').value;
 
+    // 오늘 날짜 구하기 (yyyy-mm-dd)
+    const today = new Date().toISOString().slice(0, 10);
+    const empId = "3"; // 임의의 사번
+
+    // 검색
+    document.querySelector(".srhBtn").addEventListener("click", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // 조회
+        getData().then(res => {
+            // key 매핑
+            const mapped = (res.data || []).map(item => ({
+                id: item.empId,
+                name: item.empName,
+                position: item.positionName,
+                department: item.deptName,
+                date: item.commuteDate,
+                inTime: item.commuteIn,
+                outTime: item.commuteOut
+            }));
+            testGrid.resetData(mapped);
+        });
+    }, false);
+
     async function getData() {
+        const nameOrId = document.querySelector("input[name='srhNameOrId']").value;
+        const dept = document.querySelector("select[name='srhDepartment']").value;
         const strBirth = document.querySelector("input[name='srhStrBirth']").value;
         const endBirth = document.querySelector("input[name='srhEndBirth']").value;
+
         if (strBirth && endBirth && new Date(strBirth) > new Date(endBirth)) {
             alert("시작 날짜는 종료 날짜보다 이전이어야 합니다.");
             return;
         }
-        const params = new URLSearchParams({
-            // empId: getEmployeeId(),
-            empId: 3, // 임시로 3번 사원으로 설정
-            startDate: strBirth,
-            endDate: endBirth,
-            nameOrId: document.querySelector("input[name='srhNameOrId']").value,
-            department: document.querySelector("select[name='srhDepartment']").value
-        });
+
+        const params = new URLSearchParams();
+        if (nameOrId) params.append("nameOrId", nameOrId);
+        if (dept) params.append("dept", dept);
+        if (strBirth) params.append("startDate", strBirth);
+        if (endBirth) params.append("endDate", endBirth);
+
+        let url = "/api/commute"; // 엔드포인트 확인
+        if ([...params].length > 0) {
+            url += "?" + params.toString();
+        }
+
         try {
-            const res = await fetch(`/commute?${params.toString()}`, {
+            const res = await fetch(url, {
                 method: "GET",
                 headers: { "Content-Type": "application/json", "empId": "3"}
             });
-            const result = await res.json();
-            if(result.success) {
-                testGrid.resetData(result.data);
-            } else {
-                alert(result.message);
+            if (!res.ok) {
+                // 에러 응답일 때 텍스트로 받아서 콘솔에 출력
+                const errorText = await res.text();
+                console.error("API Error:", res.status, errorText);
+                alert("데이터 조회 중 오류가 발생했습니다.");
+                return { data: [] };
             }
+            return res.json();
         } catch (e) {
             console.error(e);
+            alert("네트워크 오류가 발생했습니다.");
+            return { data: [] };
         }
     }
 
@@ -111,9 +147,19 @@ const init = () => {
     //     getData();
     // }, false);
 
-    // 페이지 로드시 자동 조회
-    getData();
-
+    // 페이지 로드시 자동 조회 (당일, 본인)
+    // getData().then(res => {
+    //     const mapped = (res.data || []).map(item => ({
+    //         id: item.empId,
+    //         name: item.empName,
+    //         position: item.positionName,
+    //         department: item.deptName,
+    //         date: item.commuteDate,
+    //         inTime: item.commuteIn,
+    //         outTime: item.commuteOut
+    //     }));
+    //     testGrid.resetData(mapped);
+    // });
 }
 
 window.onload = () => {
