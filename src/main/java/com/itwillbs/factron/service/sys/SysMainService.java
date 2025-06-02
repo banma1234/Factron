@@ -1,9 +1,11 @@
-package com.itwillbs.factron.service.sysMain;
+package com.itwillbs.factron.service.sys;
 
-import com.itwillbs.factron.dto.sysMain.RequestSysMain;
-import com.itwillbs.factron.dto.sysMain.SysMain;
+import com.itwillbs.factron.dto.sys.SysDetail;
+import com.itwillbs.factron.dto.sys.SysMain;
 import com.itwillbs.factron.repository.syscode.SysCodeRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class SysMainService {
@@ -12,9 +14,5 @@ public class SysMainService {
 
     public SysMainService(SysCodeRepository sysCodeRepository) {
         this.sysCodeRepository = sysCodeRepository;
-    }
-
-    public SysMain getAllDetailByMainCode(RequestSysMain sysMain) {
-        List<SysMain>
     }
 }

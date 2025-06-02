@@ -1,9 +1,9 @@
-package com.itwillbs.factron.dto.sysMain;
+package com.itwillbs.factron.dto.sys;
 
 import lombok.Data;
 
 @Data
 public class RequestSysMain {
 
-    private String id;
+    private Long id;
 }
