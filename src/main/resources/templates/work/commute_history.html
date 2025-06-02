@@ -15,72 +15,35 @@
         <div class="commute-header-row">
             <h4 class="wow">출퇴근 관리</h4>
 
-            <!-- 출근/퇴근/퇴근완료 버튼 (id로 구분) -->
-<!--            <span id="commuteInBtn" style="display:none;">-->
-<!--                <button class="btn btn-primary" type="button">출근</button>-->
-<!--            </span>-->
-<!--            <span id="commuteOutBtn" style="display:none;">-->
-<!--                <button class="btn btn-warning" type="button">퇴근</button>-->
-<!--            </span>-->
-<!--            <span id="commuteDoneBtn" style="display:none;">-->
-<!--                <button class="btn btn-secondary" type="button" disabled>퇴근 완료</button>-->
-<!--            </span>-->
-
-            <span id="commuteInBtn">
-                <button class="btn btn-primary" type="button">출근</button>
-            </span>
+                <span class="commuteInBtn">
+                    <button class="btn btn-primary" type="button">출근</button>
+                </span>
 <!--            <span id="commuteOutBtn">-->
 <!--                <button class="btn btn-warning" type="button">퇴근</button>-->
-<!--            </span>-->
-<!--            <span id="commuteDoneBtn">-->
-<!--                <button class="btn btn-secondary" type="button" disabled>퇴근 완료</button>-->
 <!--            </span>-->
         </div>
 
         <form class="test__form">
             <div class="test__select__container">
-                <div>
-                    <label for="srhStrBirth">시작날짜</label>
-                </div>
-                <div>
-                    <input class="form-control" type="date" id="srhStrBirth" name="srhStrBirth">
-                </div>
-
-                <div>
-                    <label for="srhEndBirth">종료날짜</label>
-                </div>
-                <div>
-                    <input class="form-control" type="date" id="srhEndBirth" name="srhEndBirth">
-                </div>
-                <div>
-                    <label for="srhNameOrId">이름/사번</label>
-                </div>
-                <div>
-                    <input class="form-control" type="text" id="srhNameOrId" name="srhNameOrId" placeholder="이름 또는 사번 입력">
-                </div>
-                <div>
-                    <label for="srhDepartment">부서선택</label>
-                </div>
-                <div>
-                    <select class="form-select" id="srhDepartment" name="srhDepartment">
-                        <option value="">전체</option>
-                        <option value="DEP001">인사</option>
-                        <option value="DEP002">영업</option>
-                        <option value="DEP003">개발</option>
-                        <option value="DEP004">재무</option>
-                    </select>
-                </div>
-                <div>
-                    <button class="btn btn-outline-secondary srhBtn" type="button">검색</button>
-                </div>
+                <input class="form-control" type="date" name="srhStrBirth">
+                <div>~</div>
+                <input class="form-control" type="date" name="srhEndBirth">
+                <select class="form-select" name="srhDepartment">
+                    <option value="">부서 선택</option>
+                    <option value="DEP001">인사</option>
+                    <option value="DEP002">영업</option>
+                    <option value="DEP003">개발</option>
+                    <option value="DEP004">재무</option>
+                </select>
             </div>
-<!--            <div class="input-group mb-3">-->
-<!--                <button class="btn btn-outline-secondary srhBtn" type="button">검색</button>-->
-<!--            </div>-->
+            <div class="input-group mb-3">
+                <input class="form-control" type="text" name="srhNameOrId" placeholder="이름 또는 사번 입력">
+                <button class="btn btn-outline-secondary srhBtn" type="button">검색</button>
+            </div>
         </form>
         <!-- list grid -->
         <article>
-            <div id="commute_history_grid">
+            <div id="commuteHistoryGrid">
 
             </div>
         </article>

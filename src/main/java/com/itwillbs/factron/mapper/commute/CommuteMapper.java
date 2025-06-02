@@ -1,5 +1,6 @@
 package com.itwillbs.factron.mapper.commute;
 
+import com.itwillbs.factron.dto.commute.CommuteRequestDto;
 import com.itwillbs.factron.dto.commute.CommuteResponseDto;
 import com.itwillbs.factron.dto.test.RequestTest;
 import com.itwillbs.factron.dto.test.Test;
@@ -13,7 +14,7 @@ import java.util.Map;
 public interface CommuteMapper {
 
     // 출퇴근 기록을 조회하는 메서드
-    List<CommuteResponseDto> selectCommuteHistories(Map<String, Object> params);
+    List<CommuteResponseDto> selectCommuteHistories(CommuteRequestDto requestDto);
 
 
 }

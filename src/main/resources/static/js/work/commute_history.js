@@ -24,11 +24,11 @@ const initGrid = () => {
 
     // 세팅
     return new Grid({
-        el: document.getElementById('commute_history_grid'),
+        el: document.getElementById('commuteHistoryGrid'),
         scrollX: false,
         scrollY: false,
         minBodyHeight: 30,
-        // rowHeaders: ['rowNum'],
+        rowHeaders: ['rowNum'],
         columns: [
             {
                 header: '사원번호',
@@ -71,7 +71,7 @@ const initGrid = () => {
 
 const init = () => {
     const testGrid = initGrid();
-    const getEmployeeId = () => document.getElementById('employeeId').value;
+    // const getEmployeeId = () => document.getElementById('employeeId').value;
 
     // 초기 값 설정
     const today = new Date().toISOString().slice(0, 10);
@@ -93,6 +93,7 @@ const init = () => {
         });
     }, false);
 
+    // fetch 함수 선언
     async function getData(extraParams = {}) {
         let nameOrId = document.querySelector("input[name='srhNameOrId']").value;
         const dept = document.querySelector("select[name='srhDepartment']").value;

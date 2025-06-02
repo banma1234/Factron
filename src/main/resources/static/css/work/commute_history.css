@@ -2,14 +2,6 @@
 
 .form-row {
     display: flex;
-    /*align-items: center;*/
-    /*gap: 10px;*/
-    /*margin-right: 20px;*/
-}
-
-
-.form-control {
-    max-width: 300px;
 }
 
 /* 출퇴근 기록 페이지 스타일 */

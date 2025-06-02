@@ -112,59 +112,50 @@ public class CommuteServiceImpl implements CommuteService {
     @Override
     public List<CommuteResponseDto> getCommuteHistories(CommuteRequestDto requestDto) {
 
-        Map<String, Object> queryParams = new HashMap<>();
+        // 입력 값이 null 또는 빈 문자열인 경우 null로 변환하는 메소드로
+        String nameOrId = safeTrim(requestDto.getNameOrId());
+        String deptCode = safeTrim(requestDto.getDept());
+        String startDate = safeTrim(requestDto.getStartDate());
+        String endDate = safeTrim(requestDto.getEndDate());
 
-        // nameOrId(사번 또는 이름) 하나로 받음
-        String nameOrId = requestDto.getNameOrId();
+        // 날짜 형식 유효성 검사
+        validateDateFormat(startDate, "startDate");
+        validateDateFormat(endDate, "endDate");
 
-        if (nameOrId != null && !nameOrId.isEmpty()) {
+        // CommuteRequestDto 객체 생성
+        CommuteRequestDto commuteRequestDto = CommuteRequestDto.builder()
+                .nameOrId(nameOrId)
+                .dept(deptCode)
+                .startDate(startDate)
+                .endDate(endDate)
+                .build();
 
-            queryParams.put("nameOrId", nameOrId.trim());
+        return commuteMapper.selectCommuteHistories(commuteRequestDto);
+    }
+
+    /**
+     * 입력 값의 공백을 제거하고 null 처리하는 메소드
+     * @param value 입력 값
+     * @return 공백 제거된 값 또는 null
+     */
+    private String safeTrim(String value) {
+
+        // 입력 값이 null 또는 빈 문자열인 경우 null로 변환
+        return (value != null && !value.isEmpty()) ? value.trim() : null;
+    }
+
+    /**
+     * 날짜 형식 유효성 검사 메소드
+     * @param value 입력 값
+     * @param fieldName 필드 이름 (오류 메시지에 사용)
+     */
+    private void validateDateFormat(String value, String fieldName) {
+
+        // 입력 값이 null 또는 빈 문자열인 경우 아무 작업도 하지 않음
+        if (value != null && !value.isEmpty() && !value.matches("\\d{4}-\\d{2}-\\d{2}")) {
+
+            // 날짜 형식이 잘못된 경우 예외 발생
+            throw new IllegalArgumentException(fieldName + "는 yyyy-MM-dd 형식이어야 합니다.");
         }
-
-        // 부서 코드
-        String departmentCode = requestDto.getDept();
-
-        // 부서 코드가 null이 아니고 빈 문자열이 아닐 때
-        if (departmentCode != null && !departmentCode.isEmpty()) {
-
-            // 마이바티스 쿼리에서 사용하는 파라미터 이름을 "deptCode"로 변경
-            // 부서 코드는 공백 제거 후 저장
-            queryParams.put("deptCode", departmentCode.trim());  // "dept" → "deptCode"
-        }
-
-        // 시작 일자
-        String startDate = requestDto.getStartDate();
-
-        // 시작 일자가 null이 아니고 빈 문자열이 아닐 때
-        if (startDate != null && !startDate.isEmpty()) {
-
-            // 시작 일자가 yyyy-MM-dd 형식인지 확인
-            if (!startDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
-
-                throw new IllegalArgumentException("startDate는 yyyy-MM-dd 형식이어야 합니다.");
-            }
-
-            queryParams.put("startDate", startDate.trim());
-        }
-
-        // 종료 일자
-        String endDate = requestDto.getEndDate();
-
-        // 종료 일자가 null이 아니고 빈 문자열이 아닐 때
-        if (endDate != null && !endDate.isEmpty()) {
-
-            // 종료 일자가 yyyy-MM-dd 형식인지 확인
-            if (!endDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
-
-                throw new IllegalArgumentException("endDate는 yyyy-MM-dd 형식이어야 합니다.");
-            }
-
-            // 종료 일자도 공백 제거 후 저장
-            queryParams.put("endDate", endDate.trim());
-        }
-
-        // 이제 마이바티스 매퍼 호출
-        return commuteMapper.selectCommuteHistories(queryParams);
     }
 }
