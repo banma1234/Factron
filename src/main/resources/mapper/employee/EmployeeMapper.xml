@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itwillbs.factron.mapper.employee.EmployeeMapper">
+
+    <!-- 테스트 목록 조회 -->
+    <select id="getEmployeeList" parameterType="com.itwillbs.factron.dto.employee.EmployeeSearchDTO" resultType="com.itwillbs.factron.dto.employee.EmployeeDTO">
+        SELECT
+            e.id,
+            e.name,
+            e.birth || '-' || e.rrnBack AS rrn,
+            e.gender,
+            e.email,
+            e.edu_level_code,
+            e.address,
+            e.quit_date,
+            e.position_code,
+            e.status,
+            i.is_active,
+            e.join_date,
+            e.employ_code,
+            e.phone,
+            e.dept_code,
+            e.edu_level_code
+        FROM employee e
+        LEFT JOIN intergrat_auth i ON  e.id = i.employee_id
+        <where>
+            <if test="dept_code != null and dept_code != ''">
+                AND dept_code LIKE '%' || #{deptCode} || '%'
+            </if>
+            <if test="position_code != null and position_code != ''">
+                AND birth = #{positionCode}
+            </if>
+            <if test="is_active != null and is_active != ''">
+                AND i.is_active = #{isActive}
+            </if>
+            <if test="name != null and name != ''">
+                AND name = #{name}
+            </if>
+            <if test="name != null">
+                AND id = #{name}
+            </if>
+        </where>
+        ORDER BY e.id DESC
+    </select>
+
+</mapper>
