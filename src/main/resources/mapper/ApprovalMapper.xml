@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itwillbs.factron.mapper.approval.ApprovalMapper">
+<!--결재 조회-->
+    <select id="getApprovalList" parameterType="com.itwillbs.factron.dto.approval.RequestApproval" resultType="com.itwillbs.factron.dto.approval.ResponseApproval">
+        SELECT
+        APP.ID AS approvalId,
+        APP.APPROVAL_TYPE_CODE AS apprTypeCode,
+        TYPE_CODE.NAME AS apprTypeName,
+        REQ_EMP.NAME AS requesterName,
+        APP.REQUESTER_ID AS requesterId,
+        APP.REQUESTED_AT AS requested_at,
+        REQ_EMP.POSITION_CODE AS positionCode,
+        POS_CODE.NAME AS positionName,
+        REQ_EMP.DEPT_CODE AS deptCode,
+        DEPT_CODE.NAME AS deptName,
+        APP.CONFIRMED_AT AS confirmedDate,
+        APP.APPROVAL_STATUS_CODE AS approvalStatusCode,
+        STATUS_CODE.NAME AS approvalStatusName,
+        APRV_EMP.NAME AS approverName,
+        APP.APPROVER_ID AS approverId,
+        APP.REJECT_REASON AS rejectionReason
+        FROM APPROVAL APP
+        LEFT JOIN EMPLOYEE REQ_EMP ON REQ_EMP.ID = APP.REQUESTER_ID
+        LEFT JOIN EMPLOYEE APRV_EMP ON APRV_EMP.ID = APP.APPROVER_ID
+        LEFT JOIN DETAIL_SYS_CODE STATUS_CODE ON APP.APPROVAL_STATUS_CODE = STATUS_CODE.DETAIL_CODE
+        LEFT JOIN DETAIL_SYS_CODE TYPE_CODE ON APP.APPROVAL_TYPE_CODE = TYPE_CODE.DETAIL_CODE
+        LEFT JOIN DETAIL_SYS_CODE POS_CODE ON REQ_EMP.POSITION_CODE = POS_CODE.DETAIL_CODE
+        LEFT JOIN DETAIL_SYS_CODE DEPT_CODE ON REQ_EMP.DEPT_CODE = DEPT_CODE.DETAIL_CODE
+        <where>
+            <if test="startDate != null and startDate != ''">
+                AND APP.REQUESTED_AT &gt;= #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND APP.REQUESTED_AT &lt;= #{endDate}
+            </if>
+            <if test="apprType != null and apprType != ''">
+                AND APP.APPROVAL_TYPE_CODE = #{apprType}
+            </if>
+            <if test="dept != null and dept != ''">
+                AND REQ_EMP.DEPT_CODE = #{dept}
+            </if>
+            <if test="position != null and position != ''">
+                AND REQ_EMP.POSITION_CODE = #{position}
+            </if>
+            <if test="approvalNameOrEmpId != null and approvalNameOrEmpId != ''">
+                AND (
+                REQ_EMP.NAME LIKE CONCAT(CONCAT('%', #{approvalNameOrEmpId}), '%')
+                OR TO_CHAR(REQ_EMP.ID) LIKE CONCAT(CONCAT('%', #{approvalNameOrEmpId}), '%')
+                )
+            </if>
+        </where>
+
+        ORDER BY APP.ID DESC
+    </select>
+
+
+</mapper>

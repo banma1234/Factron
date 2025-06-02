@@ -1,20 +1,18 @@
-package com.itwillbs.factron.dto;
+package com.itwillbs.factron.dto.approval;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
 @NoArgsConstructor
-@ToString
-public class ApprovalDTO {
+@Builder
+public class ResponseApproval {
     private Long approvalId;//결재 문서 번호
     private String apprTypeCode;//결재 유형 상세 코드
     private String apprTypeName;//결재 유형 이름 ex)휴가,근무
-    private String empName;//발행자 이름
-    private Long empId;//발행자 사번
+    private String requesterName;//발행자 이름
+    private Long requesterId;//발행자 사번
+    private String requested_at;//발행날짜
     private String positionCode;//직급 상세 코드
     private String positionName;//직급 이름 ex)부장
     private String deptCode;//부서 상세 코드
