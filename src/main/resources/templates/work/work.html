@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base.html}">
+<head>
+    <title>factron</title>
+    <th:block layout:fragment="style">
+<!--        <link rel="stylesheet" th:href="@{/css/test.css}" />-->
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <section>
+        <h4 class="wow">근무 현황</h4>
+        <form class="test__form">
+            <div class="test__select__container">
+                <input class="form-control" type="date" name="srhStrDate">
+                ~
+                <input class="form-control" type="date" name="srhEndDate"><br/>
+                <select class="form-select" name="srhDeptCode">
+                    <option value="">전체</option>
+                </select>
+                <select class="form-select" name="srhWorkCode">
+                    <option value="">전체</option>
+                </select>
+            </div>
+            <div class="input-group mb-3">
+                <input class="form-control" type="text" name="srhEmp"><br/>
+                <button class="btn btn-outline-secondary srhBtn" type="button">검색</button>
+            </div>
+        </form>
+        <!-- list grid -->
+        <article>
+            <div id="workGrid">
+
+            </div>
+        </article>
+    </section>
+</div>
+
+<th:block layout:fragment="javascript">
+    <!-- js import -->
+    <script th:src="@{/js/work/work.js}"></script>
+</th:block>
+</body>
+</html>
