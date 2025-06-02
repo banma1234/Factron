@@ -5,12 +5,14 @@ import com.itwillbs.factron.dto.ResponseDTO;
 import com.itwillbs.factron.dto.test.Test;
 import com.itwillbs.factron.service.test.TestService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
+@RequestMapping("/testList")
 @RequiredArgsConstructor
 public class TestRestController {
 
@@ -19,12 +21,26 @@ public class TestRestController {
     /*
     * 테스트 목록 조회
     */
-    @GetMapping("/testList")
+    @GetMapping()
     public ResponseDTO<List<Test>> getTestList(RequestTest srhTest) {
         try {
             return ResponseDTO.success(testService.getTestList(srhTest));
         } catch (Exception e) {
             return ResponseDTO.fail(800, "퇴사 처리된 사원입니다.", testService.getTestList(srhTest));
+        }
+    }
+
+    /*
+     * 테스트 저장
+     */
+    @PostMapping()
+    public ResponseDTO<Void> registTest(@RequestBody Test test) {
+        log.info("registTest: {}", test);
+        try {
+            testService.registTest(test);
+            return ResponseDTO.success("저장이 완료되었습니다!", null);
+        } catch (Exception e) {
+            return ResponseDTO.fail(800, "저장에 실패했습니다. 다시 시도해주세요.", null);
         }
     }
 }

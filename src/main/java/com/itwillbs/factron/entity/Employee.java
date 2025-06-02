@@ -40,8 +40,8 @@ public class Employee extends BaseEntity {
     @Column(name = "joined_date", nullable = false)
     private LocalDate joinedDate;
 
-    @Column(name = "quit_code")
-    private LocalDate quitCode;
+    @Column(name = "quit_date")
+    private LocalDate quitDate;
 
     @Column(name = "email", length = 100, nullable = false)
     private String email;
