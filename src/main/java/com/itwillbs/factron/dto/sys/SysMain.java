@@ -1,4 +1,4 @@
-package com.itwillbs.factron.dto.sysMain;
+package com.itwillbs.factron.dto.sys;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
