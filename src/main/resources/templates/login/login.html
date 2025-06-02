@@ -22,11 +22,11 @@
 <main class="login__page">
     <!-- 로그인 카드 -->
     <div class="login__container">
-        <form class="login__form">
+        <form class="login__form" method="post">
             <img class="login__logo" th:src="@{/logo_title.svg}" />
             <div class="login__input__group">
-                <input class="form-control" type="text" name="employeeCode" placeholder="사원번호">
-                <input class="form-control" type="password" name="passsword" placeholder="비밀번호">
+                <input class="form-control" type="text" name="employeeId" placeholder="사원번호">
+                <input class="form-control" type="password" name="password" placeholder="비밀번호">
             </div>
             <button class="btn btn-primary btn-lg" id="login__button" type="button">로그인</button>
             <br/>
@@ -48,6 +48,9 @@
     <!-- 배경 이미지 -->
     <img class="login__background" th:src="@{/login_background.webp}" alt="login background" />
 </main>
-
+<th:block layout:fragment="javascript">
+    <!-- js import -->
+    <script th:src="@{/js/login/loginForm.js}"></script>
+</th:block>
 </body>
 </html>
