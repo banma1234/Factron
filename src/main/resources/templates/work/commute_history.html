@@ -12,15 +12,25 @@
 <body>
 <div layout:fragment="content">
     <section>
+
+        <!-- 로그인한 사번을 JS에서 쓸 수 있도록 hidden input(class) 추가 -->
+        <input type="hidden" class="loginEmpId" th:value="${empId}">
+
         <div class="commute-header-row">
             <h4 class="wow">출퇴근 관리</h4>
 
-                <span class="commuteInBtn">
-                    <button class="btn btn-warning cmInBtn" type="button">출근</button>
-                </span>
-                <span class="commuteOutBtn">
-                    <button class="btn btn-warning cmOutBtn" type="button">퇴근</button>
-                </span>
+            <!-- 출근 버튼: 출근 전(NONE)만 노출 -->
+            <span th:if="${commuteStatus == 'NONE'}">
+                <button class="btn btn-warning cmInBtn"
+                        type="button">출근</button>
+            </span>
+
+            <!-- 퇴근 버튼: 출근 후(IN) 또는 퇴근 완료(DONE)일 때 노출 -->
+            <span class="commuteOutBtn" th:if="${commuteStatus == 'IN' or commuteStatus == 'DONE'}">
+                <button class="btn btn-warning cmOutBtn"
+                        type="button"
+                        th:disabled="${commuteStatus == 'DONE'}">퇴근</button>
+            </span>
         </div>
 
         <form class="test__form">

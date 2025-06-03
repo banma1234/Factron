@@ -69,13 +69,21 @@ const initGrid = () => {
     });
 }
 
+// 한국 시간 기준 오늘 날짜 구하기
+function getKoreaToday() {
+    const now = new Date();
+    now.setHours(now.getHours() + 9); // UTC+9
+    return now.toISOString().slice(0, 10);
+}
+
 const init = () => {
     const testGrid = initGrid();
     // const getEmployeeId = () => document.getElementById('employeeId').value;
 
     // 초기 값 설정
-    const today = new Date().toISOString().slice(0, 10);
-    const empId = "5"; // 임의의 사번
+    const today = getKoreaToday();
+    const empId = "4"; // 임의의 사번
+    // const empId = document.querySelector('.loginEmpId').value;
 
     // 폼에 값 세팅
     document.querySelector("input[name='srhNameOrId']").value = empId;
@@ -129,7 +137,7 @@ const init = () => {
             if (!res.ok) {
                 const errorText = await res.text();
                 console.error("API Error:", res.status, errorText);
-                alert("데이터 조회 중 오류가 발생했습니다.");ㅛ
+                alert("데이터 조회 중 오류가 발생했습니다.");
                 return { data: [] };
             }
             return res.json();
@@ -148,6 +156,61 @@ const init = () => {
     // }, false);
 
 
+    // 출근 API 호출 함수
+    async function commuteIn(empId) {
+        const res = await fetch('/api/commute', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'empId': empId
+            }
+        });
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+    }
+
+    // 퇴근 API 호출 함수
+    async function commuteOut(empId) {
+        const res = await fetch('/api/commute', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'empId': empId
+            }
+        });
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+    }
+
+    // 출근 버튼 이벤트
+    const cmInBtn = document.querySelector('.cmInBtn');
+    if (cmInBtn) {
+        cmInBtn.addEventListener('click', async () => {
+            const empId = document.querySelector('.loginEmpId').value;
+            try {
+                await commuteIn(empId);
+                alert('출근 처리 완료');
+                location.reload();
+            } catch (e) {
+                alert('출근 처리 실패: ' + e.message);
+            }
+        });
+    }
+
+    // 퇴근 버튼 이벤트
+    const cmOutBtn = document.querySelector('.commuteOutBtn .cmOutBtn');
+    if (cmOutBtn) {
+        cmOutBtn.addEventListener('click', async () => {
+            const empId = document.querySelector('.loginEmpId').value;
+            try {
+                await commuteOut(empId);
+                alert('퇴근 처리 완료');
+                location.reload();
+            } catch (e) {
+                alert('퇴근 처리 실패: ' + e.message);
+            }
+        });
+    }
 
     // 최초 진입 시 empId=3, 오늘 날짜로 조회
     getData({ empId, startDate: today, endDate: today }).then(res => {

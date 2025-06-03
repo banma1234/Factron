@@ -16,4 +16,7 @@ public interface CommuteService {
 
     // 출근 기록을 조회하는 메서드
     List<CommuteResponseDto> getCommuteHistories(CommuteRequestDto commuteRequestDto);
+
+    // 특정 사원의 출근 기록을 조회하는 메서드 (출퇴근 버튼 활성화 여부를 판단하기 위해 사용)
+    String getTodayCommuteStatus(String empId, String todayDate);
 }

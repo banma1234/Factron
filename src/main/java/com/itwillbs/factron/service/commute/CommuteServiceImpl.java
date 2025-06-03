@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -112,17 +113,17 @@ public class CommuteServiceImpl implements CommuteService {
     @Override
     public List<CommuteResponseDto> getCommuteHistories(CommuteRequestDto requestDto) {
 
-        // 입력 값이 null 또는 빈 문자열인 경우 null로 변환하는 메소드로
+        // 1. 입력 값이 null 또는 빈 문자열인 경우 null로 변환하는 메소드로
         String nameOrId = safeTrim(requestDto.getNameOrId());
         String deptCode = safeTrim(requestDto.getDept());
         String startDate = safeTrim(requestDto.getStartDate());
         String endDate = safeTrim(requestDto.getEndDate());
 
-        // 날짜 형식 유효성 검사
+        // 2. 날짜 형식 유효성 검사
         validateDateFormat(startDate, "startDate");
         validateDateFormat(endDate, "endDate");
 
-        // CommuteRequestDto 객체 생성
+        // 3. CommuteRequestDto 객체 생성
         CommuteRequestDto commuteRequestDto = CommuteRequestDto.builder()
                 .nameOrId(nameOrId)
                 .dept(deptCode)
@@ -130,7 +131,45 @@ public class CommuteServiceImpl implements CommuteService {
                 .endDate(endDate)
                 .build();
 
+        // 4. CommuteMapper를 사용하여 출퇴근 기록 조회
         return commuteMapper.selectCommuteHistories(commuteRequestDto);
+    }
+
+    /**
+     * 오늘 출근 상태 조회 메소드
+     * @param empId 사원 ID
+     * @param todayDate 오늘 날짜 (yyyy-MM-dd 형식)
+     * @return 출근 상태 (IN, DONE, NONE)
+     */
+    @Override
+    public String getTodayCommuteStatus(String empId, String todayDate) {
+
+        // 1. 사원 정보 조회 (예: employeeRepository.findById)
+        Employee employee = employeeRepository.findById(Long.parseLong(empId))
+                .orElseThrow(() -> new EntityNotFoundException("해당 사원이 없습니다."));
+
+        // 2. 오늘 날짜의 시작과 끝 계산
+        LocalDate date = LocalDate.parse(todayDate);
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusDays(1).minusNanos(1);
+
+        // 3. 오늘 출근 기록 조회
+        Optional<CommuteHistory> optionalHistory = commuteRepository
+                .findByEmployeeAndCommuteInBetween(employee, startOfDay, endOfDay);
+
+        if (optionalHistory.isEmpty()) {
+
+            return "NONE"; // 출근 기록 없음
+        }
+
+        CommuteHistory history = optionalHistory.get();
+        if (history.getCommuteOut() == null) {
+
+            return "IN"; // 출근했으나 퇴근 안함
+        } else {
+
+            return "DONE"; // 출근+퇴근 완료
+        }
     }
 
     /**
