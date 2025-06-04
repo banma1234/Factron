@@ -2,7 +2,7 @@ package com.itwillbs.factron.controller.sys;
 
 import com.itwillbs.factron.dto.ResponseDTO;
 import com.itwillbs.factron.dto.sys.SysDetailDTO;
-import com.itwillbs.factron.service.sys.SysDetailService;
+import com.itwillbs.factron.service.sys.SysDetailServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SysDetailRestController {
 
-    private final SysDetailService sysDetailService;
+    private final SysDetailServiceImpl sysDetailService;
 
     @GetMapping("")
     public ResponseDTO<List<SysDetailDTO>> getDetailById(@RequestParam Long id) {
