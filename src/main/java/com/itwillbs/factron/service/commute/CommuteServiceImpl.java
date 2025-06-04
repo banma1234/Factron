@@ -4,9 +4,11 @@ import com.itwillbs.factron.dto.commute.CommuteRequestDto;
 import com.itwillbs.factron.dto.commute.CommuteResponseDto;
 import com.itwillbs.factron.entity.CommuteHistory;
 import com.itwillbs.factron.entity.Employee;
+import com.itwillbs.factron.entity.WorkHistory;
 import com.itwillbs.factron.mapper.commute.CommuteMapper;
 import com.itwillbs.factron.repository.commute.CommuteRepository;
 import com.itwillbs.factron.repository.employee.EmployeeRepository;
+import com.itwillbs.factron.repository.work.WorkRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Slf4j
@@ -25,6 +28,7 @@ public class CommuteServiceImpl implements CommuteService {
 
     private final CommuteRepository commuteRepository;
     private final EmployeeRepository employeeRepository;
+    private final WorkRepository workRepository;
 
     private final CommuteMapper commuteMapper;
 
@@ -93,16 +97,22 @@ public class CommuteServiceImpl implements CommuteService {
             throw new IllegalArgumentException("이미 퇴근한 상태입니다.");
         }
 
-        // 5. 퇴근 시간 저장 (퇴근 기록 업데이트)
-        commuteHistory = CommuteHistory.builder()
-                .id(commuteHistory.getId())
+        // 5. 퇴근 시간 수정
+        commuteHistory.changeCommuteOut(LocalDateTime.now());
+
+        // 6. 근무 테이블에 일반 근무로 저장할 근무 데이터 생성
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        WorkHistory workHistory = WorkHistory.builder()
+                .workDate(LocalDate.now())
+                .startTime(commuteHistory.getCommuteIn().format(timeFormatter))
+                .endTime(commuteHistory.getCommuteOut().format(timeFormatter))
+                .workCode("WRK001") // 일반 근무 코드
                 .employee(employee)
-                .commuteIn(commuteHistory.getCommuteIn())
-                .commuteOut(LocalDateTime.now())
                 .build();
 
-        // 6. 퇴근 기록 저장
-        commuteRepository.save(commuteHistory);
+        // 7. 근무 기록 저장
+        workRepository.save(workHistory);
     }
 
     /**

@@ -82,8 +82,8 @@ const init = () => {
 
     // 초기 값 설정
     const today = getKoreaToday();
-    const empId = "1"; // 임의의 사번 -> 추후에 base.html 에서 시큐리티 세션으로 받은 사용자 객체를 통해 추출
-    const empName = "홍길동"; // 임의의 사원 이름 -> 추후에 base.html 에서 시큐리티 세션으로 받은 사용자 객체를 통해 추출
+    const empId = "8"; // 임의의 사번 -> 추후에 base.html 에서 시큐리티 세션으로 받은 사용자 객체를 통해 추출
+    const empName = "임의 사용자 이름"; // 임의의 사원 이름 -> 추후에 base.html 에서 시큐리티 세션으로 받은 사용자 객체를 통해 추출
 
     // 폼에 값 세팅
     document.querySelector("input[name='srhNameOrId']").value = empId;
@@ -198,7 +198,7 @@ const init = () => {
         });
     }
 
-// 퇴근 버튼 이벤트
+    // 퇴근 버튼 이벤트
     const cmOutBtn = document.querySelector('.commuteOutBtn .cmOutBtn');
     if (cmOutBtn) {
         cmOutBtn.addEventListener('click', () => {

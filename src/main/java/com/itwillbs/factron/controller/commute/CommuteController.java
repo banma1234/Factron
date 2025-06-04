@@ -20,7 +20,7 @@ public class CommuteController {
     public String commute_history(Model model) {
 
         // 실제 로그인 정보에서 사번을 가져와야 함 (예시: SecurityContext 등)
-        String empId = "1"; // TODO: 실제 로그인 정보로 대체
+        String empId = "8"; // TODO: 실제 로그인 정보로 대체
 
         String today = LocalDate.now().toString(); // 오늘 날짜를 문자열로 변환
 
