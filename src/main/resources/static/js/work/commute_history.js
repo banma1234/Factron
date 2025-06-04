@@ -82,13 +82,19 @@ const init = () => {
 
     // 초기 값 설정
     const today = getKoreaToday();
-    const empId = "4"; // 임의의 사번
-    // const empId = document.querySelector('.loginEmpId').value;
+    const empId = "1"; // 임의의 사번 -> 추후에 base.html 에서 시큐리티 세션으로 받은 사용자 객체를 통해 추출
+    const empName = "홍길동"; // 임의의 사원 이름 -> 추후에 base.html 에서 시큐리티 세션으로 받은 사용자 객체를 통해 추출
 
     // 폼에 값 세팅
     document.querySelector("input[name='srhNameOrId']").value = empId;
     document.querySelector("input[name='srhStrBirth']").value = today;
     document.querySelector("input[name='srhEndBirth']").value = today;
+
+    // 모달 관련 변수
+    const commuteConfirmModal = new bootstrap.Modal(document.getElementsByClassName("commuteConfirmModal")[0]);
+    const commuteConfirmMsg = document.getElementsByClassName("commuteConfirmMsg")[0];
+    const commuteConfirmBtn = document.getElementsByClassName("commuteConfirmBtn")[0];
+    let commuteAction = null; // 'in' 또는 'out'
 
     // 검색
     document.querySelector(".srhBtn").addEventListener("click", function(e) {
@@ -185,34 +191,42 @@ const init = () => {
     // 출근 버튼 이벤트
     const cmInBtn = document.querySelector('.cmInBtn');
     if (cmInBtn) {
-        cmInBtn.addEventListener('click', async () => {
-            const empId = document.querySelector('.loginEmpId').value;
-            try {
-                await commuteIn(empId);
-                alert('출근 처리 완료');
-                location.reload();
-            } catch (e) {
-                alert('출근 처리 실패: ' + e.message);
-            }
+        cmInBtn.addEventListener('click', () => {
+            commuteConfirmMsg.textContent = `${empName}님 출근 하시겠습니까?`;
+            commuteAction = 'in';
+            commuteConfirmModal.show();
         });
     }
 
-    // 퇴근 버튼 이벤트
+// 퇴근 버튼 이벤트
     const cmOutBtn = document.querySelector('.commuteOutBtn .cmOutBtn');
     if (cmOutBtn) {
-        cmOutBtn.addEventListener('click', async () => {
-            const empId = document.querySelector('.loginEmpId').value;
-            try {
-                await commuteOut(empId);
-                alert('퇴근 처리 완료');
-                location.reload();
-            } catch (e) {
-                alert('퇴근 처리 실패: ' + e.message);
-            }
+        cmOutBtn.addEventListener('click', () => {
+            commuteConfirmMsg.textContent = `${empName}님 퇴근 하시겠습니까?`;
+            commuteAction = 'out';
+            commuteConfirmModal.show();
         });
     }
 
-    // 최초 진입 시 empId=3, 오늘 날짜로 조회
+    // 모달 확인 버튼 이벤트
+    commuteConfirmBtn.addEventListener('click', async () => {
+        try {
+            if (commuteAction === 'in') {
+                await commuteIn(empId);
+                alert('출근 처리 완료');
+            } else if (commuteAction === 'out') {
+                await commuteOut(empId);
+                alert('퇴근 처리 완료');
+            }
+            commuteConfirmModal.hide();
+            location.reload();
+        } catch (e) {
+            alert('처리 실패: ' + e.message);
+            commuteConfirmModal.hide();
+        }
+    });
+
+    // 최초 진입 시 empId, 오늘 날짜로 조회
     getData({ empId, startDate: today, endDate: today }).then(res => {
         testGrid.resetData(res.data);
     });

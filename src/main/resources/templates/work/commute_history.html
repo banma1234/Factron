@@ -13,9 +13,6 @@
 <div layout:fragment="content">
     <section>
 
-        <!-- 로그인한 사번을 JS에서 쓸 수 있도록 hidden input(class) 추가 -->
-        <input type="hidden" class="loginEmpId" th:value="${empId}">
-
         <div class="commute-header-row">
             <h4 class="wow">출퇴근 관리</h4>
 
@@ -31,6 +28,19 @@
                         type="button"
                         th:disabled="${commuteStatus == 'DONE'}">퇴근</button>
             </span>
+        </div>
+
+        <!-- 출퇴근 확인 모달 -->
+        <div class="modal fade commuteConfirmModal" tabindex="-1" aria-labelledby="commuteConfirmModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-body commuteConfirmMsg"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary commuteConfirmBtn">확인</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <form class="test__form">
