@@ -21,7 +21,7 @@ public class RequestSysMainDTO {
     private String is_active;
 
     @Builder
-    public RequestSysMainDTO(Long id, String main_code, String name, String is_active, Long created_by, LocalDateTime created_at) {
+    public RequestSysMainDTO(String main_code, String name, String is_active) {
         this.main_code = main_code;
         this.name = name;
         this.is_active = is_active;
