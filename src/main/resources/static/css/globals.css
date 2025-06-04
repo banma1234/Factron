@@ -10,14 +10,14 @@ html, body {
     font-style: normal;
     font-weight: 400;
     src: local("NotoSansKR-Regular.ttf");
-            url("../font/NotoSansKR-Regular.ttf");
+url("../font/NotoSansKR-Regular.ttf");
 }
 @font-face {
     font-family: 'roboto';
     font-style: normal;
     font-weight: 400;
     src: local("Roboto_Condensed-Regular.ttf");
-            url("../font/Roboto_Condensed-Regular.ttf");
+url("../font/Roboto_Condensed-Regular.ttf");
 }
 
 main{
@@ -51,14 +51,16 @@ a {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px;
+    width: 100%;
+    padding: 0.5rem 0;
 }
 
 .test__select__container {
     display: flex;
     flex-direction: row;
-    gap: 15px;
+    gap: 0.5rem;
     text-align: center;
+    align-items: center;
 }
 
 .wow {
@@ -75,5 +77,4 @@ a {
     display: flex;
     max-width: 300px;
     align-items: center;
-    margin-top: 14px;
 }
