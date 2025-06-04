@@ -12,40 +12,43 @@
 <body>
 <div layout:fragment="content">
     <section>
-        <h4 class="wow">사원 관리</h4>
-        <div class="employee__menu__container">
-            <form class="employee__search__option" method="get">
+        <div class="test__form">
+            <h4 class="wow">사원 관리</h4>
+            <button class="btn btn-primary modBtn" type="button">사원 추가</button>
+        </div>
+        <form class="test__form" method="get">
+            <div class="test__select__container">
                 <div class="search__option__title">부서</div>
                 <select class="form-select" name="deptCode">
                     <option value="">전체</option>
-                    <option value="busan">부산</option>
-                    <option value="seoul">서울</option>
-                    <option value="gyeongnam">경남</option>
-                    <option value="gyeonggi">경기</option>
+                    <option value="DPT001">부산</option>
+                    <option value="DPT001">서울</option>
+                    <option value="DPT001">경남</option>
+                    <option value="DPT001">경기</option>
                 </select>
                 <div class="search__option__title">직급</div>
                 <select class="form-select" name="positionCode">
                     <option value="">전체</option>
-                    <option value="busan">부산</option>
-                    <option value="seoul">서울</option>
-                    <option value="gyeongnam">경남</option>
-                    <option value="gyeonggi">경기</option>
+                    <option value="EMP001">부산</option>
+                    <option value="EMP001">서울</option>
+                    <option value="EMP001">경남</option>
+                    <option value="EMP001">경기</option>
                 </select>
                 <div class="search__option__title">재직 상태</div>
                 <select class="form-select" name="isActive">
                     <option value="">전체</option>
-                    <option value="busan">부산</option>
-                    <option value="seoul">서울</option>
-                    <option value="gyeongnam">경남</option>
-                    <option value="gyeonggi">경기</option>
+                    <option value="y">부산</option>
+                    <option value="y">서울</option>
+                    <option value="y">경남</option>
+                    <option value="y">경기</option>
                 </select>
-                <div class="input-group mb-3">
-                    <input class="form-control" type="text" name="name" placeholder="이름 또는 사원번호"><br/>
-                    <button class="btn btn-outline-secondary empSrhBtn" type="button">검색</button>
-                </div>
-            </form>
-            <button class="btn btn-outline-secondary srhBtn" type="button">사원 추가</button>
-        </div>
+            </div>
+            <div class="input-group mb-3">
+                <input class="form-control" type="text" name="name" placeholder="이름 또는 사원번호"><br/>
+                <button class="btn btn-outline-secondary empSrhBtn" type="button">검색</button>
+            </div>
+        </form>
+
         <!-- list grid -->
         <article>
             <div id="employee_grid">

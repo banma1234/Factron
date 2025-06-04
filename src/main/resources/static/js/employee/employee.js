@@ -1,5 +1,5 @@
 // grid 초기화
-const initGrid = () => {
+const initGrid = (employees) => {
     const Grid = tui.Grid;
 
     // 테마
@@ -21,34 +21,6 @@ const initGrid = () => {
             }
         }
     });
-    employees = [
-        {
-            id: 1,
-            name: '계두식',
-            department: '인사',
-            position: '사원',
-            phone: '010-5223-1234',
-            status: 'y',
-
-        },
-        {
-            id: 2,
-            name: '강철중',
-            department: '인사',
-            position: '사원',
-            phone: '010-5223-1234',
-            status: 'y',
-        },
-        {
-            id: 3,
-            name: '김갑환',
-            department: '인사',
-            position: '사원',
-            address: '대구광역시 XX구 XX동',
-            phone: '010-5223-1234',
-            status: 'n',
-        }
-    ]
     // 세팅
     return new Grid({
         el: document.getElementById('employee_grid'),
@@ -64,22 +36,22 @@ const initGrid = () => {
             },
             {
                 header: '사원번호',
-                name: 'employeeId',
+                name: 'empId',
                 align: 'center'
             },
             {
                 header: '이름',
-                name: 'name',
+                name: 'empName',
                 align: 'center'
             },
             {
                 header: '부서',
-                name: 'department',
+                name: 'deptName',
                 align: 'center'
             },
             {
                 header: '직급',
-                name: 'position',
+                name: 'positionName',
                 align: 'center'
             },
             {
@@ -89,7 +61,7 @@ const initGrid = () => {
             },
             {
                 header: '재직상태',
-                name: 'status',
+                name: 'empIsActive',
                 align: 'center',
                 formatter: (value) => {
                     return `${value==='y' ? '재직' : '퇴직'}`
@@ -103,51 +75,89 @@ const initGrid = () => {
 const init = () => {
     // grid 초기 세팅
     const employeeGrid = initGrid();
-
+    getEmployees();
     // 버튼에사원 조회 API 호출 기능 추가
-    document.addEventListener("DOMContentLoaded", () => {
-        const btn = document.querySelector(".empSrhBtn");
-        if (btn) {
-            btn.addEventListener("click",(e)=>{
-                e.preventDefault();
-                e.stopPropagation();
-                getEmployees();
-            });
-        }
-    });
-
+    // document.addEventListener("DOMContentLoaded", () => {
+    //
+    // });
+    const btn = document.querySelector(".empSrhBtn");
+    if (btn) {
+        btn.addEventListener("click",(e)=>{
+            e.preventDefault();
+            e.stopPropagation();
+            getEmployees();
+        });
+    }
     // 사원 목록 조회
     async function getEmployees() {
+        const selectDept = document.querySelector("select[name='deptCode']");
+        const selectPosition = document.querySelector("select[name='positionCode']");
+        const selectIsActive = document.querySelector("select[name='isActive']");
 
         // 사원 정보 추출
-        const dept = document.querySelector("input[name='deptCode']").value;
-        const position = document.querySelector("input[name='positionCode']").value;
+        const dept = selectDept.options[selectDept.selectedIndex].value;
+        const position = selectDept.options[selectPosition.selectedIndex].value;
+        const empIsActive = selectDept.options[selectIsActive.selectedIndex].value;
         const name = document.querySelector("input[name='name']").value;
-        const status = document.querySelector("input[name='isActive']").value;
 
         // params에 검색어 추가
-        const data = new URLSearchParams({
-            deptCode: dept,
-            positionCode: position,
-            name: name,
-            isActive: status
-        });
+        const params = new URLSearchParams();
 
-        try {
-            //req API
-            const res = await fetch(`/api/employee/`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-            });
-            res.json().then(res => {
-                employeeGrid.resetData(res.data); // grid에 세팅
-            });
-        } catch (e) {
+        if(dept) params.append("deptCode", dept)
+        if(position) params.append("positionCode", position)
+        if(name) params.append("name", name)
+        if(empIsActive) params.append("isActive", empIsActive)
+
+        fetch(`/api/employee?${params.toString()}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(res => res.json())
+        .then(res => {
+            employeeGrid.resetData(res); // grid에 세팅
+
+        })
+        .catch(e => {
             console.error(e);
-        }
+        });
     }
+
+    employeeGrid.on('dblclick', (e) => {
+        const rowKey = e.rowKey;
+        const rowData = employeeGrid.getRow(rowKey);
+
+        // 새 창에서 해당 ID를 기반으로 상세페이지 오픈
+        if (rowData && rowData.id) {
+            const popup = window.open('/employee-form', '_blank', 'width=800,height=600');
+
+            // 자식 창으로부터 'ready' 먼저 수신 후 postMessage 실행
+            const messageHandler = (event) => {
+                if (event.data === 'ready') {
+                    popup.postMessage({
+                        name: rowData.name,
+                        empId: rowData.empId,
+                        positionCode: rowData.positionCode,
+                        positionName: rowData.positionName,
+                        deptCode: rowData.deptCode,
+                        deptName: rowData.deptName,
+                        rrn: rowData.residentRegistrationNumber,
+                        email: rowData.email,
+                        gender: rowData.gender,
+                        eduLevelCode: rowData.eduLevelCode,
+                        eduLevelName: rowData.eduLevelName,
+                        address: rowData.address,
+                        empIsActive: rowData.empIsActive,
+                        joinedDate: rowData.joinedDate,
+                        employCode: rowData.employCode,
+                        employName: rowData.employName
+                    }, "*");
+                    window.removeEventListener("message", messageHandler);
+                }
+            };
+            window.addEventListener("message", messageHandler);
+        }
+    });
 }
 
 window.onload = () => {
