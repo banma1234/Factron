@@ -130,16 +130,20 @@ const init = () => {
     employeeGrid.on('dblclick', (e) => {
         const rowKey = e.rowKey;
         const rowData = employeeGrid.getRow(rowKey);
-
         // 새 창에서 해당 ID를 기반으로 상세페이지 오픈
-        if (rowData && rowData.id) {
+        if (rowData && (rowKey || rowKey === 0)) {
             const popup = window.open('/employee-form', '_blank', 'width=800,height=600');
+
+            if (!popup) {
+                alert("팝업이 차단되었습니다. 팝업 차단을 해제해주세요.");
+                return;
+            }
 
             // 자식 창으로부터 'ready' 먼저 수신 후 postMessage 실행
             const messageHandler = (event) => {
                 if (event.data === 'ready') {
                     popup.postMessage({
-                        name: rowData.name,
+                        name: rowData.empName,
                         empId: rowData.empId,
                         positionCode: rowData.positionCode,
                         positionName: rowData.positionName,

@@ -1,55 +1,29 @@
 package com.itwillbs.factron.service.employee;
 
-import com.itwillbs.factron.dto.employee.EmployeeRequestDTO;
-import com.itwillbs.factron.dto.employee.EmployeeResponseDTO;
-import com.itwillbs.factron.mapper.employee.EmployeeMapper;
-import com.itwillbs.factron.repository.employee.EmployeeRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.stereotype.Service;
+import com.itwillbs.factron.dto.employee.RequestEmployeeSrhDTO;
+import com.itwillbs.factron.dto.employee.ResponseEmployeeSrhDTO;
+import com.itwillbs.factron.dto.employee.RequestEmployeeUpdateDTO;
 
 import java.util.List;
 
-@Service
-@RequiredArgsConstructor
-@Log4j2
-public class EmployeeService {
 
-    private final EmployeeRepository employeeRepository;
-
-    private final EmployeeMapper employeeMapper;
+public interface EmployeeService {
 
     // 검색 조건으로 사원 조회
-    public List<EmployeeResponseDTO> getEmployees(EmployeeRequestDTO employeeRequestDTO){
-        log.info("EmployeeService employeeReqDTO Before valid: " + employeeRequestDTO);
-        employeeRequestDTO.setDept(this.validateCode(employeeRequestDTO.getDept()));
-        employeeRequestDTO.setPosition(this.validateCode(employeeRequestDTO.getPosition()));
-        employeeRequestDTO.setEmpIsActive(this.validActive(employeeRequestDTO.getEmpIsActive()));
-        employeeRequestDTO.setNameOrId(this.safeTrim(employeeRequestDTO.getNameOrId()));
-        log.info("EmployeeService employeeReqDTO After valid: " + employeeRequestDTO);
-        return employeeMapper.getEmployeeList(employeeRequestDTO);
-    }
 
-    // 공백 제거
-    private String safeTrim(String input) {
-        return (input == null) ? "" : input.trim();
-    }
+    /**
+     * 검색 조건으로 사원 목록 조회 (개인 or 다수)
+     * @param requestEmployeeSrhDTO {@link RequestEmployeeSrhDTO}
+     * @return List<responseEmployeeSrhDTO>
+     */
+    List<ResponseEmployeeSrhDTO> getEmployees(RequestEmployeeSrhDTO requestEmployeeSrhDTO);
 
-    // 재직여부 확인
-    private String validActive(String str){
-        String trimmed = safeTrim(str);
-        if (trimmed.equals("")) return trimmed;
-        return ((trimmed.equals("y")  || trimmed.equals("n")) ) ?  trimmed: "";
-    }
-
-    // Code 유효성 검사
-    private String validateCode(String code) {
-        String trimmed = safeTrim(code);
-        if (trimmed.matches("^[A-Z]{3}\\d{3}$")) {
-            return trimmed;
-        }
-        return "";
-    }
-
-
+    /**
+     * 사원의 개인정보를 수정 (권한에 따라 선택 기준 다름)
+     * @param reqEmployeeDTO {@link RequestEmployeeUpdateDTO}
+     * @return Void
+     */
+    Void updateEmployee(RequestEmployeeUpdateDTO reqEmployeeDTO);
 }
+
+

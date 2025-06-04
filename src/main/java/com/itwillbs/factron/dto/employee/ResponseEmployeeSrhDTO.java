@@ -5,7 +5,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmployeeResponseDTO {
+public class ResponseEmployeeSrhDTO {
     private Long empId; //사번
     private String empName; //이름
     private String residentRegistrationNumber; //주민번호

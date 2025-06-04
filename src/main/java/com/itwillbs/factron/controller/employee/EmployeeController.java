@@ -14,7 +14,7 @@ public class EmployeeController {
 
     @GetMapping("/employee-form")
     public String employeeFrom() {
-        return "/layout/employee/employee-from";
+        return "/layout/employee/employee-form";
     }
 }
 

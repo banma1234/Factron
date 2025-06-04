@@ -1,21 +1,26 @@
 package com.itwillbs.factron.entity;
 
 
+import com.itwillbs.factron.dto.employee.RequestEmployeeUpdateDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 
 @Entity
 @Getter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@SuperBuilder
 @Table(name = "employee")
+@EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor
+@AllArgsConstructor
 public class Employee extends BaseEntity {
 
     @Id
@@ -38,6 +43,7 @@ public class Employee extends BaseEntity {
     private String positionCode;
 
     @Column(name = "joined_date", nullable = false)
+    @CreatedDate
     private LocalDate joinedDate;
 
     @Column(name = "quit_date")
@@ -61,4 +67,34 @@ public class Employee extends BaseEntity {
     @Column(name = "edu_level_code", length = 6, nullable = false)
     private String eduLevelCode;
 
+    /**
+     * 일반 사원이 본인의 개인정보를 수정합니다.
+     * @param reqEmpUpDto {@link RequestEmployeeUpdateDTO}
+     */
+    public void updateNormEmployeeInfo(RequestEmployeeUpdateDTO reqEmpUpDto) {
+        this.name = reqEmpUpDto.getEmpName();
+        String[] fullRrn = reqEmpUpDto.getResidentRegistrationNumber().split("-");
+        this.birth = fullRrn[0];
+        this.rrnBack = fullRrn[1];
+        this.email = reqEmpUpDto.getEmail();
+        this.phone = reqEmpUpDto.getPhone();
+    }
+
+    /**
+     * 인사 직원이 사원의 정보(퇴사 여부 포함)를 수정합니다.
+     * @param reqEmpUpDto {@link RequestEmployeeUpdateDTO}
+     */
+    public void updateTranfEmployeeInfo(RequestEmployeeUpdateDTO reqEmpUpDto) {
+        this.name = reqEmpUpDto.getEmpName();
+        String[] fullRrn = reqEmpUpDto.getResidentRegistrationNumber().split("-");
+        this.birth = fullRrn[0];
+        this.rrnBack = fullRrn[1];
+        this.gender = reqEmpUpDto.getGender();
+        this.email = reqEmpUpDto.getEmail();
+        this.eduLevelCode = reqEmpUpDto.getEduLevelCode();
+        this.address = reqEmpUpDto.getAddress();
+        if ("N".equals(reqEmpUpDto.getEmpIsActive())) this.quitDate = LocalDate.now();
+        this.employCode = reqEmpUpDto.getEmployeCode();
+        this.phone = reqEmpUpDto.getPhone();
+    }
 }
