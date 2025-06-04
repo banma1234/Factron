@@ -6,7 +6,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ResponseApproval {
+public class ResponseSearchApprovalDTO {
     private Long approvalId;//결재 문서 번호
     private String apprTypeCode;//결재 유형 상세 코드
     private String apprTypeName;//결재 유형 이름 ex)휴가,근무

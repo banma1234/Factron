@@ -5,7 +5,7 @@
 
 <mapper namespace="com.itwillbs.factron.mapper.approval.ApprovalMapper">
 <!--결재 조회-->
-    <select id="getApprovalList" parameterType="com.itwillbs.factron.dto.approval.RequestApproval" resultType="com.itwillbs.factron.dto.approval.ResponseApproval">
+    <select id="getApprovalList" parameterType="com.itwillbs.factron.dto.approval.RequestSearchApprovalDTO" resultType="com.itwillbs.factron.dto.approval.ResponseSearchApprovalDTO">
         SELECT
         APP.ID AS approvalId,
         APP.APPROVAL_TYPE_CODE AS apprTypeCode,

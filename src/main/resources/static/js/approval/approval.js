@@ -19,6 +19,7 @@ const initGrid = () => {
         columns: [
             { header: '결재번호', name: 'approvalId', align: 'center' },
             { header: '결재 유형', name: 'apprTypeName', align: 'center' },
+            { header: '결재 코드', name: 'apprTypeCode', hidden:'ture' },
             { header: '이름', name: 'requesterName', align: 'center' },
             { header: '사번', name: 'requesterId', align: 'center' },
             { header: '직급', name: 'positionName', align: 'center' },
@@ -60,7 +61,7 @@ const init = () => {
     // 👉 가짜 로그인 사용자 정보 (하드코딩)
     const currentUser = {
         id: "20250001",
-        authCode: "ATH001"
+        authCode: "ATH002"
     };
     // 검색
     document.querySelector(".srhBtn").addEventListener("click", function(e) {
@@ -73,31 +74,57 @@ const init = () => {
         });
     }, false);
 
-    // form 창 오픈
     testGrid.on('dblclick', (e) => {
         const rowKey = e.rowKey;
         const rowData = testGrid.getRow(rowKey);
 
-        // 새 창에서 해당 ID를 기반으로 상세페이지 오픈
-        if (rowData && rowData.id) {
-            const popup = window.open('/test-form', '_blank', 'width=800,height=600');
+        if (rowData && rowData.approvalId) {
+            // 결재 유형 코드 확인
+            let formUrl = "";
+            switch (rowData.apprTypeName) {
+                case "발령":
+                    formUrl = "/approval/transferApproval-form";
+                    break;
+                case "휴가":
+                    formUrl = "/approval/vacationApproval-form";
+                    break;
+                case "근무":
+                    formUrl = "/approval/workApproval-form";
+                    break;
+                default:
+                    alert("유효하지 않은 결재 유형입니다.");
+                    return;
+            }
 
-            // 자식 창으로부터 'ready' 먼저 수신 후 postMessage 실행
+            // 새 창 열기 (쿼리 스트링 제거)
+            const popup = window.open(formUrl, '_blank', 'width=800,height=800');
+            console.log('popup:', popup);
+            if (!popup) {
+                alert('팝업이 차단되었습니다. 팝업 차단 해제 후 다시 시도하세요.');
+                return;
+            }
+
+
+            // postMessage로 데이터 전달
             const messageHandler = (event) => {
+                console.log("부모 창에서 받은 메시지:", event.data);
                 if (event.data === 'ready') {
+                    console.log('부모 창: ready 받음, 자식 창에 데이터 전송 시작');
                     popup.postMessage({
-                        name: rowData.name,
-                        age: rowData.id,
-                        birth: rowData.birth,
-                        regDate: rowData.regDate,
-                        remark: rowData.address
+                        approvalId: rowData.approvalId,
+                        apprTypeCode: rowData.apprTypeCode,
+                        userId: currentUser.id,
+                        authCode: currentUser.authCode
                     }, "*");
                     window.removeEventListener("message", messageHandler);
                 }
             };
+
+
             window.addEventListener("message", messageHandler);
         }
     });
+
 
     // 목록 조회
     window.getData = async function () {
