@@ -1,5 +1,7 @@
 package com.itwillbs.factron.service.sys;
 
+import com.itwillbs.factron.dto.sys.RequestSysMainDTO;
+import com.itwillbs.factron.dto.sys.ResponseSysDetailDTO;
 import com.itwillbs.factron.dto.sys.SysDetailDTO;
 import com.itwillbs.factron.entity.DetailSysCode;
 import com.itwillbs.factron.repository.syscode.DetailSysCodeRepository;
@@ -16,18 +18,21 @@ public class SysDetailServiceImpl implements SysDetailService {
 
     private final DetailSysCodeRepository detailSysCodeRepository;
 
+    // Main.id = Detail.sys_code_id 인 데이터 모두 조회
     @Override
-    public List<SysDetailDTO> getAllDetailByMainCode(Long id) {
+    public List<ResponseSysDetailDTO> getAllDetailByMainCode(RequestSysMainDTO requestSysMainDTO) {
 
-        List<DetailSysCode> details = detailSysCodeRepository.findBySysCode_Id(id);
+        List<DetailSysCode> details = detailSysCodeRepository
+                .findBySysCode_Id(requestSysMainDTO.getId());
 
         return toDetailDTOList(details);
     }
 
-    private List<SysDetailDTO> toDetailDTOList(List<DetailSysCode> details) {
+    // Entity -> DTO 변환
+    private List<ResponseSysDetailDTO> toDetailDTOList(List<DetailSysCode> details) {
 
         return details.stream()
-                .map(SysDetailDTO :: fromEntity )
+                .map(ResponseSysDetailDTO:: fromEntity )
                 .toList();
     }
 }

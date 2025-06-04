@@ -1,7 +1,8 @@
 package com.itwillbs.factron.controller.sys;
 
 import com.itwillbs.factron.dto.ResponseDTO;
-import com.itwillbs.factron.dto.sys.SysDetailDTO;
+import com.itwillbs.factron.dto.sys.RequestSysMainDTO;
+import com.itwillbs.factron.dto.sys.ResponseSysDetailDTO;
 import com.itwillbs.factron.service.sys.SysDetailServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,17 +22,18 @@ public class SysDetailRestController {
     private final SysDetailServiceImpl sysDetailService;
 
     @GetMapping("")
-    public ResponseDTO<List<SysDetailDTO>> getDetailById(@RequestParam Long id) {
+    public ResponseDTO<List<ResponseSysDetailDTO>> getDetailById(@RequestParam RequestSysMainDTO requestSysMainDTO) {
 
         try {
-            List<SysDetailDTO> detailList = sysDetailService.getAllDetailByMainCode(id);
+            List<ResponseSysDetailDTO> detailList = sysDetailService
+                    .getAllDetailByMainCode(requestSysMainDTO);
 
             return ResponseDTO.success(detailList);
         } catch (Exception e) {
             return ResponseDTO.fail(
                     800,
                     "존재하지 않는 메인코드입니다.",
-                    sysDetailService.getAllDetailByMainCode(id)
+                    sysDetailService.getAllDetailByMainCode(requestSysMainDTO)
             );
         }
     }
