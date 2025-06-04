@@ -1,14 +1,12 @@
 package com.itwillbs.factron.service.employee;
 
-import com.itwillbs.factron.dto.employee.EmployeeDTO;
+import com.itwillbs.factron.dto.employee.ResponseEmployeeDTO;
 import com.itwillbs.factron.dto.employee.EmployeeSearchDTO;
-import com.itwillbs.factron.entity.Employee;
 import com.itwillbs.factron.mapper.employee.EmployeeMapper;
 import com.itwillbs.factron.repository.employee.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -21,11 +19,10 @@ public class EmployeeService {
 
     private final EmployeeMapper employeeMapper;
 
-
-    public List<EmployeeDTO> getAllEmployees(EmployeeSearchDTO employeeSearchDTO){
-        List<EmployeeDTO> allEmployees = employeeMapper.getEmployeeList(employeeSearchDTO);
-
-        return allEmployees;
+    // 검색 조건으로 사원 조회
+    public List<ResponseEmployeeDTO> getEmployees(EmployeeSearchDTO employeeSearchDTO){
+        List<ResponseEmployeeDTO> employees = employeeMapper.getEmployeeList(employeeSearchDTO);
+        return employees;
     }
 
 
