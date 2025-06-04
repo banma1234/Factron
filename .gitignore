@@ -164,3 +164,9 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+### QueryDSL ###
+/src/main/generated/
+
+*.yml
+*.properties
