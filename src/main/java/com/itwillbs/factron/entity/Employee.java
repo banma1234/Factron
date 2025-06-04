@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
 
@@ -36,11 +37,11 @@ public class Employee extends BaseEntity {
     @Column(name = "position_code", length = 6, nullable = false)
     private String positionCode;
 
-    @Column(name = "joined_code", nullable = false)
-    private LocalDate joinedCode;
+    @Column(name = "joined_date", nullable = false)
+    private LocalDate joinedDate;
 
-    @Column(name = "quit_code")
-    private LocalDate quitCode;
+    @Column(name = "quit_date")
+    private LocalDate quitDate;
 
     @Column(name = "email", length = 100, nullable = false)
     private String email;
@@ -56,5 +57,8 @@ public class Employee extends BaseEntity {
 
     @Column(name = "gender", length = 1, nullable = false)
     private String gender;
+
+    @Column(name = "edu_level_code", length = 6, nullable = false)
+    private String eduLevelCode;
 
 }
