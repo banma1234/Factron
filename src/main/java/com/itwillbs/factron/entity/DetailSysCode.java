@@ -14,13 +14,12 @@ import lombok.NoArgsConstructor;
 @Table(name = "detail_sys_code")
 public class DetailSysCode extends BaseEntity{
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sysCode_id", referencedColumnName = "id")
+    @JoinColumn(name = "sys_code_id", referencedColumnName = "id")
     private SysCode sysCode;
 
     @Column(name = "main_code", length = 3, nullable = false)

@@ -1,8 +1,7 @@
 package com.itwillbs.factron.controller.sys;
 
 import com.itwillbs.factron.dto.ResponseDTO;
-import com.itwillbs.factron.dto.sys.RequestSysDetail;
-import com.itwillbs.factron.dto.sys.SysDetail;
+import com.itwillbs.factron.dto.sys.SysDetailDTO;
 import com.itwillbs.factron.service.sys.SysDetailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,19 +10,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @Slf4j
 @RestController
-@RequestMapping("/sys")
+@RequestMapping("/sys/detail")
 @RequiredArgsConstructor
 public class SysDetailRestController {
 
     private final SysDetailService sysDetailService;
 
-    @GetMapping("/detail")
-    public ResponseDTO<SysDetail> getDetailById(@RequestParam Long id) {
+    @GetMapping("")
+    public ResponseDTO<List<SysDetailDTO>> getDetailById(@RequestParam Long id) {
 
         try {
-            return ResponseDTO.success(sysDetailService.getAllDetailByMainCode(id));
+            List<SysDetailDTO> detailList = sysDetailService.getAllDetailByMainCode(id);
+
+            return ResponseDTO.success(detailList);
         } catch (Exception e) {
             return ResponseDTO.fail(
                     800,

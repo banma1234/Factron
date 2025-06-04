@@ -1,7 +1,6 @@
 package com.itwillbs.factron.dto.sys;
 
 import com.itwillbs.factron.entity.DetailSysCode;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
