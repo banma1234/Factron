@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RequestEmployeeDTO {
-    private String name;          // 이름
+public class EmployeeRequestDTO {
+    private String nameOrId;          // 이름
     private String dept;      // 부서 코드
     private String position;  // 직급 코드
     private String empIsActive;      // 재직 여부

@@ -1,12 +1,12 @@
 package com.itwillbs.factron.mapper.employee;
 
-import com.itwillbs.factron.dto.employee.ResponseEmployeeDTO;
-import com.itwillbs.factron.dto.employee.EmployeeSearchDTO;
+import com.itwillbs.factron.dto.employee.EmployeeRequestDTO;
+import com.itwillbs.factron.dto.employee.EmployeeResponseDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
 @Mapper
 public interface EmployeeMapper {
-    List<ResponseEmployeeDTO> getEmployeeList(EmployeeSearchDTO employeeSearchDTO);
+    List<EmployeeResponseDTO> getEmployeeList(EmployeeRequestDTO employeeRequestDTO);
 }

@@ -105,7 +105,7 @@ const init = () => {
 
         if(dept) params.append("deptCode", dept)
         if(position) params.append("positionCode", position)
-        if(name) params.append("name", name)
+        if(name) params.append("nameOrId", name)
         if(empIsActive) params.append("isActive", empIsActive)
 
         fetch(`/api/employee?${params.toString()}`, {
@@ -115,8 +115,12 @@ const init = () => {
             }
         }).then(res => res.json())
         .then(res => {
-            employeeGrid.resetData(res.data); // grid에 세팅
-
+            if(res.status == 200) {
+                // window.alert(res.message);
+                return employeeGrid.resetData(res.data);
+            }; // grid에 세팅
+            window.alert(res.message);
+            return employeeGrid.resetData([]);
         })
         .catch(e => {
             console.error(e);
