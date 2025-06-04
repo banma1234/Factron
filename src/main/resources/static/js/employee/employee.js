@@ -115,7 +115,7 @@ const init = () => {
             }
         }).then(res => res.json())
         .then(res => {
-            employeeGrid.resetData(res); // grid에 세팅
+            employeeGrid.resetData(res.data); // grid에 세팅
 
         })
         .catch(e => {
