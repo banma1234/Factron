@@ -6,7 +6,7 @@
 <mapper namespace="com.itwillbs.factron.mapper.commute.CommuteMapper">
 
     <!-- 출퇴근 기록 조회 -->
-    <select id="selectCommuteHistories" resultType="com.itwillbs.factron.dto.commute.CommuteResponseDto" parameterType="com.itwillbs.factron.dto.commute.CommuteRequestDto">
+    <select id="selectCommuteHistories" resultType="com.itwillbs.factron.dto.commute.ResponseCommuteDTO" parameterType="com.itwillbs.factron.dto.commute.RequestCommuteDTO">
         SELECT
         e.id AS empId,
         e.name AS empName,
@@ -31,11 +31,9 @@
             <if test="dept != null and dept != ''">
                 AND e.dept_code = #{dept}
             </if>
-            <if test="startDate != null and startDate != ''">
-                AND ch.commute_in &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
-            </if>
-            <if test="endDate != null and endDate != ''">
-                AND ch.commute_in &lt; TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
+            <if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+                AND ch.commute_in BETWEEN TO_DATE(#{startDate}, 'YYYY-MM-DD')
+                    AND TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
             </if>
         </where>
         ORDER BY TO_CHAR(ch.commute_in, 'YYYYMMDD') DESC, ch.commute_in DESC

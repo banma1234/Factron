@@ -1,8 +1,8 @@
 package com.itwillbs.factron.controller.commute;
 
 import com.itwillbs.factron.dto.ResponseDTO;
-import com.itwillbs.factron.dto.commute.CommuteRequestDto;
-import com.itwillbs.factron.dto.commute.CommuteResponseDto;
+import com.itwillbs.factron.dto.commute.RequestCommuteDTO;
+import com.itwillbs.factron.dto.commute.ResponseCommuteDTO;
 import com.itwillbs.factron.service.commute.CommuteService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -61,16 +60,12 @@ public class CommuteRestController {
 
     // 출퇴근 기록 조회
     @GetMapping()
-    public ResponseDTO<List<CommuteResponseDto>> getCommuteHistories(
-            @ModelAttribute CommuteRequestDto requestDto) {
-
-        List<CommuteResponseDto> results = new ArrayList<>();
+    public ResponseDTO<List<ResponseCommuteDTO>> getCommuteHistories(
+            @ModelAttribute RequestCommuteDTO requestDto) {
 
         try {
 
-            results = commuteService.getCommuteHistories(requestDto);
-
-            return ResponseDTO.success(results);
+            return ResponseDTO.success(commuteService.getCommuteHistories(requestDto));
         } catch (IllegalArgumentException e) {
 
             return ResponseDTO.fail(801, "날짜 입력 형식이 잘못되었습니다", null);

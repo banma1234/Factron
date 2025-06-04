@@ -1,7 +1,7 @@
 package com.itwillbs.factron.service.commute;
 
-import com.itwillbs.factron.dto.commute.CommuteRequestDto;
-import com.itwillbs.factron.dto.commute.CommuteResponseDto;
+import com.itwillbs.factron.dto.commute.RequestCommuteDTO;
+import com.itwillbs.factron.dto.commute.ResponseCommuteDTO;
 import com.itwillbs.factron.entity.CommuteHistory;
 import com.itwillbs.factron.entity.Employee;
 import com.itwillbs.factron.entity.WorkHistory;
@@ -75,6 +75,7 @@ public class CommuteServiceImpl implements CommuteService {
     @Override
     @Transactional
     public void commuteOut(String employeeId) {
+
         log.info("퇴근 처리: employeeId={}", employeeId);
 
         Long empId = Long.parseLong(employeeId);
@@ -97,7 +98,7 @@ public class CommuteServiceImpl implements CommuteService {
             throw new IllegalArgumentException("이미 퇴근한 상태입니다.");
         }
 
-        // 5. 퇴근 시간 수정
+        // 5. 퇴근 시간 설정
         commuteHistory.changeCommuteOut(LocalDateTime.now());
 
         // 6. 근무 테이블에 일반 근무로 저장할 근무 데이터 생성
@@ -121,7 +122,7 @@ public class CommuteServiceImpl implements CommuteService {
      * @return 출퇴근 기록 DTO 리스트
      */
     @Override
-    public List<CommuteResponseDto> getCommuteHistories(CommuteRequestDto requestDto) {
+    public List<ResponseCommuteDTO> getCommuteHistories(RequestCommuteDTO requestDto) {
 
         // 1. 입력 값이 null 또는 빈 문자열인 경우 null로 변환하는 메소드로
         String nameOrId = safeTrim(requestDto.getNameOrId());
@@ -134,7 +135,7 @@ public class CommuteServiceImpl implements CommuteService {
         validateDateFormat(endDate, "endDate");
 
         // 3. CommuteRequestDto 객체 생성
-        CommuteRequestDto commuteRequestDto = CommuteRequestDto.builder()
+        RequestCommuteDTO requestCommuteDto = RequestCommuteDTO.builder()
                 .nameOrId(nameOrId)
                 .dept(deptCode)
                 .startDate(startDate)
@@ -142,7 +143,7 @@ public class CommuteServiceImpl implements CommuteService {
                 .build();
 
         // 4. CommuteMapper를 사용하여 출퇴근 기록 조회
-        return commuteMapper.selectCommuteHistories(commuteRequestDto);
+        return commuteMapper.selectCommuteHistories(requestCommuteDto);
     }
 
     /**

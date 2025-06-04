@@ -16,6 +16,7 @@ public class CommuteController {
 
     private final CommuteService commuteService;
 
+    // 출퇴근 기록 조회 페이지
     @GetMapping()
     public String commute_history(Model model) {
 

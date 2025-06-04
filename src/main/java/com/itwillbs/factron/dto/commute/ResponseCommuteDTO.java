@@ -6,7 +6,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommuteResponseDto {
+public class ResponseCommuteDTO {
 
     private Long empId;             // 사번
     private String empName;         // 사원명
