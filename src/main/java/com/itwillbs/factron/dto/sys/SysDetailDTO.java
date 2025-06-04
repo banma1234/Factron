@@ -33,16 +33,16 @@ public class SysDetailDTO {
     }
 
     // Entity → DTO
-    public static SysDetailDTO fromEntity(DetailSysCode detailSysCode) {
+    public static SysDetailDTO fromEntity(DetailSysCode entity) {
         return SysDetailDTO.builder()
-                .id(detailSysCode.getId())
-                .sys_code_id(detailSysCode.getSysCode().getId())
-                .main_code(detailSysCode.getMainCode())
-                .detail_code(detailSysCode.getDetailCode())
-                .name(detailSysCode.getName())
-                .is_active(detailSysCode.getIsActive())
-                .created_by(detailSysCode.getCreatedBy())
-                .created_at(detailSysCode.getCreatedAt())
+                .id(entity.getId())
+                .sys_code_id(entity.getSysCode().getId())
+                .main_code(entity.getMainCode())
+                .detail_code(entity.getDetailCode())
+                .name(entity.getName())
+                .is_active(entity.getIsActive())
+                .created_by(entity.getCreatedBy())
+                .created_at(entity.getCreatedAt())
                 .build();
     }
 }

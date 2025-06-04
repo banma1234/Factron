@@ -16,20 +16,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class SysMainRestController {
 
-//    private final SysMainService sysMainService;
-//
-//    @PostMapping("")
-//    public ResponseDTO<SysMainDTO> saveSysMain(@RequestBody SysMainDTO sysMainDTO) {
-//
-//        try {
-//            return ResponseDTO.success(sysMainService.saveSysMain(sysMainDTO));
-//        } catch (Exception e) {
-//            return ResponseDTO.fail(
-//                    800,
-//                    "잘못된 입력입니다.",
-//                    sysMainService.saveSysMain(sysMainDTO)
-//            );
-//        }
-//    }
+    private final SysMainService sysMainService;
+
+    @PostMapping("")
+    public ResponseDTO<Void> saveSysMain(@RequestBody SysMainDTO sysMainDTO) {
+
+        try {
+            return ResponseDTO.success(sysMainService.saveSysMain(sysMainDTO));
+        } catch (Exception e) {
+            return ResponseDTO.fail(
+                    800,
+                    "잘못된 입력입니다.",
+                    sysMainService.saveSysMain(sysMainDTO)
+            );
+        }
+    }
 
 }

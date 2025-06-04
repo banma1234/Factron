@@ -1,22 +1,48 @@
 package com.itwillbs.factron.dto.sys;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.itwillbs.factron.entity.SysCode;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class SysMainDTO {
 
     private Long id;
     private String main_code;
     private String name;
     private String is_active;
-    private String created_by;
+    private Long created_by;
     private LocalDateTime created_at;
+
+    @Builder
+    public SysMainDTO(Long id, String main_code, String name, String is_active, Long created_by, LocalDateTime created_at) {
+        this.id = id;
+        this.main_code = main_code;
+        this.name = name;
+        this.is_active = is_active;
+        this.created_by = created_by;
+        this.created_at = created_at;
+    }
+
+    public static SysMainDTO fromEntity(SysCode entity) {
+        return SysMainDTO.builder()
+                .id(entity.getId())
+                .main_code(entity.getMainCode())
+                .name(entity.getName())
+                .is_active(entity.getIsActive())
+                .created_by(entity.getCreatedBy())
+                .created_at(entity.getCreatedAt())
+                .build();
+    }
+
+    public static SysCode toEntity(SysMainDTO dto) {
+        return SysCode.builder()
+                .id(dto.id)
+                .mainCode(dto.main_code)
+                .name(dto.name)
+                .isActive(dto.is_active)
+                .build();
+    }
 }
