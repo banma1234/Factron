@@ -11,12 +11,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SysDetail {
+public class SysMainDTO {
 
     private Long id;
-    private Long sys_code_id;
     private String main_code;
-    private String detail_code;
     private String name;
     private String is_active;
     private String created_by;
