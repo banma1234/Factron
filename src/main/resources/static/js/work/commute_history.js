@@ -127,18 +127,29 @@ const init = () => {
 
         const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
+        // 날짜 유효성 검사는 둘 다 값이 있을 때만 수행
         if ((startDate && !endDate) || (!startDate && endDate)) {
+
             alert("시작 및 종료 날짜를 모두 입력해주세요.");
             return { data: [] };
         }
-        if (!dateRegex.test(startDate) || isNaN(Date.parse(startDate))
-            || !dateRegex.test(endDate) || isNaN(Date.parse(endDate))) {
-            alert("날짜 형식이 올바르지 않습니다.");
-            return { data: [] };
-        }
-        if (new Date(startDate) > new Date(endDate)) {
-            alert("시작 날짜는 종료 날짜보다 이전이어야 합니다.");
-            return { data: [] };
+
+        if (startDate && endDate) {
+
+            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+            if (!dateRegex.test(startDate) || isNaN(Date.parse(startDate))
+                || !dateRegex.test(endDate) || isNaN(Date.parse(endDate))) {
+
+                alert("날짜 형식이 올바르지 않습니다.");
+                return { data: [] };
+            }
+
+            if (new Date(startDate) > new Date(endDate)) {
+
+                alert("시작 날짜는 종료 날짜보다 이전이어야 합니다.");
+                return { data: [] };
+            }
         }
 
         const params = new URLSearchParams();
