@@ -26,23 +26,4 @@ public class SysMainDTO {
         this.created_at = created_at;
     }
 
-    public static SysMainDTO fromEntity(SysCode entity) {
-        return SysMainDTO.builder()
-                .id(entity.getId())
-                .main_code(entity.getMainCode())
-                .name(entity.getName())
-                .is_active(entity.getIsActive())
-                .created_by(entity.getCreatedBy())
-                .created_at(entity.getCreatedAt())
-                .build();
-    }
-
-    public static SysCode toEntity(SysMainDTO dto) {
-        return SysCode.builder()
-                .id(dto.id)
-                .mainCode(dto.main_code)
-                .name(dto.name)
-                .isActive(dto.is_active)
-                .build();
-    }
 }

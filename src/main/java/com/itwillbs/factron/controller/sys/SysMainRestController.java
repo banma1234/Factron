@@ -1,8 +1,9 @@
 package com.itwillbs.factron.controller.sys;
 
 import com.itwillbs.factron.dto.ResponseDTO;
-import com.itwillbs.factron.dto.sys.SysMainDTO;
+import com.itwillbs.factron.dto.sys.RequestSysMainDTO;
 import com.itwillbs.factron.service.sys.SysMainServiceImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,15 +20,14 @@ public class SysMainRestController {
     private final SysMainServiceImpl sysMainService;
 
     @PostMapping("")
-    public ResponseDTO<Void> saveSysMain(@RequestBody SysMainDTO sysMainDTO) {
-
+    public ResponseDTO<Void> saveSysMain(@Valid @RequestBody RequestSysMainDTO requestSysMainDTO) {
         try {
-            return ResponseDTO.success(sysMainService.saveSysMain(sysMainDTO));
+            return ResponseDTO.success(sysMainService.saveSysMain(requestSysMainDTO));
         } catch (Exception e) {
             return ResponseDTO.fail(
                     800,
                     "잘못된 입력입니다.",
-                    sysMainService.saveSysMain(sysMainDTO)
+                    sysMainService.saveSysMain(requestSysMainDTO)
             );
         }
     }

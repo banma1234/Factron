@@ -1,5 +1,6 @@
 package com.itwillbs.factron.service.sys;
 
+import com.itwillbs.factron.dto.sys.RequestSysMainDTO;
 import com.itwillbs.factron.dto.sys.SysMainDTO;
 import com.itwillbs.factron.entity.SysCode;
 import com.itwillbs.factron.repository.syscode.SysCodeRepository;
@@ -16,15 +17,15 @@ public class SysMainServiceImpl implements SysMainService {
 
     @Override
     @Transactional
-    public Void saveSysMain(SysMainDTO sysMainDTO) {
+    public Void saveSysMain(RequestSysMainDTO requestSysMainDTO) {
 
-        sysCodeRepository.save(toMainEntity(sysMainDTO));
+        sysCodeRepository.save(toMainEntity(requestSysMainDTO));
 
         return null;
     }
 
-    private SysCode toMainEntity(SysMainDTO sysMainDTO) {
+    private SysCode toMainEntity(RequestSysMainDTO requestSysMainDTO) {
 
-        return SysMainDTO.toEntity(sysMainDTO);
+        return RequestSysMainDTO.toEntity(requestSysMainDTO);
     }
 }
