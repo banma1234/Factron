@@ -32,7 +32,7 @@ const initMainGrid = () => {
         columns: [
             {
                 header: '구분코드',
-                name: 'id',
+                name: 'main_code',
                 align: 'center'
             },
             {
@@ -60,7 +60,7 @@ const initDetailGrid = () => {
         columns: [
             {
                 header: '구분코드',
-                name: 'id',
+                name: 'detail_code',
                 align: 'center'
             },
             {
@@ -75,6 +75,21 @@ const initDetailGrid = () => {
             },
         ],
     })
+}
+
+const getMainCode = async () => {
+    try {
+        const res = await fetch(`/sys/main`, {
+            method: 'GET',
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        return res.json();
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 const getDetailCode = async (id) => {
@@ -93,20 +108,25 @@ const getDetailCode = async (id) => {
 }
 
 const sysInit = () => {
-    // const mainGrid = initMainGrid();
+    const mainGrid = initMainGrid();
+    const detailGrid = initDetailGrid();
 
-    initMainGrid();
-    initDetailGrid();
+    const setMainGridEvent = () => {
+        mainGrid.on('click', e => {
+            const rowKey = e.rowKey;
+            const rowData = mainGrid.getRow(rowKey);
 
-    // mainGrid.on('click', e => {
-    //     const rowKey = e.rowKey;
-    //     const rowData = testGrid.getRow(rowKey);
-    //
-    //     getDetailCode(rowData.id).then(res => {
-    //         const detailGrid = initDetailGrid();
-    //
-    //         detailGrid.resetData(res.data);
-    //     })
+            getDetailCode(rowData.id).then(res => {
+                detailGrid.resetData(res.data);
+            })
+        });
+    }
+
+    getMainCode().then(res => {
+        mainGrid.resetData(res.data);
+
+        setMainGridEvent();
+    })
 
         // if (rowData && rowData.id) {
         //     const popup = window.open('/test-form', '_blank', 'width=800,height=600');
@@ -128,7 +148,7 @@ const sysInit = () => {
         // }
     // });
 
-}
+};
 
 document.getElementById('postSysMainBtn').addEventListener('click', (e) => {
     e.preventDefault();
