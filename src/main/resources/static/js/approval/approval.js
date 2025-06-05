@@ -48,6 +48,7 @@ const initGrid = () => {
             }
             ,
             { header: '상태', name: 'approvalStatusName', align: 'center' },
+            { header: '상태코드', name: 'approvalStatusCode', hidden:'ture' },
             { header: '승인 권자', name: 'approverName', align: 'center' }
         ]
     });
@@ -113,6 +114,7 @@ const init = () => {
                     popup.postMessage({
                         approvalId: rowData.approvalId,
                         apprTypeCode: rowData.apprTypeCode,
+                        approvalStatusCode: rowData.approvalStatusCode,
                         userId: currentUser.id,
                         authCode: currentUser.authCode
                     }, "*");
@@ -176,8 +178,9 @@ const init = () => {
                     "Content-Type": "application/json"
                 },
             });
-            return res.json();
-
+            const data = await res.json();  // JSON 파싱 필수
+            testGrid.resetData(data.data);  // data 객체 안에 실제 배열이 data 프로퍼티에 있다면
+            return data;
         } catch (e) {
             console.error(e);
         }

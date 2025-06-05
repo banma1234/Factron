@@ -34,10 +34,10 @@ public class ApprovalRestController {
         log.info("Received approval update DTO: {}", requestApprovalDTO);
         try {
             approvalService.updateApproval(requestApprovalDTO);
-            return ResponseDTO.success(null);
+            return ResponseDTO.success("결재 성공",null);
         } catch (Exception e) {
             log.error("Approval update failed", e);
-            return ResponseDTO.fail(800, "결재 업데이트 실패", null);
+            return ResponseDTO.fail(800, "결재 실패", null);
         }
     }
 

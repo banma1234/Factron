@@ -38,6 +38,7 @@ public class ApprovalServiceImpl implements ApprovalService {
         Employee approver = employeeRepository.findById(requestApprovalDTO.getApproverId())
                 .orElseThrow(() -> new IllegalArgumentException("결재자를 찾을 수 없습니다."));
 
+        //결재,반려
         if ("APV002".equals(requestApprovalDTO.getApprovalStatus())) {
             approval.approve(approver);
         } else if ("APV003".equals(requestApprovalDTO.getApprovalStatus())) {

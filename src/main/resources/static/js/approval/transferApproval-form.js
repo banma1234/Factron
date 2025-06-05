@@ -122,16 +122,19 @@ const init = () => {
         form.querySelector("input[name='empName']").value = data.empName || '';
         form.querySelector("input[name='dept']").value = data.dept || '';
         form.querySelector("input[name='position']").value = data.position || '';
-        form.querySelector("input[name='workName']").value = data.workName || '';
-        form.querySelector("input[name='workDate']").value = data.workDate || '';
-        form.querySelector("input[name='workStartTime']").value = data.workStartTime || '';
-        form.querySelector("input[name='workEndTime']").value = data.workEndTime || '';
+        form.querySelector("input[name='currDept']").value = data.currDept || '';
+        form.querySelector("input[name='currPosition']").value = data.currPosition || '';
+        form.querySelector("input[name='transType']").value = data.transType || '';
+        form.querySelector("input[name='publisherId']").value = data.publisherId || '';
+        form.querySelector("input[name='publisherName']").value = data.publisherName || '';
+        form.querySelector("input[name='date']").value = data.date || '';
         form.querySelector("input[name='approverId']").value = data.approverId || '';
         form.querySelector("input[name='approverName']").value = data.approverName || '';
         form.querySelector("input[name='confirmedDate']").value = data.confirmedDate || '';
         form.querySelector("input[name='approvalStatus']").value = data.approvalStatus || '';
         form.querySelector("textarea[name='rejectionReason']").value = data.rejectionReason || '';
     }
+
 
     function setUIState(data) {
         const approveBtn = document.querySelector(".approveBtn");

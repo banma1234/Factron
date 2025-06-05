@@ -114,6 +114,7 @@ const init = () => {
     }
 
     // 폼에 데이터 세팅 함수
+    // setFormData 함수 내부만 수정됨
     function setFormData(data) {
         const form = document.querySelector("form");
 
@@ -122,16 +123,16 @@ const init = () => {
         form.querySelector("input[name='empName']").value = data.empName || '';
         form.querySelector("input[name='dept']").value = data.dept || '';
         form.querySelector("input[name='position']").value = data.position || '';
-        form.querySelector("input[name='workName']").value = data.workName || '';
-        form.querySelector("input[name='workDate']").value = data.workDate || '';
-        form.querySelector("input[name='workStartTime']").value = data.workStartTime || '';
-        form.querySelector("input[name='workEndTime']").value = data.workEndTime || '';
+        form.querySelector("input[name='vacationType']").value = data.vacationType || '';
+        form.querySelector("input[name='vacationStartDate']").value = data.vacationStartDate || '';
+        form.querySelector("input[name='vacationEndDate']").value = data.vacationEndDate || '';
         form.querySelector("input[name='approverId']").value = data.approverId || '';
         form.querySelector("input[name='approverName']").value = data.approverName || '';
         form.querySelector("input[name='confirmedDate']").value = data.confirmedDate || '';
         form.querySelector("input[name='approvalStatus']").value = data.approvalStatus || '';
         form.querySelector("textarea[name='rejectionReason']").value = data.rejectionReason || '';
     }
+
 
     function setUIState(data) {
         const approveBtn = document.querySelector(".approveBtn");
