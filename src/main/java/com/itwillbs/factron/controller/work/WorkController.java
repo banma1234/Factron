@@ -19,6 +19,6 @@ public class WorkController {
      */
     @GetMapping("/work/save")
     public String workForm() {
-        return "work/workDtl";
+        return "work/work-form";
     }
 }

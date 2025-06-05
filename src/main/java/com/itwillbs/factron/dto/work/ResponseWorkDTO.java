@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ResponseWork {
+public class ResponseWorkDTO {
 
     private Long id;
     private LocalDate workDate;
@@ -21,4 +21,9 @@ public class ResponseWork {
     private String workName;
     private Long empId;
     private String empName;
+    private String deptCode;
+    private String deptName;
+    private String positionCode;
+    private String positionName;
+    private String approvalId;
 }

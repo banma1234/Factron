@@ -7,64 +7,44 @@
 </head>
 <body>
 <div class="container mt-5">
-    <h2 class="mb-4">Test Form</h2>
+    <h2 class="mb-4">근무 등록</h2>
     <!-- form -->
     <form>
         <div class="row mb-3">
             <div class="col-md-6">
-                <span class="form-label">이름</span>
-                <input type="text" name="name" class="form-control" placeholder="이름을 입력하세요" disabled>
+                <span class="form-label">사번</span>
+                <input type="text" name="empId" class="form-control" disabled>
             </div>
             <div class="col-md-6">
-                <span class="form-label">나이</span>
-                <input type="number" name="age" class="form-control" placeholder="숫자만 입력" disabled>
+                <span class="form-label">이름</span>
+                <input type="text" name="empName" class="form-control" disabled>
             </div>
         </div>
         <div class="row mb-3">
             <div class="col-md-6">
-                <span class="form-label">이메일</span>
-                <input type="email" name="email" class="form-control" placeholder="이메일을 입력하세요" disabled>
+                <span class="form-label">근무 날짜</span>
+                <input type="date" name="workDate" class="form-control">
             </div>
             <div class="col-md-6">
-                <span class="form-label">지역</span>
-                <select name="region" class="form-select" disabled>
-                    <option value="">선택하세요</option>
-                    <option value="seoul">서울</option>
-                    <option value="busan">부산</option>
-                    <option value="incheon">인천</option>
-                    <option value="daegu">대구</option>
+                <span class="form-label">근무 유형</span>
+                <select name="workCode" class="form-select">
+                    <option value="">선택</option>
                 </select>
             </div>
         </div>
         <div class="row mb-3">
-            <div class="col-md-6">
-                <span class="form-label">주민번호</span>
+            <div class="col-12">
+                <span class="form-label">근무 시간</span>
                 <div class="d-flex gap-2">
-                    <input type="text" name="birth" class="form-control" maxlength="6" placeholder="앞 6자리" disabled>
+                    <input type="time" name="startTime" class="form-control">
                     -
-                    <input type="password" name="rrnBack" class="form-control" maxlength="7" placeholder="뒤 7자리" disabled>
+                    <input type="time" name="endTime" class="form-control">
                 </div>
-            </div>
-            <div class="col-md-6">
-                <span class="form-label">등록일</span>
-                <input type="date" name="regDate" class="form-control" disabled>
-            </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col-12">
-                <span class="form-label">주소</span>
-                <input type="text" name="address" class="form-control" readonly disabled>
-            </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col-12">
-                <span class="form-label">비고</span>
-                <textarea name="remark" class="form-control" rows="3" placeholder="비고를 입력하세요" disabled></textarea>
             </div>
         </div>
 
         <div class="d-flex justify-content-end mt-4 gap-2">
-            <button type="button" class="btn btn-primary modBtn">저장</button>
+            <button type="button" class="btn btn-primary saveBtn">저장</button>
             <button type="button" class="btn btn-secondary">취소</button>
         </div>
     </form>
@@ -99,9 +79,8 @@
     </div>
 </div>
 
-<script th:src="@{//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script th:src="@{/js/test-form.js}"></script>
+<script th:src="@{/js/work/work-form.js}"></script>
 
 </body>
 </html>

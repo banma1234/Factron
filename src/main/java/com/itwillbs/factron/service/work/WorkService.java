@@ -1,10 +1,12 @@
 package com.itwillbs.factron.service.work;
 
-import com.itwillbs.factron.dto.work.RequestWork;
-import com.itwillbs.factron.dto.work.ResponseWork;
+import com.itwillbs.factron.dto.work.RequestWorkDTO;
+import com.itwillbs.factron.dto.work.ResponseWorkDTO;
 
 import java.util.List;
 
 public interface WorkService {
-    List<ResponseWork> getWorkList(RequestWork requestWork);
+    List<ResponseWorkDTO> getWorkList(RequestWorkDTO requestWorkDTO);
+
+    Void registWork(RequestWorkDTO requestWorkDTO);
 }
