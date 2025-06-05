@@ -134,6 +134,7 @@ const init = () => {
             return { data: [] };
         }
 
+        // 시작 날짜와 종료 날짜가 모두 입력된 경우 또는 아예 입력되지 않은 경우에만 날짜 형식 검증
         if (startDate && endDate) {
 
             const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
