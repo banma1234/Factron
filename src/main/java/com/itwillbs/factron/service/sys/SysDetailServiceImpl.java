@@ -37,9 +37,10 @@ public class SysDetailServiceImpl implements SysDetailService {
     public Void saveSysDetail(@Valid RequestSysDetailDTO requestSysDetailDTO) {
 
         String mainCode = requestSysDetailDTO.getMain_code();
-        SysCode parentSysCode = sysCodeRepository.findByMainCode(mainCode);
+        List<SysCode> parentSysCode = sysCodeRepository.findByMainCode(mainCode);
 
-        DetailSysCode detailSysCode = toDetailEntity(requestSysDetailDTO, parentSysCode);
+        // mainCode는 unique이고 해당하는 컬럼은 하나밖에 없기 때문에 이렇게 꺼냈다.
+        DetailSysCode detailSysCode = toDetailEntity(requestSysDetailDTO, parentSysCode.getFirst());
 
         detailSysCodeRepository.save(detailSysCode);
 
@@ -50,7 +51,7 @@ public class SysDetailServiceImpl implements SysDetailService {
     private List<ResponseSysDetailDTO> toDetailDTOList(List<DetailSysCode> details) {
 
         return details.stream()
-                .map(ResponseSysDetailDTO:: fromEntity )
+                .map(ResponseSysDetailDTO :: fromEntity )
                 .toList();
     }
 
