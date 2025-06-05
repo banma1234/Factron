@@ -1,18 +1,26 @@
 @charset "UTF-8";
 
-.test__form {
+.employee__menu__container {
+    display: flex;
+    flex-direction: row;
+    padding: 20px 20px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.employee__search__option {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-}
-
-.test__select__container {
-    display: flex;
-    flex-direction: row;
     gap: 15px;
     text-align: center;
+    height:42.5px;
+}
+
+.search__option__title {
+    white-space:nowrap;
+    display: flex;
+    align-items: center;
 }
 
 .wow {
@@ -21,7 +29,8 @@
     width: 200px;
 }
 
-.form-select {
+.form-select{
+    width: 120px;
     max-width: 200px;
 }
 
@@ -29,9 +38,8 @@
     display: flex;
     max-width: 300px;
     align-items: center;
-    margin-top: 14px;
 }
 
-/*.form-control {*/
-/*    max-width: 300px;*/
-/*}*/
+.form-control {
+    max-width: 300px;
+}

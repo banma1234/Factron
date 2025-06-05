@@ -8,4 +8,6 @@ import java.util.List;
 public interface TestService {
 
     List<Test> getTestList(RequestTest srhTest);
+
+    void registTest(Test test);
 }
