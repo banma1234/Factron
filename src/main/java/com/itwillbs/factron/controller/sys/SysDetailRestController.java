@@ -1,16 +1,13 @@
 package com.itwillbs.factron.controller.sys;
 
 import com.itwillbs.factron.dto.ResponseDTO;
-import com.itwillbs.factron.dto.sys.RequestSysMainDTO;
+import com.itwillbs.factron.dto.sys.RequestSysDetailDTO;
 import com.itwillbs.factron.dto.sys.ResponseSysDetailDTO;
 import com.itwillbs.factron.service.sys.SysDetailServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -35,6 +32,20 @@ public class SysDetailRestController {
                     800,
                     "존재하지 않는 메인코드입니다.",
                     sysDetailService.getAllDetailByMainCode(id)
+            );
+        }
+    }
+
+    @PostMapping("")
+    public ResponseDTO<Void> saveSysDetail(@Valid @RequestBody RequestSysDetailDTO requestSysDetailDTO) {
+
+        try {
+            return ResponseDTO.success(sysDetailService.saveSysDetail(requestSysDetailDTO));
+        } catch (Exception e) {
+            return ResponseDTO.fail(
+                    800,
+                    "존재하지 않는 메인코드입니다.",
+                    sysDetailService.saveSysDetail(requestSysDetailDTO)
             );
         }
     }
