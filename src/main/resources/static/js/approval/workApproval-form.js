@@ -28,7 +28,7 @@ const init = () => {
             setUIState(data);
             // ✅ 전체 폼 데이터 세팅
             setFormData(data);
-
+            fetchWorkByApprovalId(approvalId);
         } else {
             console.warn("필요한 데이터가 부족합니다.");
         }
@@ -72,6 +72,35 @@ const init = () => {
         window.close();
     });
 
+    async function fetchWorkByApprovalId(approvalId) {
+        try {
+            const params = new URLSearchParams({ srhApprovalId: approvalId }); // 수정된 부분
+            const response = await fetch(`/api/work?${params.toString()}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+
+            const result = await response.json();
+            console.log("근무 조회 결과:", result);
+
+            if (result.code === 200 && result.data?.length > 0) {
+                const workData = result.data[0];
+                setWorkFormData(workData);
+            } else {
+                console.warn("근무 정보가 없습니다.");
+            }
+        } catch (error) {
+            console.error("근무 정보 조회 중 오류:", error);
+        }
+    }
+
+
+
+
+
+
     /**
      * 승인/반려 API 전송 함수
      * @param {'APV002'|'APV003'} statusCode
@@ -114,24 +143,29 @@ const init = () => {
     }
 
     // 폼에 데이터 세팅 함수
+    function setWorkFormData(data) {
+        const form = document.querySelector("form");
+
+        form.querySelector("input[name='empId']").value = data.empId || '';
+        form.querySelector("input[name='empName']").value = data.empName || '';
+        form.querySelector("input[name='dept']").value = data.deptName || '';
+        form.querySelector("input[name='position']").value = data.positionName || '';
+        form.querySelector("input[name='workName']").value = data.workName || '';
+        form.querySelector("input[name='workDate']").value = data.workDate || '';
+        form.querySelector("input[name='workStartTime']").value = data.startTime || '';
+        form.querySelector("input[name='workEndTime']").value = data.endTime || '';
+    }
     function setFormData(data) {
         const form = document.querySelector("form");
 
         form.querySelector("input[name='approvalId']").value = data.approvalId || '';
-        form.querySelector("input[name='empId']").value = data.empId || '';
-        form.querySelector("input[name='empName']").value = data.empName || '';
-        form.querySelector("input[name='dept']").value = data.dept || '';
-        form.querySelector("input[name='position']").value = data.position || '';
-        form.querySelector("input[name='workName']").value = data.workName || '';
-        form.querySelector("input[name='workDate']").value = data.workDate || '';
-        form.querySelector("input[name='workStartTime']").value = data.workStartTime || '';
-        form.querySelector("input[name='workEndTime']").value = data.workEndTime || '';
         form.querySelector("input[name='approverId']").value = data.approverId || '';
         form.querySelector("input[name='approverName']").value = data.approverName || '';
         form.querySelector("input[name='confirmedDate']").value = data.confirmedDate || '';
         form.querySelector("input[name='approvalStatus']").value = data.approvalStatus || '';
         form.querySelector("textarea[name='rejectionReason']").value = data.rejectionReason || '';
     }
+
 
     function setUIState(data) {
         const approveBtn = document.querySelector(".approveBtn");
