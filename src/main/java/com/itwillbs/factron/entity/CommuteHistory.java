@@ -31,4 +31,12 @@ public class CommuteHistory {
     @JoinColumn(name = "employee_id", referencedColumnName = "id")
     private Employee employee;
 
+    /**
+     *  퇴근 시간을 변경하는 메소드
+     *  @param commuteOut 현재 퇴근 시간
+     */
+    public void changeCommuteOut(LocalDateTime commuteOut) {
+
+        this.commuteOut = commuteOut;
+    }
 }
