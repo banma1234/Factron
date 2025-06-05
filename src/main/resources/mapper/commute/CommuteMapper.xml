@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itwillbs.factron.mapper.commute.CommuteMapper">
+
+    <!-- 출퇴근 기록 조회 -->
+    <select id="selectCommuteHistories" resultType="com.itwillbs.factron.dto.commute.ResponseCommuteDTO" parameterType="com.itwillbs.factron.dto.commute.RequestCommuteDTO">
+        SELECT
+        e.id AS empId,
+        e.name AS empName,
+        e.position_code AS positionCode,
+        pos.name AS positionName,
+        e.dept_code AS deptCode,
+        dept.name AS deptName,
+        TO_CHAR(ch.commute_in, 'YYYY-MM-DD') AS commuteDate,
+        TO_CHAR(ch.commute_in, 'HH24:MI:SS') AS commuteIn,
+        TO_CHAR(ch.commute_out, 'HH24:MI:SS') AS commuteOut
+        FROM commute_history ch
+        JOIN employee e ON ch.employee_id = e.id
+        LEFT JOIN detail_sys_code pos ON e.position_code = pos.detail_code AND pos.main_code = 'POS'
+        LEFT JOIN detail_sys_code dept ON e.dept_code = dept.detail_code AND dept.main_code = 'DEP'
+        <where>
+            <if test="nameOrId != null and nameOrId != ''">
+                AND (
+                TO_CHAR(e.id) LIKE '%' || #{nameOrId} || '%'
+                OR e.name LIKE '%' || #{nameOrId} || '%'
+                )
+            </if>
+            <if test="dept != null and dept != ''">
+                AND e.dept_code = #{dept}
+            </if>
+            <if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+                AND ch.commute_in BETWEEN TO_DATE(#{startDate}, 'YYYY-MM-DD')
+                    AND TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
+            </if>
+        </where>
+        ORDER BY TO_CHAR(ch.commute_in, 'YYYYMMDD') DESC, ch.commute_in DESC
+    </select>
+
+</mapper>
