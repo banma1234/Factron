@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SysCodeRepository extends JpaRepository<SysCode, Integer> {
+    SysCode findByMainCode(String mainCode);
 }

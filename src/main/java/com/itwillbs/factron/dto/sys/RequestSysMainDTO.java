@@ -5,13 +5,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Data
 public class RequestSysMainDTO {
 
     @NotBlank(message = "메인코드는 필수 입력값입니다.")
-    @Pattern(regexp = "^[A-Za-z]{3}$", message = "메인코드는 3자리 알파벳만 사용 가능합니다.")
+    @Pattern(regexp = "^[A-Z]{3}$", message = "메인코드는 3자리의 대문자 알파벳만 사용 가능합니다.")
     private String main_code;
 
     @NotBlank(message = "구분명은 필수 입력값입니다.")
@@ -36,6 +34,7 @@ public class RequestSysMainDTO {
                 .isActive(requestSysMainDTO.getIs_active() != null
                         ? requestSysMainDTO.getIs_active()
                         : "Y")
+                .createdBy(20180924L)
                 .build();
     }
 }
