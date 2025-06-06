@@ -77,9 +77,12 @@ const initDetailGrid = () => {
     })
 }
 
+/*
+* 메인코드 불러오는 api
+* */
 const getMainCode = async () => {
     try {
-        const res = await fetch(`/sys/main`, {
+        const res = await fetch(`/api/sys/main`, {
             method: 'GET',
             headers: {
                 "Content-Type": "application/json"
@@ -92,9 +95,12 @@ const getMainCode = async () => {
     }
 }
 
-const getDetailCode = async (id) => {
+/*
+* 상세코드 불러오는 api
+* */
+const getDetailCode = async (mainCode) => {
     try {
-        const res = await fetch(`/sys/detail?id=${id}`, {
+        const res = await fetch(`/api/sys/detail?id=${mainCode}`, {
             method: 'GET',
             headers: {
                 "Content-Type": "application/json"
@@ -106,18 +112,33 @@ const getDetailCode = async (id) => {
         console.error(e);
     }
 }
+
+let selectedRowData = null;
 
 const sysInit = () => {
     const mainGrid = initMainGrid();
     const detailGrid = initDetailGrid();
 
+    const setDetailGridEvent = () => {
+        detailGrid.on('click', e => {
+            const rowKey = e.rowKey;
+            selectedRowData = detailGrid.getRow(rowKey);
+
+            console.log("detail : ", selectedRowData);
+        })
+    }
+
     const setMainGridEvent = () => {
         mainGrid.on('click', e => {
             const rowKey = e.rowKey;
-            const rowData = mainGrid.getRow(rowKey);
+            selectedRowData = mainGrid.getRow(rowKey);
 
-            getDetailCode(rowData.id).then(res => {
+            console.log("main : ", selectedRowData);
+
+            getDetailCode(selectedRowData.id).then(res => {
                 detailGrid.resetData(res.data);
+
+                setDetailGridEvent();
             })
         });
     }
@@ -128,35 +149,51 @@ const sysInit = () => {
         setMainGridEvent();
     })
 
-        // if (rowData && rowData.id) {
-        //     const popup = window.open('/test-form', '_blank', 'width=800,height=600');
-        //
-        //     // 자식 창으로부터 'ready' 먼저 수신 후 postMessage 실행
-        //     const messageHandler = (event) => {
-        //         if (event.data === 'ready') {
-        //             popup.postMessage({
-        //                 name: rowData.name,
-        //                 age: rowData.id,
-        //                 birth: rowData.birth,
-        //                 regDate: rowData.regDate,
-        //                 remark: rowData.address
-        //             }, "*");
-        //             window.removeEventListener("message", messageHandler);
-        //         }
-        //     };
-        //     window.addEventListener("message", messageHandler);
-        // }
-    // });
-
 };
 
-document.getElementById('postSysMainBtn').addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+const openUpdatePopup = () => {
+    const rowData = selectedRowData;
 
-    window.open('/sys-form', '_blank', 'width=800,height=400');
-})
+    if (rowData && rowData.id) {
+        const popup = window.open('/sys/sys-form', '_blank', 'width=800,height=400');
+
+        // 자식 창으로부터 'ready' 먼저 수신 후 postMessage 실행
+        const messageHandler = (event) => {
+            if (event.data === 'ready') {
+                popup.postMessage({
+                    main_code: rowData.main_code ? rowData.main_code : "",
+                    detail_code: rowData.detail_code ? rowData.detail_code : "",
+                    name: rowData.name,
+                    is_active: rowData.is_active
+                }, "*");
+
+                window.removeEventListener("message", messageHandler);
+            }
+        };
+
+        window.addEventListener("message", messageHandler);
+    }
+}
+
+document.querySelectorAll(".updateSysCodeBtn")
+    .forEach(btn => {
+        btn.addEventListener('click', e => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                openUpdatePopup();
+            });
+    });
+
+
+document.getElementById('postSysMainBtn')
+    .addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        window.open('/sys/sys-form', '_blank', 'width=800,height=400');
+    });
 
 window.onload = () => {
     sysInit();
-}
+};
