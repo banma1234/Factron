@@ -13,7 +13,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/sys/detail")
+@RequestMapping("/api/sys/detail")
 @RequiredArgsConstructor
 public class SysDetailRestController {
 

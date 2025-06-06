@@ -13,7 +13,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/sys/main")
+@RequestMapping("/api/sys/main")
 @RequiredArgsConstructor
 public class SysMainRestController {
 
