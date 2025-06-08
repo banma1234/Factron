@@ -24,7 +24,6 @@ import java.time.LocalDate;
 public class Employee extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column(name = "employ_code", length = 6, nullable = false)
@@ -42,7 +41,7 @@ public class Employee extends BaseEntity {
     @Column(name = "position_code", length = 6, nullable = false)
     private String positionCode;
 
-    @Column(name = "joined_date", nullable = false)
+    @Column(name = "joined_date")
     @CreatedDate
     private LocalDate joinedDate;
 
@@ -73,9 +72,8 @@ public class Employee extends BaseEntity {
      */
     public void updateNormEmployeeInfo(RequestEmployeeUpdateDTO reqEmpUpDto) {
         this.name = reqEmpUpDto.getEmpName();
-        String[] fullRrn = reqEmpUpDto.getResidentRegistrationNumber().split("-");
-        this.birth = fullRrn[0];
-        this.rrnBack = fullRrn[1];
+        this.birth = reqEmpUpDto.getBirth();
+        this.rrnBack = reqEmpUpDto.getRrnBack();
         this.email = reqEmpUpDto.getEmail();
         this.phone = reqEmpUpDto.getPhone();
     }
@@ -86,9 +84,8 @@ public class Employee extends BaseEntity {
      */
     public void updateTranfEmployeeInfo(RequestEmployeeUpdateDTO reqEmpUpDto) {
         this.name = reqEmpUpDto.getEmpName();
-        String[] fullRrn = reqEmpUpDto.getResidentRegistrationNumber().split("-");
-        this.birth = fullRrn[0];
-        this.rrnBack = fullRrn[1];
+        this.birth = reqEmpUpDto.getBirth();
+        this.rrnBack = reqEmpUpDto.getRrnBack();
         this.gender = reqEmpUpDto.getGender();
         this.email = reqEmpUpDto.getEmail();
         this.eduLevelCode = reqEmpUpDto.getEduLevelCode();
