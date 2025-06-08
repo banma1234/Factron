@@ -123,8 +123,6 @@ const sysInit = () => {
         detailGrid.on('click', e => {
             const rowKey = e.rowKey;
             selectedRowData = detailGrid.getRow(rowKey);
-
-            console.log("detail : ", selectedRowData);
         })
     }
 
@@ -132,8 +130,6 @@ const sysInit = () => {
         mainGrid.on('click', e => {
             const rowKey = e.rowKey;
             selectedRowData = mainGrid.getRow(rowKey);
-
-            console.log("main : ", selectedRowData);
 
             getDetailCode(selectedRowData.id).then(res => {
                 detailGrid.resetData(res.data);
@@ -155,7 +151,11 @@ const openUpdatePopup = () => {
     const rowData = selectedRowData;
 
     if (rowData && rowData.id) {
-        const popup = window.open('/sys/sys-form', '_blank', 'width=800,height=400');
+        const popup = window.open(
+            `/sys/sys-form?target=${rowData.detail_code ? "detail" : "main"}`,
+            '_blank',
+            'width=800,height=400'
+        );
 
         // 자식 창으로부터 'ready' 먼저 수신 후 postMessage 실행
         const messageHandler = (event) => {
@@ -185,13 +185,20 @@ document.querySelectorAll(".updateSysCodeBtn")
             });
     });
 
-
-document.getElementById('postSysMainBtn')
+document.querySelector("button[name='postSysMainBtn']")
     .addEventListener('click', e => {
         e.preventDefault();
         e.stopPropagation();
 
-        window.open('/sys/sys-form', '_blank', 'width=800,height=400');
+        window.open('/sys/sys-form?target=main', '_blank', 'width=800,height=400');
+    });
+
+document.querySelector("button[name='postSysDetailBtn']")
+    .addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        window.open('/sys/sys-form?target=detail', '_blank', 'width=800,height=400');
     });
 
 window.onload = () => {

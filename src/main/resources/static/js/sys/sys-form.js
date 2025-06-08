@@ -1,11 +1,18 @@
 const init = () => {
     const form = document.querySelector("form");
-    const btnModify = form.querySelector("button.modBtn");
     const confirmModal = new bootstrap.Modal(document.getElementsByClassName("confirmModal")[0]);
-    // const confirmEditBtn = document.getElementsByClassName("confirmEditBtn")[0];
-    // const alertModal = new bootstrap.Modal(document.getElementsByClassName("alertModal")[0]);
-    // const alertBtn = document.getElementsByClassName("alertBtn")[0];
+    const urlParams = new URLSearchParams(location.search);
+    const confirmEditBtn = document.querySelector("button[name='confirmEditBtn']");
+    const alertModal = new bootstrap.Modal(document.getElementsByClassName("alertModal")[0]);
+    const alertBtn = document.getElementsByClassName("alertBtn")[0];
     let isEditMode = false; // 수정모드
+    const target = urlParams.get("target");
+
+    if (target === "main") {
+        form.querySelector("input[name='detail_code']").disabled = true;
+    } else if (target === "detail") {
+        form.querySelector("input[name='main_code']").disabled = true;
+    }
 
     // 부모창에서 데이터 받아오기
     window.addEventListener('message', function(event) {
@@ -18,20 +25,29 @@ const init = () => {
         form.querySelector("input[name='detail_code']").value = data.detail_code.substring(3,6);
         form.querySelector("input[name='name']").value = data.name;
         form.querySelector("input[name='is_active']").value = data.is_active;
+
+        isEditMode = true;
     });
 
-    // 저장 버튼
-    btnModify.addEventListener("click", () => {
-        if (!isEditMode) {
-            // 수정모드 아닌 경우
-            toggleFormDisabled(false);
-            btnModify.textContent = "확인";
-            isEditMode = true;
 
-        } else {
-            // 수정모드인 경우
-            confirmModal.show();
-        }
+    form.querySelector("button.btn-primary").addEventListener("click", () => {
+        confirmModal.show();
+
+        saveData().then(res => {
+            confirmEditBtn.addEventListener('click', e => {
+                console.log("hit!")
+
+                saveData().then(res => {
+                    isEditMode = false;
+                    confirmModal.hide();
+
+                    document.querySelector(".alertModal .modal-body").textContent = res.message;
+                    alertModal.show();
+                });
+
+                // window.close();
+            })
+        })
     });
 
     // 취소 버튼
@@ -39,7 +55,7 @@ const init = () => {
         window.close();
     });
 
-    // 폼 disable 변경
+    // // 폼 disable 변경
     // const toggleFormDisabled = (isDisabled) => {
     //     const fields = document.querySelectorAll("input, select, textarea");
     //     fields.forEach(el => {
@@ -50,80 +66,86 @@ const init = () => {
     //     });
     // };
 
-    // 주소 입력
-    // function handleAddressClick(event) {
-    //     if (event.target.disabled) return;
-    //
-    //     new daum.Postcode({
-    //         oncomplete: function(data) {
-    //             const fullAddr = data.address; // 도로명 주소
-    //             document.querySelector("input[name='address']").value = fullAddr;
-    //         }
-    //     }).open();
-    // }
+    // 저장
+    async function saveData() {
+        // fetch data
+        const data = {
+            main_code: form.querySelector("input[name='main_code']").value,
+            detail_code: form.querySelector("input[name='detail_code']").value || "",
+            name: form.querySelector("input[name='name']").value,
+            is_active: form.querySelector("select[name='is_active']").value
+        };
 
-    // confirm 모달 확인 버튼
-    // confirmEditBtn.addEventListener("click", () => {
+        if (target === "main") {
+            console.log("main");
+            delete data.detail_code;
+        }
+
+        try {
+            const res = await fetch(`/api/sys/${target}`, {
+                method: `${isEditMode ? "PUT" : "POST"}`,
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data),
+            });
+            return res.json();
+
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    // // confirm 모달 확인 버튼
+    // btnModify.addEventListener("click", () => {
+    //     // confirmModal.show();
+    //
     //     saveData().then(res => {
-    //         if(res.status === 200) {
-    //             // ...
-    //         } else {
-    //             // ...
-    //         }
+    //         window.close();
+    //     })
     //
-    //         // 수정모드 종료
-    //         toggleFormDisabled(true);
-    //         btnModify.textContent = "저장";
-    //         isEditMode = false;
+    //     // confirmEditBtn.addEventListener('click', e => {
+    //     //     console.log("hit!")
+    //     //
+    //     //     saveData().then(res => {
+    //     //         isEditMode = false;
+    //     //         confirmModal.hide();
+    //     //
+    //     //         document.querySelector(".alertModal .modal-body").textContent = res.message;
+    //     //         alertModal.show();
+    //     //     })
     //
-    //         confirmModal.hide();
-    //         document.querySelector(".alertModal .modal-body").textContent = res.message;
-    //         alertModal.show();
-    //     });
+    //
+    //     // saveData().then(res => {
+    //     //     if(res.status === 200) {
+    //     //         // ...
+    //     //     } else {
+    //     //         // ...
+    //     //     }
+    //     //
+    //     //     // 수정모드 종료
+    //     //     // toggleFormDisabled(true);
+    //     //     btnModify.textContent = "저장";
+    //     //     isEditMode = false;
+    //     //
+    //     //     confirmModal.hide();
+    //     //     document.querySelector(".alertModal .modal-body").textContent = res.message;
+    //     //     alertModal.show();
+    //     // });
     // });
 
     // alert 모달 확인 버튼
-    // alertBtn.addEventListener("click", () => {
-    //     alertModal.hide();
-    //
-    //     // 부모 창의 그리드 리프레시
-    //     if (window.opener && !window.opener.closed) {
-    //         window.opener.getData();
-    //     }
-    //
-    //     window.close();
-    // });
+    alertBtn.addEventListener("click", () => {
+        alertModal.hide();
 
-    // 저장
-    // async function saveData() {
-    //     // validation
-    //
-    //     // fetch data
-    //     const data = {
-    //         id: form.querySelector("input[name='age']").value,
-    //         name: form.querySelector("input[name='name']").value,
-    //         birth: form.querySelector("input[name='birth']").value,
-    //         chkType: null,
-    //         regDate: null,
-    //         address: form.querySelector("textarea[name='remark']").value,
-    //         // ...
-    //     };
-    //
-    //     try {
-    //         const res = await fetch(`/testList`, {
-    //             method: "POST",
-    //             headers: {
-    //                 "Content-Type": "application/json"
-    //             },
-    //             body: JSON.stringify(data),
-    //         });
-    //         return res.json();
-    //
-    //     } catch (e) {
-    //         console.error(e);
-    //     }
-    // }
-};
+        // 부모 창의 그리드 리프레시
+        if (window.opener && !window.opener.closed) {
+            window.opener.getData();
+        }
+
+        window.close();
+    });
+}
 
 window.onload = () => {
     init();
