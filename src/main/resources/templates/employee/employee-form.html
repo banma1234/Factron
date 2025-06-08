@@ -7,59 +7,59 @@
 </head>
 <body>
 <div class="container mt-5">
-  <h2 class="mb-4">Test Form</h2>
+  <h2 class="mb-4">사원 정보 수정</h2>
   <!-- form -->
   <form>
     <div class="row mb-3">
       <div class="col-md-6">
         <span class="form-label">이름</span>
-        <input type="text" name="name" class="form-control" placeholder="이름을 입력하세요" disabled>
+        <input type="text" name="empName" class="form-control" placeholder="이름을 입력하세요" disabled>
       </div>
       <div class="col-md-6">
         <span class="form-label">사원번호</span>
-        <input type="number" name="empId" class="form-control" placeholder="숫자만 입력" disabled>
+        <input type="number" name="empId" class="form-control" disabled>
       </div>
     </div>
     <div class="row mb-3">
       <div class="col-md-6">
         <span class="form-label">주민번호</span>
-        <input type="text" name="rrn" class="form-control" placeholder="이름을 입력하세요" disabled>
+        <div class="input-group">
+          <input maxlength="6" type="text" name="birth" class="form-control" placeholder="생년월일" disabled>
+          <span class="form-label">-</span>
+          <input maxlength="7" type="password" name="rrnBack" class="form-control" placeholder="주민번호" disabled>
+        </div>
       </div>
       <div class="col-md-6">
         <span class="form-label">성별</span>
         <select name="gender" class="form-select" disabled>
           <option value="">선택하세요</option>
-          <option value="seoul">서울</option>
-          <option value="busan">부산</option>
-          <option value="incheon">인천</option>
-          <option value="daegu">대구</option>
+          <option value="M">남</option>
+          <option value="F">여</option>
+
         </select>
       </div>
     </div>
     <div class="row mb-3">
       <div class="col-md-6">
         <span class="form-label">이메일</span>
-        <input type="text" name="email" class="form-control" placeholder="이름을 입력하세요" disabled>
+        <input type="text" name="email" class="form-control" placeholder="메일 주소를 입력하세요" disabled>
       </div>
       <div class="col-md-6">
         <span class="form-label">최종학력</span>
         <select name="eduLevel" class="form-select" disabled>
           <option value="">선택하세요</option>
-          <option value="seoul">서울</option>
-          <option value="busan">부산</option>
-          <option value="incheon">인천</option>
-          <option value="daegu">대구</option>
+          <option value="EDU001">고졸</option>
         </select>
       </div>
     </div>
     <div class="row mb-3">
       <div class="col-md-6">
         <span class="form-label">주소</span>
-        <input type="text" name="address" class="form-control" placeholder="이름을 입력하세요" disabled>
+        <input type="text" name="address" class="form-control" placeholder="주소를 입력하세요" disabled>
       </div>
       <div class="col-md-6">
         <span class="form-label">퇴사날짜</span>
-        <input type="number" name="quitDate" class="form-control" placeholder="숫자만 입력" disabled>
+        <input type="date" name="quitDate" class="form-control" disabled>
       </div>
     </div>
     <div class="row mb-3">
@@ -67,51 +67,46 @@
         <span class="form-label">직급</span>
         <select name="position" class="form-select" disabled>
           <option value="">선택하세요</option>
-          <option value="seoul">서울</option>
-          <option value="busan">부산</option>
-          <option value="incheon">인천</option>
-          <option value="daegu">대구</option>
+          <option value="POS001">사원</option>
         </select>
       </div>
       <div class="col-md-6">
         <span class="form-label">재직상태</span>
-        <input type="text" name="status" class="form-control" placeholder="숫자만 입력" disabled>
+        <select name="isActive" class="form-select" disabled>
+          <option value="">선택하세요</option>
+          <option value="Y">재직</option>
+          <option value="N">퇴사</option>
+        </select>
       </div>
     </div>
     <div class="row mb-3">
       <div class="col-md-6">
         <span class="form-label">입사일</span>
-        <input type="text" name="joinDate" class="form-control" placeholder="이름을 입력하세요" disabled>
+        <input type="date" name="joinDate" class="form-control" disabled>
       </div>
       <div class="col-md-6">
         <span class="form-label">고용유형</span>
         <select name="employ" class="form-select" disabled>
           <option value="">선택하세요</option>
-          <option value="seoul">서울</option>
-          <option value="busan">부산</option>
-          <option value="incheon">인천</option>
-          <option value="daegu">대구</option>
+          <option value="EMP001">정규직</option>
         </select>
       </div>
     </div>
     <div class="row mb-3">
       <div class="col-md-6">
         <span class="form-label">전화번호</span>
-        <input type="text" name="phone" class="form-control" placeholder="이름을 입력하세요" disabled>
+        <input type="text" name="phone" class="form-control" placeholder="전화번호를 입력하세요" disabled>
       </div>
       <div class="col-md-6">
         <span class="form-label">부서</span>
         <select name="dept" class="form-select" disabled>
           <option value="">선택하세요</option>
-          <option value="seoul">서울</option>
-          <option value="busan">부산</option>
-          <option value="incheon">인천</option>
-          <option value="daegu">대구</option>
+          <option value="DPT001"  >인사</option>
         </select>
       </div>
     </div>
     <div class="d-flex justify-content-end mt-4 gap-2">
-      <button type="button" class="btn btn-primary modBtn">저장</button>
+      <button type="button" class="btn btn-primary modBtn">수정</button>
       <button type="button" class="btn btn-secondary">취소</button>
     </div>
   </form>

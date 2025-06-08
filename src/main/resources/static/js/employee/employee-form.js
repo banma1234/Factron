@@ -1,3 +1,56 @@
+/**
+ * 대문자 변환
+ * @param str
+ * @returns {string}
+ */
+function toUpperCase(str) {
+    if (typeof str !== 'string') return '';
+    return str.toUpperCase();
+}
+
+/**
+ *
+ * @returns {[Element,Element,Element,Element,Element]}
+ */
+const getNormAccess = () => {
+    const name = document.querySelector("input[name='empName']");
+    const birth = document.querySelector("input[name='birth']");
+    const rrnBack = document.querySelector("input[name='rrnBack']");
+    const email = document.querySelector("input[name='email']");
+    const address = document.querySelector("input[name='address']");
+    const phone = document.querySelector("input[name='phone']");
+    return [name, birth, rrnBack, email, address, phone];
+}
+
+const getNormBody = () => {
+    const name = document.querySelector("input[name='empName']");
+    const birth = document.querySelector("input[name='birth']");
+    const rrnBack = document.querySelector("input[name='rrnBack']");
+    const email = document.querySelector("input[name='email']");
+    const address = document.querySelector("input[name='address']");
+    const phone = document.querySelector("input[name='phone']");
+    const empId = document.querySelector("input[name='empId']");
+    return [empId, name, birth, rrnBack, email, address, phone];
+}
+
+const setFormAccess = (inputList) => {
+    inputList.forEach((input)=>{
+        input.disabled=false;
+    })
+}
+
+const setPernAccess = () => {
+    const gender = document.querySelector("select[name='gender']");
+    const isActive = document.querySelector("select[name='isActive']");
+    const employ = document.querySelector("select[name='employ']");
+    const eduLevel = document.querySelector("select[name='eduLevel']");
+
+
+}
+
+
+
+
 const init = () => {
     const form = document.querySelector("form");
     const btnModify = form.querySelector("button.modBtn");
@@ -7,6 +60,8 @@ const init = () => {
     const alertBtn = document.getElementsByClassName("alertBtn")[0];
     let isEditMode = false; // 수정모드
 
+    //일반 사원 설정
+
     // 부모창에서 데이터 받아오기
     window.addEventListener('message', function(event) {
         // if (event.origin !== "http://localhost:8080") return;
@@ -14,16 +69,23 @@ const init = () => {
         const data = event.data;
         if (data?.source === 'react-devtools-content-script') return;
         // 값 세팅
-        form.querySelector("input[name='name']").value = data.name || "";
+        console.log(data)
+        form.querySelector("input[name='empName']").value = data.name || "";
         form.querySelector("input[name='empId']").value = data.empId || "";
-        form.querySelector("input[name='rrn']").value = data.rrn || "";
-        // form.querySelector("input[name='gender']").value = data.gender || "";
+        form.querySelector("input[name='birth']").value = data.birth || "";
+        form.querySelector("input[name='rrnBack']").value = data.rrnBack || "";
         form.querySelector("input[name='email']").value = data.email || "";
         form.querySelector("input[name='address']").value = data.address || "";
         form.querySelector("input[name='quitDate']").value = data.quitDate || "";
-        form.querySelector("input[name='status']").value = data.empIsActive || "";
         form.querySelector("input[name='joinDate']").value = data.joinedDate || "";
         form.querySelector("input[name='phone']").value = data.phone || "";
+        form.querySelector("select[name='gender']").value = toUpperCase(data.gender);
+        form.querySelector("select[name='eduLevel']").value = toUpperCase(data.eduLevelCode);
+        form.querySelector("select[name='position']").value = toUpperCase(data.positionCode);
+        form.querySelector("select[name='isActive']").value = toUpperCase(data.empIsActive);
+        form.querySelector("select[name='employ']").value = toUpperCase(data.employCode);
+        form.querySelector("select[name='dept']").value = toUpperCase(data.deptCode);
+
     });
 
     // 주소 input 클릭
@@ -36,7 +98,7 @@ const init = () => {
         if (!isEditMode) {
             // 수정모드 아닌 경우
             toggleFormDisabled(false);
-            btnModify.textContent = "확인";
+            btnModify.textContent = "저장";
             isEditMode = true;
 
         } else {
@@ -51,14 +113,8 @@ const init = () => {
     });
 
     // 폼 disable 변경
-    const toggleFormDisabled = (isDisabled) => {
-        const fields = document.querySelectorAll("input, select, textarea");
-        fields.forEach(el => {
-            // 주민번호 뒷자리 제외하고 disable 해제
-            if (el.name !== 'rrnBack') {
-                el.disabled = isDisabled;
-            }
-        });
+    const toggleFormDisabled = () => {
+        setFormAccess(getNormAccess());
     };
 
     // 주소 입력
@@ -79,12 +135,12 @@ const init = () => {
             if(res.status === 200) {
                 // ...
             } else {
-                // ...
-            }
 
+            }
+            //
             // 수정모드 종료
             toggleFormDisabled(true);
-            btnModify.textContent = "저장";
+            btnModify.textContent = "확인";
             isEditMode = false;
 
             confirmModal.hide();
@@ -99,37 +155,32 @@ const init = () => {
 
         // 부모 창의 그리드 리프레시
         if (window.opener && !window.opener.closed) {
-            window.opener.getData();
+            window.opener.postMessage({ type: "REFRESH_EMPLOYEES" }, "*");
         }
-
         window.close();
     });
 
     // 저장
     async function saveData() {
         // validation
-
+        const inputs = getNormBody();
         // fetch data
-        const data = {
-            id: form.querySelector("input[name='age']").value,
-            name: form.querySelector("input[name='name']").value,
-            birth: form.querySelector("input[name='birth']").value,
-            chkType: null,
-            regDate: null,
-            address: form.querySelector("textarea[name='remark']").value,
-            // ...
-        };
+
+        //[name, rrn, email, address, phone]
+        const data = {}
+        inputs.forEach(input => {
+            data[input.name] = input.value;
+        })
 
         try {
-            const res = await fetch(`/testList`, {
-                method: "POST",
+            const res = await fetch(`/api/employee`, {
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify(data),
             });
             return res.json();
-
         } catch (e) {
             console.error(e);
         }
