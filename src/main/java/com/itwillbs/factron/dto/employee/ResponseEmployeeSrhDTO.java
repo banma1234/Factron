@@ -8,7 +8,8 @@ import lombok.*;
 public class ResponseEmployeeSrhDTO {
     private Long empId; //사번
     private String empName; //이름
-    private String residentRegistrationNumber; //주민번호
+    private String birth; //주민번호
+    private String rrnBack;
     private String gender; //성별
     private String email; //메일주소
     private String eduLevelCode; //최종학력코드
@@ -24,4 +25,17 @@ public class ResponseEmployeeSrhDTO {
     private String phone; //전화번호
     private String deptCode; //부서코드
     private String deptName; //부서이름
+
+    public ResponseEmployeeSrhDTO removeTime(){
+        if(this.quitDate != null){
+            if(this.quitDate.contains("T")) this.quitDate = this.quitDate.split("T")[0];
+            if(this.quitDate.contains(" ")) this.quitDate = this.quitDate.split(" ")[0];
+        }
+
+        if(this.joinedDate != null){
+            if(this.joinedDate.contains("T")) this.joinedDate = this.joinedDate.split("T")[0];
+            if(this.joinedDate.contains(" ")) this.joinedDate = this.joinedDate.split(" ")[0];
+        }
+        return this;
+    }
 }

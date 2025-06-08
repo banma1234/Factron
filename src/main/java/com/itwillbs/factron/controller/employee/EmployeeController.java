@@ -9,12 +9,17 @@ public class EmployeeController {
 
     @GetMapping("/employee")
     public String employee() {
-        return "/layout/employee/employee";
+        return "/employee/employee";
     }
 
     @GetMapping("/employee-form")
     public String employeeFrom() {
-        return "/layout/employee/employee-form";
+        return "/employee/employee-form";
+    }
+
+    @GetMapping("/employee-newForm")
+    public String employeeNewFrom() {
+        return "/employee/employee-add-form";
     }
 }
 

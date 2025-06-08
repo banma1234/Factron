@@ -10,7 +10,8 @@
         SELECT
             e.id AS empId,
             e.name AS empName,
-            e.birth || '-' || e.rrn_back AS residentRegistrationNumber,
+            e.birth,
+            e.rrn_back,
             e.gender,
             e.email,
             e.edu_level_code,

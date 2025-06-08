@@ -1,19 +1,25 @@
 package com.itwillbs.factron.service.employee;
 
+import com.itwillbs.factron.common.component.AESUtil;
+import com.itwillbs.factron.dto.employee.RequestEmployeeNewDTO;
 import com.itwillbs.factron.dto.employee.RequestEmployeeSrhDTO;
 import com.itwillbs.factron.dto.employee.ResponseEmployeeSrhDTO;
 import com.itwillbs.factron.dto.employee.RequestEmployeeUpdateDTO;
 import com.itwillbs.factron.entity.Employee;
+import com.itwillbs.factron.entity.IntergratAuth;
 import com.itwillbs.factron.mapper.employee.EmployeeMapper;
 import com.itwillbs.factron.repository.employee.EmployeeRepository;
+import com.itwillbs.factron.repository.employee.IntergratAuthRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,8 +28,9 @@ import java.util.Optional;
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
-
+    private final IntergratAuthRepository intergratAuthRepository;
     private final EmployeeMapper employeeMapper;
+    private final AESUtil aesUtil;
 
     /**
      * 검색 조건으로 사원 조회
@@ -32,13 +39,24 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Override
     public List<ResponseEmployeeSrhDTO> getEmployees(RequestEmployeeSrhDTO requestEmployeeSrhDTO){
-//        log.info("EmployeeService employeeReqDTO Before valid: " + employeeRequestDTO);
         requestEmployeeSrhDTO.setDept(this.validateCode(requestEmployeeSrhDTO.getDept()));
         requestEmployeeSrhDTO.setPosition(this.validateCode(requestEmployeeSrhDTO.getPosition()));
         requestEmployeeSrhDTO.setEmpIsActive(this.validActive(requestEmployeeSrhDTO.getEmpIsActive()));
         requestEmployeeSrhDTO.setNameOrId(this.safeTrim(requestEmployeeSrhDTO.getNameOrId()));
-//        log.info("EmployeeService employeeReqDTO After valid: " + employeeRequestDTO);
-        return employeeMapper.getEmployeeList(requestEmployeeSrhDTO);
+//        log.info("EmployeeServiceImpl getEmployee requestEmployeeSrhDTO: " +requestEmployeeSrhDTO);
+        return employeeMapper.getEmployeeList(requestEmployeeSrhDTO)
+                                    .stream()
+                                    .map(dto ->
+                                    {
+                                        dto.removeTime();
+                                        try {
+                                            dto.setRrnBack(aesUtil.decrypt(dto.getRrnBack()));
+                                        } catch (Exception e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                        return dto;
+                                    })
+                                    .collect(Collectors.toList());
     }
 
     /**
@@ -55,8 +73,18 @@ public class EmployeeServiceImpl implements EmployeeService {
         // RequestEmployeeUpdateDTO Validation 확인
         if (reqEmployeeDTO.getEmpName() == null || reqEmployeeDTO.getEmpName().isEmpty())
             reqEmployeeDTO.setEmpName(emp.getName());
-        if (reqEmployeeDTO.getResidentRegistrationNumber() == null || reqEmployeeDTO.getResidentRegistrationNumber().isEmpty())
-            reqEmployeeDTO.setResidentRegistrationNumber(emp.getBirth() + "-" + emp.getRrnBack());
+
+        if (reqEmployeeDTO.getRrnBack() == null || reqEmployeeDTO.getRrnBack().isEmpty()){
+            reqEmployeeDTO.setEmpName(emp.getRrnBack());
+        }else{
+            try {
+                reqEmployeeDTO.setRrnBack(
+                        aesUtil.encrypt(emp.getRrnBack())
+                );
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
         if(reqEmployeeDTO.getGender() == null || reqEmployeeDTO.getGender().isEmpty())
             reqEmployeeDTO.setGender(emp.getGender());
         if(reqEmployeeDTO.getEmail() == null || reqEmployeeDTO.getEmail().isEmpty())
@@ -75,6 +103,40 @@ public class EmployeeServiceImpl implements EmployeeService {
         return null;
     }
 
+    /**
+     * 새로운 사원 추가
+     * @param reqEmployeeNewDTO {@link RequestEmployeeNewDTO}
+     * @return Void
+     */
+    @Override
+    @Transactional
+    public Void addNewEmployee(RequestEmployeeNewDTO reqEmployeeNewDTO){
+        Long newId = generateEmployeeId();
+        try {
+            reqEmployeeNewDTO.setRrnBack(aesUtil.encrypt(reqEmployeeNewDTO.getRrnBack()));
+//            log.info("service " + reqEmployeeNewDTO.getRrnBack());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+//        log.info("EmployeeServiceImpl addNewEmployee newId: " + newId);
+        Employee employee = reqEmployeeNewDTO.toEntity(newId, 1000L);
+//        log.info("EmployeeServiceImpl addNewEmployee requestEmployeeNewDTO: " +reqEmployeeNewDTO);
+//        log.info("EmployeeServiceImpl addNewEmployee employee: " + employee.toString());
+        employeeRepository.save(employee);
+        employeeRepository.flush();
+//        log.info("EmployeeServiceImpl addNewEmployee employeeId: " + employee.getId());
+        Employee newEmp = employeeRepository.findById(newId).orElseThrow(
+                ()-> new EntityNotFoundException("It does not exist")
+        );
+//        log.info("EmployeeServiceImpl addNewEmployee newEmpId: " + newEmp.getId());
+
+        IntergratAuth newIntergratAuth = reqEmployeeNewDTO.toIntergratAuth(newEmp);
+//        log.info("EmployeeServiceImpl addNewEmployee newIntergratAuth: " + newIntergratAuth.toString());
+        intergratAuthRepository.save(newIntergratAuth);
+        intergratAuthRepository.flush();
+        return null;
+    }
+
     // 공백 제거
     private String safeTrim(String input) {
         return (input == null) ? "" : input.trim();
@@ -84,7 +146,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private String validActive(String str){
         String trimmed = safeTrim(str);
         if (trimmed.equals("")) return trimmed;
-        return ((trimmed.equals("y")  || trimmed.equals("n")) ) ?  trimmed: "";
+        return ((trimmed.equals("Y")  || trimmed.equals("N")) ) ?  trimmed: "";
     }
 
     // Code 유효성 검사
@@ -95,5 +157,25 @@ public class EmployeeServiceImpl implements EmployeeService {
             return trimmed;
         }
         return "";
+    }
+
+    private String dateParse (String dateTime){
+        return dateTime.split("T")[0];
+    }
+
+
+    public Long generateEmployeeId() {
+        LocalDate now = LocalDate.now();
+        String yy = String.format("%02d", now.getYear() % 100); // 올해 2자리
+        String mm = String.format("%02d", now.getMonthValue()); // 월 2자리
+
+        String yearMonth = now.format(DateTimeFormatter.ofPattern("yyyy-MM"));
+
+        long countThisMonth = employeeRepository.countByYearMonth(yearMonth);
+        String nnn = String.format("%04d", countThisMonth + 1); // 3자리로 채움
+
+        String idStr = yy + mm + nnn;
+
+        return Long.parseLong(idStr);
     }
 }

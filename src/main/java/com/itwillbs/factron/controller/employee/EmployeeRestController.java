@@ -1,6 +1,7 @@
 package com.itwillbs.factron.controller.employee;
 
 import com.itwillbs.factron.dto.ResponseDTO;
+import com.itwillbs.factron.dto.employee.RequestEmployeeNewDTO;
 import com.itwillbs.factron.dto.employee.RequestEmployeeSrhDTO;
 import com.itwillbs.factron.dto.employee.ResponseEmployeeSrhDTO;
 import com.itwillbs.factron.dto.employee.RequestEmployeeUpdateDTO;
@@ -28,8 +29,10 @@ public class EmployeeRestController {
     // 사원 리스트 호출 API
     @GetMapping("")
     public ResponseDTO<List<ResponseEmployeeSrhDTO>> getEmployees(@ModelAttribute RequestEmployeeSrhDTO reqEmployeeDTO) {
+//        log.info("EmpRestController getEmployees reqEmployeeDTO: "+reqEmployeeDTO);
         try {
             List<ResponseEmployeeSrhDTO> employees = employeeService.getEmployees(reqEmployeeDTO);
+//            log.info("EmpRestController getEmployees employees: " + employees);
             return ResponseDTO.success(employees);
         } catch (IllegalArgumentException e) {
             return ResponseDTO.fail(400, e.getMessage(), new ArrayList<>());
@@ -44,12 +47,23 @@ public class EmployeeRestController {
      * @return ResponseDTO<Void>
      */
     @PutMapping("")
-    public ResponseDTO<Void> updateEmployee(@ModelAttribute RequestEmployeeUpdateDTO requestEmployeeUpdateDTO) {
+    public ResponseDTO<Void> updateEmployee(@RequestBody RequestEmployeeUpdateDTO requestEmployeeUpdateDTO) {
+//        log.info("EmployeeRestController updateEmployee input requestEmployeeUpdateDTO:" + requestEmployeeUpdateDTO);
         try{
-            return ResponseDTO.success(employeeService.updateEmployee(requestEmployeeUpdateDTO));
+            return ResponseDTO.success("사원 정보가 저장되었습니다.",employeeService.updateEmployee(requestEmployeeUpdateDTO));
         }catch (Exception e) {
             return ResponseDTO.fail(500, "서버 오류가 발생했습니다.", null);
         }
+    }
 
+
+    @PostMapping("")
+    public ResponseDTO<Void> addEmployee(@RequestBody RequestEmployeeNewDTO reqEmployeeNewDTO) {
+        log.info("EmployeeRestController addEmployee input reqEmployeeNewDTO:" + reqEmployeeNewDTO.toString());
+        try{
+            return ResponseDTO.success("사원이 추가되었습니다.", employeeService.addNewEmployee(reqEmployeeNewDTO));
+        }catch (Exception e) {
+            return  ResponseDTO.fail(500, "서버 오류가 발생했습니다.", null);
+        }
     }
 }

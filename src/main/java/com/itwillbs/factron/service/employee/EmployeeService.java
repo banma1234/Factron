@@ -1,5 +1,6 @@
 package com.itwillbs.factron.service.employee;
 
+import com.itwillbs.factron.dto.employee.RequestEmployeeNewDTO;
 import com.itwillbs.factron.dto.employee.RequestEmployeeSrhDTO;
 import com.itwillbs.factron.dto.employee.ResponseEmployeeSrhDTO;
 import com.itwillbs.factron.dto.employee.RequestEmployeeUpdateDTO;
@@ -24,6 +25,14 @@ public interface EmployeeService {
      * @return Void
      */
     Void updateEmployee(RequestEmployeeUpdateDTO reqEmployeeDTO);
+
+    /**
+     * 새로운 사원 추가
+     * @param reqEmployeeNewDTO {@link RequestEmployeeNewDTO}
+     * @return Void
+     */
+    Void addNewEmployee(RequestEmployeeNewDTO reqEmployeeNewDTO);
+
 }
 
 
