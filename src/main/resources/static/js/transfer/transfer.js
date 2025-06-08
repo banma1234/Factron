@@ -56,12 +56,12 @@ const initGrid = () => {
             },
             {
                 header: '전 부서',
-                name: 'prvDeptName',
+                name: 'prevDeptName',
                 align: 'center'
             },
             {
                 header: '현 부서',
-                name: 'curDeptName',
+                name: 'currDeptName',
                 align: 'center'
             },
         ],
@@ -131,8 +131,8 @@ const init = () => {
                     "Content-Type": "application/json"
                 },
             });
-            // return res.json();
-            return { data : [] };
+            return res.json();
+            //return { data : [] };
 
         } catch (e) {
             console.error(e);
