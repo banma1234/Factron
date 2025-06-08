@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 public class RequestEmployeeUpdateDTO {
     private Long empId;
     private String empName;
+    private String birth;
+    private String rrnBack;
     private String residentRegistrationNumber;
     private String email;
     private String gender;
