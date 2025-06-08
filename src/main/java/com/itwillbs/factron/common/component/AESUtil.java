@@ -21,10 +21,8 @@ public class AESUtil {
     @Value("${aes.secret-key}")
     private String secretKey;
 
-    public String encrypt(String plainText) throws Exception {
+    public String encrypt(String plainText){
         try {
-            log.info("secretKey: " + secretKey);
-            log.info("plainText: " + plainText);
             SecretKeySpec key = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), "AES");
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
 
@@ -38,10 +36,8 @@ public class AESUtil {
     }
 
 
-    public String decrypt(String encryptedText) throws Exception {
+    public String decrypt(String encryptedText){
         try {
-            log.info("secretKey: " + secretKey);
-            log.info("encryptedText: " + encryptedText);
             SecretKeySpec key = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), "AES");
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
 
@@ -56,11 +52,5 @@ public class AESUtil {
             // 필요하면 커스텀 런타임 예외 던지기
             throw new RuntimeException("복호화 과정에서 오류가 발생했습니다.");
         }
-
-
     }
-
-
-
-
 }

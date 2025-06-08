@@ -39,18 +39,15 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Override
     public List<ResponseEmployeeSrhDTO> getEmployees(RequestEmployeeSrhDTO requestEmployeeSrhDTO){
-        requestEmployeeSrhDTO.setDept(this.validateCode(requestEmployeeSrhDTO.getDept()));
-        requestEmployeeSrhDTO.setPosition(this.validateCode(requestEmployeeSrhDTO.getPosition()));
-        requestEmployeeSrhDTO.setEmpIsActive(this.validActive(requestEmployeeSrhDTO.getEmpIsActive()));
-        requestEmployeeSrhDTO.setNameOrId(this.safeTrim(requestEmployeeSrhDTO.getNameOrId()));
-//        log.info("EmployeeServiceImpl getEmployee requestEmployeeSrhDTO: " +requestEmployeeSrhDTO);
         return employeeMapper.getEmployeeList(requestEmployeeSrhDTO)
                                     .stream()
                                     .map(dto ->
                                     {
                                         dto.removeTime();
                                         try {
+                                            log.info("before decrypt : " + dto.getRrnBack());
                                             dto.setRrnBack(aesUtil.decrypt(dto.getRrnBack()));
+                                            log.info("after decrypt : " + dto.getRrnBack());
                                         } catch (Exception e) {
                                             throw new RuntimeException(e);
                                         }
@@ -111,29 +108,25 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public Void addNewEmployee(RequestEmployeeNewDTO reqEmployeeNewDTO){
+        // 새 아이디 생성
         Long newId = generateEmployeeId();
+
+        // 주민번호 뒷자리 암호화
         try {
             reqEmployeeNewDTO.setRrnBack(aesUtil.encrypt(reqEmployeeNewDTO.getRrnBack()));
-//            log.info("service " + reqEmployeeNewDTO.getRrnBack());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-//        log.info("EmployeeServiceImpl addNewEmployee newId: " + newId);
+
         Employee employee = reqEmployeeNewDTO.toEntity(newId, 1000L);
-//        log.info("EmployeeServiceImpl addNewEmployee requestEmployeeNewDTO: " +reqEmployeeNewDTO);
-//        log.info("EmployeeServiceImpl addNewEmployee employee: " + employee.toString());
         employeeRepository.save(employee);
-        employeeRepository.flush();
-//        log.info("EmployeeServiceImpl addNewEmployee employeeId: " + employee.getId());
+
         Employee newEmp = employeeRepository.findById(newId).orElseThrow(
                 ()-> new EntityNotFoundException("It does not exist")
         );
-//        log.info("EmployeeServiceImpl addNewEmployee newEmpId: " + newEmp.getId());
 
         IntergratAuth newIntergratAuth = reqEmployeeNewDTO.toIntergratAuth(newEmp);
-//        log.info("EmployeeServiceImpl addNewEmployee newIntergratAuth: " + newIntergratAuth.toString());
         intergratAuthRepository.save(newIntergratAuth);
-        intergratAuthRepository.flush();
         return null;
     }
 

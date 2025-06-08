@@ -8,6 +8,30 @@ function toUpperCase(str) {
     return str.toUpperCase();
 }
 
+const isValidName = (name) => {
+    return (/^[가-힣a-zA-Z\s]+$/.test(name));
+}
+
+const isValidBirthDate = (birth) => {
+    return (/^\d{6}$/.test(birth));
+}
+
+const isValidRrnBack = (rrnBack) => {
+    return (/^\d{7}$/.test(rrnBack));
+}
+
+const isValidEmail = (email) => {
+    return (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
+}
+
+const isValidPhone = (phone) => {
+    return (/^01[016789]\d{7,8}$/.test(phone));
+}
+
+const removeWhitespace = (code) => {
+    return code.replace(/\s+/g, '');
+}
+
 /**
  *
  * @returns {[Element,Element,Element,Element,Element]}
@@ -44,8 +68,6 @@ const setPernAccess = () => {
     const isActive = document.querySelector("select[name='isActive']");
     const employ = document.querySelector("select[name='employ']");
     const eduLevel = document.querySelector("select[name='eduLevel']");
-
-
 }
 
 
@@ -103,6 +125,12 @@ const init = () => {
 
         } else {
             // 수정모드인 경우
+            const [name, birth, rrnBack, email, address, phone] = getNormAccess();
+            if(!isValidName(name.value)) return;
+            if(!isValidBirthDate(birth.value)) return;
+            if(!isValidRrnBack(rrnBack)) return;
+            if(!isValidEmail(email.value)) return;
+            if(!isValidPhone(phone.value)) return;
             confirmModal.show();
         }
     });
@@ -169,7 +197,7 @@ const init = () => {
         //[name, rrn, email, address, phone]
         const data = {}
         inputs.forEach(input => {
-            data[input.name] = input.value;
+            data[input.name] = input.name !== 'phone' ? input.value: formatPhoneNumber(input.value)
         })
 
         try {

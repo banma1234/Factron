@@ -32,7 +32,10 @@ public class EmployeeRestController {
 //        log.info("EmpRestController getEmployees reqEmployeeDTO: "+reqEmployeeDTO);
         try {
             List<ResponseEmployeeSrhDTO> employees = employeeService.getEmployees(reqEmployeeDTO);
-//            log.info("EmpRestController getEmployees employees: " + employees);
+
+            for (ResponseEmployeeSrhDTO dto : employees) {
+                log.info("Controller 확인 - empId: {}, rrnBack: {}", dto.getEmpId(), dto.getRrnBack());
+            }
             return ResponseDTO.success(employees);
         } catch (IllegalArgumentException e) {
             return ResponseDTO.fail(400, e.getMessage(), new ArrayList<>());
@@ -56,7 +59,11 @@ public class EmployeeRestController {
         }
     }
 
-
+    /**
+     * 사원 추가
+     * @param reqEmployeeNewDTO {@link RequestEmployeeNewDTO}
+     * @return ResponseDTO<Void>
+     */
     @PostMapping("")
     public ResponseDTO<Void> addEmployee(@RequestBody RequestEmployeeNewDTO reqEmployeeNewDTO) {
         log.info("EmployeeRestController addEmployee input reqEmployeeNewDTO:" + reqEmployeeNewDTO.toString());

@@ -87,6 +87,10 @@ const toUpperCase = (str) => {
     return str.toUpperCase();
 }
 
+const removeHyphens = (phoneNumber) => {
+    return phoneNumber.replace(/-/g, '');
+}
+
 const init = () => {
     const employeeGrid = initGrid(); // grid 초기 세팅
     getEmployees(); //초기 사원 리스트 호출
@@ -141,7 +145,8 @@ const init = () => {
             }
         }).then(res => res.json())
         .then(res => {
-            if(res.status == 200){
+            if(res.status === 200){
+                console.log(res.data)
                 return employeeGrid.resetData(res.data); // grid에 세팅
             }
             return employeeGrid.resetData([]);
@@ -212,7 +217,7 @@ const init = () => {
                         quitDate: rowData.quitDate,
                         employCode: rowData.employCode,
                         employName: rowData.employName,
-                        phone: rowData.phone
+                        phone: removeHyphens(rowData.phone)
                     }, "*");
                     window.removeEventListener("message", messageHandler);
                 }
