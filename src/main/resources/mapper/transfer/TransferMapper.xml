@@ -10,8 +10,8 @@
         SELECT
             t.id,
             t.transfer_date,
-            t.transfer_type_code AS transTypeCode,
-            s1.name AS transTypeName,
+            t.transfer_type_code AS trsTypeCode,
+            s1.name AS trsTypeName,
             t.position_code AS positionCode,
             p1.name AS positionName,
             t.employee_id AS empId,
@@ -34,7 +34,7 @@
                     AND a.id = #{srhApprovalId}
                 </when>
                 <otherwise>
-                    AND a.approval_status_code = 'APV002'
+                    AND a.approval_status_code = 'APV002' <!-- 미승인 상태 -->
                 </otherwise>
             </choose>
             <if test="srhIdOrName != null and srhIdOrName != ''">

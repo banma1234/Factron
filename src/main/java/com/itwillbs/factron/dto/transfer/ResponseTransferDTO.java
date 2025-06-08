@@ -15,8 +15,8 @@ public class ResponseTransferDTO {
 
     private Long id; // 인사발령 ID
     private LocalDate transferDate; // 인사발령 날짜
-    private String transTypeCode; // 인사발령 유형 코드 (예: 부서 이동, 직급 변경 등)
-    private String transTypeName; // 인사발령 유형 이름
+    private String trsTypeCode; // 인사발령 유형 코드 (예: 부서 이동, 직급 변경 등)
+    private String trsTypeName; // 인사발령 유형 이름
     private String positionCode; // 직급 코드 (승진 시 승진 후 직급 코드, 즉 조회 시점에선 현재 직급 코드)
     private String positionName; // 직급 이름 (승진 시 승진 후 직급 이름, 즉 조회 시점에선 현재 직급 이름)
     private Long empId; // 인사발령 대상 직원 ID

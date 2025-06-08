@@ -85,13 +85,22 @@ public class TransferServiceImpl implements TransferService {
 
         // 인사발령 등록
         transferRepository.save(Transfer.builder()
-                .employee(employee) // 인사발령 대상 사원
-                .transferTypeCode(requestTransferDTO.getTrsTypeCode()) // 인사발령 유형 코드
-                .transferDate(requestTransferDTO.getTransDate()) // 인사발령 날짜
-                .positionCode(requestTransferDTO.getCurrPositionCode()) // 현재 직급 코드
-                .prevDeptCode(requestTransferDTO.getPrevDeptCode()) // 이전 부서 코드
-                .currDeptCode(requestTransferDTO.getCurrDeptCode()) // 현재 부서 코드
-                .approval(approval) // 결재 정보
+                .employee(employee)
+                .transferTypeCode(requestTransferDTO.getTrsTypeCode())
+//                .transferDate(requestTransferDTO.getTransDate())
+                .transferDate(LocalDate.now()) // 인사발령 날짜 (오늘 날짜로 설정), TODO : 추후 결재 승인 시점에 발령 날짜로 저장되게끔 또는 폼에서 발령 날짜 입력 받도록 변경 필요
+                .positionCode(
+                        "TRS002".equals(requestTransferDTO.getTrsTypeCode())
+                                ? employee.getPositionCode()
+                                : requestTransferDTO.getCurrPositionCode()
+                )
+                .prevDeptCode(requestTransferDTO.getPrevDeptCode())
+                .currDeptCode(
+                        "TRS001".equals(requestTransferDTO.getTrsTypeCode())
+                                ? requestTransferDTO.getPrevDeptCode()
+                                : requestTransferDTO.getCurrDeptCode()
+                )
+                .approval(approval)
                 .build());
 
 
