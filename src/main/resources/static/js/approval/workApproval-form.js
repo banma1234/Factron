@@ -14,14 +14,18 @@ const init = () => {
 
         if (!data || data?.source === 'react-devtools-content-script') return;
 
-        const { approvalId, apprTypeCode,approvalStatusCode ,userId, authCode } = data;
+        const { approvalId, apprTypeCode,approvalStatusCode, approverName, approvalStatusName, approverId, rejectionReason, confirmedDate, userId, authCode } = data;
 
         if (approvalId && userId && authCode) {
             console.log("받은 approvalId:", approvalId);
             console.log("받은 apprTypeCode:", apprTypeCode);
             console.log("받은 approvalStatusCode:", approvalStatusCode);
+            console.log("받은 approvalStatusName:", approvalStatusName);
             console.log("받은 userId:", userId);
-            console.log("받은 authCode:", authCode);
+            console.log("받은 approverName:", approverName);
+            console.log("받은 approverId:", approverId);
+            console.log("받은 rejectionReason:", rejectionReason);
+            console.log("받은 confirmedDate:", confirmedDate);
 
             window.receivedData = data; // 전체 데이터 저장
             // UI설정
@@ -74,7 +78,10 @@ const init = () => {
 
     async function fetchWorkByApprovalId(approvalId) {
         try {
-            const params = new URLSearchParams({ srhApprovalId: approvalId }); // 수정된 부분
+            const params = new URLSearchParams({
+                srhApprovalId: approvalId,
+            });
+
             const response = await fetch(`/api/work?${params.toString()}`, {
                 method: "GET",
                 headers: {
@@ -85,7 +92,7 @@ const init = () => {
             const result = await response.json();
             console.log("근무 조회 결과:", result);
 
-            if (result.code === 200 && result.data?.length > 0) {
+            if (result.status === 200 && result.data?.length > 0) {
                 const workData = result.data[0];
                 setWorkFormData(workData);
             } else {
@@ -95,6 +102,8 @@ const init = () => {
             console.error("근무 정보 조회 중 오류:", error);
         }
     }
+
+
 
 
 
@@ -148,23 +157,35 @@ const init = () => {
 
         form.querySelector("input[name='empId']").value = data.empId || '';
         form.querySelector("input[name='empName']").value = data.empName || '';
-        form.querySelector("input[name='dept']").value = data.deptName || '';
-        form.querySelector("input[name='position']").value = data.positionName || '';
+        form.querySelector("input[name='dept']").value = data.deptName || '';  // ✅ HTML은 dept
+        form.querySelector("input[name='position']").value = data.positionName || ''; // ✅ HTML은 position
         form.querySelector("input[name='workName']").value = data.workName || '';
         form.querySelector("input[name='workDate']").value = data.workDate || '';
-        form.querySelector("input[name='workStartTime']").value = data.startTime || '';
-        form.querySelector("input[name='workEndTime']").value = data.endTime || '';
+        form.querySelector("input[name='workStartTime']").value = data.startTime || ''; // ✅ startTime → workStartTime
+        form.querySelector("input[name='workEndTime']").value = data.endTime || '';     // ✅ endTime → workEndTime
     }
+
     function setFormData(data) {
         const form = document.querySelector("form");
 
-        form.querySelector("input[name='approvalId']").value = data.approvalId || '';
-        form.querySelector("input[name='approverId']").value = data.approverId || '';
-        form.querySelector("input[name='approverName']").value = data.approverName || '';
-        form.querySelector("input[name='confirmedDate']").value = data.confirmedDate || '';
-        form.querySelector("input[name='approvalStatus']").value = data.approvalStatus || '';
-        form.querySelector("textarea[name='rejectionReason']").value = data.rejectionReason || '';
+        const setValue = (selector, value) => {
+            const el = form.querySelector(selector);
+            if (el) el.value = value || '';
+            else console.warn(`Element not found: ${selector}`);
+        };
+
+        setValue("input[name='approvalId']", data.approvalId);
+        setValue("input[name='apprTypeCode']", data.apprTypeCode); // 만약 폼에 추가된다면
+        setValue("input[name='approverId']", data.approverId);
+        setValue("input[name='approverName']", data.approverName);
+        setValue("input[name='confirmedDate']", data.confirmedDate);
+        setValue("input[name='approvalStatus']", data.approvalStatusName);
+
+        const textarea = form.querySelector("textarea[name='rejectionReason']");
+        if (textarea) textarea.value = data.rejectionReason || '';
     }
+
+
 
 
     function setUIState(data) {

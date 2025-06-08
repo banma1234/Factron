@@ -15,17 +15,17 @@ const initGrid = () => {
         scrollX: false,
         scrollY: false,
         minBodyHeight: 30,
-        rowHeaders: ['rowNum'],
+        // rowHeaders: ['rowNum'],
         columns: [
             { header: '결재번호', name: 'approvalId', align: 'center' },
             { header: '결재 유형', name: 'apprTypeName', align: 'center' },
-            { header: '결재 코드', name: 'apprTypeCode', hidden:'ture' },
+            { header: '결재 코드', name: 'apprTypeCode', hidden:'true' },
             { header: '이름', name: 'requesterName', align: 'center' },
             { header: '사번', name: 'requesterId', align: 'center' },
             { header: '직급', name: 'positionName', align: 'center' },
             { header: '부서', name: 'deptName', align: 'center' },
             {
-                header: '발행일자', name: 'requested_at', align: 'center',
+                header: '발행일자', name: 'requestedAt', align: 'center',
                 formatter: ({ value }) => {
                     if (!value) return "";
                     const date = new Date(value);
@@ -48,8 +48,11 @@ const initGrid = () => {
             }
             ,
             { header: '상태', name: 'approvalStatusName', align: 'center' },
-            { header: '상태코드', name: 'approvalStatusCode', hidden:'ture' },
-            { header: '승인 권자', name: 'approverName', align: 'center' }
+            { header: '상태코드', name: 'approvalStatusCode', hidden:'true' },
+            { header: '상태이름', name: 'approvalStatusName', hidden:'true' },
+            { header: '승인 권자', name: 'approverName', align: 'center' },
+            { header: '승인 권자 사번', name: 'approverId', hidden:'true' },
+            { header: '반려 사유', name: 'rejectionReason', hidden:'true' }
         ]
     });
 }
@@ -61,7 +64,7 @@ const init = () => {
 
     // 👉 가짜 로그인 사용자 정보 (하드코딩)
     const currentUser = {
-        id: "20250001",
+        id: "1",
         authCode: "ATH002"
     };
     // 검색
@@ -112,11 +115,16 @@ const init = () => {
                 if (event.data === 'ready') {
                     console.log('부모 창: ready 받음, 자식 창에 데이터 전송 시작');
                     popup.postMessage({
-                        approvalId: rowData.approvalId,
-                        apprTypeCode: rowData.apprTypeCode,
-                        approvalStatusCode: rowData.approvalStatusCode,
-                        userId: currentUser.id,
-                        authCode: currentUser.authCode
+                        approvalId: rowData.approvalId,//결재번호
+                        apprTypeCode: rowData.apprTypeCode,//결재코드
+                        approvalStatusCode: rowData.approvalStatusCode,//결재상태코드
+                        approvalStatusName: rowData.approvalStatusName,//결재상태명
+                        approverName: rowData.approverName,//결재자 이름
+                        approverId: rowData.approverId,//결재자 id
+                        rejectionReason: rowData.rejectionReason,//반려 사유
+                        confirmedDate: rowData.confirmedDate,//결재 날짜
+                        userId: currentUser.id,//로그인유저 id
+                        authCode: currentUser.authCode//로그인 유저 권한코드
                     }, "*");
                     window.removeEventListener("message", messageHandler);
                 }
