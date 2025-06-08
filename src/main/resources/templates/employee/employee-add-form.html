@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Form</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+  <h2 class="mb-4">사원 추가</h2>
+  <!-- form -->
+  <form>
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <span class="form-label">이름</span>
+        <input type="text" name="empName" class="form-control" placeholder="이름을 입력하세요">
+      </div>
+      <div class="col-md-6">
+        <span class="form-label">사원번호</span>
+        <input type="number" name="empId" class="form-control" disabled>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <span class="form-label">주민번호</span>
+        <div class="input-group">
+          <input maxlength="6" type="text" name="birth" class="form-control" placeholder="생년월일">
+          <span class="form-label">-</span>
+          <input maxlength="7" type="password" name="rrnBack" class="form-control" placeholder="뒷자리">
+        </div>
+      </div>
+      <div class="col-md-6">
+        <span class="form-label">성별</span>
+        <select name="gender" class="form-select">
+          <option value="">선택하세요</option>
+          <option value="M">남</option>
+          <option value="F">여</option>
+
+        </select>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <span class="form-label">이메일</span>
+        <input type="text" name="email" class="form-control" placeholder="메일 주소를 입력하세요">
+      </div>
+      <div class="col-md-6">
+        <span class="form-label">최종학력</span>
+        <select name="eduLevelCode" class="form-select">
+          <option value="">선택하세요</option>
+          <option value="EDU001">고졸</option>
+        </select>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <span class="form-label">주소</span>
+        <input type="text" name="address" class="form-control" placeholder="주소를 입력하세요">
+      </div>
+      <div class="col-md-6">
+        <span class="form-label">퇴사날짜</span>
+        <input type="date" name="quitDate" class="form-control">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <span class="form-label">직급</span>
+        <select name="positionCode" class="form-select">
+          <option value="">선택하세요</option>
+          <option value="POS001">사원</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <span class="form-label">재직상태</span>
+        <select name="isActive" class="form-select">
+          <option value="">선택하세요</option>
+          <option value="Y">재직</option>
+          <option value="N">퇴사</option>
+        </select>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <span class="form-label">입사일</span>
+        <input type="date" name="joinedDate" class="form-control">
+      </div>
+      <div class="col-md-6">
+        <span class="form-label">고용유형</span>
+        <select name="employCode" class="form-select">
+          <option value="">선택하세요</option>
+          <option value="EMP001">정규직</option>
+        </select>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <span class="form-label">전화번호</span>
+        <input type="text" name="phone" class="form-control" placeholder="전화번호를 입력하세요">
+      </div>
+      <div class="col-md-6">
+        <span class="form-label">부서</span>
+        <select name="deptCode" class="form-select">
+          <option value="">선택하세요</option>
+          <option value="DPT001"  >인사</option>
+        </select>
+      </div>
+    </div>
+    <div class="d-flex justify-content-end mt-4 gap-2">
+      <button type="button" class="btn btn-primary confirmAddBtn">추가</button>
+      <button type="button" class="btn btn-secondary">취소</button>
+    </div>
+  </form>
+
+  <!-- confirm modal -->
+  <div class="modal fade confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+          정말로 추가하시겠습니까?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary confirmModalBtn">확인</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- alert modal -->
+  <div class="modal fade alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+          저장이 완료되었습니다!
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary alertBtn">확인</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script th:src="@{//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/employee/employee-add-form.js}"></script>
+
+</body>
+</html>
+
