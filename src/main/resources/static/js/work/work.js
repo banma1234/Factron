@@ -27,7 +27,7 @@ const initGrid = () => {
         el: document.getElementById('workGrid'),
         scrollX: false,
         scrollY: true,
-        bodyHeight: 480,
+        bodyHeight: 400,
         columns: [
             {
                 header: '사원번호',
@@ -40,17 +40,9 @@ const initGrid = () => {
                 align: 'center'
             },
             {
-                name: 'deptCode',
-                hidden: true
-            },
-            {
                 header: '부서',
                 name: 'deptName',
                 align: 'center'
-            },
-            {
-                name: 'positionCode',
-                hidden: true
             },
             {
                 header: '직급',
@@ -73,10 +65,6 @@ const initGrid = () => {
                 align: 'center'
             },
             {
-                name: 'workCode',
-                hidden: true
-            },
-            {
                 header: '근무 유형',
                 name: 'workName',
                 align: 'center'
@@ -87,7 +75,6 @@ const initGrid = () => {
 
 const init = () => {
     const workGrid = initGrid();
-    let workCodeList = [];
 
     // 검색 초기 세팅
     const today = new Date();
@@ -172,15 +159,25 @@ const init = () => {
         const messageHandler = (event) => {
             if (event.data === 'ready') {
                 popup.postMessage({
-                    empId: '2', // 하드코딩
+                    empId: '1', // 하드코딩
                     empName: '홍길동',
-                    workCodeList: workCodeList
                 }, "*");
                 window.removeEventListener("message", messageHandler);
             }
         };
         window.addEventListener("message", messageHandler);
     });
+
+    // 공통코드 목록 조회
+    window.getSysCodeList = async function (mainCode) {
+        const res = await fetch(`/api/sys/detail?mainCode=${mainCode}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return res.json();
+    }
 
     // 부서 세팅
     getSysCodeList("DEP").then(res => {
@@ -242,8 +239,6 @@ const init = () => {
             }
         ];
 
-        workCodeList = data.filter(work=> work.detailCode !== "WRK001"); // 팝업 전달 데이터 (일반근무 제외)
-
         // for(const work of res.data) {
         for(const work of data) {
             const optionElement = document.createElement("option");
@@ -255,17 +250,6 @@ const init = () => {
     }).catch(e => {
         console.error(e);
     });
-
-    // 공통코드 목록 조회
-    async function getSysCodeList(mainCode) {
-        const res = await fetch(`/api/sys/detail?mainCode=${mainCode}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        return res.json();
-    }
 
     // 페이지 진입 시 바로 리스트 호출
     getData().then(res => {
