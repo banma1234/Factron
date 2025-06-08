@@ -15,13 +15,6 @@ const init = () => {
         // 초기 값 세팅
         form.querySelector("input[name='empId']").value = data.empId || "";
         form.querySelector("input[name='empName']").value = data.empName || "";
-        const selectElement = document.querySelector("select[name='workCode']");
-        for(const work of data.workCodeList) {
-            const optionElement = document.createElement("option");
-            optionElement.value = work.detailCode;  // 코드
-            optionElement.textContent = work.name;  // 이름
-            selectElement.appendChild(optionElement);
-        }
     });
 
     // 저장 버튼
@@ -112,6 +105,46 @@ const init = () => {
         } catch (e) {
             console.error(e);
         }
+    }
+
+    if (window.opener && !window.opener.closed) {
+        // 근무유형 세팅
+        window.opener.getSysCodeList("WRK").then(res => {
+            const selectElement = document.querySelector("select[name='workCode']");
+
+            // 하드코딩
+            const data = [
+                {
+                    "detailCode": "WRK001",
+                    "name": "일반근무"
+                },
+                {
+                    "detailCode": "WRK002",
+                    "name": "외근"
+                },
+                {
+                    "detailCode": "WRK003",
+                    "name": "야근"
+                },
+                {
+                    "detailCode": "WRK004",
+                    "name": "특근"
+                }
+            ];
+
+            // for(const work of res.data) {
+            for (const work of data) {
+                if (work.detailCode !== 'WRK001') { // 일반근무 제외
+                    const optionElement = document.createElement("option");
+                    optionElement.value = work.detailCode;  // 코드
+                    optionElement.textContent = work.name;  // 이름
+
+                    selectElement.appendChild(optionElement);
+                }
+            }
+        }).catch(e => {
+            console.error(e);
+        });
     }
 };
 
