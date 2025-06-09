@@ -87,8 +87,6 @@ public class TransferServiceImpl implements TransferService {
         transferRepository.save(Transfer.builder()
                 .employee(employee)
                 .transferTypeCode(requestTransferDTO.getTrsTypeCode())
-//                .transferDate(requestTransferDTO.getTransDate())
-                .transferDate(LocalDate.now()) // 인사발령 날짜 (오늘 날짜로 설정), TODO : 추후 결재 승인 시점에 발령 날짜로 저장되게끔 또는 폼에서 발령 날짜 입력 받도록 변경 필요
                 .positionCode(
                         "TRS002".equals(requestTransferDTO.getTrsTypeCode())
                                 ? employee.getPositionCode()
