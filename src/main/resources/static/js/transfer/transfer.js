@@ -24,11 +24,21 @@ const initGrid = () => {
 
     // 세팅
     return new Grid({
-        el: document.getElementById('workGrid'),
+        el: document.getElementById('transferGrid'),
         scrollX: false,
         scrollY: true,
         bodyHeight: 400,
         columns: [
+            {
+                header: '발령구분',
+                name: 'trsTypeName',
+                align: 'center'
+            },
+            {
+                header: '발령일자',
+                name: 'transferDate',
+                align: 'center'
+            },
             {
                 header: '사원번호',
                 name: 'empId',
@@ -40,33 +50,18 @@ const initGrid = () => {
                 align: 'center'
             },
             {
-                header: '부서',
-                name: 'deptName',
-                align: 'center'
-            },
-            {
                 header: '직급',
                 name: 'positionName',
                 align: 'center'
             },
             {
-                header: '근무 일자',
-                name: 'workDate',
+                header: '전 부서',
+                name: 'prevDeptName',
                 align: 'center'
             },
             {
-                header: '시작시간',
-                name: 'startTime',
-                align: 'center'
-            },
-            {
-                header: '종료시간',
-                name: 'endTime',
-                align: 'center'
-            },
-            {
-                header: '근무 유형',
-                name: 'workName',
+                header: '현 부서',
+                name: 'currDeptName',
                 align: 'center'
             },
         ],
@@ -74,14 +69,7 @@ const initGrid = () => {
 }
 
 const init = () => {
-    const workGrid = initGrid();
-
-    // 검색 초기 세팅
-    const today = new Date();
-    today.setHours(today.getHours() + 9); // 한국 시간대
-    const todayStr = today.toISOString().split('T')[0];
-    document.querySelector("input[name='srhStrDate']").value = todayStr;
-    document.querySelector("input[name='srhEndDate']").value = todayStr;
+    const transferGrid = initGrid();
 
     // 검색
     document.querySelector(".srhBtn").addEventListener("click", function(e) {
@@ -90,7 +78,7 @@ const init = () => {
 
         // 조회
         getData().then(res => {
-            workGrid.resetData(res.data); // grid에 세팅
+            transferGrid.resetData(res.data); // grid에 세팅
         });
     }, false);
 
@@ -100,7 +88,7 @@ const init = () => {
 
         // 조회
         getData().then(res => {
-            workGrid.resetData(res.data);
+            transferGrid.resetData(res.data);
         });
     });
 
@@ -133,34 +121,33 @@ const init = () => {
             srhIdOrName: document.querySelector("input[name='srhIdOrName']").value,
             srhStrDate: startDate,
             srhEndDate: endDate,
-            srhDeptCode: document.querySelector("select[name='srhDeptCode']").value,
-            srhWorkCode: document.querySelector("select[name='srhWorkCode']").value,
+            srhTrsTypeCode: document.querySelector("select[name='srhTrsTypeCode']").value,
         });
 
         try {
-            const res = await fetch(`/api/work?${data.toString()}`, {
+            const res = await fetch(`/api/trans?${data.toString()}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json"
                 },
             });
             return res.json();
+            //return { data : [] };
 
         } catch (e) {
             console.error(e);
         }
     }
 
-    // 근무 등록 팝업 오픈
-    document.querySelector(".registWork").addEventListener("click", function(e) {
-        const popup = window.open('/work/save', '_blank', 'width=800,height=450');
+    // 발령 팝업 오픈
+    document.querySelector(".registTrans").addEventListener("click", function(e) {
+        const popup = window.open('/trans/save', '_blank', 'width=800,height=750');
 
         // 자식 창으로부터 'ready' 먼저 수신 후 postMessage 실행
         const messageHandler = (event) => {
             if (event.data === 'ready') {
                 popup.postMessage({
                     empId: '1', // 하드코딩
-                    empName: '홍길동',
                 }, "*");
                 window.removeEventListener("message", messageHandler);
             }
@@ -179,71 +166,27 @@ const init = () => {
         return res.json();
     }
 
-    // 부서 세팅
-    getSysCodeList("DEP").then(res => {
-        const selectElement = document.querySelector("select[name='srhDeptCode']");
+    // 발령구분 세팅
+    getSysCodeList("TRS").then(res => {
+        const selectElement = document.querySelector("select[name='srhTrsTypeCode']");
 
         // 하드코딩
         const data = [
             {
-                "detailCode": "DEP001",
-                "name": "인사부"
+                "detailCode": "TRS001",
+                "name": "승진"
             },
             {
-                "detailCode": "DEP002",
-                "name": "개발부"
+                "detailCode": "TRS002",
+                "name": "전보"
             },
-            {
-                "detailCode": "DEP003",
-                "name": "영업부"
-            },
-            {
-                "detailCode": "DEP004",
-                "name": "생산부"
-            }
         ];
 
-        // for(const dept of res.data) {
-        for(const dept of data) {
+        // for(const trsType of res.data) {
+        for(const trsType of data) {
             const optionElement = document.createElement("option");
-            optionElement.value = dept.detailCode;  // 코드
-            optionElement.textContent = dept.name;  // 이름
-
-            selectElement.appendChild(optionElement);
-        }
-    }).catch(e => {
-        console.error(e);
-    });
-
-    // 근무유형 세팅
-    getSysCodeList("WRK").then(res => {
-        const selectElement = document.querySelector("select[name='srhWorkCode']");
-
-        // 하드코딩
-        const data = [
-            {
-                "detailCode": "WRK001",
-                "name": "일반근무"
-            },
-            {
-                "detailCode": "WRK002",
-                "name": "외근"
-            },
-            {
-                "detailCode": "WRK003",
-                "name": "야근"
-            },
-            {
-                "detailCode": "WRK004",
-                "name": "특근"
-            }
-        ];
-
-        // for(const work of res.data) {
-        for(const work of data) {
-            const optionElement = document.createElement("option");
-            optionElement.value = work.detailCode;  // 코드
-            optionElement.textContent = work.name;  // 이름
+            optionElement.value = trsType.detailCode;  // 코드
+            optionElement.textContent = trsType.name;  // 이름
 
             selectElement.appendChild(optionElement);
         }
@@ -253,7 +196,7 @@ const init = () => {
 
     // 페이지 진입 시 바로 리스트 호출
     getData().then(res => {
-        workGrid.resetData(res.data); // grid에 세팅
+        transferGrid.resetData(res.data); // grid에 세팅
     });
 }
 

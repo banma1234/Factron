@@ -9,5 +9,13 @@ import java.util.List;
 @Mapper
 public interface WorkMapper {
 
+    /*
+     * 근무 목록 조회
+     * */
     List<ResponseWorkDTO> getWorkList(RequestWorkDTO requestWorkDTO);
+
+    /*
+     * 중복 근무 체크
+     * */
+    List<ResponseWorkDTO> chkDuplicateWork(RequestWorkDTO requestWorkDTO);
 }
