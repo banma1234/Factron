@@ -31,4 +31,9 @@ public class IntergratAuth {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false)
     private Employee employee;
+
+    public void updateAuthCode(String newAuthCode) {
+        this.authCode = newAuthCode;
+    }
+
 }

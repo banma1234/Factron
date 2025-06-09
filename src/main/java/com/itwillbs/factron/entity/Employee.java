@@ -61,4 +61,12 @@ public class Employee extends BaseEntity {
     @Column(name = "edu_level_code", length = 6, nullable = false)
     private String eduLevelCode;
 
+    public void updatePositionCode(String newPositionCode) {
+        this.positionCode = newPositionCode;
+    }
+
+    public void updateDeptCode(String newDeptCode) {
+        this.deptCode = newDeptCode;
+    }
+
 }

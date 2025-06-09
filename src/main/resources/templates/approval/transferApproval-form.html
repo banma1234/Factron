@@ -19,56 +19,58 @@
             </div>
         </div>
 
+        <!-- 발령자 정보: 사번, 이름, 직급 -->
         <div class="row mb-3">
-            <div class="col-md-6">
-                <span class="form-label">신청자 사원 번호</span>
+            <div class="col-md-4">
+                <span class="form-label">발령자 사원 번호</span>
                 <input type="text" name="empId" class="form-control" disabled>
             </div>
-            <div class="col-md-6">
-                <span class="form-label">신청자 성명</span>
+            <div class="col-md-4">
+                <span class="form-label">발령자 성명</span>
                 <input type="text" name="empName" class="form-control" disabled>
             </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <span class="form-label">부서</span>
-                <input type="text" name="dept" class="form-control" disabled>
-            </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <span class="form-label">직급</span>
-                <input type="text" name="position" class="form-control" disabled>
-            </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <span class="form-label">발령 부서</span>
-                <input type="text" name="currDept" class="form-control" disabled>
-            </div>
-            <div class="col-md-6">
-                <span class="form-label">발령 직급</span>
                 <input type="text" name="currPosition" class="form-control" disabled>
             </div>
         </div>
+
+        <!-- 부서, 발령 부서 -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <span class="form-label">이전 부서</span>
+                <input type="text" name="currDept" class="form-control" disabled>
+            </div>
+            <div class="col-md-6">
+                <span class="form-label">발령 부서</span>
+                <input type="text" name="dept" class="form-control" disabled>
+            </div>
+        </div>
+
+        <!-- 발령 구분, 발행 일자 -->
         <div class="row mb-3">
             <div class="col-md-6">
                 <span class="form-label">발령 구분</span>
                 <input type="text" name="transType" class="form-control" disabled>
             </div>
             <div class="col-md-6">
-                <span class="form-label">발행자 사번</span>
-                <input type="text" name="publisherId" class="form-control" disabled>
-            </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <span class="form-label">발행자 이름</span>
-                <input type="text" name="publisherName" class="form-control" disabled>
-            </div>
-            <div class="col-md-6">
                 <span class="form-label">발행 일자</span>
                 <input type="text" name="date" class="form-control" disabled>
             </div>
         </div>
+
+        <!-- 발행자 사번, 발행자 이름 -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <span class="form-label">발행자 사번</span>
+                <input type="text" name="publisherId" class="form-control" disabled>
+            </div>
+            <div class="col-md-6">
+                <span class="form-label">발행자 이름</span>
+                <input type="text" name="publisherName" class="form-control" disabled>
+            </div>
+        </div>
+
         <div class="approval-result-section">
             <div class="row mb-3">
                 <div class="col-md-6">

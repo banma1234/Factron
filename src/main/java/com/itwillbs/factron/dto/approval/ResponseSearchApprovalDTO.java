@@ -23,4 +23,8 @@ public class ResponseSearchApprovalDTO {
     private String approverName;//결재자 이름
     private Long approverId;//결재자 사번
     private String rejectionReason;//반려사유
+
+    private Long transferEmpId;     // 발령자 사번 (TRANSFER.EMPLOYEE_ID)
+    private String transferEmpName; // 발령자 이름 (EMPLOYEE.NAME)
+
 }

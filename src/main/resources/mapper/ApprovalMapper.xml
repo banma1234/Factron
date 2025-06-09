@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.itwillbs.factron.mapper.approval.ApprovalMapper">
-<!--결재 조회-->
+
     <select id="getApprovalList" parameterType="com.itwillbs.factron.dto.approval.RequestSearchApprovalDTO" resultType="com.itwillbs.factron.dto.approval.ResponseSearchApprovalDTO">
         SELECT
         APP.ID AS approvalId,
@@ -22,20 +22,28 @@
         STATUS_CODE.NAME AS approvalStatusName,
         APRV_EMP.NAME AS approverName,
         APP.APPROVER_ID AS approverId,
-        APP.REJECT_REASON AS rejectionReason
+        APP.REJECT_REASON AS rejectionReason,
+        TRANS.EMPLOYEE_ID AS transferEmpId,
+        TRANS_EMP.NAME AS transferEmpName
+
         FROM APPROVAL APP
+
         LEFT JOIN EMPLOYEE REQ_EMP ON REQ_EMP.ID = APP.REQUESTER_ID
         LEFT JOIN EMPLOYEE APRV_EMP ON APRV_EMP.ID = APP.APPROVER_ID
         LEFT JOIN DETAIL_SYS_CODE STATUS_CODE ON APP.APPROVAL_STATUS_CODE = STATUS_CODE.DETAIL_CODE
         LEFT JOIN DETAIL_SYS_CODE TYPE_CODE ON APP.APPROVAL_TYPE_CODE = TYPE_CODE.DETAIL_CODE
         LEFT JOIN DETAIL_SYS_CODE POS_CODE ON REQ_EMP.POSITION_CODE = POS_CODE.DETAIL_CODE
         LEFT JOIN DETAIL_SYS_CODE DEPT_CODE ON REQ_EMP.DEPT_CODE = DEPT_CODE.DETAIL_CODE
+
+        LEFT JOIN TRANSFER TRANS ON TRANS.APPROVAL_ID = APP.ID
+        LEFT JOIN EMPLOYEE TRANS_EMP ON TRANS.EMPLOYEE_ID = TRANS_EMP.ID
+
         <where>
             <if test="startDate != null and startDate != ''">
-                AND APP.REQUESTED_AT &gt;= #{startDate}
+                AND APP.REQUESTED_AT &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
             </if>
             <if test="endDate != null and endDate != ''">
-                AND APP.REQUESTED_AT &lt;= #{endDate}
+                AND APP.REQUESTED_AT &lt;= TO_DATE(#{endDate}, 'YYYY-MM-DD')
             </if>
             <if test="apprType != null and apprType != ''">
                 AND APP.APPROVAL_TYPE_CODE = #{apprType}
@@ -46,16 +54,30 @@
             <if test="position != null and position != ''">
                 AND REQ_EMP.POSITION_CODE = #{position}
             </if>
+
+            <!-- ✅ 이름 또는 사번 검색 -->
             <if test="approvalNameOrEmpId != null and approvalNameOrEmpId != ''">
                 AND (
-                REQ_EMP.NAME LIKE CONCAT(CONCAT('%', #{approvalNameOrEmpId}), '%')
-                OR TO_CHAR(REQ_EMP.ID) LIKE CONCAT(CONCAT('%', #{approvalNameOrEmpId}), '%')
+                REQ_EMP.NAME LIKE '%' || #{approvalNameOrEmpId} || '%'
+                OR (
+                REGEXP_LIKE(#{approvalNameOrEmpId}, '^[0-9]+')
+                AND TO_CHAR(REQ_EMP.ID) LIKE '%' || #{approvalNameOrEmpId} || '%'
+                )
+                OR (
+                APP.APPROVAL_TYPE_CODE = 'APR003'
+                AND (
+                TRANS_EMP.NAME LIKE '%' || #{approvalNameOrEmpId} || '%'
+                OR (
+                REGEXP_LIKE(#{approvalNameOrEmpId}, '^[0-9]+')
+                AND TO_CHAR(TRANS_EMP.ID) LIKE '%' || #{approvalNameOrEmpId} || '%'
+                )
+                )
+                )
                 )
             </if>
         </where>
 
         ORDER BY APP.ID DESC
     </select>
-
 
 </mapper>

@@ -6,6 +6,7 @@
 <head>
     <title>test page</title>
     <th:block layout:fragment="style">
+        <link rel="stylesheet" th:href="@{/css/approval/approval.css}" />
         <!--        <link rel="stylesheet" th:href="@{/css/test.css}" />-->
     </th:block>
 </head>
@@ -51,6 +52,11 @@
         </form>
 <!--         전자결재 그리드 -->
         <article>
+            <div class="filter-tab-container">
+                <button type="button" class="filter-tab active" data-status="ALL">전체결재</button>
+                <button type="button" class="filter-tab" data-status="APV001">결재대기</button>
+                <button type="button" class="filter-tab" data-status="APPROVED">결재승인</button>
+            </div>
             <div id="approvalGrid">
 
             </div>
