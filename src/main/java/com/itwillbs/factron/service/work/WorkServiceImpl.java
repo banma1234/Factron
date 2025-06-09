@@ -45,6 +45,11 @@ public class WorkServiceImpl implements WorkService {
         Employee employee = empRepository.findById(requestWorkDTO.getEmpId())
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사원입니다."));
 
+        // 중복된 근무 신청 기각
+        if (!workMapper.chkDuplicateWork(requestWorkDTO).isEmpty()) {
+            throw new IllegalArgumentException("해당 일시에 이미 등록된 근무가 있습니다.");
+        }
+
         // 결재 먼저 등록
         Approval approval = appRepository.save(Approval.builder()
                 .requester(employee)
