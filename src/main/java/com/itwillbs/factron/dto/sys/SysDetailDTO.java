@@ -32,17 +32,4 @@ public class SysDetailDTO {
         this.created_at = created_at;
     }
 
-    // Entity → DTO
-    public static SysDetailDTO fromEntity(DetailSysCode entity) {
-        return SysDetailDTO.builder()
-                .id(entity.getId())
-                .sys_code_id(entity.getSysCode().getId())
-                .main_code(entity.getMainCode())
-                .detail_code(entity.getDetailCode())
-                .name(entity.getName())
-                .is_active(entity.getIsActive())
-                .created_by(entity.getCreatedBy())
-                .created_at(entity.getCreatedAt())
-                .build();
-    }
 }
