@@ -17,6 +17,7 @@ const isValidBirthDate = (birth) => {
 }
 
 const isValidRrnBack = (rrnBack) => {
+    console.log("rrnBack", rrnBack);
     return (/^\d{7}$/.test(rrnBack));
 }
 
@@ -30,6 +31,13 @@ const isValidPhone = (phone) => {
 
 const removeWhitespace = (code) => {
     return code.replace(/\s+/g, '');
+}
+
+const formatPhoneNumber = (phone) => {
+    phone = phone.replace(/\D/g, ""); // 숫자 외 제거
+    if (phone.length < 4) return phone;
+    if (phone.length < 8) return phone.replace(/(\d{3})(\d+)/, "$1-$2");
+    return phone.replace(/(\d{3})(\d{3,4})(\d{4})/, "$1-$2-$3");
 }
 
 /**
@@ -126,11 +134,11 @@ const init = () => {
         } else {
             // 수정모드인 경우
             const [name, birth, rrnBack, email, address, phone] = getNormAccess();
-            if(!isValidName(name.value)) return;
-            if(!isValidBirthDate(birth.value)) return;
-            if(!isValidRrnBack(rrnBack)) return;
-            if(!isValidEmail(email.value)) return;
-            if(!isValidPhone(phone.value)) return;
+            if(!isValidName(name.value)) return console.log("name");
+            if(!isValidBirthDate(birth.value)) return console.log("birth");
+            if(!isValidRrnBack(rrnBack.value)) return console.log("rrnBack");
+            if(!isValidEmail(email.value)) return console.log("email");
+            if(!isValidPhone(phone.value)) return console.log("phone");
             confirmModal.show();
         }
     });

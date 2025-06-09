@@ -32,10 +32,6 @@ public class EmployeeRestController {
 //        log.info("EmpRestController getEmployees reqEmployeeDTO: "+reqEmployeeDTO);
         try {
             List<ResponseEmployeeSrhDTO> employees = employeeService.getEmployees(reqEmployeeDTO);
-
-            for (ResponseEmployeeSrhDTO dto : employees) {
-                log.info("Controller 확인 - empId: {}, rrnBack: {}", dto.getEmpId(), dto.getRrnBack());
-            }
             return ResponseDTO.success(employees);
         } catch (IllegalArgumentException e) {
             return ResponseDTO.fail(400, e.getMessage(), new ArrayList<>());

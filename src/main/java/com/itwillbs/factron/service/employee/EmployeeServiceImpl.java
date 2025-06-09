@@ -45,9 +45,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                                     {
                                         dto.removeTime();
                                         try {
-                                            log.info("before decrypt : " + dto.getRrnBack());
                                             dto.setRrnBack(aesUtil.decrypt(dto.getRrnBack()));
-                                            log.info("after decrypt : " + dto.getRrnBack());
                                         } catch (Exception e) {
                                             throw new RuntimeException(e);
                                         }
@@ -76,7 +74,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }else{
             try {
                 reqEmployeeDTO.setRrnBack(
-                        aesUtil.encrypt(emp.getRrnBack())
+                        aesUtil.encrypt(reqEmployeeDTO.getRrnBack())
                 );
             } catch (Exception e) {
                 throw new RuntimeException(e);
