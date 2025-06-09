@@ -48,10 +48,10 @@ public class Employee extends BaseEntity {
     @Column(name = "quit_date")
     private LocalDate quitDate;
 
-    @Column(name = "email", length = 100, nullable = false)
+    @Column(name = "email", length = 100, nullable = false, unique = true)
     private String email;
 
-    @Column(name = "phone", length = 100, nullable = false)
+    @Column(name = "phone", length = 100, nullable = false, unique = true)
     private String phone;
 
     @Column(name = "birth", length = 100, nullable = false)
