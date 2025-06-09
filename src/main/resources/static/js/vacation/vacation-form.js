@@ -5,8 +5,12 @@ const init = () => {
     const confirmBtn = document.querySelector(".vacationConfirmBtn");
     const alertModal = new bootstrap.Modal(document.querySelector(".vacationAlertModal"));
     const alertBtn = document.querySelector(".vacationAlertBtn");
+    const today = new Date().toISOString().split("T")[0];
 
     let data = {};
+
+    form.querySelector("input[name='vacationStartDate']").setAttribute("min", today);
+    form.querySelector("input[name='vacationEndDate']").setAttribute("min", today);
 
     // 저장 버튼
     saveBtn.addEventListener("click", () => {
@@ -73,7 +77,6 @@ const init = () => {
                 body: JSON.stringify(data),
             });
             return res.json();
-
         } catch (e) {
             console.error(e);
             return { status: 'fail', message: '요청 중 오류 발생' };

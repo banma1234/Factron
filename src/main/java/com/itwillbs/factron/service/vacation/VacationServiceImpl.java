@@ -8,7 +8,7 @@ import com.itwillbs.factron.entity.Employee;
 import com.itwillbs.factron.entity.VacationHistory;
 import com.itwillbs.factron.mapper.vacation.VacationMapper;
 
-import com.itwillbs.factron.repository.approval.ApprovalRespository;
+import com.itwillbs.factron.repository.approval.ApprovalRepository;
 import com.itwillbs.factron.repository.employee.EmployeeRepository;
 import com.itwillbs.factron.repository.vacation.VacationRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,17 +26,12 @@ public class VacationServiceImpl implements VacationService {
     private final VacationRepository vacationRepository;
     private final VacationMapper vacationMapper; 
     private final EmployeeRepository employeeRepository;
-    private final ApprovalRespository approvalRepository;
+    private final ApprovalRepository approvalRepository;
 
 
     @Override
     public List<VacationResponseDTO> getMyVacations(Long empId, LocalDate startDate, LocalDate endDate) {
-        log.info("서비스에서 데이터 확인 시작날짜={}. 끝날짜{}",startDate,endDate);
-
-
-        List<VacationResponseDTO> dtolist = vacationMapper.findMyVacations(empId, startDate.toString(), endDate.toString());
-        log.info("dtolist >>>> {}",dtolist);
-        return dtolist;
+        return vacationMapper.findMyVacations(empId, startDate.toString(), endDate.toString());
     }
 
     @Override
