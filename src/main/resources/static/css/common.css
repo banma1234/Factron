@@ -69,19 +69,15 @@
     margin-left: 20px;
 }
 
-.submenu {
-    display: none;
-    padding-left: 2rem;
-}
-
 .nav-item.open > .submenu {
     display: block;
 }
+
 .menu-item {
     display: flex;
     flex-direction: row;
     padding: 5px 0;
-    gap: 20px;
+    gap: 10px;
 }
 
 .nav-link {
@@ -104,7 +100,7 @@
 
 .submenu {
     display: none;
-    padding: 0;
+    padding: 0 !important;
 }
 
 .nav-item.open > .submenu {
@@ -112,7 +108,7 @@
 }
 
 .submenu .nav-link {
-    padding-left: 3rem;
+    padding-left: 3.5rem;
 }
 
 .overlay {
