@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -21,23 +22,33 @@ public class SysDetailServiceImpl implements SysDetailService {
     private final DetailSysCodeRepository detailSysCodeRepository;
     private final SysCodeRepository sysCodeRepository;
 
-    // Main.id = Detail.sys_code_id 인 데이터 모두 조회
+    /**
+     * 상세공통코드 목록호출
+     * @param id 상세공통코드 ID
+     * @return responseDetailDTO 반환 DTO
+     * */
     @Override
     public List<ResponseSysDetailDTO> getAllDetailByMainCode(Long id) {
 
         List<DetailSysCode> details = detailSysCodeRepository
-                .findBySysCode_Id(id);
+                .findBySysCode_Id(id)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 상세코드입니다."));
 
         return toDetailDTOList(details);
     }
 
-    // 추가하려는 DetailCode의 부모인 MainCode 조회 후 해당 엔티티 객체를 전달, DetailCode 저장 수행
+    /**
+    * 상세공통코드 저장
+    * @param requestSysDetailDTO 요청 DTO
+    * @return Void
+    * */
     @Transactional
     @Override
     public Void saveSysDetail(@Valid RequestSysDetailDTO requestSysDetailDTO) {
 
         String mainCode = requestSysDetailDTO.getMain_code();
-        List<SysCode> parentSysCode = sysCodeRepository.findByMainCode(mainCode);
+        List<SysCode> parentSysCode = sysCodeRepository.findByMainCode(mainCode)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 상세코드입니다."));
 
         // mainCode는 unique이고 해당하는 컬럼은 하나밖에 없기 때문에 이렇게 꺼냈다.
         DetailSysCode detailSysCode = toDetailEntity(requestSysDetailDTO, parentSysCode.getFirst());
@@ -47,7 +58,29 @@ public class SysDetailServiceImpl implements SysDetailService {
         return null;
     }
 
-    // Entity List -> DTO 변환
+    /**
+    * 상세공통코드 수정
+    * @param requestSysDetailDTO 요청 DTO
+    * @return Void
+    * */
+    @Transactional
+    @Override
+    public Void updateSysDetail(@Valid RequestSysDetailDTO requestSysDetailDTO) {
+
+        DetailSysCode detailSysCode = detailSysCodeRepository
+                .findByDetailCode(requestSysDetailDTO.getDetail_code())
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 상세코드입니다.."));
+
+        detailSysCode.updateSysCode(requestSysDetailDTO);
+
+        return null;
+    }
+
+    /**
+    * Entity List -> DTO 변환
+    * @param details 엔티티
+    * @return responseDetailDTO 반환 DTO
+    * */
     private List<ResponseSysDetailDTO> toDetailDTOList(List<DetailSysCode> details) {
 
         return details.stream()
@@ -59,5 +92,4 @@ public class SysDetailServiceImpl implements SysDetailService {
 
         return RequestSysDetailDTO.toEntity(DTO, sysCode);
     }
-
 }

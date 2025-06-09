@@ -11,4 +11,6 @@ public interface SysDetailService {
     List<ResponseSysDetailDTO> getAllDetailByMainCode(Long id);
 
     Void saveSysDetail(@Valid RequestSysDetailDTO requestSysDetailDTO);
+
+    Void updateSysDetail(@Valid RequestSysDetailDTO requestSysDetailDTO);
 }

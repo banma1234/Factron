@@ -50,4 +50,18 @@ public class SysDetailRestController {
         }
     }
 
+    @PutMapping("")
+    public ResponseDTO<Void> updateSysDetail(@Valid @RequestBody RequestSysDetailDTO requestSysDetailDTO) {
+
+        try {
+            return ResponseDTO.success(sysDetailService.updateSysDetail(requestSysDetailDTO));
+        } catch (Exception e) {
+            return ResponseDTO.fail(
+                    800,
+                    "잘못된 입력입니다.",
+                    sysDetailService.updateSysDetail(requestSysDetailDTO)
+            );
+        }
+    }
+
 }

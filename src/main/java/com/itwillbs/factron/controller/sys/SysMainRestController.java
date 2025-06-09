@@ -41,9 +41,11 @@ public class SysMainRestController {
 
     @PostMapping("")
     public ResponseDTO<Void> saveSysMain(@Valid @RequestBody RequestSysMainDTO requestSysMainDTO) {
+
         try {
             return ResponseDTO.success(sysMainService.saveSysMain(requestSysMainDTO));
         } catch (Exception e) {
+
             return ResponseDTO.fail(
                     800,
                     "잘못된 입력입니다.",
@@ -52,5 +54,18 @@ public class SysMainRestController {
         }
     }
 
+    @PutMapping("")
+    public ResponseDTO<Void> updateSysMain(@Valid @RequestBody RequestSysMainDTO requestSysMainDTO) {
 
+        try {
+            return ResponseDTO.success(sysMainService.updateSysMain(requestSysMainDTO));
+        } catch (Exception e) {
+
+            return ResponseDTO.fail(
+                    800,
+                    "잘못된 입력입니다.",
+                    sysMainService.updateSysMain(requestSysMainDTO)
+            );
+        }
+    }
 }

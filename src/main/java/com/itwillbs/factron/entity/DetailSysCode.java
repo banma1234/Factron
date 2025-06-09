@@ -1,6 +1,8 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.dto.sys.RequestSysDetailDTO;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,4 +35,10 @@ public class DetailSysCode extends BaseEntity{
 
     @Column(name = "is_active", length = 1, nullable = false)
     private String isActive;
+
+    public void updateSysCode(@Valid RequestSysDetailDTO dto) {
+        this.mainCode = dto.getMain_code();
+        this.name = dto.getName();
+        this.isActive = dto.getIs_active();
+    }
 }
