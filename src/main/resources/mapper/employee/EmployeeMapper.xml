@@ -48,7 +48,7 @@
             </if>
 
         </where>
-        ORDER BY e.id DESC
+        ORDER BY i.is_active DESC, e.id DESC
     </select>
 
 </mapper>

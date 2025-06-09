@@ -70,7 +70,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             reqEmployeeDTO.setEmpName(emp.getName());
 
         if (reqEmployeeDTO.getRrnBack() == null || reqEmployeeDTO.getRrnBack().isEmpty()){
-            reqEmployeeDTO.setEmpName(emp.getRrnBack());
+            reqEmployeeDTO.setRrnBack(emp.getRrnBack());
         }else{
             try {
                 reqEmployeeDTO.setRrnBack(
@@ -141,7 +141,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     // Code 유효성 검사
-
     private String validateCode(String code) {
         String trimmed = safeTrim(code);
         if (trimmed.matches("^[A-Z]{3}\\d{3}$")) {
