@@ -32,7 +32,12 @@ public class RequestSysDetailDTO {
         this.is_active = is_active;
     }
 
-    // DTO -> Entity 변환
+    /**
+     * DTO -> Entity 변환
+     * @param DTO 요청 DTO
+     * @param sysCode 부모 sysCode
+     * @return detailSysCode 엔티티
+     * */
     public static DetailSysCode toEntity(RequestSysDetailDTO DTO, SysCode sysCode) {
         return DetailSysCode.builder()
                 .sysCode(sysCode)

@@ -25,7 +25,11 @@ public class RequestSysMainDTO {
         this.is_active = is_active;
     }
 
-    // DTO -> Entity 변환
+    /**
+     * DTO -> Entity 변환
+     * @param requestSysMainDTO 요청 DTO
+     * @return sysCode 엔티티
+     * */
     public static SysCode toEntity(RequestSysMainDTO requestSysMainDTO) {
         return SysCode.builder()
                 .mainCode(requestSysMainDTO.getMain_code())

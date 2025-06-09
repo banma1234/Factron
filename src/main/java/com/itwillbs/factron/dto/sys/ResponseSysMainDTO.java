@@ -26,6 +26,11 @@ public class ResponseSysMainDTO {
         this.created_at = created_at;
     }
 
+    /**
+     * Entity -> DTO 변환
+     * @param entity 엔티티
+     * @return responseMainDTO 반환 DTO
+     * */
     public static ResponseSysMainDTO fromEntity(SysCode entity) {
         return ResponseSysMainDTO.builder()
                 .id(entity.getId())

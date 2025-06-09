@@ -49,7 +49,11 @@ public class ResponseSysDetailDTO {
         this.created_at = created_at;
     }
 
-    // Entity → DTO 변환
+    /**
+     * Entity → DTO 변환
+     * @param entity 엔티티
+     * @return responseDetailDTO 반환 DTO
+     * */
     public static ResponseSysDetailDTO fromEntity(DetailSysCode entity) {
         return ResponseSysDetailDTO.builder()
                 .id(entity.getId())
