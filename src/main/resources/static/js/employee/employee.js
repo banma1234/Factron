@@ -24,9 +24,9 @@ const initGrid = (employees) => {
     return new Grid({
         el: document.getElementById('employee_grid'),
         scrollX: false,
-        scrollY: false,
-        minBodyHeight: 30,
-        rowHeaders: ['rowNum'],
+        scrollY: true,
+        bodyHeight: 400,
+        // rowHeaders: ['rowNum'],
         columns: [
             {
                 header: '번호',
@@ -158,7 +158,7 @@ const init = () => {
 
     const addNewEmployee = () => {
         console.log("Clicked")
-        const popup = window.open('/employee-newForm', '_blank', 'width=800,height=600');
+        const popup = window.open('/employee-newForm', '_blank', 'width=800,height=750');
 
         if (!popup) {
             alert("팝업이 차단되었습니다. 팝업 차단을 해제해주세요.");
@@ -188,7 +188,7 @@ const init = () => {
         const rowData = employeeGrid.getRow(rowKey);
         // 새 창에서 해당 ID를 기반으로 상세페이지 오픈
         if (rowData && (rowKey || rowKey === 0)) {
-            const popup = window.open('/employee-form', '_blank', 'width=800,height=600');
+            const popup = window.open('/employee-form', '_blank', 'width=800,height=750');
 
             if (!popup) {
                 alert("팝업이 차단되었습니다. 팝업 차단을 해제해주세요.");
