@@ -6,7 +6,7 @@ import com.itwillbs.factron.entity.Approval;
 import com.itwillbs.factron.entity.Employee;
 import com.itwillbs.factron.entity.WorkHistory;
 import com.itwillbs.factron.mapper.work.WorkMapper;
-import com.itwillbs.factron.repository.approval.ApprovalRespository;
+import com.itwillbs.factron.repository.approval.ApprovalRepository;
 import com.itwillbs.factron.repository.employee.EmployeeRepository;
 import com.itwillbs.factron.repository.work.WorkRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class WorkServiceImpl implements WorkService {
     private final WorkMapper workMapper;
     private final WorkRepository workRepository;
     private final EmployeeRepository empRepository;
-    private final ApprovalRespository appRespository;
+    private final ApprovalRepository appRepository;
 
     /*
     * 근무 목록 조회
@@ -45,8 +45,13 @@ public class WorkServiceImpl implements WorkService {
         Employee employee = empRepository.findById(requestWorkDTO.getEmpId())
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사원입니다."));
 
+        // 중복된 근무 신청 기각
+        if (!workMapper.chkDuplicateWork(requestWorkDTO).isEmpty()) {
+            throw new IllegalArgumentException("해당 일시에 이미 등록된 근무가 있습니다.");
+        }
+
         // 결재 먼저 등록
-        Approval approval = appRespository.save(Approval.builder()
+        Approval approval = appRepository.save(Approval.builder()
                 .requester(employee)
                 .requestedAt(LocalDate.now())
                 .approvalTypeCode("APR001") // 근무
