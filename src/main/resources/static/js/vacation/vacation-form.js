@@ -77,7 +77,6 @@ const init = () => {
                 body: JSON.stringify(data),
             });
             return res.json();
-
         } catch (e) {
             console.error(e);
             return { status: 'fail', message: '요청 중 오류 발생' };

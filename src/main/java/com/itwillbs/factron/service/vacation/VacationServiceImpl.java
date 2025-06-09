@@ -31,12 +31,7 @@ public class VacationServiceImpl implements VacationService {
 
     @Override
     public List<VacationResponseDTO> getMyVacations(Long empId, LocalDate startDate, LocalDate endDate) {
-        log.info("서비스에서 데이터 확인 시작날짜={}. 끝날짜{}",startDate,endDate);
-
-
-        List<VacationResponseDTO> dtolist = vacationMapper.findMyVacations(empId, startDate.toString(), endDate.toString());
-        log.info("dtolist >>>> {}",dtolist);
-        return dtolist;
+        return vacationMapper.findMyVacations(empId, startDate.toString(), endDate.toString());
     }
 
     @Override
