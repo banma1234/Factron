@@ -20,6 +20,7 @@ const DEFAULT_GRID_THEME = {
 const Grid = tui.Grid;
 Grid.applyTheme('default', DEFAULT_GRID_THEME);
 
+
 // grid 초기화
 const initMainGrid = () => {
     // sys-main 세팅
@@ -113,11 +114,11 @@ const getDetailCode = async (mainCode) => {
     }
 }
 
+const mainGrid = initMainGrid();
+const detailGrid = initDetailGrid();
 let selectedRowData = null;
 
 const sysInit = () => {
-    const mainGrid = initMainGrid();
-    const detailGrid = initDetailGrid();
 
     const setDetailGridEvent = () => {
         detailGrid.on('click', e => {
@@ -147,32 +148,55 @@ const sysInit = () => {
 
 };
 
-const openUpdatePopup = () => {
-    const rowData = selectedRowData;
+const refreshDataOnPopup = async () => {
+    await getMainCode().then(res => {
+        mainGrid.resetData(res.data);
+    })
 
-    if (rowData && rowData.id) {
-        const popup = window.open(
-            `/sys/sys-form?target=${rowData.detail_code ? "detail" : "main"}`,
-            '_blank',
-            'width=800,height=400'
-        );
-
-        // 자식 창으로부터 'ready' 먼저 수신 후 postMessage 실행
-        const messageHandler = (event) => {
-            if (event.data === 'ready') {
-                popup.postMessage({
-                    main_code: rowData.main_code ? rowData.main_code : "",
-                    detail_code: rowData.detail_code ? rowData.detail_code : "",
-                    name: rowData.name,
-                    is_active: rowData.is_active
-                }, "*");
-
-                window.removeEventListener("message", messageHandler);
-            }
-        };
-
-        window.addEventListener("message", messageHandler);
+    if (selectedRowData) {
+        console.log(selectedRowData);
+        await getDetailCode(selectedRowData.id).then(res => {
+            console.log(res);
+            detailGrid.resetData(res.data);
+        })
     }
+};
+
+const openUpdatePopup = (isEditMode) => {
+    const rowData = selectedRowData || undefined;
+    let url = "/sys/sys-form?target=";
+
+    if (!rowData) {
+        url += "main"
+    }else if (!rowData.detail_code && isEditMode) {
+        url += "main"
+    } else {
+        url += "detail";
+    }
+
+    const popup = window.open(
+        url,
+        '_blank',
+        'width=800,height=400'
+    );
+
+    // 자식 창으로부터 'ready' 먼저 수신 후 postMessage 실행
+    const messageHandler = (event) => {
+        if (event.data === 'ready') {
+
+            popup.postMessage({
+                main_code: rowData.main_code ? rowData.main_code : "",
+                detail_code: rowData.detail_code && isEditMode ? rowData.detail_code : "",
+                name: rowData.name,
+                is_active: rowData.is_active,
+                is_edit_mode: isEditMode,
+            }, "*");
+
+            window.removeEventListener("message", messageHandler);
+        }
+    };
+
+    window.addEventListener("message", messageHandler);
 }
 
 document.querySelectorAll(".updateSysCodeBtn")
@@ -181,7 +205,7 @@ document.querySelectorAll(".updateSysCodeBtn")
                 e.preventDefault();
                 e.stopPropagation();
 
-                openUpdatePopup();
+                openUpdatePopup(true);
             });
     });
 
@@ -190,7 +214,7 @@ document.querySelector("button[name='postSysMainBtn']")
         e.preventDefault();
         e.stopPropagation();
 
-        window.open('/sys/sys-form?target=main', '_blank', 'width=800,height=400');
+        openUpdatePopup(false);
     });
 
 document.querySelector("button[name='postSysDetailBtn']")
@@ -198,8 +222,11 @@ document.querySelector("button[name='postSysDetailBtn']")
         e.preventDefault();
         e.stopPropagation();
 
-        window.open('/sys/sys-form?target=detail', '_blank', 'width=800,height=400');
+        openUpdatePopup(false);
     });
+
+window.sysInit = sysInit;
+window.refreshDataOnPopup = refreshDataOnPopup;
 
 window.onload = () => {
     sysInit();
