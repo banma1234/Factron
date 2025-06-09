@@ -149,20 +149,19 @@ public class CommuteServiceImpl implements CommuteService {
     /**
      * 오늘 출근 상태 조회 메소드
      * @param empId 사원 ID
-     * @param todayDate 오늘 날짜 (yyyy-MM-dd 형식)
      * @return 출근 상태 (IN, DONE, NONE)
      */
     @Override
-    public String getTodayCommuteStatus(String empId, String todayDate) {
+    public String getTodayCommuteStatus(String empId) {
 
         // 1. 사원 정보 조회 (예: employeeRepository.findById)
         Employee employee = employeeRepository.findById(Long.parseLong(empId))
                 .orElseThrow(() -> new EntityNotFoundException("해당 사원이 없습니다."));
 
         // 2. 오늘 날짜의 시작과 끝 계산
-        LocalDate date = LocalDate.parse(todayDate);
-        LocalDateTime startOfDay = date.atStartOfDay();
-        LocalDateTime endOfDay = startOfDay.plusDays(1).minusNanos(1);
+        LocalDate date = LocalDate.now(); // 현재 날짜
+        LocalDateTime startOfDay = date.atStartOfDay(); // 오늘 시작 시간 (00:00:00)
+        LocalDateTime endOfDay = startOfDay.plusDays(1).minusNanos(1); // 오늘 끝 시간 (23:59:59.999999999)
 
         // 3. 오늘 출근 기록 조회
         Optional<CommuteHistory> optionalHistory = commuteRepository
@@ -174,13 +173,8 @@ public class CommuteServiceImpl implements CommuteService {
         }
 
         CommuteHistory history = optionalHistory.get();
-        if (history.getCommuteOut() == null) {
 
-            return "IN"; // 출근했으나 퇴근 안함
-        } else {
-
-            return "DONE"; // 출근+퇴근 완료
-        }
+        return (history.getCommuteOut() == null) ? "IN" : "DONE";
     }
 
     /**
