@@ -3,66 +3,107 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
+<!-- 이 매퍼는 결재(Approval) 목록 조회용 SQL을 정의합니다 -->
 <mapper namespace="com.itwillbs.factron.mapper.approval.ApprovalMapper">
 
-    <select id="getApprovalList" parameterType="com.itwillbs.factron.dto.approval.RequestSearchApprovalDTO" resultType="com.itwillbs.factron.dto.approval.ResponseSearchApprovalDTO">
+    <!--
+        결재 목록을 조회하는 SQL
+        - 입력 파라미터: RequestSearchApprovalDTO
+        - 출력 결과 타입: ResponseSearchApprovalDTO
+    -->
+    <select id="getApprovalList"
+            parameterType="com.itwillbs.factron.dto.approval.RequestSearchApprovalDTO"
+            resultType="com.itwillbs.factron.dto.approval.ResponseSearchApprovalDTO">
+
         SELECT
+        -- 기본 결재 정보
         APP.ID AS approvalId,
         APP.APPROVAL_TYPE_CODE AS apprTypeCode,
         TYPE_CODE.NAME AS apprTypeName,
+
+        -- 요청자(REQ_EMP) 정보
         REQ_EMP.NAME AS requesterName,
         APP.REQUESTER_ID AS requesterId,
         APP.REQUESTED_AT AS requested_at,
+
+        -- 요청자의 직급/부서 코드 및 이름
         REQ_EMP.POSITION_CODE AS positionCode,
         POS_CODE.NAME AS positionName,
         REQ_EMP.DEPT_CODE AS deptCode,
         DEPT_CODE.NAME AS deptName,
+
+        -- 결재 완료 날짜 및 상태
         APP.CONFIRMED_AT AS confirmedDate,
         APP.APPROVAL_STATUS_CODE AS approvalStatusCode,
         STATUS_CODE.NAME AS approvalStatusName,
+
+        -- 결재자 정보
         APRV_EMP.NAME AS approverName,
         APP.APPROVER_ID AS approverId,
+
+        -- 반려 사유
         APP.REJECT_REASON AS rejectionReason,
+
+        -- 발령 관련 정보 (인사발령일 경우만 사용됨)
         TRANS.EMPLOYEE_ID AS transferEmpId,
         TRANS_EMP.NAME AS transferEmpName
 
         FROM APPROVAL APP
 
+        -- 요청자(REQ_EMP) 및 결재자(APRV_EMP) 조인
         LEFT JOIN EMPLOYEE REQ_EMP ON REQ_EMP.ID = APP.REQUESTER_ID
         LEFT JOIN EMPLOYEE APRV_EMP ON APRV_EMP.ID = APP.APPROVER_ID
+
+        -- 상태 코드, 결재 유형, 직급, 부서 이름을 위한 조인
         LEFT JOIN DETAIL_SYS_CODE STATUS_CODE ON APP.APPROVAL_STATUS_CODE = STATUS_CODE.DETAIL_CODE
         LEFT JOIN DETAIL_SYS_CODE TYPE_CODE ON APP.APPROVAL_TYPE_CODE = TYPE_CODE.DETAIL_CODE
         LEFT JOIN DETAIL_SYS_CODE POS_CODE ON REQ_EMP.POSITION_CODE = POS_CODE.DETAIL_CODE
         LEFT JOIN DETAIL_SYS_CODE DEPT_CODE ON REQ_EMP.DEPT_CODE = DEPT_CODE.DETAIL_CODE
 
+        -- 인사발령이 있는 경우 발령 정보 및 발령 대상자 정보 조인
         LEFT JOIN TRANSFER TRANS ON TRANS.APPROVAL_ID = APP.ID
         LEFT JOIN EMPLOYEE TRANS_EMP ON TRANS.EMPLOYEE_ID = TRANS_EMP.ID
 
+        <!-- 검색 조건 -->
         <where>
+            <!-- 요청일 시작일 -->
             <if test="startDate != null and startDate != ''">
                 AND APP.REQUESTED_AT &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
             </if>
+
+            <!-- 요청일 종료일 -->
             <if test="endDate != null and endDate != ''">
                 AND APP.REQUESTED_AT &lt;= TO_DATE(#{endDate}, 'YYYY-MM-DD')
             </if>
+
+            <!-- 결재 유형 -->
             <if test="apprType != null and apprType != ''">
                 AND APP.APPROVAL_TYPE_CODE = #{apprType}
             </if>
+
+            <!-- 부서 필터 -->
             <if test="dept != null and dept != ''">
                 AND REQ_EMP.DEPT_CODE = #{dept}
             </if>
+
+            <!-- 직급 필터 -->
             <if test="position != null and position != ''">
                 AND REQ_EMP.POSITION_CODE = #{position}
             </if>
 
-            <!-- ✅ 이름 또는 사번 검색 -->
+            <!-- 이름 또는 사번 검색 -->
             <if test="approvalNameOrEmpId != null and approvalNameOrEmpId != ''">
                 AND (
+                -- 요청자 이름
                 REQ_EMP.NAME LIKE '%' || #{approvalNameOrEmpId} || '%'
+
+                -- 또는 요청자 사번 (숫자일 경우에만)
                 OR (
                 REGEXP_LIKE(#{approvalNameOrEmpId}, '^[0-9]+')
                 AND TO_CHAR(REQ_EMP.ID) LIKE '%' || #{approvalNameOrEmpId} || '%'
                 )
+
+                -- 인사 발령(APR003)일 경우, 발령 대상자 이름/사번 검색도 포함
                 OR (
                 APP.APPROVAL_TYPE_CODE = 'APR003'
                 AND (
@@ -77,6 +118,7 @@
             </if>
         </where>
 
+        -- 최신 순 정렬
         ORDER BY APP.ID DESC
     </select>
 

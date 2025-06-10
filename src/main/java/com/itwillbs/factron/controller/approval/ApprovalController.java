@@ -21,21 +21,4 @@ public class ApprovalController {
         // formType: transferApproval, vacationApproval, workApproval
         return "approval/" + formType + "-form";
     }
-
-    // 공통 결재 폼 핸들러
-//    @GetMapping("/approval/{formType}-form")
-//    public String approvalForm(
-//            @RequestParam(name = "id") String approvalId,
-//            @RequestParam(name = "userId", required = false) String userId,
-//            @RequestParam(name = "authCode", required = false) String authCode,
-//            @org.springframework.web.bind.annotation.PathVariable String formType,
-//            Model model
-//    ) {
-//        model.addAttribute("approvalId", approvalId);
-//        model.addAttribute("userId", userId);
-//        model.addAttribute("authCode", authCode);
-//
-//        // formType은 "transferApproval", "vacationApproval", "workApproval" 중 하나
-//        return "approval/" + formType + "-form";
-//    }
 }
