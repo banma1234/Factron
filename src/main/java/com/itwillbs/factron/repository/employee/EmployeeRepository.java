@@ -8,6 +8,11 @@ import org.springframework.data.repository.query.Param;
 
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+    /**
+     * 이번달 입사원수
+     * @param yearMonth
+     * @return long
+     */
     @Query("SELECT COUNT(e) FROM Employee e WHERE FUNCTION('TO_CHAR', e.joinedDate, 'YYYY-MM') = :yearMonth")
     long countByYearMonth(@Param("yearMonth") String yearMonth);
 
