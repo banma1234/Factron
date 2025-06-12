@@ -41,14 +41,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     public List<ResponseEmployeeSrhDTO> getEmployees(RequestEmployeeSrhDTO requestEmployeeSrhDTO){
         return employeeMapper.getEmployeeList(requestEmployeeSrhDTO)
                                     .stream()
-                                    .map(dto ->
-                                    {
-                                        dto.removeTime();
-                                        try {
-                                            dto.setRrnBack(aesUtil.decrypt(dto.getRrnBack()));
-                                        } catch (Exception e) {
-                                            throw new RuntimeException(e);
-                                        }
+                                    .map(dto -> {
+                                        dto.setRrnBack(aesUtil.decrypt(dto.getRrnBack()));
                                         return dto;
                                     })
                                     .collect(Collectors.toList());
@@ -72,25 +66,25 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (reqEmployeeDTO.getRrnBack() == null || reqEmployeeDTO.getRrnBack().isEmpty()){
             reqEmployeeDTO.setRrnBack(emp.getRrnBack());
         }else{
-            try {
-                reqEmployeeDTO.setRrnBack(
-                        aesUtil.encrypt(reqEmployeeDTO.getRrnBack())
-                );
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            reqEmployeeDTO.setRrnBack(aesUtil.encrypt(reqEmployeeDTO.getRrnBack()));
         }
+
         if(reqEmployeeDTO.getGender() == null || reqEmployeeDTO.getGender().isEmpty())
             reqEmployeeDTO.setGender(emp.getGender());
+
         if(reqEmployeeDTO.getEmail() == null || reqEmployeeDTO.getEmail().isEmpty())
             reqEmployeeDTO.setEmail(emp.getEmail());
+
         if(reqEmployeeDTO.getAddress() == null || reqEmployeeDTO.getAddress().isEmpty())
             reqEmployeeDTO.setAddress(emp.getAddress());
+
         if(reqEmployeeDTO.getEmpIsActive() == null || reqEmployeeDTO.getEmpIsActive().isEmpty())
             reqEmployeeDTO.setEmpIsActive("Y");
         reqEmployeeDTO.getEmpIsActive().toUpperCase();
+
         if(reqEmployeeDTO.getEmployeCode() == null || reqEmployeeDTO.getEmployeCode().isEmpty())
             reqEmployeeDTO.setEmployeCode(emp.getEmployCode());
+
         // 권한 확인!
         if(false)
             emp.updateTranfEmployeeInfo(reqEmployeeDTO);
@@ -110,12 +104,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         Long newId = generateEmployeeId();
 
         // 주민번호 뒷자리 암호화
-        try {
-            reqEmployeeNewDTO.setRrnBack(aesUtil.encrypt(reqEmployeeNewDTO.getRrnBack()));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        reqEmployeeNewDTO.setRrnBack(aesUtil.encrypt(reqEmployeeNewDTO.getRrnBack()));
 
+        // 생성자 id 수정하기
         Employee employee = reqEmployeeNewDTO.toEntity(newId, 1000L);
         employeeRepository.save(employee);
 

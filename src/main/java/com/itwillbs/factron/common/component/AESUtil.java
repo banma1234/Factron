@@ -47,9 +47,6 @@ public class AESUtil {
             return new String(cipher.doFinal(decoded), StandardCharsets.UTF_8);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException |
                  IllegalBlockSizeException | BadPaddingException e) {
-            // 로그 출력
-            log.error("AES 복호화 실패", e);
-            // 필요하면 커스텀 런타임 예외 던지기
             throw new RuntimeException("복호화 과정에서 오류가 발생했습니다.");
         }
     }
