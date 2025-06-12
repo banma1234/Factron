@@ -1,3 +1,6 @@
+/**
+ * window 로드 후 실행
+ * */
 const init = () => {
     const form = document.querySelector("form");
     const confirmModal = new bootstrap.Modal(document.getElementsByClassName("confirmModal")[0]);
@@ -15,13 +18,14 @@ const init = () => {
         form.querySelector("input[name='main_code']").disabled = true;
     }
 
-    // 부모창에서 데이터 받아오기
+    /**
+     * 부모창(syscode.html)로부터 데이터 받아와서 form에 세팅
+     * */
     window.addEventListener('message', function(event) {
         // if (event.origin !== "http://localhost:8080") return;
         const data = event.data;
         if (data?.source === 'react-devtools-content-script') return;
 
-        // 값 세팅
         form.querySelector("input[name='main_code']").value = data.main_code;
         form.querySelector("input[name='detail_code']").value = data.detail_code.substring(3,6);
         form.querySelector("input[name='name']").value = data.name;
@@ -34,6 +38,9 @@ const init = () => {
         }
     });
 
+    /**
+     * `confirm` 모달 확인 버튼
+     * */
     form.querySelector("button.btn-primary").addEventListener("click", () => {
         confirmModal.show();
 
@@ -48,14 +55,18 @@ const init = () => {
         })
     });
 
-    // 취소 버튼
+    /**
+     * 통합 취소 버튼
+     * */
     form.querySelector("button.btn-secondary").addEventListener("click", () => {
         window.close();
     });
 
-    // 저장
+    /**
+     * 변경사항 저장
+     * @return void
+     * */
     async function saveData() {
-        // fetch data
         const mainCode = form.querySelector("input[name='main_code']").value;
         let detailCode = form.querySelector("input[name='detail_code']").value;
 
@@ -89,7 +100,9 @@ const init = () => {
         }
     }
 
-    // alert 모달 확인 버튼
+    /**
+     * `alert` 모달 확인 버튼 이벤트
+     * */
     alertBtn.addEventListener("click", () => {
         alertModal.hide();
         // 부모 창의 그리드 리프레시

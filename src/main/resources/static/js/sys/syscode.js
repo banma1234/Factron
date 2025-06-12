@@ -1,3 +1,6 @@
+/**
+ * toastUi 그리드 옵션
+ * */
 const DEFAULT_GRID_THEME = {
     cell: {
         normal: {
@@ -17,11 +20,16 @@ const DEFAULT_GRID_THEME = {
     }
 };
 
+/**
+ * toastUi 그리드
+ * */
 const Grid = tui.Grid;
 Grid.applyTheme('default', DEFAULT_GRID_THEME);
 
 
-// grid 초기화
+/**
+ * `sysCode` 테이블 초기화
+ * */
 const initMainGrid = () => {
     // sys-main 세팅
     return new Grid({
@@ -50,6 +58,9 @@ const initMainGrid = () => {
     });
 }
 
+/**
+ * `detailSysCode` 테이블 초기화
+ * */
 const initDetailGrid = () => {
     // sys-detail 세팅
     return new Grid({
@@ -78,9 +89,12 @@ const initDetailGrid = () => {
     })
 }
 
-/*
-* 메인코드 불러오는 api
-* */
+
+/**
+ * `sysCode` 요청 api
+ * @param mainCode 메인코드
+ * @return JSON
+ * */
 const getMainCode = async (mainCode) => {
     try {
         const res = await fetch(`/api/sys/main?mainCode=${mainCode}`, {
@@ -114,12 +128,28 @@ const getDetailCode = async (mainCode, name) => {
     }
 }
 
+/**
+ * `sysCode` 데이터 출력하는 그리드(테이블)
+ * */
 const mainGrid = initMainGrid();
+/**
+ * ``detailSysCode`` 데이터 출력하는 그리드(테이블)
+ * */
 const detailGrid = initDetailGrid();
+/**
+ * 클릭한 `컬럼`의 데이터 저장하는 `전역변수`
+ * */
 let selectedRowData = null;
 
-const sysInit = () => {
 
+/**
+ * window 로드 후 실행할 스크립트
+ * @return void
+ * */
+const sysInit = () => {
+    /**
+     * `detailSysCode` 그리드 이벤트 연결
+     * */
     const setDetailGridEvent = () => {
         detailGrid.on('click', e => {
             const rowKey = e.rowKey;
@@ -127,6 +157,10 @@ const sysInit = () => {
         })
     }
 
+    /**
+     * `sysCode` 그리드 이벤트 연결
+     * @return void
+     * */
     const setMainGridEvent = () => {
         mainGrid.on('click', e => {
             const rowKey = e.rowKey;
@@ -149,7 +183,8 @@ const sysInit = () => {
 };
 
 /**
- *
+ * `삽입` / `수정` 완료시 그리드 데이터 초기화
+ * @return void
  * */
 const refreshDataOnPopup = async () => {
     await getMainCode("").then(res => {
@@ -164,7 +199,7 @@ const refreshDataOnPopup = async () => {
 };
 
 /**
- * 팝업창 오픈 - 수정모드
+ * 팝업창 오픈 - `수정모드`
  * @param isEditMode 수정모드 여부
  * @return void
  * */
@@ -188,6 +223,7 @@ const openUpdatePopup = (isEditMode) => {
 
     /**
      * 팝업창에 데이터 전달
+     * @return void
      * */
     const messageHandler = (event) => {
         if (event.data === 'ready') {
@@ -208,7 +244,7 @@ const openUpdatePopup = (isEditMode) => {
 }
 
 /**
- * sysCode 삽입 버튼
+ * `sysCode` 삽입 버튼
  * */
 document.querySelector("button[name='postSysMainBtn']")
     .addEventListener('click', e => {
@@ -219,7 +255,7 @@ document.querySelector("button[name='postSysMainBtn']")
     });
 
 /**
- * detailSysCode 삽입 버튼
+ * `detailSysCode` 삽입 버튼
  * */
 document.querySelector("button[name='postSysDetailBtn']")
     .addEventListener('click', e => {
@@ -230,7 +266,7 @@ document.querySelector("button[name='postSysDetailBtn']")
     });
 
 /**
- * sysCode 수정 버튼
+ * `sysCode` 수정 버튼
  * */
 document.querySelectorAll(".updateSysCodeBtn")
     .forEach(btn => {
@@ -243,7 +279,7 @@ document.querySelectorAll(".updateSysCodeBtn")
     });
 
 /**
- * sysCode 검색(AJAX) 인풋
+ * `sysCode` 검색(AJAX) 인풋
  * */
 document.querySelector("input[name='srhMain']")
     .addEventListener('input', e => {
@@ -256,7 +292,7 @@ document.querySelector("input[name='srhMain']")
     });
 
 /**
- * detailSysCode 검색(AJAX) 인풋
+ * `detailSysCode` 검색(AJAX) 인풋
  * */
 document.querySelector("input[name='srhDetail']")
     .addEventListener('input', e => {

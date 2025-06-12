@@ -19,6 +19,11 @@ public class SysMainRestController {
 
     private final SysMainServiceImpl sysMainService;
 
+    /**
+     * sysCode 검색 및 조회
+     * @param mainCode 메인코드
+     * @return ResponseDTO
+     * */
     @GetMapping("")
     public ResponseDTO<List<ResponseSysMainDTO>> getSysMain(
             @RequestParam(required = false) String mainCode
@@ -39,6 +44,11 @@ public class SysMainRestController {
         }
     }
 
+    /**
+     * sysCode 삽입
+     * @param requestSysMainDTO requestMainDTO 요청 DTO
+     * @return ResponseDTO
+     * */
     @PostMapping("")
     public ResponseDTO<Void> saveSysMain(@Valid @RequestBody RequestSysMainDTO requestSysMainDTO) {
 
@@ -54,6 +64,11 @@ public class SysMainRestController {
         }
     }
 
+    /**
+     * sysCode 수정
+     * @param requestSysMainDTO requestMainDTO 요청 DTO
+     * @return ResponseDTO
+     * */
     @PutMapping("")
     public ResponseDTO<Void> updateSysMain(@Valid @RequestBody RequestSysMainDTO requestSysMainDTO) {
 

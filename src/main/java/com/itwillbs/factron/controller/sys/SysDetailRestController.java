@@ -45,6 +45,11 @@ public class SysDetailRestController {
         }
     }
 
+    /**
+     * detailSysCode 삽입
+     * @param requestSysDetailDTO requestDetailDTO 요청 DTO
+     * @return ResponseDTO
+     * */
     @PostMapping("")
     public ResponseDTO<Void> saveSysDetail(@Valid @RequestBody RequestSysDetailDTO requestSysDetailDTO) {
 
@@ -59,6 +64,11 @@ public class SysDetailRestController {
         }
     }
 
+    /**
+     * detailSysCode 수정
+     * @param requestSysDetailDTO requestDetailDTO 요청 DTO
+     * @return ResponseDTO
+     * */
     @PutMapping("")
     public ResponseDTO<Void> updateSysDetail(@Valid @RequestBody RequestSysDetailDTO requestSysDetailDTO) {
 
