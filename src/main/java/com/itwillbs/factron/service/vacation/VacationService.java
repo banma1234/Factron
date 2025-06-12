@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface VacationService {
-    List<VacationResponseDTO> getMyVacations(Long empId, LocalDate startDate, LocalDate endDate);
-    Void registVacation(Long empId, VacationRequestDTO dto);
+    List<VacationResponseDTO> getMyVacations(VacationRequestDTO dto);
+    Void registVacation(VacationRequestDTO dto);
 }
 

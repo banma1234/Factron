@@ -9,39 +9,50 @@ const init = () => {
 
     let data = {};
 
-    form.querySelector("input[name='vacationStartDate']").setAttribute("min", today);
-    form.querySelector("input[name='vacationEndDate']").setAttribute("min", today);
+    form.querySelector("input[name='startTime']").setAttribute("min", today);
+    form.querySelector("input[name='endTime']").setAttribute("min", today);
+
+    // 부모창에서 데이터 받아오기
+    window.addEventListener('message', function(event) {
+        const data = event.data;
+        if (data?.source === 'react-devtools-content-script') return;
+
+        // 초기 값 세팅
+        form.querySelector("input[name='empId']").value = data.empId || "";
+        form.querySelector("input[name='empName']").value = data.empName || "";
+    });
 
     // 저장 버튼
     saveBtn.addEventListener("click", () => {
-        const empId = document.getElementById("vacationEmpIdHidden").value;
+        const empId = form.querySelector("input[name='empId']").value.trim();
         const empName = form.querySelector("input[name='empName']").value.trim();
-        const vacationStartDate = form.querySelector("input[name='vacationStartDate']").value;
-        const vacationEndDate = form.querySelector("input[name='vacationEndDate']").value;
+        const startTime = form.querySelector("input[name='startTime']").value;
+        const endTime = form.querySelector("input[name='endTime']").value;
         const remark = form.querySelector("textarea[name='remark']").value;
 
         const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-        if (!vacationStartDate || !vacationEndDate) {
+        if (!startTime || !endTime) {
             alert("시작 날짜와 종료 날짜를 모두 입력해주세요.");
             return;
         }
-        if (!dateRegex.test(vacationStartDate) || !dateRegex.test(vacationEndDate)) {
+        if (!dateRegex.test(startTime) || !dateRegex.test(endTime)) {
             alert("날짜 형식이 올바르지 않습니다.");
             return;
         }
-        if (vacationStartDate > vacationEndDate) {
+        if (startTime > endTime) {
             alert("시작 날짜는 종료 날짜보다 빠르거나 같아야 합니다.");
             return;
         }
 
         data = {
-            vacationStartDate,
-            vacationEndDate,
+            empId,
+            startTime,
+            endTime,
             remark
         };
 
         document.querySelector(".vacationConfirmModal .modal-body").innerHTML =
-            `${empName} 님<br/>${vacationStartDate} ~ ${vacationEndDate}<br/>휴가를 신청하시겠습니까?`;
+            `${empName} 님<br/>${startTime} ~ ${endTime}<br/>휴가를 신청하시겠습니까?`;
         confirmModal.show();
     });
 
