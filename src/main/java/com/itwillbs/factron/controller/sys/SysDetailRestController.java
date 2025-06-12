@@ -19,19 +19,28 @@ public class SysDetailRestController {
 
     private final SysDetailServiceImpl sysDetailService;
 
+    /**
+     * detailSysCode 검색 및 조회
+     * @param mainCode 메인코드
+     * @param name 이름(필수X)
+     * @return responseDetailDTO 반환 DTO
+     * */
     @GetMapping("")
-    public ResponseDTO<List<ResponseSysDetailDTO>> getDetailById(@Valid @RequestParam String mainCode) {
+    public ResponseDTO<List<ResponseSysDetailDTO>> getDetailById(
+            @Valid @RequestParam String mainCode,
+            @RequestParam(required = false) String name
+    ) {
 
         try {
             List<ResponseSysDetailDTO> detailList = sysDetailService
-                    .getAllDetailByMainCode(mainCode);
+                    .getDetailByParams(mainCode, name);
 
             return ResponseDTO.success(detailList);
         } catch (Exception e) {
             return ResponseDTO.fail(
                     800,
                     "존재하지 않는 메인코드입니다.",
-                    sysDetailService.getAllDetailByMainCode(mainCode)
+                    sysDetailService.getDetailByParams(mainCode, name)
             );
         }
     }

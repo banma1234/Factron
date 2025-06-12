@@ -37,6 +37,23 @@ public class SysDetailServiceImpl implements SysDetailService {
         return toDetailDTOList(details);
     }
 
+    public List<ResponseSysDetailDTO> getDetailByParams(@Valid String mainCode, String name) {
+
+        List<DetailSysCode> details;
+
+        if(name == null || name.isEmpty()) {
+            details = detailSysCodeRepository
+                    .findByMainCode(mainCode)
+                    .orElseThrow(() -> new NoSuchElementException("존재하지 않는 상세코드입니다."));
+        } else {
+            details = detailSysCodeRepository
+                    .findByMainCodeAndNameContaining(mainCode, name)
+                    .orElseThrow(() -> new NoSuchElementException("존재하지 않는 상세코드입니다."));
+        }
+
+        return toDetailDTOList(details);
+    }
+
     /**
     * 상세공통코드 저장
     * @param requestSysDetailDTO 요청 DTO
@@ -92,4 +109,5 @@ public class SysDetailServiceImpl implements SysDetailService {
 
         return RequestSysDetailDTO.toEntity(DTO, sysCode);
     }
+
 }
