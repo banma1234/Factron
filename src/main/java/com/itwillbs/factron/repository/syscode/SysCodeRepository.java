@@ -10,4 +10,6 @@ import java.util.Optional;
 @Repository
 public interface SysCodeRepository extends JpaRepository<SysCode, Long> {
     Optional<List<SysCode>> findByMainCode(String mainCode);
+
+    Optional<List<SysCode>> findByMainCodeContaining(String mainCode);
 }
