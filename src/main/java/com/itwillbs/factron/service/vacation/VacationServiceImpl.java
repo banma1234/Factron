@@ -1,6 +1,5 @@
 package com.itwillbs.factron.service.vacation;
 
-
 import com.itwillbs.factron.dto.vacation.VacationRequestDTO;
 import com.itwillbs.factron.dto.vacation.VacationResponseDTO;
 import com.itwillbs.factron.entity.Approval;
@@ -14,11 +13,11 @@ import com.itwillbs.factron.repository.vacation.VacationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@Log4j2
 @Service
 @RequiredArgsConstructor
 public class VacationServiceImpl implements VacationService {
@@ -30,41 +29,37 @@ public class VacationServiceImpl implements VacationService {
 
 
     @Override
-    public List<VacationResponseDTO> getMyVacations(Long empId, LocalDate startDate, LocalDate endDate) {
-        return vacationMapper.findMyVacations(empId, startDate.toString(), endDate.toString());
+    public List<VacationResponseDTO> getMyVacations(VacationRequestDTO dto) {
+        return vacationMapper.getVacations(dto);
     }
 
+    @Transactional
     @Override
-    public Void registVacation(Long empId, VacationRequestDTO dto) {
-        Employee employee = employeeRepository.findById(empId).orElseThrow();
+    public Void registVacation(VacationRequestDTO dto) {
+        Employee employee = employeeRepository.findById(dto.getEmpId()).orElseThrow();
 
-        boolean hasNonRejected = vacationMapper.VacationCheck(
-                empId,
-                dto.getVacationStartDate().toString(),
-                dto.getVacationEndDate().toString()
-        );
-
-        if (hasNonRejected) {
+        //중복 방지
+        if (vacationMapper.VacationCheck(dto)) {
             throw new IllegalStateException("이미 해당 날짜에 신청한 휴가가 있습니다.");
         }
 
-        Long randomEmpId = vacationMapper.selectRandomHrManagerId(empId);
-        Employee approver = employeeRepository.findById(randomEmpId).orElseThrow();
-
-        //수정예정
-        Approval approval = Approval.builder()
+        //결제 등록
+        Approval approval = approvalRepository.save(Approval.builder()
                 .requester(employee)
-                .approver(approver)
-                .approvalStatusCode("wait")
-                .approvalTypeCode("vac")
+                .approvalStatusCode("APV001")
+                .approvalTypeCode("APR002")
                 .requestedAt(LocalDate.now())
-                .build();
+                .build());
 
+        //휴가 기록 등록
+        vacationRepository.save(VacationHistory.builder()
+                .startDate(dto.getStartTime())
+                .endDate(dto.getEndTime())
+                .remark(dto.getRemark())
+                .employee(employee)
+                .approval(approval)
+                .build());
 
-        approvalRepository.save(approval);
-
-        VacationHistory vacation = dto.toEntity(employee, approval);
-        vacationRepository.save(vacation);
 
         return null;
     }

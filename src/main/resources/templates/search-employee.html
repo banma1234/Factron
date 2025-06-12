@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>사원 검색</title>
+</head>
+<body>
+<div th:fragment="searchEmployee" class="border rounded p-3 mt-5">
+    <!-- TOAST UI import -->
+    <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+    <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+
+    <!-- form -->
+    <h5 class="mb-3">사원 검색</h5>
+    <div class="row g-2 align-items-center srhEmpForm">
+        <div class="col-md-2">
+            <select class="form-select" name="srhDepCode">
+                <option value="">전체</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select class="form-select" name="srhPosCode">
+                <option value="">전체</option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <input type="text" class="form-control" name="srhIdOrName" placeholder="사번 또는 이름을 입력해주세요">
+        </div>
+
+        <div class="col-md-2">
+            <button type="button" class="btn btn-outline-secondary w-100 srhEmpBtn">검색</button>
+        </div>
+    </div>
+
+    <!-- grid -->
+    <article class="mt-3">
+        <div id="srhEmpGrid">
+
+        </div>
+    </article>
+
+    <!-- js import -->
+    <script th:src="@{/js/search-employee.js}"></script>
+</div>
+</body>
+</html>

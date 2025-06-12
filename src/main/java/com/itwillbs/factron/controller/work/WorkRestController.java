@@ -38,8 +38,10 @@ public class WorkRestController {
             return ResponseDTO.success("근무 등록 결재 신청이 완료되었습니다!", workService.registWork(requestWorkDTO));
         } catch (NoSuchElementException nse) {
             return ResponseDTO.fail(800, nse.getMessage(), null);
+        } catch (IllegalArgumentException iae) {
+            return ResponseDTO.fail(801, iae.getMessage(), null);
         } catch (Exception e) {
-            return ResponseDTO.fail(801, "근무 등록에 실패했습니다.", null);
+            return ResponseDTO.fail(802, "근무 등록에 실패했습니다.", null);
         }
     }
 }
