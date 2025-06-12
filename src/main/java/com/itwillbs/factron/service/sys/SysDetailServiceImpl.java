@@ -24,14 +24,14 @@ public class SysDetailServiceImpl implements SysDetailService {
 
     /**
      * 상세공통코드 목록호출
-     * @param id 상세공통코드 ID
+     * @param String 상세공통코드 ID
      * @return responseDetailDTO 반환 DTO
      * */
     @Override
-    public List<ResponseSysDetailDTO> getAllDetailByMainCode(Long id) {
+    public List<ResponseSysDetailDTO> getAllDetailByMainCode(String mainCode) {
 
         List<DetailSysCode> details = detailSysCodeRepository
-                .findBySysCode_Id(id)
+                .findByMainCode(mainCode)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 상세코드입니다."));
 
         return toDetailDTOList(details);

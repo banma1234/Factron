@@ -101,7 +101,7 @@ const getMainCode = async () => {
 * */
 const getDetailCode = async (mainCode) => {
     try {
-        const res = await fetch(`/api/sys/detail?id=${mainCode}`, {
+        const res = await fetch(`/api/sys/detail?mainCode=${mainCode}`, {
             method: 'GET',
             headers: {
                 "Content-Type": "application/json"
@@ -132,7 +132,7 @@ const sysInit = () => {
             const rowKey = e.rowKey;
             selectedRowData = mainGrid.getRow(rowKey);
 
-            getDetailCode(selectedRowData.id).then(res => {
+            getDetailCode(selectedRowData.main_code).then(res => {
                 detailGrid.resetData(res.data);
 
                 setDetailGridEvent();
@@ -155,8 +155,7 @@ const refreshDataOnPopup = async () => {
 
     if (selectedRowData) {
         console.log(selectedRowData);
-        await getDetailCode(selectedRowData.id).then(res => {
-            console.log(res);
+        await getDetailCode(selectedRowData.main_code).then(res => {
             detailGrid.resetData(res.data);
         })
     }
@@ -168,7 +167,7 @@ const openUpdatePopup = (isEditMode) => {
 
     if (!rowData) {
         url += "main"
-    }else if (!rowData.detail_code && isEditMode) {
+    } else if (!rowData.detail_code && isEditMode) {
         url += "main"
     } else {
         url += "detail";
