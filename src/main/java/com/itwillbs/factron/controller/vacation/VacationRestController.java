@@ -5,13 +5,11 @@ import com.itwillbs.factron.dto.vacation.VacationRequestDTO;
 import com.itwillbs.factron.dto.vacation.VacationResponseDTO;
 import com.itwillbs.factron.service.vacation.VacationService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 
-@Log4j2
 @RestController
 @RequestMapping("/api/vacation")
 @RequiredArgsConstructor
@@ -22,7 +20,6 @@ public class VacationRestController {
     //조건 검색
     @GetMapping()
     public ResponseDTO<List<VacationResponseDTO>> getMyVacations(VacationRequestDTO dto) {
-        log.info("srhIdOrName 확인 :{}", dto.getSrhIdOrName());
         try {
             return ResponseDTO.success(vacationService.getMyVacations(dto));
         } catch (Exception e) {

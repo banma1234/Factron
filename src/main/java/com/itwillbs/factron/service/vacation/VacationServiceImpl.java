@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
-@Log4j2
 @Service
 @RequiredArgsConstructor
 public class VacationServiceImpl implements VacationService {
@@ -31,7 +30,6 @@ public class VacationServiceImpl implements VacationService {
 
     @Override
     public List<VacationResponseDTO> getMyVacations(VacationRequestDTO dto) {
-        log.info("사번또는 이름:{}", dto.getSrhIdOrName());
         return vacationMapper.getVacations(dto);
     }
 
