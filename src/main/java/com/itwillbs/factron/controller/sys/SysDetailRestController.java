@@ -20,18 +20,18 @@ public class SysDetailRestController {
     private final SysDetailServiceImpl sysDetailService;
 
     @GetMapping("")
-    public ResponseDTO<List<ResponseSysDetailDTO>> getDetailById(@Valid @RequestParam Long id) {
+    public ResponseDTO<List<ResponseSysDetailDTO>> getDetailById(@Valid @RequestParam String mainCode) {
 
         try {
             List<ResponseSysDetailDTO> detailList = sysDetailService
-                    .getAllDetailByMainCode(id);
+                    .getAllDetailByMainCode(mainCode);
 
             return ResponseDTO.success(detailList);
         } catch (Exception e) {
             return ResponseDTO.fail(
                     800,
                     "존재하지 않는 메인코드입니다.",
-                    sysDetailService.getAllDetailByMainCode(id)
+                    sysDetailService.getAllDetailByMainCode(mainCode)
             );
         }
     }

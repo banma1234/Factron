@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface DetailSysCodeRepository extends JpaRepository<DetailSysCode, Long> {
-    Optional<List<DetailSysCode>> findBySysCode_Id(Long id);
+    Optional<List<DetailSysCode>> findByMainCode(String mainCode);
 
     Optional<DetailSysCode> findByDetailCode(String detailCode);
 }

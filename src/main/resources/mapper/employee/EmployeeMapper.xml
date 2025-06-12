@@ -6,11 +6,12 @@
 <mapper namespace="com.itwillbs.factron.mapper.employee.EmployeeMapper">
 
     <!-- 테스트 목록 조회 -->
-    <select id="com.itwillbs.factron.mapper.employee.EmployeeMapper.getEmployeeList" parameterType="com.itwillbs.factron.dto.employee.EmployeeRequestDTO" resultType="com.itwillbs.factron.dto.employee.EmployeeResponseDTO">
+    <select id="com.itwillbs.factron.mapper.employee.EmployeeMapper.getEmployeeList" parameterType="com.itwillbs.factron.dto.employee.RequestEmployeeSrhDTO" resultType="com.itwillbs.factron.dto.employee.ResponseEmployeeSrhDTO">
         SELECT
             e.id AS empId,
             e.name AS empName,
-            e.birth || '-' || e.rrn_back AS residentRegistrationNumber,
+            e.birth,
+            e.rrn_back,
             e.gender,
             e.email,
             e.edu_level_code,
@@ -47,7 +48,7 @@
             </if>
 
         </where>
-        ORDER BY e.id DESC
+        ORDER BY i.is_active DESC, e.id DESC
     </select>
 
 </mapper>

@@ -20,8 +20,13 @@
             <div class="vacation__date-inputs">
                 <input class="form-control" type="date" name="startDate" id="startDate">
                 <input class="form-control" type="date" name="endDate" id="endDate">
+                <select class="form-select" name="srhDeptCode">
+                    <option value="">전체</option>
+                </select>
             </div>
+
             <div class="vacation__search-btn">
+                <input class="form-control" type="text" name="srhIdOrName" placeholder="이름 또는 사번 입력">
                 <button class="btn btn-outline-secondary srhBtn" type="button">검색</button>
             </div>
         </form>
@@ -34,10 +39,6 @@
 </div>
 
 <th:block layout:fragment="javascript">
-    <script th:inline="javascript">
-        const vacationData = [[${vacations}]];
-        console.log("vacationData 데이터 확인 >>  ", vacationData);
-    </script>
     <script th:src="@{/js/vacation/vacation.js}">
     </script>
 </th:block>
