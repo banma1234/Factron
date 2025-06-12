@@ -28,7 +28,7 @@ const initMainGrid = () => {
         el: document.getElementById('grid_main'),
         scrollX: false,
         scrollY: true,
-        minBodyHeight: 30,
+        bodyHeight: 400,
         rowHeaders: ['rowNum'],
         columns: [
             {
@@ -56,7 +56,7 @@ const initDetailGrid = () => {
         el: document.getElementById('grid_detail'),
         scrollX: false,
         scrollY: true,
-        minBodyHeight: 30,
+        bodyHeight: 400,
         rowHeaders: ['rowNum'],
         columns: [
             {

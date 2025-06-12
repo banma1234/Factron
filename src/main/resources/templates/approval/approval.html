@@ -4,30 +4,26 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base.html}">
 <head>
-    <title>test page</title>
+    <title>Factron</title>
     <th:block layout:fragment="style">
         <link rel="stylesheet" th:href="@{/css/approval/approval.css}" />
-        <!--        <link rel="stylesheet" th:href="@{/css/test.css}" />-->
     </th:block>
 </head>
 <body>
 <div layout:fragment="content">
     <section>
-        <h4 class="wow">전자결재</h4>
-        <form class="test__form">
-            <div class="test__select__container">
-<!--                발행일자 필터(시작)-->
+        <h4 class="page__name">인사 결재 목록</h4>
+        <form class="search__form mb-2">
+            <div class="select__container">
                 <input class="form-control" type="date" name="startDate">
-<!--                발행일자 필터(끝)-->
+                ~
                 <input class="form-control" type="date" name="endDate"><br/>
-<!--                결재유형 필터-->
                 <select class="form-select" name="APR">
                     <option value="">결재유형</option>
                     <option value="APR001">근무</option>
                     <option value="APR002">휴가</option>
                     <option value="APR003">발령</option>
                 </select>
-<!--                부서필터-->
                 <select class="form-select" name="DEP">
                     <option value="">부서</option>
                     <option value="DEP001">부서1</option>
@@ -35,7 +31,6 @@
                     <option value="DEP003">부서3</option>
                     <option value="DEP004">부서4</option>
                 </select>
-<!--                직급 필터-->
                 <select class="form-select" name="POS">
                     <option value="">직급</option>
                     <option value="POS001">사원</option>
@@ -44,9 +39,9 @@
                     <option value="POS004">차장</option>
                 </select>
             </div>
-<!--            사원/사원번호 필터-->
-            <div class="input-group mb-3">
-                <input class="form-control" type="text" name="srhName"><br/>
+
+            <div class="input-group">
+                <input class="form-control" type="text" name="srhName" placeholder="이름 또는 사원번호"><br/>
                 <button class="btn btn-outline-secondary srhBtn" type="button">검색</button>
             </div>
         </form>

@@ -26,7 +26,6 @@ const initGrid = (employees) => {
         scrollX: false,
         scrollY: true,
         bodyHeight: 400,
-        // rowHeaders: ['rowNum'],
         columns: [
             {
                 header: '번호',
