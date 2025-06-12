@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface SysDetailService {
 
-    List<ResponseSysDetailDTO> getAllDetailByMainCode(Long id);
+    List<ResponseSysDetailDTO> getAllDetailByMainCode(String mainCode);
 
     Void saveSysDetail(@Valid RequestSysDetailDTO requestSysDetailDTO);
 
