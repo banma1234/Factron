@@ -24,7 +24,7 @@ public class SysDetailServiceImpl implements SysDetailService {
 
     /**
      * 상세공통코드 목록호출
-     * @param String 상세공통코드 ID
+     * @param mainCode 상세공통코드 ID
      * @return responseDetailDTO 반환 DTO
      * */
     @Override
