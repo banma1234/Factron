@@ -4,7 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base.html}">
 <head>
-    <title>factron</title>
+    <title>Factron</title>
     <th:block layout:fragment="style">
         <link rel="stylesheet" th:href="@{/css/work/work.css}" />
     </th:block>
@@ -12,21 +12,21 @@
 <body>
 <div layout:fragment="content">
     <section>
-        <div class="commute-header-row">
-            <h4 class="wow">인사발령 관리</h4>
-            <button class="btn btn-info registTrans">발령</button>
+        <div class="header-row">
+            <h4 class="page__name">인사발령 관리</h4>
+            <button class="btn btn-primary registTrans">발령</button>
         </div>
-        <form class="test__form">
-            <div class="test__select__container">
+        <form class="search__form mb-2">
+            <div class="select__container">
                 <input class="form-control" type="date" name="srhStrDate">
                 ~
                 <input class="form-control" type="date" name="srhEndDate"><br/>
                 <select class="form-select" name="srhTrsTypeCode">
-                    <option value="">전체</option>
+                    <option value="">발령유형</option>
                 </select>
             </div>
-            <div class="input-group mb-3">
-                <input class="form-control" type="text" name="srhIdOrName" placeholder="사번 또는 이름을 입력해주세요"><br/>
+            <div class="input-group">
+                <input class="form-control" type="text" name="srhIdOrName" placeholder="이름 또는 사원번호"><br/>
                 <button class="btn btn-outline-secondary srhBtn" type="button">검색</button>
             </div>
         </form>

@@ -4,7 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base.html}">
 <head>
-    <title>commute_history page</title>
+    <title>Factron</title>
     <th:block layout:fragment="style">
     </th:block>
 </head>
@@ -12,18 +12,18 @@
 <div layout:fragment="content">
     <section>
 
-        <div class="commute-header-row">
-            <h4 class="wow">출퇴근 관리</h4>
+        <div class="header-row">
+            <h4 class="page__name">출퇴근 현황</h4>
 
             <!-- 출근 버튼: 출근 전(NONE)만 노출 -->
             <span th:if="${commuteStatus == 'NONE'}">
-                <button class="btn btn-warning cmInBtn"
+                <button class="btn btn-primary cmInBtn"
                         type="button">출근</button>
             </span>
 
             <!-- 퇴근 버튼: 출근 후(IN) 또는 퇴근 완료(DONE)일 때 노출 -->
             <span class="commuteOutBtn" th:if="${commuteStatus == 'IN' or commuteStatus == 'DONE'}">
-                <button class="btn btn-warning cmOutBtn"
+                <button class="btn btn-primary cmOutBtn"
                         type="button"
                         th:disabled="${commuteStatus == 'DONE'}">퇴근</button>
             </span>
@@ -42,21 +42,21 @@
             </div>
         </div>
 
-        <form class="test__form">
-            <div class="test__select__container">
+        <form class="search__form mb-2">
+            <div class="select__container">
                 <input class="form-control" type="date" name="srhStartDate">
                 <div>~</div>
                 <input class="form-control" type="date" name="srhEndDate">
                 <select class="form-select" name="srhDepartment">
-                    <option value="">부서 선택</option>
+                    <option value="">부서</option>
                     <option value="DEP001">인사</option>
                     <option value="DEP002">영업</option>
                     <option value="DEP003">개발</option>
                     <option value="DEP004">재무</option>
                 </select>
             </div>
-            <div class="input-group mb-3">
-                <input class="form-control" type="text" name="srhNameOrId" placeholder="이름 또는 사번 입력">
+            <div class="input-group">
+                <input class="form-control" type="text" name="srhNameOrId" placeholder="이름 또는 사원번호">
                 <button class="btn btn-outline-secondary srhBtn" type="button">검색</button>
             </div>
         </form>
