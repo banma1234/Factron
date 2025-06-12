@@ -81,9 +81,9 @@ const initDetailGrid = () => {
 /*
 * 메인코드 불러오는 api
 * */
-const getMainCode = async () => {
+const getMainCode = async (mainCode) => {
     try {
-        const res = await fetch(`/api/sys/main`, {
+        const res = await fetch(`/api/sys/main?mainCode=${mainCode}`, {
             method: 'GET',
             headers: {
                 "Content-Type": "application/json"
@@ -99,9 +99,9 @@ const getMainCode = async () => {
 /*
 * 상세코드 불러오는 api
 * */
-const getDetailCode = async (mainCode) => {
+const getDetailCode = async (mainCode, name) => {
     try {
-        const res = await fetch(`/api/sys/detail?mainCode=${mainCode}`, {
+        const res = await fetch(`/api/sys/detail?mainCode=${mainCode}&name=${name}`, {
             method: 'GET',
             headers: {
                 "Content-Type": "application/json"
@@ -132,7 +132,7 @@ const sysInit = () => {
             const rowKey = e.rowKey;
             selectedRowData = mainGrid.getRow(rowKey);
 
-            getDetailCode(selectedRowData.main_code).then(res => {
+            getDetailCode(selectedRowData.main_code, "").then(res => {
                 detailGrid.resetData(res.data);
 
                 setDetailGridEvent();
@@ -140,7 +140,7 @@ const sysInit = () => {
         });
     }
 
-    getMainCode().then(res => {
+    getMainCode("").then(res => {
         mainGrid.resetData(res.data);
 
         setMainGridEvent();
@@ -148,19 +148,26 @@ const sysInit = () => {
 
 };
 
+/**
+ *
+ * */
 const refreshDataOnPopup = async () => {
-    await getMainCode().then(res => {
+    await getMainCode("").then(res => {
         mainGrid.resetData(res.data);
     })
 
     if (selectedRowData) {
-        console.log(selectedRowData);
-        await getDetailCode(selectedRowData.main_code).then(res => {
+        await getDetailCode(selectedRowData.main_code, "").then(res => {
             detailGrid.resetData(res.data);
         })
     }
 };
 
+/**
+ * 팝업창 오픈 - 수정모드
+ * @param isEditMode 수정모드 여부
+ * @return void
+ * */
 const openUpdatePopup = (isEditMode) => {
     const rowData = selectedRowData || undefined;
     let url = "/sys/sys-form?target=";
@@ -179,7 +186,9 @@ const openUpdatePopup = (isEditMode) => {
         'width=800,height=400'
     );
 
-    // 자식 창으로부터 'ready' 먼저 수신 후 postMessage 실행
+    /**
+     * 팝업창에 데이터 전달
+     * */
     const messageHandler = (event) => {
         if (event.data === 'ready') {
 
@@ -198,16 +207,9 @@ const openUpdatePopup = (isEditMode) => {
     window.addEventListener("message", messageHandler);
 }
 
-document.querySelectorAll(".updateSysCodeBtn")
-    .forEach(btn => {
-        btn.addEventListener('click', e => {
-                e.preventDefault();
-                e.stopPropagation();
-
-                openUpdatePopup(true);
-            });
-    });
-
+/**
+ * sysCode 삽입 버튼
+ * */
 document.querySelector("button[name='postSysMainBtn']")
     .addEventListener('click', e => {
         e.preventDefault();
@@ -216,6 +218,9 @@ document.querySelector("button[name='postSysMainBtn']")
         openUpdatePopup(false);
     });
 
+/**
+ * detailSysCode 삽입 버튼
+ * */
 document.querySelector("button[name='postSysDetailBtn']")
     .addEventListener('click', e => {
         e.preventDefault();
@@ -224,8 +229,47 @@ document.querySelector("button[name='postSysDetailBtn']")
         openUpdatePopup(false);
     });
 
-window.sysInit = sysInit;
-window.refreshDataOnPopup = refreshDataOnPopup;
+/**
+ * sysCode 수정 버튼
+ * */
+document.querySelectorAll(".updateSysCodeBtn")
+    .forEach(btn => {
+        btn.addEventListener('click', e => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            openUpdatePopup(true);
+        });
+    });
+
+/**
+ * sysCode 검색(AJAX) 인풋
+ * */
+document.querySelector("input[name='srhMain']")
+    .addEventListener('input', e => {
+        e.preventDefault();
+        const keyword = e.target.value;
+
+        getMainCode(keyword).then(res => {
+            mainGrid.resetData(res.data);
+        })
+    });
+
+/**
+ * detailSysCode 검색(AJAX) 인풋
+ * */
+document.querySelector("input[name='srhDetail']")
+    .addEventListener('input', e => {
+        e.preventDefault();
+        const keyword = e.target.value;
+
+        getDetailCode(selectedRowData.main_code, keyword).then(res => {
+            detailGrid.resetData(res.data);
+        })
+    });
+
+window["sysInit"] = sysInit;
+window["refreshDataOnPopup"] = refreshDataOnPopup;
 
 window.onload = () => {
     sysInit();
