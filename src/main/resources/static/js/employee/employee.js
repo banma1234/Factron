@@ -103,10 +103,16 @@ const init = () => {
             e.stopPropagation();
             getEmployees();
         });
+
+        srhBtn.addEventListener("submit",(e)=>{
+            e.preventDefault();
+            e.stopPropagation();
+            getEmployees();
+        });
     }
 
     const addBtn = document.querySelector("button[name='addNewEmp']");
-    console.log(addBtn)
+
     if(addBtn){
         addBtn.addEventListener("click", (e) => {
             e.preventDefault();
@@ -156,7 +162,6 @@ const init = () => {
     }
 
     const addNewEmployee = () => {
-        console.log("Clicked")
         const popup = window.open('/employee-newForm', '_blank', 'width=800,height=750');
 
         if (!popup) {
