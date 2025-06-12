@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base.html}">
+<head>
+    <title>test page</title>
+    <th:block layout:fragment="style">
+        <link rel="stylesheet" th:href="@{/css/approval/approval.css}" />
+        <!--        <link rel="stylesheet" th:href="@{/css/test.css}" />-->
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <section>
+        <h4 class="wow">전자결재</h4>
+        <form class="test__form">
+            <div class="test__select__container">
+<!--                발행일자 필터(시작)-->
+                <input class="form-control" type="date" name="startDate">
+<!--                발행일자 필터(끝)-->
+                <input class="form-control" type="date" name="endDate"><br/>
+<!--                결재유형 필터-->
+                <select class="form-select" name="APR">
+                    <option value="">결재유형</option>
+                    <option value="APR001">근무</option>
+                    <option value="APR002">휴가</option>
+                    <option value="APR003">발령</option>
+                </select>
+<!--                부서필터-->
+                <select class="form-select" name="DEP">
+                    <option value="">부서</option>
+                    <option value="DEP001">부서1</option>
+                    <option value="DEP002">인사</option>
+                    <option value="DEP003">부서3</option>
+                    <option value="DEP004">부서4</option>
+                </select>
+<!--                직급 필터-->
+                <select class="form-select" name="POS">
+                    <option value="">직급</option>
+                    <option value="POS001">사원</option>
+                    <option value="POS002">대리</option>
+                    <option value="POS003">과장</option>
+                    <option value="POS004">차장</option>
+                </select>
+            </div>
+<!--            사원/사원번호 필터-->
+            <div class="input-group mb-3">
+                <input class="form-control" type="text" name="srhName"><br/>
+                <button class="btn btn-outline-secondary srhBtn" type="button">검색</button>
+            </div>
+        </form>
+<!--         전자결재 그리드 -->
+        <article>
+            <div class="filter-tab-container">
+                <button type="button" class="filter-tab active" data-status="ALL">전체결재</button>
+                <button type="button" class="filter-tab" data-status="APV001">결재대기</button>
+                <button type="button" class="filter-tab" data-status="APPROVED">결재승인</button>
+            </div>
+            <div id="approvalGrid">
+
+            </div>
+        </article>
+    </section>
+</div>
+
+<th:block layout:fragment="javascript">
+    <!-- js import -->
+    <script th:src="@{/js/approval/approval.js}"></script>
+</th:block>
+</body>
+</html>

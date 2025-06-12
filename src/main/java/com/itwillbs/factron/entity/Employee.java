@@ -66,6 +66,15 @@ public class Employee extends BaseEntity {
     @Column(name = "edu_level_code", length = 6, nullable = false)
     private String eduLevelCode;
 
+    public void updatePositionCode(String newPositionCode) {
+        this.positionCode = newPositionCode;
+    }
+
+    public void updateDeptCode(String newDeptCode) {
+        this.deptCode = newDeptCode;
+    }
+
+
     /**
      * 일반 사원이 본인의 개인정보를 수정합니다.
      * @param reqEmpUpDto {@link RequestEmployeeUpdateDTO}
