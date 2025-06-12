@@ -4,7 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base.html}">
 <head>
-    <title>test page</title>
+    <title>Factron</title>
     <th:block layout:fragment="style">
 <!--        <link rel="stylesheet" th:href="@{/css/test.css}" />-->
     </th:block>
@@ -12,20 +12,20 @@
 <body>
 <div layout:fragment="content">
     <section>
-        <h4 class="wow">검색 (Search)</h4>
-        <form class="test__form">
-            <div class="test__select__container">
+        <h4 class="page__name">검색 (Search)</h4>
+        <form class="search__form mb-2">
+            <div class="select__container">
                 <input class="form-control" type="date" name="srhStrBirth">
                 <input class="form-control" type="date" name="srhEndBirth"><br/>
                 <select class="form-select" name="srhAddress">
-                    <option value="">전체</option>
+                    <option value="">선택</option>
                     <option value="busan">부산</option>
                     <option value="seoul">서울</option>
                     <option value="gyeongnam">경남</option>
                     <option value="gyeonggi">경기</option>
                 </select>
-                <select class="form-select" name="wow">
-                    <option value="">전체</option>
+                <select class="form-select">
+                    <option value="">선택</option>
                     <option value="busan">부산</option>
                     <option value="seoul">서울</option>
                     <option value="gyeongnam">경남</option>
@@ -33,7 +33,7 @@
                 </select>
             </div>
             <div class="input-group">
-                <input class="form-control" type="text" name="srhName"><br/>
+                <input class="form-control" type="text" name="srhName" placeholder="이름 또는 사원번호"><br/>
                 <button class="btn btn-outline-secondary srhBtn" type="button">검색</button>
             </div>
         </form>

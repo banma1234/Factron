@@ -95,7 +95,7 @@ const init = () => {
     }, false);
 
     // 엔터 시 검색
-    document.querySelector('.test__form').addEventListener('submit', function(e) {
+    document.querySelector('.search__form').addEventListener('submit', function(e) {
         e.preventDefault(); // 폼 제출(새로고침) 방지
 
         // 조회

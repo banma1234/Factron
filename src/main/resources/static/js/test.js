@@ -26,8 +26,8 @@ const initGrid = () => {
     return new Grid({
         el: document.getElementById('grid'),
         scrollX: false,
-        scrollY: false,
-        minBodyHeight: 30,
+        scrollY: true,
+        bodyHeight: 400,
         rowHeaders: ['rowNum'],
         columns: [
             {
