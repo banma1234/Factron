@@ -7,44 +7,58 @@
     <meta charset="UTF-8">
     <title>공통코드 관리</title>
     <th:block layout:fragment="style">
-      <link rel="stylesheet" th:href="@{/css/test.css}" />
+      <link rel="stylesheet" th:href="@{/css/sys/syscode.css}" />
     </th:block>
 </head>
 <body>
 <div layout:fragment="content">
-  <section>
-    <h1>공통코드 관리</h1>
-    <form class="test__form">
-      <div class="test__select__container">
-        <input class="form-control" type="date" name="srhStrBirth">
-        <input class="form-control" type="date" name="srhEndBirth"><br/>
-        <select class="form-select" name="srhAddress">
-          <option value="">전체</option>
-          <option value="busan">부산</option>
-          <option value="seoul">서울</option>
-          <option value="gyeongnam">경남</option>
-          <option value="gyeonggi">경기</option>
-        </select>
-        <select class="form-select" name="wow">
-          <option value="">전체</option>
-          <option value="busan">부산</option>
-          <option value="seoul">서울</option>
-          <option value="gyeongnam">경남</option>
-          <option value="gyeonggi">경기</option>
-        </select>
-      </div>
-      <div class="input-group mb-3">
-        <input class="form-control" type="text" name="srhName"><br/>
-        <button class="btn btn-outline-secondary srhBtn" type="button">검색</button>
-      </div>
-    </form>
-    <!-- list grid -->
-    <article>
-      <div id="grid">
+  <h2>공통코드 관리</h2>
+  <article class="sys__container">
+    <section class="sys__grid__container">
+      <form class="sys__form">
+        <input
+                class="form-control sysInput"
+                type="text"
+                name="srhDetail"
+                placeholder="구분코드"
+        >
+        <div class="test__select__container">
+          <button class="btn btn-primary" name="postSysMainBtn" type="button">추가</button>
+          <button class="btn btn-outline-primary updateSysCodeBtn" type="button">수정</button>
+        </div>
+      </form>
+      <!-- list grid -->
+      <article>
+        <div id="grid_main">
 
-      </div>
-    </article>
-  </section>
+        </div>
+      </article>
+    </section>
+    <section class="sys__grid__container">
+      <form class="sys__form">
+        <input
+                class="form-control sysInput"
+                type="text"
+                name="srhDetail"
+                placeholder="구분코드"
+        >
+        <div class="test__select__container">
+          <button class="btn btn-primary" name="postSysDetailBtn" type="button">추가</button>
+          <button class="btn btn-outline-primary updateSysCodeBtn" type="button">수정</button>
+        </div>
+      </form>
+      <!-- list grid -->
+      <article>
+        <div id="grid_detail">
+
+        </div>
+      </article>
+    </section>
+  </article>
 </div>
+<th:block layout:fragment="javascript">
+  <!-- js import -->
+  <script th:src="@{/js/sys/syscode.js}"></script>
+</th:block>
 </body>
 </html>

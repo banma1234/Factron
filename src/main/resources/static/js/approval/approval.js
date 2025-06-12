@@ -64,6 +64,16 @@ const initGrid = () => {
 const init = () => {
     testGrid = initGrid(); // 전역 변수 testGrid에 초기화된 그리드 인스턴스 할당
 
+    // 기본 날짜 설정
+    const today = new Date();
+    today.setHours(today.getHours() + 9);
+    const toDateStr = today.toISOString().split('T')[0];
+    const pastDate = new Date(today);
+    pastDate.setDate(pastDate.getDate() - 30);
+    const pastDateStr = pastDate.toISOString().split('T')[0];
+    const futureDate = new Date(today);
+    futureDate.setDate(futureDate.getDate() + 30);
+    const futureDateStr = futureDate.toISOString().split('T')[0];
     // 현재 사용자 정보 (예시: id와 인증코드 저장)
     const currentUser = {
         id: "1",
@@ -99,13 +109,23 @@ const init = () => {
         });
     });
 
-    // 검색 버튼 클릭 이벤트: 사용자가 검색 버튼을 클릭하면 데이터 조회 실행
+    document.querySelector('input[name="startDate"]').value = pastDateStr;
+    document.querySelector('input[name="endDate"]').value = futureDateStr;
+
+    // 사번/이름 Enter 검색
+    document.querySelector('input[name="srhName"]').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            getData().then(res => {
+                testGrid.resetData(res.data);
+            });
+        }
+    });
+
+    // 검색 버튼
     document.querySelector(".srhBtn").addEventListener("click", function (e) {
-        // 기본 이벤트 동작(폼 제출 등)을 막음
         e.preventDefault();
         e.stopPropagation();
-
-        // getData() 함수를 호출해 데이터를 조회하고, 응답 받은 데이터로 그리드를 갱신
         getData().then(res => {
             testGrid.resetData(res.data);
         });
@@ -176,7 +196,7 @@ const init = () => {
     window.getData = async function () {
         // 검색 폼에서 입력된 검색 조건 가져오기
         const startDate = document.querySelector("input[name='startDate']").value;
-        const endDate = document.querySelector("input[name='ednDate']").value;
+        const endDate = document.querySelector("input[name='endDate']").value;
         const apprType = document.querySelector("select[name='APR']").value;
         const dept = document.querySelector("select[name='DEP']").value;
         const position = document.querySelector("select[name='POS']").value;
@@ -235,6 +255,12 @@ const init = () => {
             alert("데이터를 불러오는 중 문제가 발생했습니다.\n입력 값을 확인하거나 관리자에게 문의하세요.");
         }
     }
+
+    // getData 정의까지 끝난 후에 마지막에 추가👇
+    getData().then(res => {
+        testGrid.resetData(res.data);
+        rawApprovalData = res.data;
+    });
 }
 
 // 페이지 로딩이 완료되면 init 함수 실행
