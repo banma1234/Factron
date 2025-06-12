@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base.html}">
+<head>
+    <title>commute_history page</title>
+    <th:block layout:fragment="style">
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <section>
+
+        <div class="commute-header-row">
+            <h4 class="wow">출퇴근 관리</h4>
+
+            <!-- 출근 버튼: 출근 전(NONE)만 노출 -->
+            <span th:if="${commuteStatus == 'NONE'}">
+                <button class="btn btn-warning cmInBtn"
+                        type="button">출근</button>
+            </span>
+
+            <!-- 퇴근 버튼: 출근 후(IN) 또는 퇴근 완료(DONE)일 때 노출 -->
+            <span class="commuteOutBtn" th:if="${commuteStatus == 'IN' or commuteStatus == 'DONE'}">
+                <button class="btn btn-warning cmOutBtn"
+                        type="button"
+                        th:disabled="${commuteStatus == 'DONE'}">퇴근</button>
+            </span>
+        </div>
+
+        <!-- 출퇴근 확인 모달 -->
+        <div class="modal fade commuteConfirmModal" tabindex="-1" aria-labelledby="commuteConfirmModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-body commuteConfirmMsg"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary commuteConfirmBtn">확인</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form class="test__form">
+            <div class="test__select__container">
+                <input class="form-control" type="date" name="srhStartDate">
+                <div>~</div>
+                <input class="form-control" type="date" name="srhEndDate">
+                <select class="form-select" name="srhDepartment">
+                    <option value="">부서 선택</option>
+                    <option value="DEP001">인사</option>
+                    <option value="DEP002">영업</option>
+                    <option value="DEP003">개발</option>
+                    <option value="DEP004">재무</option>
+                </select>
+            </div>
+            <div class="input-group mb-3">
+                <input class="form-control" type="text" name="srhNameOrId" placeholder="이름 또는 사번 입력">
+                <button class="btn btn-outline-secondary srhBtn" type="button">검색</button>
+            </div>
+        </form>
+        <!-- list grid -->
+        <article>
+            <div id="commuteHistoryGrid">
+
+            </div>
+        </article>
+    </section>
+</div>
+
+<th:block layout:fragment="javascript">
+    <!-- js import -->
+    <script th:src="@{/js/commute/commute_history.js}"></script>
+</th:block>
+</body>
+</html>

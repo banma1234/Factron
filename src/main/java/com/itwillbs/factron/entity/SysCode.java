@@ -19,7 +19,7 @@ public class SysCode extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(name = "main_code", length = 3, nullable = false)
+    @Column(name = "main_code", length = 3, nullable = false, unique = true)
     private String mainCode;
 
     @Column(name = "name", length = 200, nullable = false)

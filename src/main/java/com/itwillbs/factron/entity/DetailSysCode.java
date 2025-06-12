@@ -26,7 +26,7 @@ public class DetailSysCode extends BaseEntity{
     @Column(name = "main_code", length = 3, nullable = false)
     private String mainCode;
 
-    @Column(name = "detail_code", length = 6, nullable = false)
+    @Column(name = "detail_code", length = 6, nullable = false, unique = true)
     private String detailCode;
 
     @Column(name = "name", length = 200, nullable = false)

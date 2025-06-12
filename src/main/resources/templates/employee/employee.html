@@ -14,33 +14,23 @@
     <section>
         <div class="test__form">
             <h4 class="wow">사원 관리</h4>
-            <button class="btn btn-primary modBtn" type="button">사원 추가</button>
+            <button class="btn btn-primary modBtn" name="addNewEmp" type="button">사원 추가</button>
         </div>
         <form class="test__form" method="get">
             <div class="test__select__container">
-                <div class="search__option__title">부서</div>
+
                 <select class="form-select" name="deptCode">
                     <option value="">전체</option>
-                    <option value="DPT001">부산</option>
-                    <option value="DPT001">서울</option>
-                    <option value="DPT001">경남</option>
-                    <option value="DPT001">경기</option>
+                    <option value="DPT001">인사</option>
                 </select>
-                <div class="search__option__title">직급</div>
                 <select class="form-select" name="positionCode">
                     <option value="">전체</option>
-                    <option value="EMP001">부산</option>
-                    <option value="EMP001">서울</option>
-                    <option value="EMP001">경남</option>
-                    <option value="EMP001">경기</option>
+                    <option value="EMP001">사원</option>
                 </select>
-                <div class="search__option__title">재직 상태</div>
                 <select class="form-select" name="isActive">
                     <option value="">전체</option>
-                    <option value="y">부산</option>
-                    <option value="y">서울</option>
-                    <option value="y">경남</option>
-                    <option value="y">경기</option>
+                    <option value="Y">재직</option>
+                    <option value="N">퇴직</option>
                 </select>
             </div>
             <div class="input-group mb-3">

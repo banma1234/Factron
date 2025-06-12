@@ -49,3 +49,24 @@ const toggleSidebar = () => {
     sidebar.classList.toggle('active');
     overlay.classList.toggle('active');
 }
+
+// 페이지 이동 시 url에 맞는 메뉴 열기
+document.addEventListener('DOMContentLoaded', function () {
+    const menuItems = document.querySelectorAll('a.sub-link');
+    const currentUrl = window.location.pathname;
+
+    menuItems.forEach(function(menuItem) {
+        const menuLink = menuItem.getAttribute('href');
+
+        if (currentUrl === menuLink || currentUrl === menuLink + '/') {
+            // 서브 링크에 active 클래스 추가
+            menuItem.classList.add('active');
+
+            // 상위 메뉴 열기
+            const navItem = menuItem.closest('.nav-item');
+            if (navItem) {
+                navItem.classList.add('open');
+            }
+        }
+    });
+});

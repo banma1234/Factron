@@ -28,7 +28,7 @@ public class IntergratAuth {
     @Column(name = "is_active", length = 1, nullable = false)
     private String isActive;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false)
     private Employee employee;
 }
