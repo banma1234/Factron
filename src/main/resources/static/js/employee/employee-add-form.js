@@ -60,9 +60,9 @@ const isValidCommonCode = (code) => {
 //     return status === 'Y' || status === 'N';
 // }
 //
-// const isValidDate = (date) => {
-//     return /^\d{4}-\d{2}-\d{2}$/.test(date) || date === null
-// }
+const isValidDate = (date) => {
+    return /^\d{4}-\d{2}-\d{2}$/.test(date) || date === null
+}
 
 
 
@@ -73,7 +73,16 @@ const init = () => {
     const confirmedModalBtn = document.getElementsByClassName("confirmModalBtn")[0];
     const alertModal = new bootstrap.Modal(document.getElementsByClassName("alertModal")[0]);
     const alertBtn = document.getElementsByClassName("alertBtn")[0];
+    const isActive = document.querySelector("select[name='isActive']");
+    const joinedDate = document.querySelector("input[name='joinedDate']")
+    isActive.value = 'Y';
 
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0'); // 0부터 시작하므로 +1
+    const dd = String(today.getDate()).padStart(2, '0');
+    const formattedToday = `${yyyy}-${mm}-${dd}`;
+    joinedDate.value = formattedToday;
 
     // 주소 input 클릭
     form.querySelector("input[name='address']").addEventListener("click", (e) => {
@@ -115,15 +124,16 @@ const init = () => {
             console.log("invalid position code");
             return
         }
-        if( isActive.value !== null ) {
+        if( isActive.value == null ) {
             console.log("invalid employee status");
             return
         }
-        if( joinedDate.value !== null ) {
+        if( !isValidDate(joinedDate.value) ) {
             console.log("join date must be empty");
             return
         }
-        if( quittedDate.value !== null) {
+        if( quittedDate.value !== '') {
+            console.log(quittedDate.value)
             console.log("quit date must be empty");
             return
         }

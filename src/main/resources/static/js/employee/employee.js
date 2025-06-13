@@ -90,10 +90,113 @@ const removeHyphens = (phoneNumber) => {
     return phoneNumber.replace(/-/g, '');
 }
 
+// 공통코드 목록 조회
+const getSysCodeList = async (mainCode)  =>  {
+    const res = await fetch(`/api/sys/detail?mainCode=${mainCode}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    return res.json();
+}
+
+const setSelectBox = (mainCode, selectName) => {
+    const selectElement = document.querySelector(`select[name="${selectName}"]`);
+
+    getSysCodeList(mainCode).then((data) => {
+        console.log(data);
+        data.forEach((code) => {
+            const optionElement = document.createElement("option");
+            optionElement.value = code.detailCode;
+            optionElement.textContent = code.name;
+
+            selectElement.appendChild(optionElement);
+        });
+    });
+};
+
+// 부서 세팅
+getSysCodeList("DEP").then(res => {
+    const selectElement = document.querySelector("select[name='srhDeptCode']");
+
+    // 하드코딩
+    const data = [
+        {
+            "detailCode": "DEP001",
+            "name": "인사부"
+        },
+        {
+            "detailCode": "DEP002",
+            "name": "개발부"
+        },
+        {
+            "detailCode": "DEP003",
+            "name": "영업부"
+        },
+        {
+            "detailCode": "DEP004",
+            "name": "생산부"
+        }
+    ];
+
+    // for(const dept of res.data) {
+    for(const dept of data) {
+        const optionElement = document.createElement("option");
+        optionElement.value = dept.detailCode;  // 코드
+        optionElement.textContent = dept.name;  // 이름
+
+        selectElement.appendChild(optionElement);
+    }
+}).catch(e => {
+    console.error(e);
+});
+
+// 근무유형 세팅
+getSysCodeList("WRK").then(res => {
+    const selectElement = document.querySelector("select[name='srhWorkCode']");
+
+    // 하드코딩
+    const data = [
+        {
+            "detailCode": "WRK001",
+            "name": "일반근무"
+        },
+        {
+            "detailCode": "WRK002",
+            "name": "외근"
+        },
+        {
+            "detailCode": "WRK003",
+            "name": "야근"
+        },
+        {
+            "detailCode": "WRK004",
+            "name": "특근"
+        }
+    ];
+
+    // for(const work of res.data) {
+    for(const work of data) {
+        const optionElement = document.createElement("option");
+        optionElement.value = work.detailCode;  // 코드
+        optionElement.textContent = work.name;  // 이름
+
+        selectElement.appendChild(optionElement);
+    }
+}).catch(e => {
+    console.error(e);
+});
+
+// 페이지 진입 시 바로 리스트 호출
+getData().then(res => {
+    workGrid.resetData(res.data); // grid에 세팅
+});
+
 const init = () => {
     const employeeGrid = initGrid(); // grid 초기 세팅
     getEmployees(); //초기 사원 리스트 호출
-
+    setSelectBox("DEP", 'deptCode');
     // 버튼에사원 조회 API 호출 기능 추가
     const srhBtn = document.querySelector(".empSrhBtn");
 
@@ -151,8 +254,9 @@ const init = () => {
         }).then(res => res.json())
         .then(res => {
             if(res.status === 200){
-                console.log(res.data)
                 return employeeGrid.resetData(res.data); // grid에 세팅
+            }else{
+                alert(res.message);
             }
             return employeeGrid.resetData([]);
         })
