@@ -34,11 +34,11 @@
         LEFT JOIN detail_sys_code emp ON e.employ_code = emp.detail_code
         LEFT JOIN detail_sys_code dept ON e.dept_code = dept.detail_code
         <where>
-            <if test="dept != null and dept != ''">
-                AND e.dept_code = #{dept}
+            <if test="deptCode != null and deptCode != ''">
+                AND e.dept_code = #{deptCode}
             </if>
-            <if test="position != null and position != ''">
-                AND e.position_code = #{position}
+            <if test="positionCode != null and positionCode != ''">
+                AND e.position_code = #{positionCode}
             </if>
             <if test="empIsActive != null and empIsActive != ''">
                 AND i.is_active = #{empIsActive}

@@ -8,6 +8,42 @@ function toUpperCase(str) {
     return str.toUpperCase();
 }
 
+// 공통코드 목록 조회
+const getSysCodeList = async (mainCode)  =>  {
+    const res = await fetch(`/api/sys/detail?mainCode=${mainCode}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    return res.json();
+}
+
+const setSelectBox = async (mainCode, selectTagName) => {
+
+
+    await getSysCodeList(mainCode).then((data) => {
+
+        const selectTag = document.querySelector(`select[name=${selectTagName}]`)
+        if(data.status === 200){
+            console.log(data.data)
+            data.data.forEach((code) => {
+                const optionElement = document.createElement("option");
+                optionElement.value = code.detail_code;
+                optionElement.textContent = code.name;
+
+                if(selectTag){
+                    selectTag.appendChild(optionElement);
+                }
+
+            });
+        }else{
+            alert("공통코드 부르기 실패!")
+        }
+
+    });
+};
+
 const isValidName = (name) => {
     return (/^[가-힣a-zA-Z\s]+$/.test(name));
 }
