@@ -24,14 +24,14 @@ public interface EmployeeService {
      * @param reqEmployeeDTO {@link RequestEmployeeUpdateDTO}
      * @return Void
      */
-    Void updateEmployee(RequestEmployeeUpdateDTO reqEmployeeDTO);
+    void updateEmployee(RequestEmployeeUpdateDTO reqEmployeeDTO);
 
     /**
      * 새로운 사원 추가
      * @param reqEmployeeNewDTO {@link RequestEmployeeNewDTO}
      * @return Void
      */
-    Void addNewEmployee(RequestEmployeeNewDTO reqEmployeeNewDTO);
+    void addNewEmployee(RequestEmployeeNewDTO reqEmployeeNewDTO);
 
 }
 

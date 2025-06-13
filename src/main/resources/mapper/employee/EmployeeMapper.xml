@@ -6,7 +6,7 @@
 <mapper namespace="com.itwillbs.factron.mapper.employee.EmployeeMapper">
 
     <!-- 테스트 목록 조회 -->
-    <select id="com.itwillbs.factron.mapper.employee.EmployeeMapper.getEmployeeList" parameterType="com.itwillbs.factron.dto.employee.RequestEmployeeSrhDTO" resultType="com.itwillbs.factron.dto.employee.ResponseEmployeeSrhDTO">
+    <select id="getEmployeeList" parameterType="com.itwillbs.factron.dto.employee.RequestEmployeeSrhDTO" resultType="com.itwillbs.factron.dto.employee.ResponseEmployeeSrhDTO">
         SELECT
             e.id AS empId,
             e.name AS empName,
@@ -35,7 +35,7 @@
         LEFT JOIN detail_sys_code dept ON e.dept_code = dept.detail_code
         <where>
             <if test="dept != null and dept != ''">
-                AND dept_code LIKE '%' || #{dept} || '%'
+                AND e.dept_code = #{dept}
             </if>
             <if test="position != null and position != ''">
                 AND e.position_code = #{position}
@@ -44,7 +44,10 @@
                 AND i.is_active = #{empIsActive}
             </if>
             <if test="nameOrId != null and nameOrId != ''">
-                AND e.name = #{nameOrId} or e.id=#{nameOrId}
+                AND (
+                LOWER(e.name) LIKE '%' || LOWER(#{nameOrId}) || '%'
+                OR TO_CHAR(e.id) LIKE '%' || #{nameOrId} || '%'
+                )
             </if>
 
         </where>

@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,6 +45,10 @@ public class EmployeeServiceImpl implements EmployeeService {
                                     .stream()
                                     .map(dto -> {
                                         dto.setRrnBack(aesUtil.decrypt(dto.getRrnBack()));
+                                        dto.setJoinedDate(dateParse(dto.getJoinedDate()));
+                                        if(dto.getQuitDate() != null){
+                                            dto.setQuitDate(dateParse(dto.getQuitDate()));
+                                        }
                                         return dto;
                                     })
                                     .collect(Collectors.toList());
@@ -55,7 +61,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Override
     @Transactional
-    public Void updateEmployee(RequestEmployeeUpdateDTO reqEmployeeDTO) {
+    public void updateEmployee(RequestEmployeeUpdateDTO reqEmployeeDTO) {
         Employee emp = employeeRepository.findById(reqEmployeeDTO.getEmpId()).orElseThrow(
                 ()-> new EntityNotFoundException("사원번호: " + reqEmployeeDTO.getEmpId() + " 조회 결과가 없습니다.")
         );
@@ -78,9 +84,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         if(reqEmployeeDTO.getAddress() == null || reqEmployeeDTO.getAddress().isEmpty())
             reqEmployeeDTO.setAddress(emp.getAddress());
 
-        if(reqEmployeeDTO.getEmpIsActive() == null || reqEmployeeDTO.getEmpIsActive().isEmpty())
+        if(reqEmployeeDTO.getEmpIsActive() == null || reqEmployeeDTO.getEmpIsActive().isEmpty()
+                || !validActive(reqEmployeeDTO.getEmpIsActive().toUpperCase()).isEmpty())
             reqEmployeeDTO.setEmpIsActive("Y");
-        reqEmployeeDTO.getEmpIsActive().toUpperCase();
 
         if(reqEmployeeDTO.getEmployeCode() == null || reqEmployeeDTO.getEmployeCode().isEmpty())
             reqEmployeeDTO.setEmployeCode(emp.getEmployCode());
@@ -89,7 +95,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         if(false)
             emp.updateTranfEmployeeInfo(reqEmployeeDTO);
         emp.updateNormEmployeeInfo(reqEmployeeDTO);
-        return null;
     }
 
     /**
@@ -99,7 +104,16 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Override
     @Transactional
-    public Void addNewEmployee(RequestEmployeeNewDTO reqEmployeeNewDTO){
+    public void addNewEmployee(RequestEmployeeNewDTO reqEmployeeNewDTO){
+
+        if(employeeRepository.existsByEmail(reqEmployeeNewDTO.getEmail())){
+            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+        }
+
+        if(employeeRepository.existsByPhone(reqEmployeeNewDTO.getPhone())){
+            throw new IllegalArgumentException("이미 존재하는 전화번호입니다.");
+        }
+
         // 새 아이디 생성
         Long newId = generateEmployeeId();
 
@@ -114,9 +128,10 @@ public class EmployeeServiceImpl implements EmployeeService {
                 ()-> new EntityNotFoundException("It does not exist")
         );
 
+
+
         IntergratAuth newIntergratAuth = reqEmployeeNewDTO.toIntergratAuth(newEmp);
         intergratAuthRepository.save(newIntergratAuth);
-        return null;
     }
 
     // 공백 제거
@@ -127,7 +142,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     // 재직여부 확인
     private String validActive(String str){
         String trimmed = safeTrim(str);
-        if (trimmed.equals("")) return trimmed;
+        if (trimmed.isEmpty()) return trimmed;
         return ((trimmed.equals("Y")  || trimmed.equals("N")) ) ?  trimmed: "";
     }
 
@@ -140,8 +155,26 @@ public class EmployeeServiceImpl implements EmployeeService {
         return "";
     }
 
-    private String dateParse (String dateTime){
-        return dateTime.split("T")[0];
+    private String dateParse(String dateTime) {
+        try{
+            if (dateTime.contains(" ")) {
+                // "2025-06-13 00:00:00" 형태
+                LocalDateTime parsed = LocalDateTime.parse(dateTime.replace(' ', 'T'));
+                return parsed.toLocalDate().toString();
+            } else if (dateTime.contains("T")) {
+                // "2025-06-13T00:00:00" 형태
+                LocalDateTime parsed = LocalDateTime.parse(dateTime);
+                return parsed.toLocalDate().toString();
+            } else if (dateTime.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                // "2025-06-13" 형태
+                return dateTime;
+            }
+        } catch (Exception e) {
+            // 포맷 에러 처리
+            throw new IllegalArgumentException("Invalid date format: " + dateTime, e);
+        }
+
+       throw new RuntimeException("Invalid date format: " + dateTime);
     }
 
 

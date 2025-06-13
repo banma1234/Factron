@@ -29,14 +29,15 @@ public class EmployeeRestController {
     // 사원 리스트 호출 API
     @GetMapping("")
     public ResponseDTO<List<ResponseEmployeeSrhDTO>> getEmployees(@ModelAttribute RequestEmployeeSrhDTO reqEmployeeDTO) {
-//        log.info("EmpRestController getEmployees reqEmployeeDTO: "+reqEmployeeDTO);
+        log.info(reqEmployeeDTO);
         try {
             List<ResponseEmployeeSrhDTO> employees = employeeService.getEmployees(reqEmployeeDTO);
+            log.info(employees);
             return ResponseDTO.success(employees);
         } catch (IllegalArgumentException e) {
-            return ResponseDTO.fail(400, e.getMessage(), new ArrayList<>());
+            return ResponseDTO.fail(400, e.getMessage(), null);
         } catch (Exception e) {
-            return ResponseDTO.fail(500, "서버 오류가 발생했습니다.", new ArrayList<>());
+            return ResponseDTO.fail(500, e.getMessage(), null);
         }
     }
 
@@ -47,9 +48,9 @@ public class EmployeeRestController {
      */
     @PutMapping("")
     public ResponseDTO<Void> updateEmployee(@RequestBody RequestEmployeeUpdateDTO requestEmployeeUpdateDTO) {
-//        log.info("EmployeeRestController updateEmployee input requestEmployeeUpdateDTO:" + requestEmployeeUpdateDTO);
         try{
-            return ResponseDTO.success("사원 정보가 저장되었습니다.",employeeService.updateEmployee(requestEmployeeUpdateDTO));
+            employeeService.updateEmployee(requestEmployeeUpdateDTO);
+            return ResponseDTO.success("사원 정보가 저장되었습니다.",null);
         }catch (Exception e) {
             return ResponseDTO.fail(500, "서버 오류가 발생했습니다.", null);
         }
@@ -62,10 +63,13 @@ public class EmployeeRestController {
      */
     @PostMapping("")
     public ResponseDTO<Void> addEmployee(@RequestBody RequestEmployeeNewDTO reqEmployeeNewDTO) {
-        log.info("EmployeeRestController addEmployee input reqEmployeeNewDTO:" + reqEmployeeNewDTO.toString());
         try{
-            return ResponseDTO.success("사원이 추가되었습니다.", employeeService.addNewEmployee(reqEmployeeNewDTO));
-        }catch (Exception e) {
+            employeeService.addNewEmployee(reqEmployeeNewDTO);
+            return ResponseDTO.success("사원이 추가되었습니다.", null);
+        }catch(IllegalArgumentException e){
+            return ResponseDTO.fail(800, e.getMessage(), null);
+        }
+        catch (Exception e) {
             return  ResponseDTO.fail(500, "서버 오류가 발생했습니다.", null);
         }
     }
