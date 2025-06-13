@@ -10,11 +10,13 @@ const getEmpInfo = () => {
     const position = document.querySelector("select[name='positionCode']")
     const isActive = document.querySelector("select[name='isActive']")
     const joinedDate = document.querySelector("input[name='joinedDate']")
+    const quittedDate = document.querySelector("input[name='quitDate']")
     const employ = document.querySelector("select[name='employCode']")
     const dept = document.querySelector("select[name='deptCode']")
-    return [name, birth, rrnBack, email, address, phone, gender, eduLevel, position, isActive, joinedDate, employ, dept];
+    return [name, birth, rrnBack, email, address, phone, gender, eduLevel, position, isActive, joinedDate, employ, dept, quittedDate];
 }
 
+// 핸드폰 번호 저장 형식
 const formatPhoneNumber = (phone) => {
     phone = phone.replace(/\D/g, ""); // 숫자 외 제거
     if (phone.length < 4) return phone;
@@ -54,13 +56,13 @@ const isValidCommonCode = (code) => {
     return (/^[A-Z]{3}[0-9]{3}$/.test(code));
 }
 
-const isValidStatus = (status) => {
-    return status === 'Y' || status === 'N';
-}
-
-const isValidDate = (date) => {
-    return /^\d{4}-\d{2}-\d{2}$/.test(date) || date === null
-}
+// const isValidStatus = (status) => {
+//     return status === 'Y' || status === 'N';
+// }
+//
+// const isValidDate = (date) => {
+//     return /^\d{4}-\d{2}-\d{2}$/.test(date) || date === null
+// }
 
 
 
@@ -79,9 +81,8 @@ const init = () => {
     });
 
     confirmedAddBtn.addEventListener("click", () => {
-        console.log("confirmedAddBtn clicked")
-        const [name, birth, rrnBack, email, address, phone, gender, eduLevel, position, isActive, joinedDate, employ, dept] = getEmpInfo();
-        console.log(name)
+        const [name, birth, rrnBack, email, address, phone, gender, eduLevel, position, isActive, joinedDate, employ, dept, quittedDate] = getEmpInfo();
+
         if(!isValidName(name.value)) {
             console.log("wrong format for name");
             return;
@@ -114,12 +115,16 @@ const init = () => {
             console.log("invalid position code");
             return
         }
-        if(!isValidStatus(isActive.value)) {
+        if( isActive.value !== null ) {
             console.log("invalid employee status");
             return
         }
-        if(!isValidDate(joinedDate.value)) {
-            console.log("invalid date form");
+        if( joinedDate.value !== null ) {
+            console.log("join date must be empty");
+            return
+        }
+        if( quittedDate.value !== null) {
+            console.log("quit date must be empty");
             return
         }
         if(!isValidCommonCode(employ.value)) {
@@ -132,7 +137,6 @@ const init = () => {
         }
 
         confirmModal.show();
-        //
     })
 
     // 취소 버튼
@@ -156,18 +160,15 @@ const init = () => {
     confirmedModalBtn.addEventListener("click", () => {
             saveData()
             .then(res => {
-            if(res.status === 200) {
+            if(res.status !== 200) {
                 // ...
             } else {
                 // ...
             }
 
-
-            // btnModify.textContent = "저장";
-
             confirmModal.hide();
-            // document.querySelector(".alertModal .modal-body").textContent = "test"
-            // document.querySelector(".alertModal .modal-body").textContent = res.message;
+            document.querySelector(".alertModal .modal-body").textContent = "test"
+            document.querySelector(".alertModal .modal-body").textContent = res.message;
             alertModal.show();
         });
     });
@@ -195,7 +196,6 @@ const init = () => {
             data[input.name] = input.name !== 'phone' ? input.value: formatPhoneNumber(input.value)
         })
 
-        console.log(data)
         try {
             const res = await fetch(`/api/employee`, {
                 method: "POST",

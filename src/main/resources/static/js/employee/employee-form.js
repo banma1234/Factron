@@ -40,6 +40,10 @@ const formatPhoneNumber = (phone) => {
     return phone.replace(/(\d{3})(\d{3,4})(\d{4})/, "$1-$2-$3");
 }
 
+const isValidStatus = (status) => {
+    return status === 'Y' || status === 'N';
+}
+
 /**
  *
  * @returns {[Element,Element,Element,Element,Element]}
@@ -71,15 +75,14 @@ const setFormAccess = (inputList) => {
     })
 }
 
-const setPernAccess = () => {
+const getPernAccess = () => {
     const gender = document.querySelector("select[name='gender']");
     const isActive = document.querySelector("select[name='isActive']");
     const employ = document.querySelector("select[name='employ']");
     const eduLevel = document.querySelector("select[name='eduLevel']");
+
+    return [gender, isActive, employ, eduLevel];
 }
-
-
-
 
 const init = () => {
     const form = document.querySelector("form");
@@ -99,7 +102,6 @@ const init = () => {
         const data = event.data;
         if (data?.source === 'react-devtools-content-script') return;
         // 값 세팅
-        console.log(data)
         form.querySelector("input[name='empName']").value = data.name || "";
         form.querySelector("input[name='empId']").value = data.empId || "";
         form.querySelector("input[name='birth']").value = data.birth || "";
@@ -134,11 +136,20 @@ const init = () => {
         } else {
             // 수정모드인 경우
             const [name, birth, rrnBack, email, address, phone] = getNormAccess();
-            if(!isValidName(name.value)) return console.log("name");
-            if(!isValidBirthDate(birth.value)) return console.log("birth");
-            if(!isValidRrnBack(rrnBack.value)) return console.log("rrnBack");
-            if(!isValidEmail(email.value)) return console.log("email");
-            if(!isValidPhone(phone.value)) return console.log("phone");
+            const [gender, isActive, employ, eduLevel] = getPernAccess();
+
+            if(!isValidName(name.value)) return alert("name");
+            if(!isValidBirthDate(birth.value)) return alert("birth");
+            if(!isValidRrnBack(rrnBack.value)) return alert("rrnBack");
+            if(!isValidEmail(email.value)) return alert("email");
+            if(!isValidPhone(phone.value)) return alert("phone");
+            if(false){
+                if(!isValidGender(gender.value)) return alert("gender");
+                if(!isValidStatus(isActive.value)) return alert("isActive")
+                if(!isValidCommonCode(employ.value)) return alert("employ code")
+                if(!isValidCommonCode(eduLevel.value)) return alert("edu level code")
+                //validation
+            }
             confirmModal.show();
         }
     });

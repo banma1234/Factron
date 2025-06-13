@@ -26,9 +26,8 @@ const initGrid = () => {
     return new Grid({
         el: document.getElementById('commuteHistoryGrid'),
         scrollX: false,
-        scrollY: false,
-        minBodyHeight: 30,
-        rowHeaders: ['rowNum'],
+        scrollY: true,
+        bodyHeight: 400,
         columns: [
             {
                 header: '사원번호',
@@ -107,7 +106,7 @@ const init = () => {
     }, false);
 
     // 폼 제출 방지
-    document.querySelector('.test__form').addEventListener('submit', function(e) {
+    document.querySelector('.search__form').addEventListener('submit', function(e) {
         e.preventDefault(); // 폼 제출(새로고침) 방지
 
         // 조회

@@ -46,7 +46,7 @@ a {
     color: inherit;
 }
 
-.test__form {
+.search__form {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -55,7 +55,7 @@ a {
     padding: 0.5rem 0;
 }
 
-.test__select__container {
+.select__container {
     display: flex;
     flex-direction: row;
     gap: 0.5rem;
@@ -63,24 +63,24 @@ a {
     align-items: center;
 }
 
-.wow {
+.page__name {
     padding: 10px;
     font-weight: 900;
     width: 200px;
 }
 
 .form-select {
-    max-width: 200px;
+    width: auto;
 }
 
 .input-group{
     display: flex;
-    max-width: 300px;
+    max-width: 250px;
     align-items: center;
 }
 
-.commute-header-row {
+.header-row {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 10px;
 }
