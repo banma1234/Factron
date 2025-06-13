@@ -1,3 +1,6 @@
+/**
+ * toastUi 그리드 옵션
+ * */
 const DEFAULT_GRID_THEME = {
     cell: {
         normal: {
@@ -17,11 +20,16 @@ const DEFAULT_GRID_THEME = {
     }
 };
 
+/**
+ * toastUi 그리드
+ * */
 const Grid = tui.Grid;
 Grid.applyTheme('default', DEFAULT_GRID_THEME);
 
 
-// grid 초기화
+/**
+ * `sysCode` 테이블 초기화
+ * */
 const initMainGrid = () => {
     // sys-main 세팅
     return new Grid({
@@ -50,6 +58,9 @@ const initMainGrid = () => {
     });
 }
 
+/**
+ * `detailSysCode` 테이블 초기화
+ * */
 const initDetailGrid = () => {
     // sys-detail 세팅
     return new Grid({
@@ -78,12 +89,15 @@ const initDetailGrid = () => {
     })
 }
 
-/*
-* 메인코드 불러오는 api
-* */
-const getMainCode = async () => {
+
+/**
+ * `sysCode` 요청 api
+ * @param mainCode 메인코드
+ * @return JSON
+ * */
+const getMainCode = async (mainCode) => {
     try {
-        const res = await fetch(`/api/sys/main`, {
+        const res = await fetch(`/api/sys/main?mainCode=${mainCode}`, {
             method: 'GET',
             headers: {
                 "Content-Type": "application/json"
@@ -99,9 +113,9 @@ const getMainCode = async () => {
 /*
 * 상세코드 불러오는 api
 * */
-const getDetailCode = async (mainCode) => {
+const getDetailCode = async (mainCode, name) => {
     try {
-        const res = await fetch(`/api/sys/detail?mainCode=${mainCode}`, {
+        const res = await fetch(`/api/sys/detail?mainCode=${mainCode}&name=${name}`, {
             method: 'GET',
             headers: {
                 "Content-Type": "application/json"
@@ -114,12 +128,28 @@ const getDetailCode = async (mainCode) => {
     }
 }
 
+/**
+ * `sysCode` 데이터 출력하는 그리드(테이블)
+ * */
 const mainGrid = initMainGrid();
+/**
+ * ``detailSysCode`` 데이터 출력하는 그리드(테이블)
+ * */
 const detailGrid = initDetailGrid();
+/**
+ * 클릭한 `컬럼`의 데이터 저장하는 `전역변수`
+ * */
 let selectedRowData = null;
 
-const sysInit = () => {
 
+/**
+ * window 로드 후 실행할 스크립트
+ * @return void
+ * */
+const sysInit = () => {
+    /**
+     * `detailSysCode` 그리드 이벤트 연결
+     * */
     const setDetailGridEvent = () => {
         detailGrid.on('click', e => {
             const rowKey = e.rowKey;
@@ -127,12 +157,16 @@ const sysInit = () => {
         })
     }
 
+    /**
+     * `sysCode` 그리드 이벤트 연결
+     * @return void
+     * */
     const setMainGridEvent = () => {
         mainGrid.on('click', e => {
             const rowKey = e.rowKey;
             selectedRowData = mainGrid.getRow(rowKey);
 
-            getDetailCode(selectedRowData.main_code).then(res => {
+            getDetailCode(selectedRowData.main_code, "").then(res => {
                 detailGrid.resetData(res.data);
 
                 setDetailGridEvent();
@@ -140,7 +174,7 @@ const sysInit = () => {
         });
     }
 
-    getMainCode().then(res => {
+    getMainCode("").then(res => {
         mainGrid.resetData(res.data);
 
         setMainGridEvent();
@@ -148,19 +182,27 @@ const sysInit = () => {
 
 };
 
+/**
+ * `삽입` / `수정` 완료시 그리드 데이터 초기화
+ * @return void
+ * */
 const refreshDataOnPopup = async () => {
-    await getMainCode().then(res => {
+    await getMainCode("").then(res => {
         mainGrid.resetData(res.data);
     })
 
     if (selectedRowData) {
-        console.log(selectedRowData);
-        await getDetailCode(selectedRowData.main_code).then(res => {
+        await getDetailCode(selectedRowData.main_code, "").then(res => {
             detailGrid.resetData(res.data);
         })
     }
 };
 
+/**
+ * 팝업창 오픈 - `수정모드`
+ * @param isEditMode 수정모드 여부
+ * @return void
+ * */
 const openUpdatePopup = (isEditMode) => {
     const rowData = selectedRowData || undefined;
     let url = "/sys/sys-form?target=";
@@ -179,7 +221,10 @@ const openUpdatePopup = (isEditMode) => {
         'width=800,height=400'
     );
 
-    // 자식 창으로부터 'ready' 먼저 수신 후 postMessage 실행
+    /**
+     * 팝업창에 데이터 전달
+     * @return void
+     * */
     const messageHandler = (event) => {
         if (event.data === 'ready') {
 
@@ -198,16 +243,9 @@ const openUpdatePopup = (isEditMode) => {
     window.addEventListener("message", messageHandler);
 }
 
-document.querySelectorAll(".updateSysCodeBtn")
-    .forEach(btn => {
-        btn.addEventListener('click', e => {
-                e.preventDefault();
-                e.stopPropagation();
-
-                openUpdatePopup(true);
-            });
-    });
-
+/**
+ * `sysCode` 삽입 버튼
+ * */
 document.querySelector("button[name='postSysMainBtn']")
     .addEventListener('click', e => {
         e.preventDefault();
@@ -216,6 +254,9 @@ document.querySelector("button[name='postSysMainBtn']")
         openUpdatePopup(false);
     });
 
+/**
+ * `detailSysCode` 삽입 버튼
+ * */
 document.querySelector("button[name='postSysDetailBtn']")
     .addEventListener('click', e => {
         e.preventDefault();
@@ -224,8 +265,47 @@ document.querySelector("button[name='postSysDetailBtn']")
         openUpdatePopup(false);
     });
 
-window.sysInit = sysInit;
-window.refreshDataOnPopup = refreshDataOnPopup;
+/**
+ * `sysCode` 수정 버튼
+ * */
+document.querySelectorAll(".updateSysCodeBtn")
+    .forEach(btn => {
+        btn.addEventListener('click', e => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            openUpdatePopup(true);
+        });
+    });
+
+/**
+ * `sysCode` 검색(AJAX) 인풋
+ * */
+document.querySelector("input[name='srhMain']")
+    .addEventListener('input', e => {
+        e.preventDefault();
+        const keyword = e.target.value;
+
+        getMainCode(keyword).then(res => {
+            mainGrid.resetData(res.data);
+        })
+    });
+
+/**
+ * `detailSysCode` 검색(AJAX) 인풋
+ * */
+document.querySelector("input[name='srhDetail']")
+    .addEventListener('input', e => {
+        e.preventDefault();
+        const keyword = e.target.value;
+
+        getDetailCode(selectedRowData.main_code, keyword).then(res => {
+            detailGrid.resetData(res.data);
+        })
+    });
+
+window["sysInit"] = sysInit;
+window["refreshDataOnPopup"] = refreshDataOnPopup;
 
 window.onload = () => {
     sysInit();

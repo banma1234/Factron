@@ -40,7 +40,7 @@ public class SysMainServiceImpl implements SysMainService {
 
     /**
      * 공통코드 목록 조회
-     * @param mainCode 메인코드
+     * @param mainCode 메인코드 - 필수 아님
      * @return responseMainDTO 반환 DTO
      * */
     @Override
@@ -48,10 +48,12 @@ public class SysMainServiceImpl implements SysMainService {
 
         List<SysCode> sysCodeList;
 
+        System.out.println(">>>>>>>>>>>>>>>>" + mainCode);
+
         if (mainCode == null || mainCode.isEmpty()) {
             sysCodeList = sysCodeRepository.findAll();
         } else {
-            sysCodeList = sysCodeRepository.findByMainCode(mainCode)
+            sysCodeList = sysCodeRepository.findByMainCodeContaining(mainCode)
                     .orElseThrow(() -> new NoSuchElementException("존재하지 않는 상세코드입니다."));
         }
 
