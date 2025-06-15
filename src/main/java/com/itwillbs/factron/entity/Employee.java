@@ -74,7 +74,6 @@ public class Employee extends BaseEntity {
         this.deptCode = newDeptCode;
     }
 
-
     /**
      * 일반 사원이 본인의 개인정보를 수정합니다.
      * @param reqEmpUpDto {@link RequestEmployeeUpdateDTO}
@@ -85,6 +84,7 @@ public class Employee extends BaseEntity {
         this.rrnBack = reqEmpUpDto.getRrnBack();
         this.email = reqEmpUpDto.getEmail();
         this.phone = reqEmpUpDto.getPhone();
+        this.address = reqEmpUpDto.getAddress();
     }
 
     /**
@@ -92,15 +92,9 @@ public class Employee extends BaseEntity {
      * @param reqEmpUpDto {@link RequestEmployeeUpdateDTO}
      */
     public void updateTranfEmployeeInfo(RequestEmployeeUpdateDTO reqEmpUpDto) {
-        this.name = reqEmpUpDto.getEmpName();
-        this.birth = reqEmpUpDto.getBirth();
-        this.rrnBack = reqEmpUpDto.getRrnBack();
         this.gender = reqEmpUpDto.getGender();
-        this.email = reqEmpUpDto.getEmail();
         this.eduLevelCode = reqEmpUpDto.getEduLevelCode();
-        this.address = reqEmpUpDto.getAddress();
         if ("N".equals(reqEmpUpDto.getEmpIsActive())) this.quitDate = LocalDate.now();
-        this.employCode = reqEmpUpDto.getEmployeCode();
-        this.phone = reqEmpUpDto.getPhone();
+        this.employCode = reqEmpUpDto.getEmployCode();
     }
 }
