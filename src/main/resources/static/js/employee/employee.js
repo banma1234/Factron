@@ -101,6 +101,7 @@ const getSysCodeList = async (mainCode)  =>  {
     return res.json();
 }
 
+// 셀렉박스 옵션 공통코드로 설정
 const setSelectBox = async (mainCode, selectTagName) => {
 
 
@@ -108,7 +109,6 @@ const setSelectBox = async (mainCode, selectTagName) => {
 
         const selectTag = document.querySelector(`select[name=${selectTagName}]`)
         if(data.status === 200){
-            console.log(data.data)
             data.data.forEach((code) => {
                 const optionElement = document.createElement("option");
                 optionElement.value = code.detail_code;
@@ -125,79 +125,6 @@ const setSelectBox = async (mainCode, selectTagName) => {
 
     });
 };
-
-// // 부서 세팅
-// getSysCodeList("DEP").then(res => {
-//     const selectElement = document.querySelector("select[name='srhDeptCode']");
-//
-//     // 하드코딩
-//     const data = [
-//         {
-//             "detailCode": "DEP001",
-//             "name": "인사부"
-//         },
-//         {
-//             "detailCode": "DEP002",
-//             "name": "개발부"
-//         },
-//         {
-//             "detailCode": "DEP003",
-//             "name": "영업부"
-//         },
-//         {
-//             "detailCode": "DEP004",
-//             "name": "생산부"
-//         }
-//     ];
-//
-//     // for(const dept of res.data) {
-//     for(const dept of data) {
-//         const optionElement = document.createElement("option");
-//         optionElement.value = dept.detailCode;  // 코드
-//         optionElement.textContent = dept.name;  // 이름
-//
-//         selectElement.appendChild(optionElement);
-//     }
-// }).catch(e => {
-//     console.error(e);
-// });
-//
-// // 근무유형 세팅
-// getSysCodeList("WRK").then(res => {
-//     const selectElement = document.querySelector("select[name='srhWorkCode']");
-//
-//     // 하드코딩
-//     const data = [
-//         {
-//             "detailCode": "WRK001",
-//             "name": "일반근무"
-//         },
-//         {
-//             "detailCode": "WRK002",
-//             "name": "외근"
-//         },
-//         {
-//             "detailCode": "WRK003",
-//             "name": "야근"
-//         },
-//         {
-//             "detailCode": "WRK004",
-//             "name": "특근"
-//         }
-//     ];
-//
-//     // for(const work of res.data) {
-//     for(const work of data) {
-//         const optionElement = document.createElement("option");
-//         optionElement.value = work.detailCode;  // 코드
-//         optionElement.textContent = work.name;  // 이름
-//
-//         selectElement.appendChild(optionElement);
-//     }
-// }).catch(e => {
-//     console.error(e);
-// });
-
 
 
 const init = () => {
@@ -246,8 +173,7 @@ const init = () => {
         const position = removeSpaces(selectPosition.options[selectPosition.selectedIndex].value);
         const empIsActive = removeSpaces(selectIsActive.options[selectIsActive.selectedIndex].value);
         const name = removeSpaces(document.querySelector("input[name='name']").value);
-        console.log(selectDept,selectPosition,selectIsActive,name)
-        console.log(dept,position,empIsActive,name)
+
         // params 생성
         const params = new URLSearchParams();
 
@@ -256,7 +182,8 @@ const init = () => {
         if(position) params.append("positionCode", position)
         if(name) params.append("nameOrId", name)
         if(empIsActive) params.append("empIsActive", empIsActive)
-        // EmployeeList API 호출
+
+        // 사원 목록 API 호출
         fetch(`/api/employee?${params.toString()}`, {
             method: "GET",
             headers: {

@@ -17,38 +17,56 @@ const getEmpInfo = () => {
 }
 
 // 공통코드 목록 조회
-const getSysCodeList = async (mainCode)  =>  {
-    const res = await fetch(`/api/sys/detail?mainCode=${mainCode}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
+const getSysCodeList = async (mainCode) => {
+    try {
+        const res = await fetch(`/api/sys/detail?mainCode=${mainCode}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
         }
-    });
-    return res.json();
-}
+        return res.json();
+    } catch (error) {
+        console.error(`getSysCodeList 에러 (${mainCode}):`, error);
+        throw error; // 상위에서 처리할 수 있도록 에러 전파
+    }
+};
 
-// 셀렉태그 설정
+// 셀렉박스 옵션 공통코드로 설정
 const setSelectBox = async (mainCode, selectTagName) => {
-    await getSysCodeList(mainCode).then((data) => {
+    try {
+        const selectTag = document.querySelector(`select[name='${selectTagName}']`);
+        if (!selectTag) {
+            throw new Error(`select[name='${selectTagName}'] not found.`);
+        }
 
-        const selectTag = document.querySelector(`select[name=${selectTagName}]`)
-        if(data.status === 200){
-            console.log(data.data)
+        // 셀렉박스 초기화
+        selectTag.innerHTML = '<option value="">선택</option>';
+
+        const data = await getSysCodeList(mainCode);
+
+        if (data.status === 200 && Array.isArray(data.data)) {
             data.data.forEach((code) => {
                 const optionElement = document.createElement("option");
                 optionElement.value = code.detail_code;
                 optionElement.textContent = code.name;
-
-                if(selectTag){
-                    selectTag.appendChild(optionElement);
-                }
-
+                selectTag.appendChild(optionElement);
             });
-        }else{
-            alert("공통코드 부르기 실패!")
+        } else {
+            throw new Error(`공통코드(${mainCode}) 데이터 형식이 올바르지 않습니다.`);
         }
-
-    });
+    } catch (error) {
+        console.error(`setSelectBox 에러 (${selectTagName}):`, error);
+        // 에러 발생 시 기본 옵션만 표시
+        const selectTag = document.querySelector(`select[name='${selectTagName}']`);
+        if (selectTag) {
+            selectTag.innerHTML = '<option value="">선택</option>';
+        }
+        throw error; // 상위에서 처리할 수 있도록 에러 전파
+    }
 };
 
 // 핸드폰 번호 저장 형식
@@ -101,7 +119,7 @@ const isValidDate = (date) => {
 
 
 
-const init = () => {
+const init = async () => {
     const form = document.querySelector("form");
     const confirmModal = new bootstrap.Modal(document.getElementsByClassName("confirmModal")[0]);
     const confirmedAddBtn = document.getElementsByClassName("confirmAddBtn")[0];
@@ -114,10 +132,35 @@ const init = () => {
 
     const today = new Date();
     const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0'); // 0부터 시작하므로 +1
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
     const dd = String(today.getDate()).padStart(2, '0');
     const formattedToday = `${yyyy}-${mm}-${dd}`;
     joinedDate.value = formattedToday;
+
+    try {
+        // Initialize all select boxes in parallel
+        await Promise.all([
+            setSelectBox("EDU", "eduLevelCode"),
+            setSelectBox("POS", "positionCode"),
+            setSelectBox("HIR", "employCode"),
+            setSelectBox("DEP", "deptCode")
+        ]);
+
+        // Set up event listeners after select boxes are populated
+        setupEventListeners();
+    } catch (error) {
+        console.error("에러: ", error);
+        // Handle initialization error appropriately
+    }
+}
+
+const setupEventListeners = () => {
+    const form = document.querySelector("form");
+    const confirmModal = new bootstrap.Modal(document.getElementsByClassName("confirmModal")[0]);
+    const confirmedAddBtn = document.getElementsByClassName("confirmAddBtn")[0];
+    const confirmedModalBtn = document.getElementsByClassName("confirmModalBtn")[0];
+    const alertModal = new bootstrap.Modal(document.getElementsByClassName("alertModal")[0]);
+    const alertBtn = document.getElementsByClassName("alertBtn")[0];
 
     // 주소 input 클릭
     form.querySelector("input[name='address']").addEventListener("click", (e) => {
@@ -182,40 +225,29 @@ const init = () => {
         }
 
         confirmModal.show();
-    })
+    });
 
     // 취소 버튼
     form.querySelector("button.btn-secondary").addEventListener("click", () => {
         window.close();
     });
 
-    // 주소 입력
-    function handleAddressClick(event) {
-        if (event.target.disabled) return;
-
-        new daum.Postcode({
-            oncomplete: function(data) {
-                const fullAddr = data.address; // 도로명 주소
-                document.querySelector("input[name='address']").value = fullAddr;
-            }
-        }).open();
-    }
-
     // confirm 모달 확인 버튼
-    confirmedModalBtn.addEventListener("click", () => {
-            saveData()
-            .then(res => {
+    confirmedModalBtn.addEventListener("click", async () => {
+        try {
+            const res = await saveData();
             if(res.status !== 200) {
-                // ...
-            } else {
-                // ...
+                // Handle error case
+                console.error("Failed to save data:", res.message);
             }
 
             confirmModal.hide();
-            document.querySelector(".alertModal .modal-body").textContent = "test"
             document.querySelector(".alertModal .modal-body").textContent = res.message;
             alertModal.show();
-        });
+        } catch (error) {
+            console.error("Error saving data:", error);
+            // Handle error appropriately
+        }
     });
 
     // alert 모달 확인 버튼
@@ -229,38 +261,55 @@ const init = () => {
 
         window.close();
     });
+}
 
-    // 저장
-    async function saveData() {
-        const empInfo = getEmpInfo()
+// 주소 입력
+function handleAddressClick(event) {
+    if (event.target.disabled) return;
 
-        // fetch data
-        const data = {};
-
-        empInfo.forEach((input) => {
-            data[input.name] = input.name !== 'phone' ? input.value: formatPhoneNumber(input.value)
-        })
-
-        try {
-            const res = await fetch(`/api/employee`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data),
-            });
-            return res.json();
-
-        } catch (e) {
-            console.error(e);
+    new daum.Postcode({
+        oncomplete: function(data) {
+            const fullAddr = data.address; // 도로명 주소
+            document.querySelector("input[name='address']").value = fullAddr;
         }
+    }).open();
+}
+
+// 저장
+async function saveData() {
+    const empInfo = getEmpInfo()
+
+    // fetch data
+    const data = {};
+
+    empInfo.forEach((input) => {
+        data[input.name] = input.name !== 'phone' ? input.value: formatPhoneNumber(input.value)
+    })
+
+    try {
+        const res = await fetch(`/api/employee`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data),
+        });
+        return res.json();
+
+    } catch (e) {
+        console.error(e);
     }
 }
 
-window.onload = () => {
-    init();
-    // 부모에게 준비 완료 신호 보내기
-    if (window.opener) {
-        window.opener.postMessage("addReady", "*");
+window.onload = async () => {
+    try {
+        await init();
+        // 부모에게 준비 완료 신호 보내기
+        if (window.opener) {
+            window.opener.postMessage("addReady", "*");
+        }
+    } catch (error) {
+        console.error("Error during initialization:", error);
+        // Handle initialization error appropriately
     }
 }
