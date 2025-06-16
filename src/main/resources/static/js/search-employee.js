@@ -31,12 +31,12 @@ const initEmpGrid = () => {
         columns: [
             {
                 header: '사원번호',
-                name: 'id',
+                name: 'empId',
                 align: 'center'
             },
             {
                 header: '이름',
-                name: 'name',
+                name: 'empName',
                 align: 'center'
             },
             {
@@ -54,16 +54,6 @@ const initEmpGrid = () => {
                 name: 'phone',
                 align: 'center'
             },
-        ],
-        data: [ // 예시
-            {
-                id: 1,
-                name: '홍길동',
-                deptCode: 'DEP001',
-                deptName: '인사',
-                positionCode: 'POS001',
-                positionName: '사원'
-            }
         ]
     });
 }
@@ -88,10 +78,10 @@ const initEmp = () => {
         const rowKey = e.rowKey;
         const rowData = srhEmpGrid.getRow(rowKey);
 
-        if (rowData && rowData.id) {
+        if (rowData && rowData.empId) {
             // 부모 폼에 데이터 세팅
-            document.querySelector("input[name='empId']").value = rowData.id;
-            document.querySelector("input[name='empName']").value = rowData.name;
+            document.querySelector("input[name='empId']").value = rowData.empId;
+            document.querySelector("input[name='empName']").value = rowData.empName;
             document.querySelector("select[name='deptCode']").value = rowData.deptCode || "";
             document.querySelector("select[name='positionCode']").value = rowData.positionCode || "";
         }

@@ -29,7 +29,7 @@ const initGrid = () => {
 
 const init = () => {
     const vacationGrid = initGrid();
-    document.querySelector("input[name='srhIdOrName']").value = "10001"; // 하드코딩
+    document.querySelector("input[name='srhIdOrName']").value = "25060001"; // 하드코딩
 
     // 검색 버튼 클릭 이벤트
     document.querySelector(".srhBtn").addEventListener("click", function(e) {
@@ -105,8 +105,8 @@ const init = () => {
         const messageHandler = (event) => {
             if (event.data === 'ready') {
                 popup.postMessage({
-                    empId: '10002',
-                    empName: '박서준'
+                    empId: '25060001',
+                    empName: '홍길동'
                 }, "*");
                 window.removeEventListener("message", messageHandler);
             }
