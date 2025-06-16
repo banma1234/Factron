@@ -72,11 +72,11 @@ const init = () => {
     pastDate.setDate(pastDate.getDate() - 30);
     const pastDateStr = pastDate.toISOString().split('T')[0];
     const futureDate = new Date(today);
-    futureDate.setDate(futureDate.getDate() + 30);
+    futureDate.setDate(futureDate.getDate() + 0);
     const futureDateStr = futureDate.toISOString().split('T')[0];
     // 현재 사용자 정보 (예시: id와 인증코드 저장)
     const currentUser = {
-        id: "1",
+        id: "25060001",
         authCode: "ATH002"
     };
 

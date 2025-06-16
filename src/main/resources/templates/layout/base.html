@@ -69,7 +69,7 @@
                 </a>
                 <ul class="submenu nav flex-column">
                     <li><a class="nav-link sub-link" href="/approval">
-                        <span>결재 목록</span>
+                        <span>인사 결재 목록</span>
                     </a></li>
                 </ul>
             </li>
@@ -101,8 +101,9 @@
                     <div th:replace="layout/icon :: icon(${type})"></div>
                 </div>
             </button>
-<!--            <a class="navbar-brand" href="#">Factron</a>-->
-            <img class="logo__title" th:src="@{/logo_title.svg}" alt="no logo title found" />
+            <a class="navbar-brand" href="/commute">
+                <img class="logo__title" th:src="@{/logo_title.svg}" alt="no logo title found" />
+            </a>
             <div class="d-flex ms-auto">
                 <span class="navbar-text user__name">test(20251234)</span>
                 <span class="navbar-text me-3">&nbsp;님 환영합니다!</span>

@@ -4,35 +4,34 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base.html}">
 <head>
-    <title>vacation History Page</title>
+    <title>Factron</title>
     <th:block layout:fragment="style">
-        <link rel="stylesheet" th:href="@{/css/vacation/vacation.css}" />
     </th:block>
 </head>
 <body>
 <div layout:fragment="content">
     <section>
-        <div class="vacation__header">
-            <h4 class="wow">휴가 조회</h4>
-            <button class="btn btn-info registVacation">휴가 신청</button>
+        <div class="header-row">
+            <h4 class="page__name">휴가 관리</h4>
+            <button class="btn btn-primary registVacation">휴가 신청</button>
         </div>
-        <form class="vacation__form">
-            <div class="vacation__date-inputs">
-                <input class="form-control" type="date" name="startDate" id="startDate">
-                <input class="form-control" type="date" name="endDate" id="endDate">
+        <form class="search__form mb-2">
+            <div class="select__container">
+                <input class="form-control" type="date" name="startDate">
+                ~
+                <input class="form-control" type="date" name="endDate">
                 <select class="form-select" name="srhDeptCode">
-                    <option value="">전체</option>
+                    <option value="">부서</option>
                 </select>
             </div>
-
-            <div class="vacation__search-btn">
-                <input class="form-control" type="text" name="srhIdOrName" placeholder="이름 또는 사번 입력">
+            <div class="input-group">
+                <input class="form-control" type="text" name="srhIdOrName" placeholder="이름 또는 사원번호"><br/>
                 <button class="btn btn-outline-secondary srhBtn" type="button">검색</button>
             </div>
         </form>
 
-        <article class="vacation__grid-container">
-            <div id="grid"></div>
+        <article>
+            <div id="vacationGrid"></div>
         </article>
 
     </section>

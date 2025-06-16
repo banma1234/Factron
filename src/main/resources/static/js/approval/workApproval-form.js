@@ -64,7 +64,7 @@ const init = () => {
     // ✅ 반려 버튼 클릭 시 처리
     confirmRejectBtn.addEventListener("click", async () => {
         console.log("반려 버튼 클릭");
-        const reason = document.getElementById("rejectReasonInput").value.trim();
+        const reason = document.querySelector("textarea[name='rejectReasonInput']").value.trim();
         if (!reason) {
             alert("반려 사유를 입력해주세요.");
             return;

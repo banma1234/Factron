@@ -10,11 +10,10 @@ const initGrid = () => {
     });
 
     return new Grid({
-        el: document.getElementById('grid'),
+        el: document.getElementById('vacationGrid'),
         scrollX: false,
-        scrollY: false,
-        minBodyHeight: 30,
-        rowHeaders: ['rowNum'],
+        scrollY: true,
+        bodyHeight: 400,
         columns: [
             { header: '사원번호', name: 'empId', align: 'center' },
             { header: '이름', name: 'empName', align: 'center' },
@@ -30,15 +29,7 @@ const initGrid = () => {
 
 const init = () => {
     const vacationGrid = initGrid();
-    const empId = "10001";
-    const today = new Date();
-    today.setHours(today.getHours() + 9);
-    const todayStr = today.toISOString().split('T')[0];
-
-    document.querySelector("input[name='srhIdOrName']").value = empId;
-    document.querySelector("input[name='startDate']").value = todayStr;
-    document.querySelector("input[name='endDate']").value = todayStr;
-
+    document.querySelector("input[name='srhIdOrName']").value = "10001"; // 하드코딩
 
     // 검색 버튼 클릭 이벤트
     document.querySelector(".srhBtn").addEventListener("click", function(e) {
@@ -52,7 +43,7 @@ const init = () => {
     }, false);
 
     // 엔터 시 검색
-    document.querySelector(".vacation__form").addEventListener("submit", function(e) {
+    document.querySelector(".search__form").addEventListener("submit", function(e) {
         e.preventDefault();
 
         fetchData().then(res => {
@@ -62,18 +53,26 @@ const init = () => {
 
     // 조회 함수
     async function fetchData() {
-        const nameOrId = document.querySelector("input[name='srhIdOrName']").value;
+        // validation
         const startDate = document.querySelector("input[name='startDate']").value;
         const endDate = document.querySelector("input[name='endDate']").value;
-
-        if (!startDate || !endDate) {
-            alert("시작일과 종료일을 모두 입력해주세요.");
-            return;
+        if ((startDate && !endDate) || (!startDate && endDate)) {
+            alert("시작 및 종료 날짜를 모두 입력해주세요.");
+            return { data: [] };
         }
 
-        if (new Date(startDate) > new Date(endDate)) {
-            alert("시작일은 종료일보다 이전이어야 합니다.");
-            return;
+        if (startDate && endDate) {
+            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+            if (!dateRegex.test(startDate) || isNaN(Date.parse(startDate))
+                || !dateRegex.test(endDate) || isNaN(Date.parse(endDate))) {
+                alert("날짜 형식이 올바르지 않습니다.");
+                return { data: [] };
+            }
+            if (new Date(startDate) > new Date(endDate)) {
+                alert("시작 날짜는 종료 날짜보다 이전이어야 합니다.");
+                return { data: [] };
+            }
         }
 
         const data = new URLSearchParams({

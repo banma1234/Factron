@@ -5,24 +5,24 @@
       layout:decorate="~{layout/base.html}">>
 <head>
     <meta charset="UTF-8">
-    <title>공통코드 관리</title>
+    <title>Factron</title>
     <th:block layout:fragment="style">
       <link rel="stylesheet" th:href="@{/css/sys/syscode.css}" />
     </th:block>
 </head>
 <body>
 <div layout:fragment="content">
-  <h2>공통코드 관리</h2>
+  <h4 class="page__name">공통코드 관리</h4>
   <article class="sys__container">
     <section class="sys__grid__container">
-      <form class="sys__form">
+      <form class="sys__form mb-2">
         <input
                 class="form-control sysInput"
                 type="text"
-                name="srhDetail"
-                placeholder="구분코드"
+                name="srhMain"
+                placeholder="메인코드"
         >
-        <div class="test__select__container">
+        <div class="select__container">
           <button class="btn btn-primary" name="postSysMainBtn" type="button">추가</button>
           <button class="btn btn-outline-primary updateSysCodeBtn" type="button">수정</button>
         </div>
@@ -35,14 +35,14 @@
       </article>
     </section>
     <section class="sys__grid__container">
-      <form class="sys__form">
+      <form class="sys__form mb-2">
         <input
                 class="form-control sysInput"
                 type="text"
                 name="srhDetail"
-                placeholder="구분코드"
+                placeholder="구분명"
         >
-        <div class="test__select__container">
+        <div class="select__container">
           <button class="btn btn-primary" name="postSysDetailBtn" type="button">추가</button>
           <button class="btn btn-outline-primary updateSysCodeBtn" type="button">수정</button>
         </div>
