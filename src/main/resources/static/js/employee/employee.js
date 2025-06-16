@@ -90,9 +90,50 @@ const removeHyphens = (phoneNumber) => {
     return phoneNumber.replace(/-/g, '');
 }
 
+// 공통코드 목록 조회
+const getSysCodeList = async (mainCode)  =>  {
+    const res = await fetch(`/api/sys/detail?mainCode=${mainCode}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    return res.json();
+}
+
+// 셀렉박스 옵션 공통코드로 설정
+const setSelectBox = async (mainCode, selectTagName) => {
+
+
+    await getSysCodeList(mainCode).then((data) => {
+
+        const selectTag = document.querySelector(`select[name=${selectTagName}]`)
+        if(data.status === 200){
+            data.data.forEach((code) => {
+                const optionElement = document.createElement("option");
+                optionElement.value = code.detail_code;
+                optionElement.textContent = code.name;
+
+                if(selectTag){
+                    selectTag.appendChild(optionElement);
+                }
+
+            });
+        }else{
+            alert("공통코드 부르기 실패!")
+        }
+
+    });
+};
+
+
 const init = () => {
     const employeeGrid = initGrid(); // grid 초기 세팅
     getEmployees(); //초기 사원 리스트 호출
+
+    setSelectBox("DEP", 'deptCode');
+    setSelectBox("POS", 'positionCode');
+    // setSelectBox('', 'isActive')
 
     // 버튼에사원 조회 API 호출 기능 추가
     const srhBtn = document.querySelector(".empSrhBtn");
@@ -127,7 +168,6 @@ const init = () => {
         const selectDept = document.querySelector("select[name='deptCode']");
         const selectPosition = document.querySelector("select[name='positionCode']");
         const selectIsActive = document.querySelector("select[name='isActive']");
-        const opp = document.querySelector("option[value='EMP001']");
         // 사원 정보 추출
         const dept = removeSpaces(selectDept.options[selectDept.selectedIndex].value);
         const position = removeSpaces(selectPosition.options[selectPosition.selectedIndex].value);
@@ -142,7 +182,8 @@ const init = () => {
         if(position) params.append("positionCode", position)
         if(name) params.append("nameOrId", name)
         if(empIsActive) params.append("empIsActive", empIsActive)
-        // EmployeeList API 호출
+
+        // 사원 목록 API 호출
         fetch(`/api/employee?${params.toString()}`, {
             method: "GET",
             headers: {
@@ -151,8 +192,9 @@ const init = () => {
         }).then(res => res.json())
         .then(res => {
             if(res.status === 200){
-                console.log(res.data)
                 return employeeGrid.resetData(res.data); // grid에 세팅
+            }else{
+                alert(res.message);
             }
             return employeeGrid.resetData([]);
         })

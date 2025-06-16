@@ -19,7 +19,7 @@ public class CommuteController {
     public String commute_history(Model model) {
 
         // 실제 로그인 정보에서 사번을 가져와야 함 (예시: SecurityContext 등)
-        String empId = "8"; // TODO: 실제 로그인 정보로 대체
+        String empId = "25060001"; // TODO: 실제 로그인 정보로 대체
 
         // 오늘 출퇴근 상태 조회
         String commuteStatus = commuteService.getTodayCommuteStatus(empId);
