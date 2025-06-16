@@ -147,7 +147,7 @@ const init = () => {
         const messageHandler = (event) => {
             if (event.data === 'ready') {
                 popup.postMessage({
-                    empId: '1', // 하드코딩
+                    empId: '25060001', // 하드코딩
                 }, "*");
                 window.removeEventListener("message", messageHandler);
             }
