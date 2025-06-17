@@ -180,7 +180,8 @@ const init = () => {
                         requesterName: rowData.requesterName, // 요청자 이름 (유효한 경우)
                         requesterId: rowData.requesterId,
                         userId: currentUser.id,
-                        authCode: currentUser.authCode
+                        authCode: currentUser.authCode,
+                        requestedAt: rowData.requestedAt
                     }, "*");
 
                     // 메시지 전송 후, 이벤트 핸들러 제거하여 중복 호출 방지
