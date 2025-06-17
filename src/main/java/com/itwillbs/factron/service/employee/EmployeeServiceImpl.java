@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,80 +27,73 @@ import java.util.stream.Collectors;
 @Log4j2
 @Transactional(readOnly = true)
 public class EmployeeServiceImpl implements EmployeeService {
+    private static final boolean HAS_ADMIN_PERMISSION = true; // TODO: 실제 권한 체크 로직으로 대체 필요
 
     private final EmployeeRepository employeeRepository;
     private final IntergratAuthRepository intergratAuthRepository;
     private final EmployeeMapper employeeMapper;
     private final AESUtil aesUtil;
 
-    /**
-     * 검색 조건으로 사원 조회
-     * @param requestEmployeeSrhDTO {@link RequestEmployeeSrhDTO}
-     * @return List<ResponseEmployeeSrhDTO>
-     */
     @Override
-    public List<ResponseEmployeeSrhDTO> getEmployees(RequestEmployeeSrhDTO requestEmployeeSrhDTO){
+    public List<ResponseEmployeeSrhDTO> getEmployees(RequestEmployeeSrhDTO requestEmployeeSrhDTO) {
         return employeeMapper.getEmployeeList(requestEmployeeSrhDTO)
-                                    .stream()
-                                    .map(dto -> {
-                                        dto.setRrnBack(aesUtil.decrypt(dto.getRrnBack()));
-                                        return dto;
-                                    })
-                                    .collect(Collectors.toList());
+                .stream()
+                .map(dto -> {
+                    dto.setRrnBack(aesUtil.decrypt(dto.getRrnBack()));
+                    dto.setJoinedDate(dateParse(dto.getJoinedDate()));
+                    if(dto.getQuitDate() != null) {
+                        dto.setQuitDate(dateParse(dto.getQuitDate()));
+                    }
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
-    /**
-     * 사원 정보 수정
-     * @param reqEmployeeDTO {@link RequestEmployeeUpdateDTO}
-     * @return Void
-     */
     @Override
     @Transactional
-    public Void updateEmployee(RequestEmployeeUpdateDTO reqEmployeeDTO) {
+    public void updateEmployee(RequestEmployeeUpdateDTO reqEmployeeDTO) {
         Employee emp = employeeRepository.findById(reqEmployeeDTO.getEmpId()).orElseThrow(
                 ()-> new EntityNotFoundException("사원번호: " + reqEmployeeDTO.getEmpId() + " 조회 결과가 없습니다.")
         );
-        // RequestEmployeeUpdateDTO Validation 확인
-        if (reqEmployeeDTO.getEmpName() == null || reqEmployeeDTO.getEmpName().isEmpty())
-            reqEmployeeDTO.setEmpName(emp.getName());
 
-        if (reqEmployeeDTO.getRrnBack() == null || reqEmployeeDTO.getRrnBack().isEmpty()){
-            reqEmployeeDTO.setRrnBack(emp.getRrnBack());
-        }else{
-            reqEmployeeDTO.setRrnBack(aesUtil.encrypt(reqEmployeeDTO.getRrnBack()));
+        // 자신의 이메일/전화번호가 아닌 다른 사원의 것과 중복 체크
+        if(!emp.getEmail().equals(reqEmployeeDTO.getEmail()) && 
+           employeeRepository.existsByEmail(reqEmployeeDTO.getEmail())) {
+            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
 
-        if(reqEmployeeDTO.getGender() == null || reqEmployeeDTO.getGender().isEmpty())
-            reqEmployeeDTO.setGender(emp.getGender());
+        if(!emp.getPhone().equals(reqEmployeeDTO.getPhone()) && 
+           employeeRepository.existsByPhone(reqEmployeeDTO.getPhone())) {
+            throw new IllegalArgumentException("이미 존재하는 전화번호입니다.");
+        }
 
-        if(reqEmployeeDTO.getEmail() == null || reqEmployeeDTO.getEmail().isEmpty())
-            reqEmployeeDTO.setEmail(emp.getEmail());
+        // 주민번호 뒷자리 암호화
+        reqEmployeeDTO.setRrnBack(aesUtil.encrypt(reqEmployeeDTO.getRrnBack()));
 
-        if(reqEmployeeDTO.getAddress() == null || reqEmployeeDTO.getAddress().isEmpty())
-            reqEmployeeDTO.setAddress(emp.getAddress());
-
-        if(reqEmployeeDTO.getEmpIsActive() == null || reqEmployeeDTO.getEmpIsActive().isEmpty())
-            reqEmployeeDTO.setEmpIsActive("Y");
-        reqEmployeeDTO.getEmpIsActive().toUpperCase();
-
-        if(reqEmployeeDTO.getEmployeCode() == null || reqEmployeeDTO.getEmployeCode().isEmpty())
-            reqEmployeeDTO.setEmployeCode(emp.getEmployCode());
-
-        // 권한 확인!
-        if(false)
+        // 권한 확인
+        if(HAS_ADMIN_PERMISSION) {
+            // 재직상태 변경 확인
+            if("N".equals(reqEmployeeDTO.getEmpIsActive())) {
+                IntergratAuth intergratAuth = intergratAuthRepository.findByEmployee(emp)
+                        .orElseThrow(() -> new EntityNotFoundException("해당 사원의 권한 정보가 없습니다."));
+                intergratAuth.updateIsActive(reqEmployeeDTO.getEmpIsActive());
+            }
             emp.updateTranfEmployeeInfo(reqEmployeeDTO);
+        }
         emp.updateNormEmployeeInfo(reqEmployeeDTO);
-        return null;
     }
 
-    /**
-     * 새로운 사원 추가
-     * @param reqEmployeeNewDTO {@link RequestEmployeeNewDTO}
-     * @return Void
-     */
     @Override
     @Transactional
-    public Void addNewEmployee(RequestEmployeeNewDTO reqEmployeeNewDTO){
+    public void addNewEmployee(RequestEmployeeNewDTO reqEmployeeNewDTO) {
+        if(employeeRepository.existsByEmail(reqEmployeeNewDTO.getEmail())) {
+            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+        }
+
+        if(employeeRepository.existsByPhone(reqEmployeeNewDTO.getPhone())) {
+            throw new IllegalArgumentException("이미 존재하는 전화번호입니다.");
+        }
+
         // 새 아이디 생성
         Long newId = generateEmployeeId();
 
@@ -111,41 +105,38 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeRepository.save(employee);
 
         Employee newEmp = employeeRepository.findById(newId).orElseThrow(
-                ()-> new EntityNotFoundException("It does not exist")
+                ()-> new EntityNotFoundException("존재하지 않는 회원번호입니다.")
         );
 
         IntergratAuth newIntergratAuth = reqEmployeeNewDTO.toIntergratAuth(newEmp);
         intergratAuthRepository.save(newIntergratAuth);
-        return null;
     }
 
-    // 공백 제거
-    private String safeTrim(String input) {
-        return (input == null) ? "" : input.trim();
-    }
-
-    // 재직여부 확인
-    private String validActive(String str){
-        String trimmed = safeTrim(str);
-        if (trimmed.equals("")) return trimmed;
-        return ((trimmed.equals("Y")  || trimmed.equals("N")) ) ?  trimmed: "";
-    }
-
-    // Code 유효성 검사
-    private String validateCode(String code) {
-        String trimmed = safeTrim(code);
-        if (trimmed.matches("^[A-Z]{3}\\d{3}$")) {
-            return trimmed;
+    // DB에서 받아온 날짜 형식을 YYYY-MM-DD 형식으로 수정합니다
+    private String dateParse(String dateTime) {
+        try {
+            if (dateTime.contains(" ")) {
+                // "2025-06-13 00:00:00" 형태
+                LocalDateTime parsed = LocalDateTime.parse(dateTime.replace(' ', 'T'));
+                return parsed.toLocalDate().toString();
+            } else if (dateTime.contains("T")) {
+                // "2025-06-13T00:00:00" 형태
+                LocalDateTime parsed = LocalDateTime.parse(dateTime);
+                return parsed.toLocalDate().toString();
+            } else if (dateTime.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                // "2025-06-13" 형태
+                return dateTime;
+            }
+        } catch (Exception e) {
+            // 포맷 에러 처리
+            throw new IllegalArgumentException("올바르지 않은 날짜 형식입니다: " + dateTime, e);
         }
-        return "";
+
+        throw new RuntimeException("올바르지 않은 날짜 형식입니다: " + dateTime);
     }
 
-    private String dateParse (String dateTime){
-        return dateTime.split("T")[0];
-    }
-
-
-    public Long generateEmployeeId() {
+    // 새로운 사번 번호를 생성합니다.
+    private Long generateEmployeeId() {
         LocalDate now = LocalDate.now();
         String yy = String.format("%02d", now.getYear() % 100); // 올해 2자리
         String mm = String.format("%02d", now.getMonthValue()); // 월 2자리
@@ -153,7 +144,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         String yearMonth = now.format(DateTimeFormatter.ofPattern("yyyy-MM"));
 
         long countThisMonth = employeeRepository.countByYearMonth(yearMonth);
-        String nnn = String.format("%04d", countThisMonth + 1); // 3자리로 채움
+        String nnn = String.format("%04d", countThisMonth + 1); // 4자리로 채움
 
         String idStr = yy + mm + nnn;
 

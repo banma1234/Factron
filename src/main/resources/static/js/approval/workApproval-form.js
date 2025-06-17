@@ -180,7 +180,7 @@ const init = () => {
         setValue("input[name='apprTypeCode']", data.apprTypeCode);
         setValue("input[name='approverId']", data.approverId);
         setValue("input[name='approverName']", data.approverName);
-        setValue("input[name='confirmedDate']", data.confirmedDate);
+        setValue("input[name='confirmedDate']", (data.confirmedDate || '').split(' ')[0]);
         setValue("input[name='approvalStatus']", data.approvalStatusName);
 
         const textarea = form.querySelector("textarea[name='rejectionReason']");

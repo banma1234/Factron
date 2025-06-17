@@ -36,4 +36,8 @@ public class IntergratAuth {
         this.authCode = newAuthCode;
     }
 
+    public void updateIsActive(String newIsActive) {
+        this.isActive = newIsActive;
+    }
+
 }

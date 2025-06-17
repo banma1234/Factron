@@ -5,9 +5,6 @@
       layout:decorate="~{layout/base.html}">
 <head>
     <title>Factron</title>
-    <th:block layout:fragment="style">
-        <link rel="stylesheet" th:href="@{/css/employee/employee.css}" />
-    </th:block>
 </head>
 <body>
 <div layout:fragment="content">
@@ -21,11 +18,9 @@
 
                 <select class="form-select" name="deptCode">
                     <option value="">부서</option>
-                    <option value="DPT001">인사</option>
                 </select>
                 <select class="form-select" name="positionCode">
                     <option value="">직급</option>
-                    <option value="EMP001">사원</option>
                 </select>
                 <select class="form-select" name="isActive">
                     <option value="">재직여부</option>
