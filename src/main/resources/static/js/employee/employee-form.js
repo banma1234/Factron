@@ -58,49 +58,26 @@ const setSelectBox = async (mainCode, selectTagName) => {
     }
 };
 
-//form validation 확인
-const isValidName = (name) => {
-    return (/^[가-힣a-zA-Z\s]+$/.test(name));
-}
-
-const isValidGender = (gender) => {
-    return gender === 'M' || gender === 'F';
-}
-
-const isValidBirthDate = (birth) => {
-    return (/^\d{6}$/.test(birth));
-}
-
-const isValidRrnBack = (rrnBack) => {
-    return (/^\d{7}$/.test(rrnBack));
-}
-
-const isValidEmail = (email) => {
-    return (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
-}
-
-const isValidPhone = (phone) => {
-    return (/^01[016789]\d{7,8}$/.test(phone));
-}
-
-const isValidCommonCode = (code) => {
-    return (/^[A-Z]{3}[0-9]{3}$/.test(code));
-}
-
-const isValidStatus = (status) => {
-    return status === 'Y' || status === 'N';
-}
-
-const removeWhitespace = (code) => {
-    return code.replace(/\s+/g, '');
-}
-
+// 핸드폰 번호 저장 형식
 const formatPhoneNumber = (phone) => {
     phone = phone.replace(/\D/g, ""); // 숫자 외 제거
     if (phone.length < 4) return phone;
     if (phone.length < 8) return phone.replace(/(\d{3})(\d+)/, "$1-$2");
     return phone.replace(/(\d{3})(\d{3,4})(\d{4})/, "$1-$2-$3");
 }
+
+//form validation 확인
+const validators = {
+    isValidName: val => /^[가-힣a-zA-Z\s]+$/.test(val),
+    isValidBirthDate: val => /^\d{6}$/.test(val),
+    isValidRrnBack: val => /^\d{7}$/.test(val),
+    isValidEmail: val => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
+    isValidPhone: val => /^01[016789]\d{7,8}$/.test(val),
+    isValidGender: val => val === 'M' || val === 'F',
+    isValidCommonCode: val => /^[A-Z]{3}[0-9]{3}$/.test(val),
+    isValidStatus: val => val === 'Y' || val === 'N',
+    isValidDate: val => /^\d{4}-\d{2}-\d{2}$/.test(val) || val === null
+};
 
 /**
  *
@@ -151,7 +128,7 @@ const init = async () => {
     let isEditMode = false; // 수정모드
 
     try {
-        // 셀렉박스 설정을 기다림
+        // 공통코드 세팅
         await Promise.all([
             setSelectBox("EDU", "eduLevelCode"),
             setSelectBox("POS", "positionCode"),
@@ -182,7 +159,7 @@ const init = async () => {
             form.querySelector("select[name='deptCode']").value = toUpperCase(data.deptCode) || "";
         });
 
-        // 주호 외부 API 연결
+        // 주소 외부 API 연결
         form.querySelector("input[name='address']").addEventListener("click", (e) => {
             handleAddressClick(e);
         });
@@ -200,18 +177,18 @@ const init = async () => {
                 const [gender, isActive, employ, eduLevel] = getPernAccess();
 
                 //validation
-                if(!isValidName(name.value)) return alert("이름 형식이 틀렸습니다");
-                if(!isValidBirthDate(birth.value)) return alert("생년월일이 6자리가 아닙니다.");
-                if(!isValidRrnBack(rrnBack.value)) return alert("주민번호 뒷자리가 7자리가 아닙니다.");
-                if(!isValidEmail(email.value)) return alert("이메일 형식이 아닙니다.");
-                if(!isValidPhone(phone.value)) return alert("핸드폰 번호 형식이 틀립니다.");
+                if(!validators.isValidName(name.value)) return alert("이름 형식이 올바르지 않습니다.");
+                if(!validators.isValidBirthDate(birth.value)) return alert("생년월일 형식이 올바르지 않습니다. (예: 990101)");
+                if(!validators.isValidRrnBack(rrnBack.value)) return alert("주민번호 뒷자리는 7자리여야 합니다.");
+                if(!validators.isValidEmail(email.value)) return alert("유효한 이메일 형식이 아닙니다.");
+                if(!validators.isValidPhone(phone.value)) return alert("전화번호 형식이 올바르지 않습니다.");
                 // 인사 권한체크
                 if(test){
                     //validation
-                    if(!isValidGender(gender.value)) return alert("올바른 성별이 아닙니다.");
-                    if(!isValidStatus(isActive.value)) return alert("올바른 재직 상태가 아닙니다.")
-                    if(!isValidCommonCode(employ.value)) return alert("올바른 고직유형 코드가 아닙니다.")
-                    if(!isValidCommonCode(eduLevel.value)) return alert("올바른 최종학렵 코드가 아닙니다.")
+                    if(!validators.isValidGender(gender.value)) return alert("성별을 선택해주세요.");
+                    if(!validators.isValidCommonCode(eduLevel.value)) return alert("최종학력을 선택해주세요.")
+                    if(!validators.isValidStatus(isActive.value)) return alert("재직 상태를 선택해주세요.")
+                    if(!validators.isValidCommonCode(employ.value)) return alert("고용유형을 선택해주세요.")
                 }
                 confirmModal.show();
             }
@@ -245,12 +222,6 @@ const init = async () => {
         // confirm 모달 확인 버튼
         confirmEditBtn.addEventListener("click", () => {
             saveData().then(res => {
-                if(res.status === 200) {
-                    // ...
-                } else {
-
-                }
-                //
                 // 수정모드 종료
                 toggleFormDisabled(true);
                 btnModify.textContent = "확인";
@@ -270,6 +241,7 @@ const init = async () => {
             if (window.opener && !window.opener.closed) {
                 window.opener.postMessage({ type: "REFRESH_EMPLOYEES" }, "*");
             }
+
             window.close();
         });
 
@@ -277,19 +249,17 @@ const init = async () => {
         async function saveData() {
             // validation
             const inputs = getNormBody();
-            const pernInputs = getPernAccess()
+            const pernInputs = getPernAccess();
 
-            const data = {}
+            const data = {};
             inputs.forEach(input => {
                 data[input.name] = input.name !== 'phone' ? input.value: formatPhoneNumber(input.value)
-            })
+            });
             if(test){
                 pernInputs.forEach(input => {
                     data[input.name] = input.value;
-                })
+                });
             }
-
-            console.log(data)
 
             try {
                 const res = await fetch(`/api/employee`, {

@@ -20,24 +20,11 @@ const init = () => {
             approverId,
             rejectionReason,
             confirmedDate,
-            userId,
-            authCode,
             requestedAt
         } = data;
 
-        if (approvalId && userId && authCode) {
-            console.log("받은 approvalId:", approvalId);
-            console.log("받은 apprTypeCode:", apprTypeCode);
-            console.log("받은 approvalStatusCode:", approvalStatusCode);
-            console.log("받은 approvalStatusName:", approvalStatusName);
-            console.log("받은 approverName:", approverName);
-            console.log("받은 approverId:", approverId);
-            console.log("받은 rejectionReason:", rejectionReason);
-            console.log("받은 confirmedDate:", confirmedDate);
-            console.log("받은 userId:", userId);
-            console.log("받은 authCode:", authCode);
-            console.log("받은 requestedAt:", requestedAt);
-
+        if (approvalId) {
+            // 전역에 저장
             window.receivedData = data;
 
             setUIState(data);
@@ -56,7 +43,7 @@ const init = () => {
 
     // ✅ 반려 버튼 클릭
     confirmRejectBtn.addEventListener("click", async () => {
-        const reason = form.querySelector("textarea[name='rejectReasonInput']").value.trim();
+        const reason = document.querySelector("textarea[name='rejectReasonInput']").value.trim();
         if (!reason) {
             alert("반려 사유를 입력해주세요.");
             return;
@@ -87,7 +74,6 @@ const init = () => {
             });
 
             const result = await response.json();
-            console.log("휴가 조회 결과:", result);
 
             if (result.status === 200 && result.data?.length > 0) {
                 const vacationData = result.data[0];
@@ -107,13 +93,11 @@ const init = () => {
 
         const data = {
             approvalId: Number(approvalId),
-            approverId: window.receivedData?.userId || null,
+            approverId: user.id || null,
             approvalType: window.receivedData?.apprTypeCode || null,
             approvalStatus: approvalStatusCode,
             rejectionReason: approvalStatusCode === "APV003" ? rejectionReason : null,
         };
-
-        console.log("전송할 결재 데이터:", data);
 
         try {
             const res = await fetch("/api/approval", {
@@ -143,7 +127,7 @@ const init = () => {
         const approvalResultSection = document.querySelector(".approval-result-section");
 
         const isStatusValid = data.approvalStatusCode === "APV001";
-        const isAuthValid = data.authCode === "ATH002";
+        const isAuthValid = user.authCode === "ATH002";
 
         approveBtn.style.display = (isStatusValid && isAuthValid) ? "inline-block" : "none";
         rejectBtn.style.display = (isStatusValid && isAuthValid) ? "inline-block" : "none";

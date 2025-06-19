@@ -2,6 +2,8 @@ package com.itwillbs.factron.dto.approval;
 
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,12 +14,12 @@ public class ResponseSearchApprovalDTO {
     private String apprTypeName;//결재 유형 이름 ex)휴가,근무
     private String requesterName;//발행자 이름
     private Long requesterId;//발행자 사번
-    private String requestedAt;//발행날짜
+    private LocalDate requestedAt;//발행날짜
     private String positionCode;//직급 상세 코드
     private String positionName;//직급 이름 ex)부장
     private String deptCode;//부서 상세 코드
     private String deptName;//부서 이름 ex)인사
-    private String confirmedDate;//결재 날짜
+    private LocalDate confirmedDate;//결재 날짜
     private String approvalStatusCode;//결재 상태 코드
     private String approvalStatusName;//결재 상태이름 ex)대기,반려
     private String approverName;//결재자 이름
