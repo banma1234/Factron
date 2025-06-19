@@ -1,93 +1,106 @@
 /**
- * toastUi 그리드 옵션
- * */
-const DEFAULT_GRID_THEME = {
-    cell: {
-        normal: {
-            border: 'gray'
-        },
-        header: {
-            background: 'gray',
-            text: 'white',
-            border: 'gray'
-        },
-        rowHeaders: {
-            header: {
-                background: 'gray',
-                text: 'white'
-            }
-        }
-    }
-};
-
-/**
- * toastUi 그리드
- * */
-const Grid = tui.Grid;
-Grid.applyTheme('default', DEFAULT_GRID_THEME);
-
-
-/**
  * `sysCode` 테이블 초기화
  * */
-const initMainGrid = () => {
-    // sys-main 세팅
-    return new Grid({
-        el: document.getElementById('grid_main'),
-        scrollX: false,
-        scrollY: true,
-        bodyHeight: 400,
-        rowHeaders: ['rowNum'],
-        columns: [
-            {
-                header: '구분코드',
-                name: 'main_code',
-                align: 'center'
-            },
-            {
-                header: '구분명',
-                name: 'name',
-                align: 'center'
-            },
-            {
-                header: '사용여부',
-                name: 'is_active',
-                align: 'center',
-            },
-        ],
-    });
-}
+const initMainGrid = initGrid(
+    document.getElementById('grid_main'),
+    400,
+    [
+        {
+            header: '구분코드',
+            name: 'main_code',
+            align: 'center'
+        },
+        {
+            header: '구분명',
+            name: 'name',
+            align: 'center'
+        },
+        {
+            header: '사용여부',
+            name: 'is_active',
+            align: 'center',
+        },
+    ]
+)
+// const initMainGrid = () => {
+//     // sys-main 세팅
+//     return new Grid({
+//         el: document.getElementById('grid_main'),
+//         scrollX: false,
+//         scrollY: true,
+//         bodyHeight: 400,
+//         rowHeaders: ['rowNum'],
+//         columns: [
+//             {
+//                 header: '구분코드',
+//                 name: 'main_code',
+//                 align: 'center'
+//             },
+//             {
+//                 header: '구분명',
+//                 name: 'name',
+//                 align: 'center'
+//             },
+//             {
+//                 header: '사용여부',
+//                 name: 'is_active',
+//                 align: 'center',
+//             },
+//         ],
+//     });
+// }
 
 /**
  * `detailSysCode` 테이블 초기화
  * */
-const initDetailGrid = () => {
-    // sys-detail 세팅
-    return new Grid({
-        el: document.getElementById('grid_detail'),
-        scrollX: false,
-        scrollY: true,
-        bodyHeight: 400,
-        rowHeaders: ['rowNum'],
-        columns: [
-            {
-                header: '구분코드',
-                name: 'detail_code',
-                align: 'center'
-            },
-            {
-                header: '구분명',
-                name: 'name',
-                align: 'center'
-            },
-            {
-                header: '사용여부',
-                name: 'is_active',
-                align: 'center',
-            },
-        ],
-    })
-}
+const initDetailGrid = initGrid(
+    document.getElementById('grid_detail'),
+    400,
+    [
+        {
+            header: '구분코드',
+            name: 'detail_code',
+            align: 'center'
+        },
+        {
+            header: '구분명',
+            name: 'name',
+            align: 'center'
+        },
+        {
+            header: '사용여부',
+            name: 'is_active',
+            align: 'center',
+        },
+    ]
+)
+// const initDetailGrid = () => {
+//     // sys-detail 세팅
+//     return new Grid({
+//         el: document.getElementById('grid_detail'),
+//         scrollX: false,
+//         scrollY: true,
+//         bodyHeight: 400,
+//         rowHeaders: ['rowNum'],
+//         columns: [
+//             {
+//                 header: '구분코드',
+//                 name: 'detail_code',
+//                 align: 'center'
+//             },
+//             {
+//                 header: '구분명',
+//                 name: 'name',
+//                 align: 'center'
+//             },
+//             {
+//                 header: '사용여부',
+//                 name: 'is_active',
+//                 align: 'center',
+//             },
+//         ],
+//     })
+// }
 
 
 /**
@@ -110,9 +123,12 @@ const getMainCode = async (mainCode) => {
     }
 }
 
-/*
-* 상세코드 불러오는 api
-* */
+/**
+ * `detailSysCode` 요청 api
+ * @param mainCode 메인코드
+ * @param name 구분명
+ * @return JSON
+ * */
 const getDetailCode = async (mainCode, name) => {
     try {
         const res = await fetch(`/api/sys/detail?mainCode=${mainCode}&name=${name}`, {
@@ -220,6 +236,11 @@ const openUpdatePopup = (isEditMode) => {
         '_blank',
         'width=800,height=400'
     );
+
+    if (!popup) {
+        alert("팝업이 차단되었습니다. 팝업 차단을 해제해주세요.");
+        return;
+    }
 
     /**
      * 팝업창에 데이터 전달
