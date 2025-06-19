@@ -1,35 +1,20 @@
-const initGrid = () => {
-    const Grid = tui.Grid;
-
-    Grid.applyTheme('default', {
-        cell: {
-            normal: { border: 'gray' },
-            header: { background: 'gray', text: 'white', border: 'gray' },
-            rowHeaders: { header: { background: 'gray', text: 'white' } }
-        }
-    });
-
-    return new Grid({
-        el: document.getElementById('vacationGrid'),
-        scrollX: false,
-        scrollY: true,
-        bodyHeight: 400,
-        columns: [
+const init = () => {
+    const vacationGrid = initGrid(
+        document.getElementById('vacationGrid'),
+        400,
+        [
             { header: '사원번호', name: 'empId', align: 'center' },
             { header: '이름', name: 'empName', align: 'center' },
             { header: '직급', name: 'positionName', align: 'center' },
             { header: '부서', name: 'deptName', align: 'center' },
             { header: '시작날짜', name: 'vacationStartDate', align: 'center' },
             { header: '종료날짜', name: 'vacationEndDate', align: 'center' },
-            { header: '비고', name: 'remark', align: 'left' }
+            { header: '비고', name: 'remark', align: 'center' }
         ]
-    });
-};
+    );
 
-
-const init = () => {
-    const vacationGrid = initGrid();
-    document.querySelector("input[name='srhIdOrName']").value = "10001"; // 하드코딩
+    // 검색 초기 세팅
+    document.querySelector("input[name='srhIdOrName']").value = user.id;
 
     // 검색 버튼 클릭 이벤트
     document.querySelector(".srhBtn").addEventListener("click", function(e) {
@@ -86,15 +71,13 @@ const init = () => {
             const res = await fetch(`/api/vacation?${data.toString()}`, {
                 method: "GET",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json"
                 }
-
             });
             return res.json();
 
         } catch (err) {
             console.error("fetch error", err);
-            alert("서버 요청 실패");
         }
     }
 
@@ -104,72 +87,21 @@ const init = () => {
 
         const messageHandler = (event) => {
             if (event.data === 'ready') {
-                popup.postMessage({
-                    empId: '10002',
-                    empName: '박서준'
-                }, "*");
+                popup.postMessage({}, "*");
                 window.removeEventListener("message", messageHandler);
             }
         };
         window.addEventListener("message", messageHandler);
     });
 
-
-    // 공통코드 목록 조회
-    window.getSysCodeList = async function (mainCode) {
-        const res = await fetch(`/api/sys/detail?mainCode=${mainCode}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        return res.json();
-    }
-
-    // 부서 세팅
-    getSysCodeList("DEP").then(res => {
-        const selectElement = document.querySelector("select[name='srhDeptCode']");
-
-        // 하드코딩
-        const data = [
-            {
-                "detailCode": "DEP001",
-                "name": "인사부"
-            },
-            {
-                "detailCode": "DEP002",
-                "name": "개발부"
-            },
-            {
-                "detailCode": "DEP003",
-                "name": "영업부"
-            },
-            {
-                "detailCode": "DEP004",
-                "name": "생산부"
-            }
-        ];
-
-        // for(const dept of res.data) {
-        for(const dept of data) {
-            const optionElement = document.createElement("option");
-            optionElement.value = dept.detailCode;  // 코드
-            optionElement.textContent = dept.name;  // 이름
-
-            selectElement.appendChild(optionElement);
-        }
-    }).catch(e => {
-        console.error(e);
-    });
-
-
+    // 공통코드 세팅
+    setSelectBox("DEP", "srhDeptCode");
 
     // 페이지 진입 시 바로 리스트 호출
     fetchData().then(res => {
         vacationGrid.resetData(res.data);
     });
 };
-
 
 window.onload = () => {
     init();

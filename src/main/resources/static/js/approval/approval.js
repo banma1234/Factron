@@ -1,53 +1,21 @@
-// 원본 결재 데이터 배열: 서버로부터 받아온 전체 결재 데이터를 저장하는 전역 변수
+// 전역 변수: 원본 결재 데이터 및 그리드 인스턴스
 let rawApprovalData = [];
+let approvalGrid;
 
-// 그리드를 담을 전역 변수
-let testGrid;
-
-// grid 초기화 함수
-const initGrid = () => {
-    // TUI Grid 라이브러리 사용
-    const Grid = tui.Grid;
-
-    // TUI Grid의 테마 설정: 기본 테마('default')에 대해 셀, 헤더, 행 헤더의 스타일을 지정
-    Grid.applyTheme('default', {
-        cell: {
-            normal: { border: 'gray' }, // 일반 셀의 테두리 색상 지정
-            header: { background: 'gray', text: 'white', border: 'gray' }, // 헤더 셀의 배경, 텍스트, 테두리 색상 지정
-            rowHeaders: { header: { background: 'gray', text: 'white' } } // 행 헤더의 헤더 부분 스타일 지정
-        }
-    });
-
-    // 신규 TUI Grid 인스턴스 생성
-    return new Grid({
-        // 그리드를 표시할 DOM 요소 지정 (ID가 'approvalGrid'인 요소)
-        el: document.getElementById('approvalGrid'),
-        scrollX: false,  // 수평 스크롤 비활성화
-        scrollY: true,   // 수직 스크롤 활성화
-        bodyHeight: 400, // 그리드 바디의 높이를 400px로 설정
-        // 그리드의 열 설정. 각 열은 헤더 텍스트, 데이터 키, 정렬 및 숨김 여부 등을 설정
-        columns: [
+const init = () => {
+    approvalGrid = initGrid(
+        document.getElementById('approvalGrid'),
+        400,
+        [
             { header: '결재번호', name: 'approvalId', align: 'center' },
             { header: '결재 유형', name: 'apprTypeName', align: 'center' },
-            { header: '결재 코드', name: 'apprTypeCode', hidden: true }, // 숨김 처리된 열
+            { header: '결재 코드', name: 'apprTypeCode', hidden: true },
             { header: '이름', name: 'displayName', align: 'center' },
             { header: '사번', name: 'displayId', align: 'center' },
             { header: '직급', name: 'positionName', align: 'center' },
             { header: '부서', name: 'deptName', align: 'center' },
-            {
-                header: '발행일자',
-                name: 'requestedAt',
-                align: 'center',
-                // formatter를 사용해 날짜 값을 ISO 문자열 형식(YYYY-MM-DD)로 변환 후 보여줌
-                formatter: ({ value }) => value ? new Date(value).toISOString().split('T')[0] : ""
-            },
-            {
-                header: '결재 날짜',
-                name: 'confirmedDate',
-                align: 'center',
-                // 날짜 형식 변환 formatter: 값이 존재할 경우 ISO 날짜 형식으로 변환
-                formatter: ({ value }) => value ? new Date(value).toISOString().split('T')[0] : ""
-            },
+            { header: '발행일자', name: 'requestedAt', align: 'center' },
+            { header: '결재 날짜', name: 'confirmedDate', align: 'center' },
             { header: '상태', name: 'approvalStatusName', align: 'center' },
             { header: '상태코드', name: 'approvalStatusCode', hidden: true },
             { header: '상태이름', name: 'approvalStatusName', hidden: true },
@@ -57,28 +25,14 @@ const initGrid = () => {
             { header: '발령자 사번', name: 'transferEmpId', hidden: true },
             { header: '발령자 이름', name: 'transferEmpName', hidden: true }
         ]
-    });
-}
-
-// 메인 초기화 함수: 페이지 로딩 시 실행되며 그리드 초기화, 이벤트 등록, 데이터 조회 등을 수행
-const init = () => {
-    testGrid = initGrid(); // 전역 변수 testGrid에 초기화된 그리드 인스턴스 할당
+    );
 
     // 기본 날짜 설정
-    const today = new Date();
-    today.setHours(today.getHours() + 9);
-    const toDateStr = today.toISOString().split('T')[0];
+    const today = getKoreaToday();
     const pastDate = new Date(today);
     pastDate.setDate(pastDate.getDate() - 30);
-    const pastDateStr = pastDate.toISOString().split('T')[0];
-    const futureDate = new Date(today);
-    futureDate.setDate(futureDate.getDate() + 30);
-    const futureDateStr = futureDate.toISOString().split('T')[0];
-    // 현재 사용자 정보 (예시: id와 인증코드 저장)
-    const currentUser = {
-        id: "1",
-        authCode: "ATH002"
-    };
+    document.querySelector('input[name="startDate"]').value = pastDate.toISOString().split('T')[0];
+    document.querySelector('input[name="endDate"]').value = today;
 
     // 필터 탭 클릭 이벤트 등록: 탭을 클릭할 때마다 그리드에 표시할 데이터 필터링
     document.querySelectorAll('.filter-tab').forEach(btn => {
@@ -105,36 +59,29 @@ const init = () => {
             }
 
             // 필터링된 데이터로 그리드를 업데이트
-            testGrid.resetData(filteredData); // 전역 변수 사용
+            approvalGrid.resetData(filteredData); // 전역 변수 사용
         });
-    });
-
-    document.querySelector('input[name="startDate"]').value = pastDateStr;
-    document.querySelector('input[name="endDate"]').value = futureDateStr;
-
-    // 사번/이름 Enter 검색
-    document.querySelector('input[name="srhName"]').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            getData().then(res => {
-                testGrid.resetData(res.data);
-            });
-        }
     });
 
     // 검색 버튼
     document.querySelector(".srhBtn").addEventListener("click", function (e) {
         e.preventDefault();
         e.stopPropagation();
-        getData().then(res => {
-            testGrid.resetData(res.data);
-        });
+
+        getData();
     }, false);
 
+    // 엔터 시 검색
+    document.querySelector('.search__form').addEventListener('submit', function(e) {
+        e.preventDefault(); // 폼 제출(새로고침) 방지
+
+        getData();
+    });
+
     // 그리드 행 더블클릭 이벤트: 특정 행을 더블클릭 시 팝업 창을 열어 상세 정보 제공
-    testGrid.on('dblclick', (e) => {
+    approvalGrid.on('dblclick', (e) => {
         const rowKey = e.rowKey;
-        const rowData = testGrid.getRow(rowKey);
+        const rowData = approvalGrid.getRow(rowKey);
 
         // 유효한 행 데이터가 있고, 결재번호가 있는 경우
         if (rowData && rowData.approvalId) {
@@ -179,8 +126,7 @@ const init = () => {
                         transferEmpName: rowData.transferEmpName,
                         requesterName: rowData.requesterName, // 요청자 이름 (유효한 경우)
                         requesterId: rowData.requesterId,
-                        userId: currentUser.id,
-                        authCode: currentUser.authCode
+                        requestedAt: rowData.requestedAt
                     }, "*");
 
                     // 메시지 전송 후, 이벤트 핸들러 제거하여 중복 호출 방지
@@ -201,11 +147,24 @@ const init = () => {
         const dept = document.querySelector("select[name='DEP']").value;
         const position = document.querySelector("select[name='POS']").value;
         const approvalNameOrEmpId = document.querySelector("input[name='srhName']").value;
+        // validation
+        if ((startDate && !endDate) || (!startDate && endDate)) {
+            alert("시작 및 종료 날짜를 모두 입력해주세요.");
+            return { data: [] };
+        }
 
-        // 시작 날짜가 종료 날짜보다 늦은 경우 경고 메시지 출력 및 함수 중단
-        if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-            alert("시작 날짜는 종료 날짜보다 이전이어야 합니다.");
-            return;
+        if (startDate && endDate) {
+            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+            if (!dateRegex.test(startDate) || isNaN(Date.parse(startDate))
+                || !dateRegex.test(endDate) || isNaN(Date.parse(endDate))) {
+                alert("날짜 형식이 올바르지 않습니다.");
+                return { data: [] };
+            }
+            if (new Date(startDate) > new Date(endDate)) {
+                alert("시작 날짜는 종료 날짜보다 이전이어야 합니다.");
+                return { data: [] };
+            }
         }
 
         // URLSearchParams를 사용해 검색 파라미터를 쿼리 스트링으로 생성
@@ -246,7 +205,7 @@ const init = () => {
 
             // 전역 원본 데이터 업데이트 및 그리드 데이터 재설정
             rawApprovalData = modifiedData;
-            testGrid.resetData(modifiedData);
+            approvalGrid.resetData(modifiedData);
             return { data: modifiedData };
 
         } catch (e) {
@@ -256,11 +215,13 @@ const init = () => {
         }
     }
 
-    // getData 정의까지 끝난 후에 마지막에 추가👇
-    getData().then(res => {
-        testGrid.resetData(res.data);
-        rawApprovalData = res.data;
-    });
+    // 공통코드 세팅
+    setSelectBox("APR", "APR");
+    setSelectBox("DEP", "DEP");
+    setSelectBox("POS", "POS");
+
+    // 페이지 진입 시 바로 리스트 호출
+    getData();
 }
 
 // 페이지 로딩이 완료되면 init 함수 실행

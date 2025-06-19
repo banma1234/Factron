@@ -9,12 +9,8 @@ const init = () => {
     // ✅ 부모 창으로부터 메시지를 수신했을 때 실행
     window.addEventListener("message", function (event) {
         const data = event.data;
-        console.log("수신된 메시지:", data);
-
-        // react-devtools 등의 내부 메시지 무시
         if (!data || data?.source === 'react-devtools-content-script') return;
 
-        // 구조 분해로 필요한 데이터 추출
         const {
             approvalId,
             apprTypeCode,
@@ -24,30 +20,15 @@ const init = () => {
             approverId,
             rejectionReason,
             confirmedDate,
-            userId,
-            authCode
         } = data;
 
-        // 필수 데이터가 존재할 때만 처리
-        if (approvalId && userId && authCode) {
-            console.log("받은 approvalId:", approvalId);
-            console.log("받은 apprTypeCode:", apprTypeCode);
-            console.log("받은 approvalStatusCode:", approvalStatusCode);
-            console.log("받은 approvalStatusName:", approvalStatusName);
-            console.log("받은 userId:", userId);
-            console.log("받은 approverName:", approverName);
-            console.log("받은 approverId:", approverId);
-            console.log("받은 rejectionReason:", rejectionReason);
-            console.log("받은 confirmedDate:", confirmedDate);
-
+        if (approvalId) {
             // 전역에 저장
             window.receivedData = data;
 
             // UI 및 폼 데이터 설정
             setUIState(data);
             setFormData(data);
-
-            // 근무 정보 조회
             fetchWorkByApprovalId(approvalId);
         } else {
             console.warn("필요한 데이터가 부족합니다.");
@@ -56,14 +37,12 @@ const init = () => {
 
     // ✅ 승인 버튼 클릭 시 처리
     confirmApproveBtn.addEventListener("click", async () => {
-        console.log("승인 버튼 클릭");
         const result = await sendApproval("APV002");  // 승인 코드
         handleAlert(result);
     });
 
     // ✅ 반려 버튼 클릭 시 처리
     confirmRejectBtn.addEventListener("click", async () => {
-        console.log("반려 버튼 클릭");
         const reason = document.querySelector("textarea[name='rejectReasonInput']").value.trim();
         if (!reason) {
             alert("반려 사유를 입력해주세요.");
@@ -100,12 +79,11 @@ const init = () => {
             const response = await fetch(`/api/work?${params.toString()}`, {
                 method: "GET",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json"
                 },
             });
 
             const result = await response.json();
-            console.log("근무 조회 결과:", result);
 
             if (result.status === 200 && result.data?.length > 0) {
                 const workData = result.data[0];
@@ -125,19 +103,17 @@ const init = () => {
 
         const data = {
             approvalId: Number(approvalId),
-            approverId: window.receivedData?.userId || null,
+            approverId: user.id || null,
             approvalType: window.receivedData?.apprTypeCode || null,
             approvalStatus: statusCode,
             rejectionReason: statusCode === "APV003" ? rejectionReason : null,
         };
 
-        console.log("전송할 결재 데이터:", data);
-
         try {
             const res = await fetch("/api/approval", {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify(data),
             });
@@ -180,7 +156,7 @@ const init = () => {
         setValue("input[name='apprTypeCode']", data.apprTypeCode);
         setValue("input[name='approverId']", data.approverId);
         setValue("input[name='approverName']", data.approverName);
-        setValue("input[name='confirmedDate']", data.confirmedDate);
+        setValue("input[name='confirmedDate']", (data.confirmedDate || '').split(' ')[0]);
         setValue("input[name='approvalStatus']", data.approvalStatusName);
 
         const textarea = form.querySelector("textarea[name='rejectionReason']");
@@ -194,7 +170,7 @@ const init = () => {
         const approvalResultSection = document.querySelector(".approval-result-section");
 
         const isStatusValid = data.approvalStatusCode === "APV001"; // 결재대기 상태
-        const isAuthValid = data.authCode === "ATH002"; // 결재권자 권한 여부
+        const isAuthValid = user.authCode === "ATH002"; // 결재권자 권한 여부
 
         approveBtn.style.display = (isStatusValid && isAuthValid) ? "inline-block" : "none";
         rejectBtn.style.display = (isStatusValid && isAuthValid) ? "inline-block" : "none";

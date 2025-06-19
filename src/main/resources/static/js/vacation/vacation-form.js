@@ -5,54 +5,46 @@ const init = () => {
     const confirmBtn = document.querySelector(".vacationConfirmBtn");
     const alertModal = new bootstrap.Modal(document.querySelector(".vacationAlertModal"));
     const alertBtn = document.querySelector(".vacationAlertBtn");
-    const today = new Date().toISOString().split("T")[0];
-
+    const today = getKoreaToday();
     let data = {};
 
-    form.querySelector("input[name='startTime']").setAttribute("min", today);
-    form.querySelector("input[name='endTime']").setAttribute("min", today);
-
-    // 부모창에서 데이터 받아오기
-    window.addEventListener('message', function(event) {
-        const data = event.data;
-        if (data?.source === 'react-devtools-content-script') return;
-
-        // 초기 값 세팅
-        form.querySelector("input[name='empId']").value = data.empId || "";
-        form.querySelector("input[name='empName']").value = data.empName || "";
-    });
+    // 초기 값 세팅
+    form.querySelector("input[name='empId']").value = user.id;
+    form.querySelector("input[name='empName']").value = user.name;
+    form.querySelector("input[name='startDate']").setAttribute("min", today);
+    form.querySelector("input[name='endDate']").setAttribute("min", today);
 
     // 저장 버튼
     saveBtn.addEventListener("click", () => {
-        const empId = form.querySelector("input[name='empId']").value.trim();
-        const empName = form.querySelector("input[name='empName']").value.trim();
-        const startTime = form.querySelector("input[name='startTime']").value;
-        const endTime = form.querySelector("input[name='endTime']").value;
+        const empId = form.querySelector("input[name='empId']").value;
+        const empName = form.querySelector("input[name='empName']").value;
+        const startDate = form.querySelector("input[name='startDate']").value;
+        const endDate = form.querySelector("input[name='endDate']").value;
         const remark = form.querySelector("textarea[name='remark']").value;
 
         const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-        if (!startTime || !endTime) {
+        if (!startDate || !endDate) {
             alert("시작 날짜와 종료 날짜를 모두 입력해주세요.");
             return;
         }
-        if (!dateRegex.test(startTime) || !dateRegex.test(endTime)) {
+        if (!dateRegex.test(startDate) || !dateRegex.test(endDate)) {
             alert("날짜 형식이 올바르지 않습니다.");
             return;
         }
-        if (startTime > endTime) {
-            alert("시작 날짜는 종료 날짜보다 빠르거나 같아야 합니다.");
+        if (startDate > endDate) {
+            alert("시작 날짜는 종료 날짜보다 이전이어야 합니다.");
             return;
         }
 
         data = {
             empId,
-            startTime,
-            endTime,
+            startDate,
+            endDate,
             remark
         };
 
         document.querySelector(".vacationConfirmModal .modal-body").innerHTML =
-            `${empName} 님<br/>${startTime} ~ ${endTime}<br/>휴가를 신청하시겠습니까?`;
+            `${empName} 님<br/>${startDate} ~ ${endDate}<br/>휴가를 신청하시겠습니까?`;
         confirmModal.show();
     });
 
@@ -82,15 +74,14 @@ const init = () => {
             const res = await fetch("/api/vacation", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
-                    "empId": document.getElementById("vacationEmpIdHidden").value
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify(data),
             });
             return res.json();
+
         } catch (e) {
             console.error(e);
-            return { status: 'fail', message: '요청 중 오류 발생' };
         }
     }
 };

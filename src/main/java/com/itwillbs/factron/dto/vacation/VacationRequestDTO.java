@@ -7,8 +7,8 @@ import java.time.LocalDate;
 public class VacationRequestDTO {
     //저장컬럼
     private Long empId;
-    private LocalDate startTime;
-    private LocalDate endTime;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private String remark;
 
     //조회컬럼

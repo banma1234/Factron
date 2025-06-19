@@ -1,34 +1,8 @@
-// grid 초기화
-const initGrid = () => {
-    const Grid = tui.Grid;
-
-    // 테마
-    Grid.applyTheme('default',  {
-        cell: {
-            normal: {
-                border: 'gray'
-            },
-            header: {
-                background: 'gray',
-                text: 'white',
-                border: 'gray'
-            },
-            rowHeaders: {
-                header: {
-                    background: 'gray',
-                    text: 'white'
-                }
-            }
-        }
-    });
-
-    // 세팅
-    return new Grid({
-        el: document.getElementById('commuteHistoryGrid'),
-        scrollX: false,
-        scrollY: true,
-        bodyHeight: 400,
-        columns: [
+const init = () => {
+    const commuteHistoryGrid = initGrid(
+        document.getElementById('commuteHistoryGrid'),
+        400,
+        [
             {
                 header: '사원번호',
                 name: 'empId',
@@ -64,27 +38,14 @@ const initGrid = () => {
                 name: 'commuteOut',
                 align: 'center'
             }
-        ],
-    });
-}
-
-// 한국 시간 기준 오늘 날짜 구하기
-function getKoreaToday() {
-    const now = new Date();
-    now.setHours(now.getHours() + 9); // UTC+9
-    return now.toISOString().slice(0, 10);
-}
-
-const init = () => {
-    const testGrid = initGrid();
+        ]
+    );
 
     // 초기 값 설정
     const today = getKoreaToday();
-    const empId = "8"; // 임의의 사번 -> 추후에 base.html 에서 시큐리티 세션으로 받은 사용자 객체를 통해 추출
-    const empName = "임의 사용자 이름"; // 임의의 사원 이름 -> 추후에 base.html 에서 시큐리티 세션으로 받은 사용자 객체를 통해 추출
 
     // 폼에 값 세팅
-    document.querySelector("input[name='srhNameOrId']").value = empId;
+    document.querySelector("input[name='srhNameOrId']").value = user.id;
     document.querySelector("input[name='srhStartDate']").value = today;
     document.querySelector("input[name='srhEndDate']").value = today;
 
@@ -101,22 +62,22 @@ const init = () => {
 
         // 조회
         getData().then(res => {
-            testGrid.resetData(res.data);
+            commuteHistoryGrid.resetData(res.data);
         });
     }, false);
 
-    // 폼 제출 방지
+    // 엔터 시 검색
     document.querySelector('.search__form').addEventListener('submit', function(e) {
         e.preventDefault(); // 폼 제출(새로고침) 방지
 
         // 조회
         getData().then(res => {
-            testGrid.resetData(res.data);
+            commuteHistoryGrid.resetData(res.data);
         });
     });
 
     // fetch 함수 선언
-    async function getData(extraParams = {}) {
+    async function getData() {
 
         // validation
         const nameOrId = document.querySelector("input[name='srhNameOrId']").value;
@@ -124,29 +85,20 @@ const init = () => {
         const startDate = document.querySelector("input[name='srhStartDate']").value;
         const endDate = document.querySelector("input[name='srhEndDate']").value;
 
-        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-
-        // 날짜 유효성 검사는 둘 다 값이 있을 때만 수행
         if ((startDate && !endDate) || (!startDate && endDate)) {
-
             alert("시작 및 종료 날짜를 모두 입력해주세요.");
             return { data: [] };
         }
 
-        // 시작 날짜와 종료 날짜가 모두 입력된 경우 또는 아예 입력되지 않은 경우에만 날짜 형식 검증
         if (startDate && endDate) {
-
             const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
             if (!dateRegex.test(startDate) || isNaN(Date.parse(startDate))
                 || !dateRegex.test(endDate) || isNaN(Date.parse(endDate))) {
-
                 alert("날짜 형식이 올바르지 않습니다.");
                 return { data: [] };
             }
-
             if (new Date(startDate) > new Date(endDate)) {
-
                 alert("시작 날짜는 종료 날짜보다 이전이어야 합니다.");
                 return { data: [] };
             }
@@ -233,10 +185,10 @@ const init = () => {
     commuteConfirmBtn.addEventListener('click', async () => {
         try {
             if (commuteAction === 'in') {
-                await commuteIn(empId);
+                await commuteIn(user.id);
                 alert('출근 처리 완료');
             } else if (commuteAction === 'out') {
-                await commuteOut(empId);
+                await commuteOut(user.id);
                 alert('퇴근 처리 완료');
             }
             commuteConfirmModal.hide();
@@ -247,9 +199,12 @@ const init = () => {
         }
     });
 
-    // 최초 진입 시 empId, 오늘 날짜로 조회
-    getData({ empId, startDate: today, endDate: today }).then(res => {
-        testGrid.resetData(res.data);
+    // 공통코드 세팅
+    setSelectBox("DEP", "srhDepartment");
+
+    // 페이지 진입 시 바로 리스트 호출
+    getData().then(res => {
+        commuteHistoryGrid.resetData(res.data);
     });
 }
 

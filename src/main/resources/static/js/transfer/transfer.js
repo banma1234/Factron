@@ -1,34 +1,8 @@
-// grid 초기화
-const initGrid = () => {
-    const Grid = tui.Grid;
-
-    // 테마
-    Grid.applyTheme('default',  {
-        cell: {
-            normal: {
-                border: 'gray'
-            },
-            header: {
-                background: 'gray',
-                text: 'white',
-                border: 'gray'
-            },
-            rowHeaders: {
-                header: {
-                    background: 'gray',
-                    text: 'white'
-                }
-            }
-        }
-    });
-
-    // 세팅
-    return new Grid({
-        el: document.getElementById('transferGrid'),
-        scrollX: false,
-        scrollY: true,
-        bodyHeight: 400,
-        columns: [
+const init = () => {
+    const transferGrid = initGrid(
+        document.getElementById('transferGrid'),
+        400,
+        [
             {
                 header: '발령구분',
                 name: 'trsTypeName',
@@ -64,12 +38,8 @@ const initGrid = () => {
                 name: 'currDeptName',
                 align: 'center'
             },
-        ],
-    });
-}
-
-const init = () => {
-    const transferGrid = initGrid();
+        ]
+    );
 
     // 검색
     document.querySelector(".srhBtn").addEventListener("click", function(e) {
@@ -132,7 +102,6 @@ const init = () => {
                 },
             });
             return res.json();
-            //return { data : [] };
 
         } catch (e) {
             console.error(e);
@@ -146,53 +115,15 @@ const init = () => {
         // 자식 창으로부터 'ready' 먼저 수신 후 postMessage 실행
         const messageHandler = (event) => {
             if (event.data === 'ready') {
-                popup.postMessage({
-                    empId: '1', // 하드코딩
-                }, "*");
+                popup.postMessage({}, "*");
                 window.removeEventListener("message", messageHandler);
             }
         };
         window.addEventListener("message", messageHandler);
     });
 
-    // 공통코드 목록 조회
-    window.getSysCodeList = async function (mainCode) {
-        const res = await fetch(`/api/sys/detail?mainCode=${mainCode}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        return res.json();
-    }
-
-    // 발령구분 세팅
-    getSysCodeList("TRS").then(res => {
-        const selectElement = document.querySelector("select[name='srhTrsTypeCode']");
-
-        // 하드코딩
-        const data = [
-            {
-                "detailCode": "TRS001",
-                "name": "승진"
-            },
-            {
-                "detailCode": "TRS002",
-                "name": "전보"
-            },
-        ];
-
-        // for(const trsType of res.data) {
-        for(const trsType of data) {
-            const optionElement = document.createElement("option");
-            optionElement.value = trsType.detailCode;  // 코드
-            optionElement.textContent = trsType.name;  // 이름
-
-            selectElement.appendChild(optionElement);
-        }
-    }).catch(e => {
-        console.error(e);
-    });
+    // 공통코드 세팅
+    setSelectBox("TRS", "srhTrsTypeCode");
 
     // 페이지 진입 시 바로 리스트 호출
     getData().then(res => {

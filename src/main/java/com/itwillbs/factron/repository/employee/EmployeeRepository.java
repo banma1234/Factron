@@ -16,4 +16,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     @Query("SELECT COUNT(e) FROM Employee e WHERE FUNCTION('TO_CHAR', e.joinedDate, 'YYYY-MM') = :yearMonth")
     long countByYearMonth(@Param("yearMonth") String yearMonth);
 
+    boolean existsByEmail(String email);
+    boolean existsByPhone(String phone);
+
 }
