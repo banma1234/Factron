@@ -121,8 +121,10 @@
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
             crossorigin="anonymous"></script>
 
+    <!-- globals JS -->
+    <script type="module" th:src="@{/js/layout/globals.js}"></script>
     <!-- COMMON JS -->
-    <script type="module" th:src="@{/js/common.js}"></script>
+    <script type="module" th:src="@{/js/layout/common.js}"></script>
     <th:block layout:fragment="javascript"></th:block>
 </main>
 

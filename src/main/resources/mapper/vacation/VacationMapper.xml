@@ -55,24 +55,19 @@
         ORDER BY vh.start_date DESC
     </select>
 
-    <select id="VacationCheck"
-            parameterType="com.itwillbs.factron.dto.vacation.VacationRequestDTO"
-            resultType="boolean">
+    <select id="VacationCheck" parameterType="com.itwillbs.factron.dto.vacation.VacationRequestDTO" resultType="int">
     <![CDATA[
-        SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
+        SELECT COUNT(vh.id)
         FROM vacation_history vh
-                 JOIN approval a ON vh.approval_id = a.id
+        JOIN approval a ON vh.approval_id = a.id
         WHERE vh.employee_id = #{empId}
-          AND a.approval_status_code != 'APV003'
+        AND a.approval_status_code != 'APV003'
         AND (
-            (vh.start_date BETWEEN #{startTime}
-          AND #{endTime})
+            (vh.start_date BETWEEN #{startDate} AND #{endDate})
            OR
-            (vh.end_date BETWEEN #{startTime}
-          AND #{endTime})
+            (vh.end_date BETWEEN #{startDate} AND #{endDate})
            OR
-            (vh.start_date <= #{startTime}
-          AND vh.end_date >= #{endTime})
+            (vh.start_date <= #{startDate} AND vh.end_date >= #{endDate})
             )
         ]]>
 </select>

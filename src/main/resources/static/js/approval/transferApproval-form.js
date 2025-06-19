@@ -9,12 +9,8 @@ const init = () => {
     // ✅ 부모 창으로부터 메시지를 수신했을 때 실행
     window.addEventListener("message", function (event) {
         const data = event.data;
-        console.log("수신된 메시지:", data);
-
-        // react-devtools 등의 내부 메시지 무시
         if (!data || data?.source === 'react-devtools-content-script') return;
 
-        // 구조 분해로 필요한 데이터 추출
         const {
             approvalId,
             apprTypeCode,
@@ -26,32 +22,15 @@ const init = () => {
             confirmedDate,
             requesterId,
             requesterName,
-            userId,
-            authCode
         } = data;
 
-        // 필수 데이터가 존재할 때만 처리
-        if (approvalId && userId && authCode) {
-            console.log("받은 approvalId:", approvalId);
-            console.log("받은 apprTypeCode:", apprTypeCode);
-            console.log("받은 approvalStatusCode:", approvalStatusCode);
-            console.log("받은 approvalStatusName:", approvalStatusName);
-            console.log("받은 userId:", userId);
-            console.log("받은 approverName:", approverName);
-            console.log("받은 approverId:", approverId);
-            console.log("받은 rejectionReason:", rejectionReason);
-            console.log("받은 confirmedDate:", confirmedDate);
-            console.log("받은 requesterId:", requesterId);
-            console.log("받은 requesterName:", requesterName);
-
+        if (approvalId) {
             // 전역에 저장
             window.receivedData = data;
 
             // UI 및 폼 데이터 설정
             setUIState(data);
             setFormData(data);
-
-            // 발령 정보 조회
             fetchTransferByApprovalId(approvalId);
         } else {
             console.warn("필요한 데이터가 부족합니다.");
@@ -102,12 +81,11 @@ const init = () => {
             const response = await fetch(`/api/trans?${params.toString()}`, {
                 method: "GET",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json"
                 },
             });
 
             const result = await response.json();
-            console.log("발령 조회 결과:", result);
 
             if (result.status === 200 && result.data?.length > 0) {
                 const transferData = result.data[0];
@@ -127,19 +105,17 @@ const init = () => {
 
         const data = {
             approvalId: Number(approvalId),
-            approverId: window.receivedData?.userId || null,
+            approverId: user.id || null,
             approvalType: window.receivedData?.apprTypeCode || null,
             approvalStatus: statusCode,
             rejectionReason: statusCode === "APV003" ? rejectionReason : null,
         };
 
-        console.log(data);
-
         try {
             const res = await fetch("/api/approval", {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify(data),
             });
@@ -193,9 +169,8 @@ const init = () => {
         const rejectBtn = document.querySelector(".rejectBtn");
         const approvalResultSection = document.querySelector(".approval-result-section");
 
-        const { approvalStatusCode, authCode } = data;
-        const isStatusValid = approvalStatusCode === "APV001"; // 결재대기 상태
-        const isAuthValid = authCode === "ATH002"; // 권한이 결재권자일 경우
+        const isStatusValid = data.approvalStatusCode === "APV001"; // 결재대기 상태
+        const isAuthValid = user.authCode === "ATH002"; // 권한이 결재권자일 경우
 
         // 조건 충족 시 버튼 보이기
         approveBtn.style.display = (isStatusValid && isAuthValid) ? "inline-block" : "none";

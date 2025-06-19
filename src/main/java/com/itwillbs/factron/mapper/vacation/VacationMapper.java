@@ -16,6 +16,6 @@ public interface VacationMapper {
 
     List<VacationResponseDTO> getVacations(VacationRequestDTO vacationRequestDTO);
 
-    boolean VacationCheck(VacationRequestDTO dto);
+    Integer VacationCheck(VacationRequestDTO dto);
 
 }
