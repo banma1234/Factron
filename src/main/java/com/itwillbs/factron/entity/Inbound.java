@@ -35,14 +35,14 @@ public class Inbound {
     @Column(name = "quantity", nullable = false)
     private Long quantity; // 입고 수량
 
-    @Column(name = "date")
-    private LocalDate date; // 입고 날짜
+    @Column(name = "in_date")
+    private LocalDate inDate; // 입고 날짜
 
     @Column(name = "category_code", length = 6, nullable = false)
     private String categoryCode; // 입고 품목 구분 코드 (예: 완제품, 반제품, 자재)
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "puchase_id", referencedColumnName = "id")
+    @JoinColumn(name = "purchase_id", referencedColumnName = "id")
     private Purchase purchase; // 발주 ID (발주 입고 시)
 
     @Column(name = "status_code", length = 6, nullable = false)

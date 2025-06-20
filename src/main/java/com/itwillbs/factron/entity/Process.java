@@ -26,8 +26,8 @@ public class Process extends BaseEntity {
     @Column(name = "name", length = 255, nullable = false)
     private String name; // 공정 이름
 
-    @Column(name = "desc", length = 255)
-    private String desc; // 공정 설명
+    @Column(name = "description", length = 255)
+    private String description; // 공정 설명
 
     @Column(name = "type_code", length = 6, nullable = false)
     private String typeCode; // 공정 유형 코드 (예: 도색, 조립 등)

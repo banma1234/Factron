@@ -35,8 +35,8 @@ public class Outbound {
     @Column(name = "quantity", nullable = false)
     private Long quantity; // 출고 수량
 
-    @Column(name = "date")
-    private LocalDate date; // 출고 날짜
+    @Column(name = "out_date")
+    private LocalDate outDate; // 출고 날짜
 
     @Column(name = "category_code", length = 6, nullable = false)
     private String categoryCode; // 출고 품목 구분 코드 (예: 완제품, 반제품, 자재)

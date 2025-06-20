@@ -24,6 +24,6 @@ public class Line extends BaseEntity {
     @Column(name = "status_code", length = 6, nullable = false)
     private String statusCode; // 라인 상태 코드 (예: 운영, 정지)
 
-    @Column(name = "desc", length = 255)
-    private String desc; // 라인 설명
+    @Column(name = "description", length = 255)
+    private String description; // 라인 설명
 }
