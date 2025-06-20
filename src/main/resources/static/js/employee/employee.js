@@ -1,32 +1,23 @@
-// grid 초기화
-const initGrid = (employees) => {
-    const Grid = tui.Grid;
-    // 테마
-    Grid.applyTheme('default',  {
-        cell: {
-            normal: {
-                border: 'gray'
-            },
-            header: {
-                background: 'gray',
-                text: 'white',
-                border: 'gray'
-            },
-            rowHeaders: {
-                header: {
-                    background: 'gray',
-                    text: 'white'
-                }
-            }
-        }
-    });
-    // 세팅
-    return new Grid({
-        el: document.getElementById('employee_grid'),
-        scrollX: false,
-        scrollY: true,
-        bodyHeight: 400,
-        columns: [
+// 공백 제거 함수
+const removeSpaces = (str) => {
+    return str.replace(/\s+/g, '');
+}
+// 대문자 변환 함수
+const toUpperCase = (str) => {
+    if (typeof str !== 'string') return '';
+    return str.toUpperCase();
+}
+// 하이픈 제거 함수
+const removeHyphens = (phoneNumber) => {
+    return phoneNumber.replace(/-/g, '');
+}
+
+
+const init = () => {
+    const employeeGrid = initGrid(
+        document.getElementById('employee_grid'),
+        400,
+        [
             {
                 header: '번호',
                 name: 'id',
@@ -66,98 +57,32 @@ const initGrid = (employees) => {
                     return `${upperValue==='Y' ? '재직' : '퇴직'}`
                 }
             }
-        ],
-        data: employees
+        ]
+    );
+
+    // 검색 버튼 클릭 이벤트
+    document.querySelector(".empSrhBtn").addEventListener("click", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        getEmployees();
+
+    }, false);
+
+    // 엔터 시 검색
+    document.querySelector(".search__form").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        getEmployees();
     });
-}
 
-// 공백 제거 함수
-const removeSpaces = (str) => {
-    return str.replace(/\s+/g, '');
-}
-
-/**
- * 대문자 변환
- * @param str
- * @returns {string}
- */
-const toUpperCase = (str) => {
-    if (typeof str !== 'string') return '';
-    return str.toUpperCase();
-}
-
-const removeHyphens = (phoneNumber) => {
-    return phoneNumber.replace(/-/g, '');
-}
-
-// 공통코드 목록 조회
-const getSysCodeList = async (mainCode)  =>  {
-    const res = await fetch(`/api/sys/detail?mainCode=${mainCode}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-    return res.json();
-}
-
-// 셀렉박스 옵션 공통코드로 설정
-const setSelectBox = async (mainCode, selectTagName) => {
-
-
-    await getSysCodeList(mainCode).then((data) => {
-
-        const selectTag = document.querySelector(`select[name=${selectTagName}]`)
-        if(data.status === 200){
-            data.data.forEach((code) => {
-                const optionElement = document.createElement("option");
-                optionElement.value = code.detail_code;
-                optionElement.textContent = code.name;
-
-                if(selectTag){
-                    selectTag.appendChild(optionElement);
-                }
-
-            });
-        }else{
-            alert("공통코드 부르기 실패!")
-        }
-
-    });
-};
-
-
-const init = () => {
-    const employeeGrid = initGrid(); // grid 초기 세팅
-    getEmployees(); //초기 사원 리스트 호출
-
-    setSelectBox("DEP", 'deptCode');
-    setSelectBox("POS", 'positionCode');
-    // setSelectBox('', 'isActive')
-
-    // 버튼에사원 조회 API 호출 기능 추가
-    const srhBtn = document.querySelector(".empSrhBtn");
-
-    if (srhBtn) {
-        srhBtn.addEventListener("click",(e)=>{
-            e.preventDefault();
-            e.stopPropagation();
-            getEmployees();
-        });
-
-        srhBtn.addEventListener("submit",(e)=>{
-            e.preventDefault();
-            e.stopPropagation();
-            getEmployees();
-        });
-    }
-
+    // 사원 추가 버튼 클릭
     const addBtn = document.querySelector("button[name='addNewEmp']");
-
     if(addBtn){
         addBtn.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
+
             addNewEmployee();
         })
     }
@@ -280,6 +205,13 @@ const init = () => {
             });
         }
     });
+
+    // 공통코드 세팅
+    setSelectBox("DEP", 'deptCode');
+    setSelectBox("POS", 'positionCode');
+
+    // 페이지 진입 시 바로 리스트 호출
+    getEmployees();
 }
 
 window.onload = () => {

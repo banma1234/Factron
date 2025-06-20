@@ -10,7 +10,6 @@ import com.itwillbs.factron.repository.approval.ApprovalRepository;
 import com.itwillbs.factron.repository.employee.EmployeeRepository;
 import com.itwillbs.factron.repository.work.WorkRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,9 +17,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class WorkServiceImpl implements WorkService {
 
     private final WorkMapper workMapper;

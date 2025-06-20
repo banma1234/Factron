@@ -11,15 +11,16 @@ import com.itwillbs.factron.repository.approval.ApprovalRepository;
 import com.itwillbs.factron.repository.employee.EmployeeRepository;
 import com.itwillbs.factron.repository.vacation.VacationRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class VacationServiceImpl implements VacationService {
 
     private final VacationRepository vacationRepository;
@@ -36,14 +37,15 @@ public class VacationServiceImpl implements VacationService {
     @Transactional
     @Override
     public Void registVacation(VacationRequestDTO dto) {
-        Employee employee = employeeRepository.findById(dto.getEmpId()).orElseThrow();
+        Employee employee = employeeRepository.findById(dto.getEmpId())
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사원입니다."));
 
         //중복 방지
-        if (vacationMapper.VacationCheck(dto)) {
+        if (vacationMapper.VacationCheck(dto) > 0) {
             throw new IllegalStateException("이미 해당 날짜에 신청한 휴가가 있습니다.");
         }
 
-        //결제 등록
+        //결재 등록
         Approval approval = approvalRepository.save(Approval.builder()
                 .requester(employee)
                 .approvalStatusCode("APV001")
@@ -53,13 +55,12 @@ public class VacationServiceImpl implements VacationService {
 
         //휴가 기록 등록
         vacationRepository.save(VacationHistory.builder()
-                .startDate(dto.getStartTime())
-                .endDate(dto.getEndTime())
+                .startDate(dto.getStartDate())
+                .endDate(dto.getEndDate())
                 .remark(dto.getRemark())
                 .employee(employee)
                 .approval(approval)
                 .build());
-
 
         return null;
     }

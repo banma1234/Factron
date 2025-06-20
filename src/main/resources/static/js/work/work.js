@@ -1,34 +1,9 @@
-// grid 초기화
-const initGrid = () => {
-    const Grid = tui.Grid;
-
-    // 테마
-    Grid.applyTheme('default',  {
-        cell: {
-            normal: {
-                border: 'gray'
-            },
-            header: {
-                background: 'gray',
-                text: 'white',
-                border: 'gray'
-            },
-            rowHeaders: {
-                header: {
-                    background: 'gray',
-                    text: 'white'
-                }
-            }
-        }
-    });
-
-    // 세팅
-    return new Grid({
-        el: document.getElementById('workGrid'),
-        scrollX: false,
-        scrollY: true,
-        bodyHeight: 400,
-        columns: [
+const init = () => {
+    // grid 세팅
+    const workGrid = initGrid(
+        document.getElementById('workGrid'),
+        400,
+        [
             {
                 header: '사원번호',
                 name: 'empId',
@@ -68,20 +43,14 @@ const initGrid = () => {
                 header: '근무 유형',
                 name: 'workName',
                 align: 'center'
-            },
-        ],
-    });
-}
-
-const init = () => {
-    const workGrid = initGrid();
+            }
+        ]
+    );
 
     // 검색 초기 세팅
-    const today = new Date();
-    today.setHours(today.getHours() + 9); // 한국 시간대
-    const todayStr = today.toISOString().split('T')[0];
-    document.querySelector("input[name='srhStrDate']").value = todayStr;
-    document.querySelector("input[name='srhEndDate']").value = todayStr;
+    const today = getKoreaToday();
+    document.querySelector("input[name='srhStrDate']").value = today;
+    document.querySelector("input[name='srhEndDate']").value = today;
 
     // 검색
     document.querySelector(".srhBtn").addEventListener("click", function(e) {
@@ -158,98 +127,16 @@ const init = () => {
         // 자식 창으로부터 'ready' 먼저 수신 후 postMessage 실행
         const messageHandler = (event) => {
             if (event.data === 'ready') {
-                popup.postMessage({
-                    empId: '25060001', // 하드코딩
-                    empName: '홍길동',
-                }, "*");
+                popup.postMessage({}, "*");
                 window.removeEventListener("message", messageHandler);
             }
         };
         window.addEventListener("message", messageHandler);
     });
 
-    // 공통코드 목록 조회
-    window.getSysCodeList = async function (mainCode) {
-        const res = await fetch(`/api/sys/detail?mainCode=${mainCode}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        return res.json();
-    }
-
-    // 부서 세팅
-    getSysCodeList("DEP").then(res => {
-        const selectElement = document.querySelector("select[name='srhDeptCode']");
-
-        // 하드코딩
-        const data = [
-            {
-                "detailCode": "DEP001",
-                "name": "인사부"
-            },
-            {
-                "detailCode": "DEP002",
-                "name": "개발부"
-            },
-            {
-                "detailCode": "DEP003",
-                "name": "영업부"
-            },
-            {
-                "detailCode": "DEP004",
-                "name": "생산부"
-            }
-        ];
-
-        // for(const dept of res.data) {
-        for(const dept of data) {
-            const optionElement = document.createElement("option");
-            optionElement.value = dept.detailCode;  // 코드
-            optionElement.textContent = dept.name;  // 이름
-
-            selectElement.appendChild(optionElement);
-        }
-    }).catch(e => {
-        console.error(e);
-    });
-
-    // 근무유형 세팅
-    getSysCodeList("WRK").then(res => {
-        const selectElement = document.querySelector("select[name='srhWorkCode']");
-
-        // 하드코딩
-        const data = [
-            {
-                "detailCode": "WRK001",
-                "name": "일반근무"
-            },
-            {
-                "detailCode": "WRK002",
-                "name": "외근"
-            },
-            {
-                "detailCode": "WRK003",
-                "name": "야근"
-            },
-            {
-                "detailCode": "WRK004",
-                "name": "특근"
-            }
-        ];
-
-        // for(const work of res.data) {
-        for(const work of data) {
-            const optionElement = document.createElement("option");
-            optionElement.value = work.detailCode;  // 코드
-            optionElement.textContent = work.name;  // 이름
-
-            selectElement.appendChild(optionElement);
-        }
-    }).catch(e => {
-        console.error(e);
-    });
+    // 공통코드 세팅
+    setSelectBox("DEP", "srhDeptCode");
+    setSelectBox("WRK", "srhWorkCode");
 
     // 페이지 진입 시 바로 리스트 호출
     getData().then(res => {
