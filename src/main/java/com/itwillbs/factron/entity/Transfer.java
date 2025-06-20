@@ -21,13 +21,13 @@ public class Transfer {
     private Long id; // 인사발령 ID
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_id", referencedColumnName = "id")
+    @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false)
     private Employee employee; // 인사발령 대상 직원
 
     @Column(name = "transfer_type_code", length = 6, nullable = false)
     private String transferTypeCode; // 인사발령 유형 코드 (예: 부서 이동, 직급 변경 등)
 
-    @Column(name = "transfer_date", nullable = false)
+    @Column(name = "transfer_date")
     private LocalDate transferDate; // 인사발령 날짜
 
     @Column(name = "position_code", length = 6, nullable = false)
@@ -42,4 +42,12 @@ public class Transfer {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "approval_id", referencedColumnName = "id", nullable = false)
     private Approval approval; // 결재 정보, 인사발령에 대한 결재 정보
+
+    /**
+     * 인사발령 날짜를 업데이트하는 메소드
+     * @param transferDate
+     */
+    public void updateTransferDate(LocalDate transferDate) {
+        this.transferDate = transferDate;
+    }
 }

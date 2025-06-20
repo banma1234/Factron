@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/popup-base.html}">
+<head>
+  <title>Factron</title>
+  <th:block layout:fragment="style">
+  </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+  <h2 class="mb-4">휴가 신청</h2>
+  <form>
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <span class="form-label">사원번호</span>
+        <input type="text" name="empId" class="form-control" disabled>
+      </div>
+      <div class="col-md-6">
+        <span class="form-label">이름</span>
+        <input type="text" name="empName" class="form-control" disabled>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <span class="form-label">시작 날짜</span>
+        <input type="date" name="startDate" class="form-control" required>
+      </div>
+      <div class="col-md-6">
+        <span class="form-label">종료 날짜</span>
+        <input type="date" name="endDate" class="form-control" required>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-12">
+        <span class="form-label">비고</span>
+        <textarea name="remark" class="form-control" rows="3"></textarea>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-end mt-4 gap-2">
+      <button type="button" class="btn btn-primary vacationSaveBtn">신청</button>
+      <button type="button" class="btn btn-secondary">취소</button>
+    </div>
+  </form>
+
+  <!-- 확인 모달 -->
+  <div class="modal fade vacationConfirmModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">정말로 휴가를 신청하시겠습니까?</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary vacationConfirmBtn">확인</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 알림 모달 -->
+  <div class="modal fade vacationAlertModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">휴가 신청이 완료되었습니다!</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary vacationAlertBtn">확인</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- script 블록 -->
+<th:block layout:fragment="javascript">
+  <script th:src="@{/js/vacation/vacation-form.js}"></script>
+</th:block>
+
+</body>
+</html>
