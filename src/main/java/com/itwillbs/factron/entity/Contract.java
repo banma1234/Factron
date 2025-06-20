@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
 
@@ -37,7 +39,8 @@ public class Contract {
     @Column(name = "created_at", updatable = false)
     private LocalDate createdAt; // 발주 등록일
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "approval_id", referencedColumnName = "id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "approval_id", referencedColumnName = "id", nullable = true)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Approval approval; // 결재 정보 (수주 결재 정보)
 }
