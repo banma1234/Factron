@@ -6,6 +6,20 @@ const init = () => {
     const confirmApproveBtn = document.querySelector(".confirmApproveBtn");
     const confirmRejectBtn = document.querySelector(".confirmRejectBtn");
 
+    const approveModal = new bootstrap.Modal(document.querySelector(".approveModal"));
+    const rejectModal = new bootstrap.Modal(document.querySelector(".rejectModal"));
+
+// 승인 버튼 클릭 시 모달 열기
+    document.querySelector(".approveBtn").addEventListener("click", () => {
+        approveModal.show();
+    });
+
+// 반려 버튼 클릭 시 모달 열기
+    document.querySelector(".rejectBtn").addEventListener("click", () => {
+        rejectModal.show();
+    });
+
+
     // ✅ 부모 창으로부터 메시지를 수신했을 때 실행
     window.addEventListener("message", function (event) {
         const data = event.data;
@@ -39,11 +53,12 @@ const init = () => {
 
     // ✅ 승인 버튼 클릭 시 처리
     confirmApproveBtn.addEventListener("click", async () => {
+        approveModal.hide(); // ← 모달 닫기
         const result = await sendApproval("APV002");  // 승인 코드
         handleAlert(result);
     });
 
-    // ✅ 반려 버튼 클릭 시 처리
+// ✅ 반려 버튼 클릭 시 처리
     confirmRejectBtn.addEventListener("click", async () => {
         const reason = document.querySelector("textarea[name='rejectReasonInput']").value.trim();
         if (!reason) {
@@ -51,12 +66,15 @@ const init = () => {
             return;
         }
 
+        rejectModal.hide(); // ← 모달 닫기
+
         // textarea에 반려사유 세팅
         document.querySelector("textarea[name='rejectionReason']").value = reason;
 
         const result = await sendApproval("APV003");  // 반려 코드
         handleAlert(result);
     });
+
 
     // ✅ 알림 모달 확인 버튼 클릭 시
     alertBtn.addEventListener("click", () => {
