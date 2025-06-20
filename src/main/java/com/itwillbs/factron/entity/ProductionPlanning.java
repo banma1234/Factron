@@ -17,7 +17,7 @@ import java.time.LocalDate;
 public class ProductionPlanning {
 
     @Id
-    private Long id; // 생산계획 ID, 패턴화
+    private String id; // 생산계획 ID, 패턴화
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id", referencedColumnName = "id", nullable = false)

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -35,5 +36,6 @@ public class Process extends BaseEntity {
     private Long standardTime; // 공정 기준 시간
 
     @Column(name = "has_machine", length = 1, nullable = false)
-    private String hasMachine; // 설비 여부 (Y/N)
+    @ColumnDefault("'N'")
+    private String hasMachine; // 설비 여부 (Y/N), 기본값은 'N'
 }

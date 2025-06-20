@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/* 수정해야함, 작업 지시 등록자 여부와 사원 테이블와의 fk 걸기 이슈 */
 @Entity
 @Getter
 @Builder
@@ -16,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class WorkOrder {
 
     @Id
-    private String id;
+    private String id; // 작업 지시 ID
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "production_id", referencedColumnName = "id", nullable = false)
@@ -24,5 +23,19 @@ public class WorkOrder {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id", referencedColumnName = "id", nullable = false)
-    private Item item; // 품목 ID
+    private Item item; // 제품 ID
+
+    @Column(name = "quantity")
+    private Long quantity; // 수량
+
+    @Column(name = "status_code", length = 6, nullable = false)
+    private String statusCode; // 상태 코드 (예: 등록, 대기, 시작, 작업 완료)
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "line_id", referencedColumnName = "id", nullable = false)
+    private Line line; // 작업 라인 ID
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false)
+    private Employee employee; // 작업 지시 등록자 (사원 ID)
 }

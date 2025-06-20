@@ -15,8 +15,7 @@ import lombok.NoArgsConstructor;
 public class Item extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id; // 제품 ID
+    private String id; // 제품 ID (예: P0000001)
 
     @Column(name = "name", length = 255, nullable = false)
     private String name; // 제품 이름

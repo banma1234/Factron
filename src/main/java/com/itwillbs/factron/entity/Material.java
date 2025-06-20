@@ -15,8 +15,7 @@ import lombok.NoArgsConstructor;
 public class Material extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id; // 자재 ID
+    private String id; // 자재 ID (예: M0000001)
 
     @Column(name = "name", length = 255, nullable = false)
     private String name; // 자재 이름
