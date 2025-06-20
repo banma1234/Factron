@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itwillbs.factron.mapper.transfer.TransferMapper">
+
+    <!-- 인사발령 목록 조회 -->
+    <select id="getTransferList" parameterType="com.itwillbs.factron.dto.transfer.RequestTransferDTO" resultType="com.itwillbs.factron.dto.transfer.ResponseTransferDTO">
+        SELECT
+            t.id,
+            t.transfer_date,
+            t.transfer_type_code AS trsTypeCode,
+            s1.name AS trsTypeName,
+            t.position_code AS positionCode,
+            p1.name AS positionName,
+            t.employee_id AS empId,
+            e.name AS empName,
+            t.prev_dept_code AS prevDeptCode,
+            d1.name AS prevDeptName,
+            t.curr_dept_code AS currDeptCode,
+            d2.name AS currDeptName,
+            t.approval_id
+        FROM transfer t
+        JOIN employee e ON t.employee_id = e.id
+        LEFT JOIN detail_sys_code s1 ON t.transfer_type_code = s1.detail_code
+        LEFT JOIN detail_sys_code p1 ON t.position_code = p1.detail_code
+        LEFT JOIN detail_sys_code d1 ON t.prev_dept_code = d1.detail_code
+        LEFT JOIN detail_sys_code d2 ON t.curr_dept_code = d2.detail_code
+        JOIN approval a ON t.approval_id = a.id
+        <where>
+            <choose>
+                <when test="srhApprovalId != null and srhApprovalId != ''">
+                    AND a.id = #{srhApprovalId}
+                </when>
+                <otherwise>
+                    AND a.approval_status_code = 'APV002' <!-- 미승인 상태 -->
+                </otherwise>
+            </choose>
+            <if test="srhIdOrName != null and srhIdOrName != ''">
+                AND (e.name LIKE '%' || #{srhIdOrName} || '%'
+                OR e.id LIKE '%' || #{srhIdOrName} || '%')
+            </if>
+            <if test="srhStrDate != null and srhStrDate != '' and srhEndDate != null and srhEndDate != ''">
+                AND t.transfer_date BETWEEN TO_DATE(#{srhStrDate}, 'yyyy-MM-dd') AND TO_DATE(#{srhEndDate}, 'yyyy-MM-dd')
+            </if>
+            <if test="srhTrsTypeCode != null and srhTrsTypeCode != ''">
+                AND t.transfer_type_code = #{srhTrsTypeCode}
+            </if>
+        </where>
+        ORDER BY t.transfer_date DESC, t.id DESC
+    </select>
+
+    <!-- 중복 결재(미승인) 체크 -->
+    <select id="existsPendingTransfer" parameterType="map" resultType="boolean">
+        SELECT CASE WHEN COUNT(*) &gt; 0 THEN
+            1 ELSE 0 END
+        FROM transfer t
+        JOIN approval a ON t.approval_id = a.id
+        WHERE t.employee_id = #{employeeId}
+          AND t.transfer_type_code = #{transferTypeCode}
+          AND a.approval_status_code = #{approvalStatusCode}
+    </select>
+
+</mapper>

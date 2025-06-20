@@ -10,7 +10,6 @@ import com.itwillbs.factron.repository.approval.ApprovalRepository;
 import com.itwillbs.factron.repository.employee.EmployeeRepository;
 import com.itwillbs.factron.repository.work.WorkRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,9 +17,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class WorkServiceImpl implements WorkService {
 
     private final WorkMapper workMapper;
@@ -44,6 +43,11 @@ public class WorkServiceImpl implements WorkService {
     public Void registWork(RequestWorkDTO requestWorkDTO) {
         Employee employee = empRepository.findById(requestWorkDTO.getEmpId())
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사원입니다."));
+
+        // 중복된 근무 신청 기각
+        if (!workMapper.chkDuplicateWork(requestWorkDTO).isEmpty()) {
+            throw new IllegalArgumentException("해당 일시에 이미 등록된 근무가 있습니다.");
+        }
 
         // 결재 먼저 등록
         Approval approval = appRepository.save(Approval.builder()

@@ -6,11 +6,12 @@
 <mapper namespace="com.itwillbs.factron.mapper.employee.EmployeeMapper">
 
     <!-- 테스트 목록 조회 -->
-    <select id="com.itwillbs.factron.mapper.employee.EmployeeMapper.getEmployeeList" parameterType="com.itwillbs.factron.dto.employee.EmployeeRequestDTO" resultType="com.itwillbs.factron.dto.employee.EmployeeResponseDTO">
+    <select id="getEmployeeList" parameterType="com.itwillbs.factron.dto.employee.RequestEmployeeSrhDTO" resultType="com.itwillbs.factron.dto.employee.ResponseEmployeeSrhDTO">
         SELECT
             e.id AS empId,
             e.name AS empName,
-            e.birth || '-' || e.rrn_back AS residentRegistrationNumber,
+            e.birth,
+            e.rrn_back,
             e.gender,
             e.email,
             e.edu_level_code,
@@ -33,21 +34,24 @@
         LEFT JOIN detail_sys_code emp ON e.employ_code = emp.detail_code
         LEFT JOIN detail_sys_code dept ON e.dept_code = dept.detail_code
         <where>
-            <if test="dept != null and dept != ''">
-                AND dept_code LIKE '%' || #{dept} || '%'
+            <if test="deptCode != null and deptCode != ''">
+                AND e.dept_code = #{deptCode}
             </if>
-            <if test="position != null and position != ''">
-                AND e.position_code = #{position}
+            <if test="positionCode != null and positionCode != ''">
+                AND e.position_code = #{positionCode}
             </if>
             <if test="empIsActive != null and empIsActive != ''">
                 AND i.is_active = #{empIsActive}
             </if>
             <if test="nameOrId != null and nameOrId != ''">
-                AND e.name = #{nameOrId} or e.id=#{nameOrId}
+                AND (
+                LOWER(e.name) LIKE '%' || LOWER(#{nameOrId}) || '%'
+                OR TO_CHAR(e.id) LIKE '%' || #{nameOrId} || '%'
+                )
             </if>
 
         </where>
-        ORDER BY e.id DESC
+        ORDER BY i.is_active DESC, e.id DESC
     </select>
 
 </mapper>

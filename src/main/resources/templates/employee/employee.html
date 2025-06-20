@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base.html}">
+<head>
+    <title>Factron</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section>
+        <div class="header-row">
+            <h4 class="page__name">사원 목록</h4>
+            <button class="btn btn-primary modBtn" name="addNewEmp" type="button">사원 추가</button>
+        </div>
+        <form class="search__form mb-2">
+            <div class="select__container">
+
+                <select class="form-select" name="deptCode">
+                    <option value="">부서</option>
+                </select>
+                <select class="form-select" name="positionCode">
+                    <option value="">직급</option>
+                </select>
+                <select class="form-select" name="isActive">
+                    <option value="">재직여부</option>
+                    <option value="Y">재직</option>
+                    <option value="N">퇴직</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <input class="form-control" type="text" name="name" placeholder="이름 또는 사원번호"><br/>
+                <button class="btn btn-outline-secondary empSrhBtn" type="button">검색</button>
+            </div>
+        </form>
+
+        <!-- list grid -->
+        <article>
+            <div id="employee_grid">
+
+            </div>
+        </article>
+    </section>
+</div>
+
+<th:block layout:fragment="javascript">
+    <!-- js import -->
+    <script th:src="@{/js/employee/employee.js}"></script>
+</th:block>
+</body>
+</html>
