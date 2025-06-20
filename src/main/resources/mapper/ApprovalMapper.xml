@@ -66,6 +66,9 @@
 
         <!-- 검색 조건 -->
         <where>
+            <!-- APR 코드만 조회하도록 필터 추가 -->
+            AND APP.APPROVAL_TYPE_CODE LIKE 'APR%'
+
             <!-- 요청일 시작일 -->
             <if test="startDate != null and startDate != ''">
                 AND APP.REQUESTED_AT &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
