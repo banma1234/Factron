@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itwillbs.factron.mapper.line.LineMapper">
+
+    <!-- 라인 목록 조회 -->
+    <select id="selectLineList" resultType="com.itwillbs.factron.dto.line.ResponseLineInfoDTO" parameterType="com.itwillbs.factron.dto.line.RequestLineInfoDTO">
+        SELECT
+        l.id AS lineId,
+        l.name AS lineName,
+        l.status_code AS lineStatusCode,
+        status.name AS lineStatusName,
+        l.description AS description,
+        TO_CHAR(l.created_at, 'YYYY-MM-DD') AS createdAt,
+        l.created_by AS createdBy
+        FROM line l
+        LEFT JOIN detail_sys_code status ON l.status_code = status.detail_code
+        <where>
+            <if test="lineName != null and lineName != ''">
+                AND LOWER(l.name) LIKE '%' || LOWER(#{lineName}) || '%'
+            </if>
+            <if test="lineStatusCode != null and lineStatusCode != ''">
+                AND l.status_code = #{lineStatusCode}
+            </if>
+        </where>
+        ORDER BY l.id DESC
+    </select>
+
+</mapper>
