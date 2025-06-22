@@ -29,8 +29,8 @@
             <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
             
             <div class="login__input__group">
-                <input class="form-control" type="text" name="employeeId" placeholder="사원번호" required>
-                <input class="form-control" type="password" name="password" placeholder="비밀번호" required>
+                <input class="form-control" type="text" name="employeeCode" placeholder="사원번호">
+                <input class="form-control" type="password" name="passsword" placeholder="비밀번호">
             </div>
             <button class="btn btn-primary btn-lg" id="login__button" type="submit">로그인</button>
             <br/>
@@ -52,6 +52,9 @@
     <!-- 배경 이미지 -->
     <img class="login__background" th:src="@{/login_background.webp}" alt="login background" />
 </main>
-
+<th:block layout:fragment="javascript">
+    <!-- js import -->
+    <script th:src="@{/js/login/loginForm.js}"></script>
+</th:block>
 </body>
 </html>
