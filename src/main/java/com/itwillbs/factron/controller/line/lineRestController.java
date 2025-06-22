@@ -52,9 +52,9 @@ public class lineRestController {
         } catch (EntityNotFoundException e) {
 
             return ResponseDTO.fail(800, e.getMessage(), null);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
 
-            return ResponseDTO.fail(801, e.getMessage(), null);
+            return ResponseDTO.fail(500, "라인 수정 중 오류가 발생하였습니다", null);
         }
     }
 

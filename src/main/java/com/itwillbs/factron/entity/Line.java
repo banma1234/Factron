@@ -28,13 +28,13 @@ public class Line extends BaseEntity {
     @Column(name = "description", length = 255)
     private String description; // 라인 설명
 
-    // 라인 이름/설명 수정
+    // 라인 정보 수정
     public void updateLineInfo(String name, String description) {
         this.name = name;
         this.description = description;
     }
 
-    // 상태 코드만 수정
+    // 라인 상태 코드 수정
     public void updateStatusCode(String statusCode) {
         this.statusCode = statusCode;
     }

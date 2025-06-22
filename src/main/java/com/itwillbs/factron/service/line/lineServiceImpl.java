@@ -56,6 +56,7 @@ public class lineServiceImpl implements lineService {
      * 라인 추가
      *
      * @param requestDto 요청 DTO
+     * @param empId      사원 ID
      */
     @Override
     @Transactional
@@ -79,6 +80,7 @@ public class lineServiceImpl implements lineService {
      * 라인 수정
      *
      * @param requestDto 요청 DTO
+     * @param empId      사원 ID
      */
     @Override
     @Transactional
@@ -90,6 +92,9 @@ public class lineServiceImpl implements lineService {
         Line line = lineRepository.findById(requestDto.getLineId())
                 .orElseThrow(() -> new EntityNotFoundException("해당 라인이 존재하지 않습니다."));
 
-        line.updateLineInfo(requestDto.getLineName(), requestDto.getDescription());
+        line.updateLineInfo(
+                requestDto.getLineName(),
+                requestDto.getDescription()
+        );
     }
 }
