@@ -38,13 +38,13 @@
             <hr/>
             <div class="login__hotkey__container" th:with="type='person'">
                 <button class="login__hotkey" title="평사원 로그인">
-                    <div th:replace="layout/icon :: icon(${type})"></div>
+                    <div th:replace="~{layout/icon :: icon(${type})}"></div>
                 </button>
                 <button class="login__hotkey" title="인사팀 로그인">
-                    <div th:replace="layout/icon :: icon(${type})"></div>
+                    <div th:replace="~{layout/icon :: icon(${type})}"></div>
                 </button>
                 <button class="login__hotkey" title="관리자 로그인">
-                    <div th:replace="layout/icon :: icon(${type})"></div>
+                    <div th:replace="~{layout/icon :: icon(${type})}"></div>
                 </button>
             </div>
         </form>

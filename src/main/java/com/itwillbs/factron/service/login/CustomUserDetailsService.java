@@ -45,8 +45,8 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("퇴직한 사용자입니다: " + employeeId);
         }
 
-        // 권한 코드에 따른 역할 부여
-        String role = getRoleByAuthCode(auth.getAuthCode());
+        // 권한 코드 그대로 사용 (1:1 관계이므로 매핑 불필요)
+        String role = auth.getAuthCode();
         log.info("로그인 성공 - 사원번호: {}, 권한: {}", employeeId, role);
 
         return User.builder()
@@ -54,18 +54,5 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .password(auth.getPassword())
                 .authorities(Collections.singletonList(new SimpleGrantedAuthority(role)))
                 .build();
-    }
-
-    private String getRoleByAuthCode(String authCode) {
-        return switch (authCode) {
-            case "ATH001" -> "ROLE_GENERAL";      // 일반
-            case "ATH002" -> "ROLE_HR";           // 인사
-            case "ATH003" -> "ROLE_ADMIN";        // 관리자
-            case "ATH004" -> "ROLE_SALES";        // 영업
-            case "ATH005" -> "ROLE_FINANCE";      // 재무
-            case "ATH006" -> "ROLE_PRODUCTION";   // 생산
-            case "ATH007" -> "ROLE_FOREMAN";      // 작업반장
-            default -> "ROLE_GENERAL";
-        };
     }
 } 
