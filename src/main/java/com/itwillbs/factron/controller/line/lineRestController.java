@@ -3,6 +3,7 @@ package com.itwillbs.factron.controller.line;
 import com.itwillbs.factron.dto.ResponseDTO;
 import com.itwillbs.factron.dto.line.RequestAddLineDTO;
 import com.itwillbs.factron.dto.line.RequestLineInfoDTO;
+import com.itwillbs.factron.dto.line.RequestUpdateLineDTO;
 import com.itwillbs.factron.dto.line.ResponseLineInfoDTO;
 import com.itwillbs.factron.service.line.lineService;
 import jakarta.persistence.EntityNotFoundException;
@@ -37,4 +38,25 @@ public class lineRestController {
 
         return ResponseDTO.success("라인을 추가하였습니다", null);
     }
+
+    // 라인 수정 API
+    @PutMapping()
+    public ResponseDTO<Void> updateLine(@RequestHeader("empId") Long empId,
+                                        @RequestBody @Valid RequestUpdateLineDTO requestDto) {
+
+        try {
+
+            lineService.updateLine(requestDto, empId);
+
+            return ResponseDTO.success("라인을 수정하였습니다", null);
+        } catch (EntityNotFoundException e) {
+
+            return ResponseDTO.fail(800, e.getMessage(), null);
+        } catch (IllegalArgumentException e) {
+
+            return ResponseDTO.fail(801, e.getMessage(), null);
+        }
+    }
+
+
 }
