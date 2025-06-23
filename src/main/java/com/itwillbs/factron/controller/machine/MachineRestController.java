@@ -36,9 +36,6 @@ public class MachineRestController {
         } catch (IllegalArgumentException e) {
 
             return ResponseDTO.fail(801, e.getMessage(), null);
-        } catch (Exception e) {
-
-            return ResponseDTO.fail(500, "설비 추가 중 오류가 발생하였습니다", null);
         }
     }
 
@@ -58,9 +55,6 @@ public class MachineRestController {
         } catch (IllegalArgumentException e) {
 
             return ResponseDTO.fail(801, e.getMessage(), null);
-        } catch (Exception e) {
-
-            return ResponseDTO.fail(500, "설비 수정 중 오류가 발생하였습니다", null);
         }
     }
 

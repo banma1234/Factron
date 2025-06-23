@@ -46,9 +46,6 @@ public class ProcessRestController {
         } catch (EntityNotFoundException e) {
 
             return ResponseDTO.fail(800, e.getMessage(), null);
-        } catch (Exception e) {
-
-            return ResponseDTO.fail(500, "공정 수정 중 오류가 발생하였습니다", null);
         }
     }
 

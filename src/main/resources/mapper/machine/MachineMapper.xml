@@ -9,24 +9,22 @@
     <select id="selectMachines" parameterType="com.itwillbs.factron.dto.machine.RequestMachineInfoDTO"
             resultType="com.itwillbs.factron.dto.machine.ResponseMachineInfoDTO">
         SELECT
-        m.id AS machineId,
-        m.name AS machineName,
-        m.manufacturer,
-        p.id AS processId,
-        p.name AS processName,
-        TO_CHAR(m.buy_date, 'YYYY-MM-DD') AS buyDate
-        FROM
-        machine m
-        INNER JOIN
-        process p ON m.process_id = p.id
+            m.id AS machineId,
+            m.name AS machineName,
+            m.manufacturer,
+            p.id AS processId,
+            p.name AS processName,
+            TO_CHAR(m.buy_date, 'YYYY-MM-DD') AS buyDate
+        FROM machine m
+        INNER JOIN process p
+            ON m.process_id = p.id
         <where>
             <if test="machineNameOrManufacturer != null and machineNameOrManufacturer != ''">
                 (UPPER(m.name) LIKE UPPER('%' || #{machineNameOrManufacturer} || '%')
                 OR UPPER(m.manufacturer) LIKE UPPER('%' || #{machineNameOrManufacturer} || '%'))
             </if>
         </where>
-        ORDER BY
-        m.id DESC
+        ORDER BY m.id DESC
     </select>
 
 </mapper>

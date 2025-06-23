@@ -1,10 +1,6 @@
 package com.itwillbs.factron.service.line;
 
-import com.itwillbs.factron.dto.line.RequestAddLineDTO;
-import com.itwillbs.factron.dto.line.RequestLineInfoDTO;
-import com.itwillbs.factron.dto.line.RequestUpdateLineDTO;
-import com.itwillbs.factron.dto.line.ResponseLineInfoDTO;
-import jakarta.validation.Valid;
+import com.itwillbs.factron.dto.line.*;
 
 import java.util.List;
 
@@ -18,4 +14,10 @@ public interface lineService {
 
     // 라인 수정
     void updateLine(RequestUpdateLineDTO requestDto, Long empId);
+
+    // 라인에 여러 공정 연결
+    void connectProcessesToLine(RequestConnectProcessesToLineDTO requestDto, Long empId);
+
+    // 라인에 여러 공정 연결 해제
+    void disconnectProcessesFromLine(RequestDisconnectProcessesFromLineDTO requestDto, Long empId);
 }
