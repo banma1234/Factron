@@ -165,7 +165,7 @@ const init = () => {
     const cmInBtn = document.querySelector('.cmInBtn');
     if (cmInBtn) {
         cmInBtn.addEventListener('click', () => {
-            commuteConfirmMsg.textContent = `${empName}님 출근 하시겠습니까?`;
+            commuteConfirmMsg.textContent = `${user.name}님 출근 하시겠습니까?`;
             commuteAction = 'in';
             commuteConfirmModal.show();
         });
@@ -175,7 +175,7 @@ const init = () => {
     const cmOutBtn = document.querySelector('.commuteOutBtn .cmOutBtn');
     if (cmOutBtn) {
         cmOutBtn.addEventListener('click', () => {
-            commuteConfirmMsg.textContent = `${empName}님 퇴근 하시겠습니까?`;
+            commuteConfirmMsg.textContent = `${user.name}님 퇴근 하시겠습니까?`;
             commuteAction = 'out';
             commuteConfirmModal.show();
         });
