@@ -1,0 +1,19 @@
+.bom-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.tree-scroll {
+    width: 45% !important;
+    height: 440px !important;
+    overflow-y: auto;     /* 세로 스크롤 활성화 */
+}
+
+.bom-detail-form {
+    width: 50%;
+    height: 440px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    box-sizing: border-box;
+}

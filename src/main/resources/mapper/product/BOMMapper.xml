@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itwillbs.factron.mapper.product.BOMMapper">
+
+    <!-- BOM 목록 조회 -->
+    <select id="getBOMList" parameterType="com.itwillbs.factron.dto.product.RequestBOMDTO" resultType="com.itwillbs.factron.dto.product.ResponseBOMDTO">
+        SELECT
+            b.id,
+            b.parent_item_id,
+            i1.name AS parent_item_name,
+            CASE WHEN b.child_item_id IS NOT NULL
+                THEN b.child_item_id
+                ELSE b.child_material_id
+            END AS child_prod_id,
+            CASE WHEN b.child_item_id IS NOT NULL
+                THEN i2.name
+                ELSE m.name
+            END AS child_prod_name,
+            CASE WHEN b.child_item_id IS NOT NULL
+                THEN 'ITEM'
+                ELSE 'MATERIAL'
+            END AS prod_type,
+            b.consumption,
+            s.name AS unit_name
+        FROM BOM b
+        JOIN ITEM i1 ON b.parent_item_id = i1.id
+        LEFT JOIN ITEM i2 ON b.child_item_id = i2.id
+        LEFT JOIN MATERIAL m ON b.child_material_id = m.id
+        LEFT JOIN DETAIL_SYS_CODE s ON i1.unit = s.detail_code
+        <where>
+            <if test="srhIdOrName != null and srhIdOrName != ''">
+                AND (i1.name LIKE '%' || #{srhIdOrName} || '%'
+                OR i1.id LIKE '%' || #{srhIdOrName} || '%')
+            </if>
+        </where>
+--         ORDER BY w.work_date DESC, w.id DESC
+    </select>
+
+</mapper>

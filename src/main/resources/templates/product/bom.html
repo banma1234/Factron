@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base.html}">>
+<head>
+    <meta charset="UTF-8">
+    <title>Factron</title>
+    <th:block layout:fragment="style">
+      <link rel="stylesheet" th:href="@{/css/product/bom.css}" />
+    </th:block>
+
+  <script src="https://uicdn.toast.com/tui-tree/latest/tui-tree.js"></script>
+  <link rel="stylesheet" href="https://uicdn.toast.com/tui-tree/latest/tui-tree.css"/>
+</head>
+<body>
+<div layout:fragment="content">
+  <h4 class="page__name">BOM 관리</h4>
+  <form class="search__form mb-2">
+    <div class="select__container">
+
+    </div>
+    <div class="input-group">
+      <input class="form-control" type="text" name="srhIdOrName" placeholder="품목코드 또는 품목명"><br/>
+      <button class="btn btn-outline-secondary srhBtn" type="button">검색</button>
+    </div>
+  </form>
+  <article class="bom-container">
+    <!-- tree -->
+    <div id="bomTree" class="tui-tree-wrap tree-scroll"></div>
+
+    <!-- form -->
+    <div class="bom-detail-form">
+      <h4 class="mb-4">상세 정보</h4>
+      <form class="mb-5">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <span>부모 품목코드</span>
+            <input type="text" class="form-control" name="ParentProdId" disabled>
+          </div>
+          <div class="col-md-6">
+            <span>부모 품목명</span>
+            <input type="text" class="form-control" name="ParentProdName" disabled>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <span>품목코드</span>
+            <input type="text" class="form-control" name="childProdId" disabled>
+          </div>
+          <div class="col-md-6">
+            <span>품목명</span>
+            <input type="text" class="form-control" name="childProdName" disabled>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <span>품목 유형</span>
+            <input type="text" class="form-control" name="prodType" disabled>
+          </div>
+          <div class="col-md-6">
+            <span class="form-label">소요량</span>
+            <input type="text" class="form-control" name="consumption" disabled>
+          </div>
+        </div>
+      </form>
+
+      <div class="d-flex justify-content-end">
+        <button class="btn btn-primary registBOM">BOM 추가</button>
+      </div>
+    </div>
+
+  </article>
+</div>
+<th:block layout:fragment="javascript">
+  <!-- js import -->
+  <script th:src="@{/js/product/bom.js}"></script>
+</th:block>
+</body>
+</html>
