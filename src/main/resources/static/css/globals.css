@@ -3,29 +3,29 @@ html, body {
     padding: 0;
     font-family: "noto-sans-kr", "roboto", sans-serif;
     font-size: 18px;
+    height: 100%;
     color: #2f2f2f;
+    background-color: #f0f0f0;
 }
 @font-face {
     font-family: 'noto-sans-kr';
     font-style: normal;
     font-weight: 400;
     src: local("NotoSansKR-Regular.ttf");
-            url("../font/NotoSansKR-Regular.ttf");
+url("../font/NotoSansKR-Regular.ttf");
 }
 @font-face {
     font-family: 'roboto';
     font-style: normal;
     font-weight: 400;
     src: local("Roboto_Condensed-Regular.ttf");
-            url("../font/Roboto_Condensed-Regular.ttf");
+url("../font/Roboto_Condensed-Regular.ttf");
 }
 
 main{
     padding: 30px 10px;
     width: 100%;
-    height: 100vh;
     display: block;
-    background-color: #f0f0f0;
 }
 
 h1, h2, h3 {
@@ -41,39 +41,54 @@ h1, h2, h3 {
     url("../font/Koulen-Regular.woff") format("woff"); /* 3. woff2 형식을 지원하지 않는다면 woff형식 사용 */
 }
 
+.select__container {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    text-align: center;
+    align-items: center;
+}
+
 a {
     text-decoration: none;
     color: inherit;
 }
 
-.test__form {
+.search__form {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px;
+    width: 100%;
+    padding: 0.5rem 0;
 }
 
-.test__select__container {
-    display: flex;
-    flex-direction: row;
-    gap: 15px;
-    text-align: center;
+@media (max-width: 800px) {
+    .search__form {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
 }
 
-.wow {
+.page__name {
     padding: 10px;
     font-weight: 900;
     width: 200px;
 }
 
 .form-select {
-    max-width: 200px;
+    width: auto;
 }
 
 .input-group{
     display: flex;
-    max-width: 300px;
+    max-width: 250px;
     align-items: center;
-    margin-top: 14px;
+}
+
+.header-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }

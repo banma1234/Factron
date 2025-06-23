@@ -4,7 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
     <meta charset="UTF-8">
-    <title>Factron - 로그인</title>
+    <title>Factron</title>
     <th:block layout:fragment="style">
         <link rel="stylesheet" th:href="@{/css/login/login.css}" />
     </th:block>
@@ -22,25 +22,29 @@
 <main class="login__page">
     <!-- 로그인 카드 -->
     <div class="login__container">
-        <form class="login__form" method="post">
+        <form class="login__form" th:action="@{/login}" method="post">
             <img class="login__logo" th:src="@{/logo_title.svg}" />
+            
+            <!-- 에러 메시지 표시 -->
+            <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
+            
             <div class="login__input__group">
-                <input class="form-control" type="text" name="employeeId" placeholder="사원번호">
-                <input class="form-control" type="password" name="password" placeholder="비밀번호">
+                <input class="form-control" type="text" name="employeeId" placeholder="사원번호" required>
+                <input class="form-control" type="password" name="password" placeholder="비밀번호" required>
             </div>
-            <button class="btn btn-primary btn-lg" id="login__button" type="button">로그인</button>
+            <button class="btn btn-primary btn-lg" id="login__button" type="submit">로그인</button>
             <br/>
             <br/>
             <hr/>
             <div class="login__hotkey__container" th:with="type='person'">
                 <button class="login__hotkey" title="평사원 로그인">
-                    <div th:replace="layout/icon :: icon(${type})"></div>
+                    <div th:replace="~{layout/icon :: icon(${type})}"></div>
                 </button>
                 <button class="login__hotkey" title="인사팀 로그인">
-                    <div th:replace="layout/icon :: icon(${type})"></div>
+                    <div th:replace="~{layout/icon :: icon(${type})}"></div>
                 </button>
                 <button class="login__hotkey" title="관리자 로그인">
-                    <div th:replace="layout/icon :: icon(${type})"></div>
+                    <div th:replace="~{layout/icon :: icon(${type})}"></div>
                 </button>
             </div>
         </form>
@@ -48,9 +52,5 @@
     <!-- 배경 이미지 -->
     <img class="login__background" th:src="@{/login_background.webp}" alt="login background" />
 </main>
-<th:block layout:fragment="javascript">
-    <!-- js import -->
-    <script th:src="@{/js/login/loginForm.js}"></script>
-</th:block>
 </body>
 </html>

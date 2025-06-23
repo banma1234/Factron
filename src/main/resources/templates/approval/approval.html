@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base.html}">
+<head>
+    <title>Factron</title>
+    <th:block layout:fragment="style">
+        <link rel="stylesheet" th:href="@{/css/approval/approval.css}" />
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <section>
+        <h4 class="page__name">인사 결재 목록</h4>
+        <form class="search__form mb-2">
+            <div class="select__container">
+                <input class="form-control" type="date" name="startDate">
+                ~
+                <input class="form-control" type="date" name="endDate"><br/>
+                <select class="form-select" name="APR">
+                    <option value="">결재유형</option>
+                </select>
+                <select class="form-select" name="DEP">
+                    <option value="">부서</option>
+                </select>
+                <select class="form-select" name="POS">
+                    <option value="">직급</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <input class="form-control" type="text" name="srhName" placeholder="이름 또는 사원번호"><br/>
+                <button class="btn btn-outline-secondary srhBtn" type="button">검색</button>
+            </div>
+        </form>
+<!--         전자결재 그리드 -->
+        <article>
+            <div class="filter-tab-container">
+                <button type="button" class="filter-tab active" data-status="ALL">전체결재</button>
+                <button type="button" class="filter-tab" data-status="APV001">결재대기</button>
+                <button type="button" class="filter-tab" data-status="APPROVED">결재완료</button>
+            </div>
+            <div id="approvalGrid">
+
+            </div>
+        </article>
+    </section>
+</div>
+
+<th:block layout:fragment="javascript">
+    <!-- js import -->
+    <script th:src="@{/js/approval/approval.js}"></script>
+</th:block>
+</body>
+</html>

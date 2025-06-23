@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base.html}">>
+<head>
+    <meta charset="UTF-8">
+    <title>Factron</title>
+    <th:block layout:fragment="style">
+      <link rel="stylesheet" th:href="@{/css/sys/syscode.css}" />
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+  <h4 class="page__name">공통코드 관리</h4>
+  <article class="sys__container">
+    <section class="sys__grid__container">
+      <form class="sys__form mb-2">
+        <input
+                class="form-control sysInput"
+                type="text"
+                name="srhMain"
+                placeholder="메인코드"
+        >
+        <div class="select__container">
+          <button class="btn btn-primary" name="postSysMainBtn" type="button">추가</button>
+          <button class="btn btn-outline-primary updateSysCodeBtn" type="button">수정</button>
+        </div>
+      </form>
+      <!-- list grid -->
+      <article>
+        <div id="grid_main">
+
+        </div>
+      </article>
+    </section>
+    <section class="sys__grid__container">
+      <form class="sys__form mb-2">
+        <input
+                class="form-control sysInput"
+                type="text"
+                name="srhDetail"
+                placeholder="구분명"
+        >
+        <div class="select__container">
+          <button class="btn btn-primary" name="postSysDetailBtn" type="button">추가</button>
+          <button class="btn btn-outline-primary updateSysCodeBtn" type="button">수정</button>
+        </div>
+      </form>
+      <!-- list grid -->
+      <article>
+        <div id="grid_detail">
+
+        </div>
+      </article>
+    </section>
+  </article>
+</div>
+<th:block layout:fragment="javascript">
+  <!-- js import -->
+  <script th:src="@{/js/sys/syscode.js}"></script>
+</th:block>
+</body>
+</html>
