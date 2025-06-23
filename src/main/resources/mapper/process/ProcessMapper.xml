@@ -26,8 +26,14 @@
         LEFT JOIN line l
             ON p.line_id = l.id
         <where>
-            <if test="processName != null and processName != ''">
-                AND LOWER(p.name) LIKE '%' || LOWER(#{processName}) || '%'
+            <if test="processIdOrName != null and processIdOrName != ''">
+                AND (
+                    TO_CHAR(p.id) = #{processIdOrName}
+                    OR LOWER(p.name) LIKE '%' || LOWER(#{processIdOrName}) || '%'
+                )
+            </if>
+            <if test="processTypeCode != null and processTypeCode != ''">
+                AND p.type_code = #{processTypeCode}
             </if>
             <if test="hasMachine != null and hasMachine != ''">
                 AND p.has_machine = #{hasMachine}

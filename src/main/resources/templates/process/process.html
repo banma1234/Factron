@@ -16,27 +16,24 @@
         <form class="search__form mb-2">
             <div class="select__container">
 
-                <select class="form-select" name="deptCode">
-                    <option value="">부서</option>
+                <select class="form-select" name="processTypeCode">
+                    <option value="">공정 유형</option>
                 </select>
-                <select class="form-select" name="positionCode">
-                    <option value="">직급</option>
-                </select>
-                <select class="form-select" name="isActive">
-                    <option value="">재직여부</option>
-                    <option value="Y">재직</option>
-                    <option value="N">퇴직</option>
+                <select class="form-select" name="hasMachine">
+                    <option value="">설비 유무</option>
+                    <option value="Y">보유</option>
+                    <option value="N">미보유</option>
                 </select>
             </div>
             <div class="input-group">
-                <input class="form-control" type="text" name="name" placeholder="이름 또는 사원번호"><br/>
-                <button class="btn btn-outline-secondary empSrhBtn" type="button">검색</button>
+                <input class="form-control" type="text" name="processIdOrName" placeholder="공정번호 또는 공정명"><br/>
+                <button class="btn btn-outline-secondary processSrhBtn" type="button">검색</button>
             </div>
         </form>
 
         <!-- list grid -->
         <article>
-            <div id="employee_grid">
+            <div id="process_grid">
 
             </div>
         </article>
@@ -45,7 +42,7 @@
 
 <th:block layout:fragment="javascript">
     <!-- js import -->
-    <script th:src="@{/js/employee/employee.js}"></script>
+    <script th:src="@{/js/process/process.js}"></script>
 </th:block>
 </body>
 </html>
