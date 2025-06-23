@@ -21,7 +21,6 @@ const handleSidebarMenu = () => {
     });
 }
 
-
 // 메뉴 클릭 시 활성화 스타일 적용
 document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', function () {
@@ -32,14 +31,12 @@ document.querySelectorAll('.nav-link').forEach(link => {
     });
 });
 
-
 document.getElementById('overlay').addEventListener('click', function (e) {
     toggleSidebar();
 })
 document.querySelector('.hamberger').addEventListener('click', function () {
     toggleSidebar();
 })
-
 
 // 사이드바 토글
 const toggleSidebar = () => {
@@ -69,4 +66,5 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     });
+    displayUserInfo();
 });
