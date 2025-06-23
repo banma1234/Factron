@@ -1,5 +1,6 @@
 package com.itwillbs.factron.service.sys;
 
+import com.itwillbs.factron.common.component.AuthorizationChecker;
 import com.itwillbs.factron.dto.sys.RequestSysMainDTO;
 import com.itwillbs.factron.dto.sys.ResponseSysDetailDTO;
 import com.itwillbs.factron.dto.sys.ResponseSysMainDTO;
@@ -47,8 +48,6 @@ public class SysMainServiceImpl implements SysMainService {
     public List<ResponseSysMainDTO> getMainSysCode(String mainCode) {
 
         List<SysCode> sysCodeList;
-
-        System.out.println(">>>>>>>>>>>>>>>>" + mainCode);
 
         if (mainCode == null || mainCode.isEmpty()) {
             sysCodeList = sysCodeRepository.findAll();
