@@ -126,6 +126,10 @@ public class lineServiceImpl implements lineService {
                 throw new IllegalArgumentException("설비가 없는 공정 ID: " + processId + "는 라인에 연결할 수 없습니다");
             }
 
+            if (process.getLine() != null) {
+                throw new IllegalStateException("공정 ID: " + processId + "는 이미 라인에 연결되어 있는 공정입니다");
+            }
+
             // 공정에 라인 연결
             process.updateLine(line);
         });
@@ -149,6 +153,10 @@ public class lineServiceImpl implements lineService {
             // 공정 조회
             Process process = processRepository.findById(processId)
                     .orElseThrow(() -> new EntityNotFoundException("공정 ID: " + processId + "를 찾을 수 없습니다"));
+
+            if (process.getLine() == null) {
+                throw new IllegalStateException("공정 ID: " + processId + "는 이미 라인과 연결 해제된 공정입니다");
+            }
 
             // 라인 연결 해제
             process.updateLine(null);

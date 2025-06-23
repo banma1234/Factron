@@ -66,6 +66,9 @@ public class lineRestController {
         } catch (IllegalArgumentException e) {
 
             return ResponseDTO.fail(801, e.getMessage(), null);
+        } catch (IllegalStateException e) {
+
+            return ResponseDTO.fail(802, e.getMessage(), null);
         }
     }
 
@@ -81,6 +84,9 @@ public class lineRestController {
         } catch (EntityNotFoundException e) {
 
             return ResponseDTO.fail(800, e.getMessage(), null);
+        } catch (IllegalStateException e) {
+
+            return ResponseDTO.fail(801, e.getMessage(), null);
         }
     }
 }

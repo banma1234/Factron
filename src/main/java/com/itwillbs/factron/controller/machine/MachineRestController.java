@@ -29,11 +29,11 @@ public class MachineRestController {
 
             machineService.addMachine(requestDto, empId);
 
-            return ResponseDTO.success("공정을 추가하였습니다", null);
+            return ResponseDTO.success("설비를 추가하였습니다", null);
         } catch (EntityNotFoundException e) {
 
             return ResponseDTO.fail(800, e.getMessage(), null);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalStateException e) {
 
             return ResponseDTO.fail(801, e.getMessage(), null);
         }
@@ -52,9 +52,6 @@ public class MachineRestController {
         } catch (EntityNotFoundException e) {
 
             return ResponseDTO.fail(800, e.getMessage(), null);
-        } catch (IllegalArgumentException e) {
-
-            return ResponseDTO.fail(801, e.getMessage(), null);
         }
     }
 
