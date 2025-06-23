@@ -86,12 +86,13 @@
 }
 
 .nav-link {
-    color: #000;
     transition: all 0.2s ease;
     border-radius: 10px;
+    color: #2f2f2f;
 }
 .nav-link:hover {
     background-color: #f0f0f0;
+    color: #000;
 }
 .nav-link span {
     padding-left: 0.5rem;
