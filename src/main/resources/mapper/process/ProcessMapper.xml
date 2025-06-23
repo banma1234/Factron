@@ -20,7 +20,7 @@
         FROM process p
         LEFT JOIN detail_sys_code dsc
         ON dsc.detail_code = p.type_code
-        AND dsc.main_code = 'PCS'
+        AND dsc.main_code = 'PTP'
         <where>
             <if test="processName != null and processName != ''">
                 AND LOWER(p.name) LIKE '%' || LOWER(#{processName}) || '%'

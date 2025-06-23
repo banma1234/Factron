@@ -67,7 +67,7 @@ public class lineServiceImpl implements lineService {
 
         Line line = Line.builder()
                 .name(requestDto.getLineName())
-                .statusCode("LIN001")
+                .statusCode("LIS001") // 기본 상태 코드 (정지)
                 .description(requestDto.getDescription())
                 .createdBy(empId)
                 .createdAt(LocalDateTime.now())
