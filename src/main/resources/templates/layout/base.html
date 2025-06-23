@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -28,7 +29,7 @@
             <li class="nav-item">
                 <a class="nav-link menu-toggle" href="#">
                     <div class="nav-link menu-item" th:with="type='person_manager'">
-                        <div th:replace="layout/icon :: icon(${type})"></div>
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
                         <span>인사 관리</span>
                     </div>
                 </a>
@@ -44,7 +45,7 @@
             <li class="nav-item">
                 <a class="nav-link menu-toggle" href="#">
                     <div class="nav-link menu-item" th:with="type='commute_manager'">
-                        <div th:replace="layout/icon :: icon(${type})"></div>
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
                         <span>근태 관리</span>
                     </div>
                 </a>
@@ -63,7 +64,7 @@
             <li class="nav-item">
                 <a class="nav-link menu-toggle" href="#">
                     <div class="nav-link menu-item" th:with="type='approval_manager'">
-                        <div th:replace="layout/icon :: icon(${type})"></div>
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
                         <span>전자결재</span>
                     </div>
                 </a>
@@ -76,7 +77,7 @@
             <li class="nav-item">
                 <a class="nav-link menu-toggle" href="#">
                     <div class="nav-link menu-item" th:with="type='admin_manager'">
-                        <div th:replace="layout/icon :: icon(${type})"></div>
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
                         <span>관리자</span>
                     </div>
                 </a>
@@ -98,7 +99,7 @@
             <!-- 햄버거 버튼은 모바일에서만 보임 -->
             <button class="btn btn-outline-secondary d-xl-none me-2 border__none hamberger" type="button">
                 <div th:with="type='hamberger'">
-                    <div th:replace="layout/icon :: icon(${type})"></div>
+                    <div th:replace="~{layout/icon :: icon(${type})}"></div>
                 </div>
             </button>
             <a class="navbar-brand" href="/commute">
@@ -107,7 +108,7 @@
             <div class="d-flex ms-auto">
                 <span class="navbar-text user__name">test(20251234)</span>
                 <span class="navbar-text me-3">&nbsp;님 환영합니다!</span>
-                <button class="btn btn-primary btn-sm logout">로그아웃</button>
+                <a href="/logout" class="btn btn-primary btn-sm logout">로그아웃</a>
             </div>
         </div>
     </nav>

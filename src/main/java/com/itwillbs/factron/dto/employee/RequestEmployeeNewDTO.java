@@ -100,10 +100,10 @@ public class RequestEmployeeNewDTO {
                 .build();
     }
 
-    public IntergratAuth toIntergratAuth(Employee employee) {
+    public IntergratAuth toIntergratAuth(Employee employee, String authCode) {
         return IntergratAuth.builder()
                 .password(phone)
-                .authCode(positionCode)
+                .authCode(authCode)
                 .isActive(isActive)
                 .employee(employee)
                 .build();
