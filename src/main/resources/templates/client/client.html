@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base.html}">>
+<head>
+    <meta charset="UTF-8">
+    <title>거래처 관리</title>
+  <th:block layout:fragment="style">
+    <link rel="stylesheet" th:href="@{/css/sys/syscode.css}" />
+  </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+  <h4 class="page__name">거래처 관리</h4>
+  <form class="search__form mb-2">
+    <div class="input-group">
+      <input class="form-control" type="text" name="srhClient" placeholder="거래처명" />
+      <button class="btn btn-outline-secondary srhBtn" type="button">검색</button>
+    </div>
+    <div class="select__container">
+      <button class="btn btn-primary" name="postSysMainBtn" type="button">추가</button>
+      <button class="btn btn-outline-primary updateSysCodeBtn" type="button">수정</button>
+    </div>
+  </form>
+  <article>
+    <div id="grid_client"></div>
+  </article>
+</div>
+<th:block layout:fragment="javascript">
+  <!-- js import -->
+  <script th:src="@{/js/client/client.js}"></script>
+</th:block>
+</body>
+</html>
