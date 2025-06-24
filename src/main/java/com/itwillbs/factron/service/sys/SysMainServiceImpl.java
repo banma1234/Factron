@@ -24,6 +24,7 @@ import java.util.NoSuchElementException;
 public class SysMainServiceImpl implements SysMainService {
 
     private final SysCodeRepository sysCodeRepository;
+    private final AuthorizationChecker authorizationChecker;
 
     /**
      * 공통코드 추가
@@ -33,6 +34,10 @@ public class SysMainServiceImpl implements SysMainService {
     @Override
     @Transactional
     public Void saveSysMain(RequestSysMainDTO requestSysMainDTO) {
+
+        if (!authorizationChecker.hasAuthority("ATH003")) {
+            throw new SecurityException("권한이 없습니다.");
+        }
 
         sysCodeRepository.save(RequestSysMainDTO.toEntity(requestSysMainDTO));
 
@@ -67,6 +72,10 @@ public class SysMainServiceImpl implements SysMainService {
     @Transactional
     @Override
     public Void updateSysMain(@Valid RequestSysMainDTO requestSysMainDTO) {
+
+        if (!authorizationChecker.hasAuthority("ATH003")) {
+            throw new SecurityException("권한이 없습니다.");
+        }
 
         SysCode sysCode = sysCodeRepository
                 .findByMainCode(requestSysMainDTO.getMain_code())
