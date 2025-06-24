@@ -18,7 +18,7 @@ public class ResponseProcessInfoDTO {
     private String processTypeName; // 공정 유형 이름
     private Long lineId; // 라인 ID (공정이 연결된 라인)
     private String lineName; // 라인 이름
-    private Long standardTime; // 공정 기준 시간 (분 단위)
+    private Long standardTime; // 공정 시간 (분 단위)
     private String hasMachine; // 설비 여부 (Y/N)
     private String createdAt; // 생성 일시 (yyyy-MM-dd)
     private Long createdBy; // 생성자 사번

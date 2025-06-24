@@ -127,7 +127,7 @@ public class lineServiceImpl implements lineService {
             }
 
             if (process.getLine() != null) {
-                throw new IllegalStateException("공정 ID: " + processId + "는 이미 라인에 연결되어 있는 공정입니다");
+                throw new IllegalStateException("이미 라인에 연결되어 있는 공정 존재합니다");
             }
 
             // 공정에 라인 연결
@@ -155,7 +155,7 @@ public class lineServiceImpl implements lineService {
                     .orElseThrow(() -> new EntityNotFoundException("공정 ID: " + processId + "를 찾을 수 없습니다"));
 
             if (process.getLine() == null) {
-                throw new IllegalStateException("공정 ID: " + processId + "는 이미 라인과 연결 해제된 공정입니다");
+                throw new IllegalStateException("이미 라인과 연결 해제된 공정이 존재합니다");
             }
 
             // 라인 연결 해제

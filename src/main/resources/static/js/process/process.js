@@ -128,6 +128,9 @@ const init = () => {
         }).then(res => res.json())
             .then(res => {
                 if(res.status === 200){
+
+                    console.log(res.data);
+
                     return processGrid.resetData(res.data);
                 }else{
                     alert(res.message);
@@ -183,6 +186,7 @@ const init = () => {
                     popup.postMessage({
                         processId: rowData.processId,
                         processName: rowData.processName,
+                        description: rowData.description,
                         processTypeCode: rowData.processTypeCode,
                         processTypeName: rowData.processTypeName,
                         lineId: rowData.lineId,

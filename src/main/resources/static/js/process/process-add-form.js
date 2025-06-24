@@ -1,53 +1,21 @@
-const getEmpInfo = () => {
-    const name = document.querySelector("input[name='empName']");
-    const birth = document.querySelector("input[name='birth']");
-    const rrnBack = document.querySelector("input[name='rrnBack']");
-    const email = document.querySelector("input[name='email']");
-    const address = document.querySelector("input[name='address']");
-    const phone = document.querySelector("input[name='phone']");
-    const gender = document.querySelector("select[name='gender']")
-    const eduLevel = document.querySelector("select[name='eduLevelCode']")
-    const position = document.querySelector("select[name='positionCode']")
-    const isActive = document.querySelector("select[name='isActive']")
-    const joinedDate = document.querySelector("input[name='joinedDate']")
-    const quittedDate = document.querySelector("input[name='quitDate']")
-    const employ = document.querySelector("select[name='employCode']")
-    const dept = document.querySelector("select[name='deptCode']")
-    return [name, birth, rrnBack, email, address, phone, gender, eduLevel, position, isActive, joinedDate, employ, dept, quittedDate];
-}
-
-// 핸드폰 번호 저장 형식
-const formatPhoneNumber = (phone) => {
-    phone = phone.replace(/\D/g, ""); // 숫자 외 제거
-    if (phone.length < 4) return phone;
-    if (phone.length < 8) return phone.replace(/(\d{3})(\d+)/, "$1-$2");
-    return phone.replace(/(\d{3})(\d{3,4})(\d{4})/, "$1-$2-$3");
-}
-
 // form validation 확인
 const validators = {
-    isValidName: val => /^[가-힣a-zA-Z\s]+$/.test(val),
-    isValidBirthDate: val => /^\d{6}$/.test(val),
-    isValidRrnBack: val => /^\d{7}$/.test(val),
-    isValidEmail: val => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
-    isValidPhone: val => /^01[016789]\d{7,8}$/.test(val),
-    isValidGender: val => val === 'M' || val === 'F',
-    isValidCommonCode: val => /^[A-Z]{3}[0-9]{3}$/.test(val),
-    isValidDate: val => /^\d{4}-\d{2}-\d{2}$/.test(val) || val === null
+    isValidStandardTime: val => /^[1-9]\d*$/.test(val) || val === '',
+    isValidProcessName: val => val !== null && val.trim() !== '',
+    isValidProcessTypeCode: val => val !== null && val !== ''
 };
 
-
 const init = () => {
-    const isActive = document.querySelector("select[name='isActive']");
-    const joinedDate = document.querySelector("input[name='joinedDate']")
-    isActive.value = 'Y';
-    joinedDate.value = getKoreaToday();
+    // 공통코드 세팅 - 공정 타입 코드 설정
+    setSelectBox("PTP", "processType"); // 공정 유형 코드를 위한 올바른 코드 사용
 
-    // 공통코드 세팅
-    setSelectBox("EDU", "eduLevelCode");
-    setSelectBox("POS", "positionCode");
-    setSelectBox("HIR", "employCode");
-    setSelectBox("DEP", "deptCode");
+    // 공정 생성일 설정 (오늘 날짜)
+    const createdAtInput = document.querySelector("input[name='createdAt']");
+    createdAtInput.value = getKoreaToday(); // 전역 함수 사용
+
+    // 등록자 사번 설정
+    const createdByInput = document.querySelector("input[name='createdBy']");
+    createdByInput.value = window.user.id; // 전역 user 객체 사용
 
     setupEventListeners();
 }
@@ -61,89 +29,49 @@ const setupEventListeners = () => {
     const alertModal = new bootstrap.Modal(document.getElementsByClassName("alertModal")[0]);
     const alertBtn = document.getElementsByClassName("alertBtn")[0];
 
-    // 주소 input 클릭
-    form.querySelector("input[name='address']").addEventListener("click", (e) => {
-        handleAddressClick(e);
-    });
-
     confirmedAddBtn.addEventListener("click", () => {
-        const [name, birth, rrnBack, email, address, phone, gender, eduLevel, position, isActive, joinedDate, employ, dept, quittedDate] = getEmpInfo();
+        const processName = document.querySelector("input[name='processName']").value;
+        const description = document.querySelector("textarea[name='description']").value;
+        const processTypeCode = document.querySelector("select[name='processType']").value;
+        const standardTime = document.querySelector("input[name='standardTime']").value;
 
-        if(!validators.isValidName(name.value)) {
-            alert("이름 형식이 올바르지 않습니다.");
+        if(!validators.isValidProcessName(processName)) {
+            alert("공정명은 필수입니다.");
             return;
         }
-        if(!validators.isValidBirthDate(birth.value)) {
-            alert("생년월일 형식이 올바르지 않습니다. (예: 990101)");
+        if(!validators.isValidProcessTypeCode(processTypeCode)) {
+            alert("공정 유형을 선택해주세요.");
             return;
         }
-        if(!validators.isValidRrnBack(rrnBack.value)) {
-            alert("주민번호 뒷자리는 7자리여야 합니다.");
-            return;
-        }
-        if(!validators.isValidGender(gender.value)) {
-            alert("성별을 선택해주세요.");
-            return;
-        }
-        if(!validators.isValidEmail(email.value)) {
-            alert("유효한 이메일 형식이 아닙니다.");
-            return;
-        }
-        if(!validators.isValidCommonCode(eduLevel.value)) {
-            alert("최종학력을 선택해주세요.");
-            return;
-        }
-        if(quittedDate.value !== '') {
-            alert("퇴사일은 비어있어야 합니다.");
-            return;
-        }
-        if(!validators.isValidCommonCode(position.value)) {
-            alert("직급을 선택해주세요.");
-            return;
-        }
-        if(isActive.value == null) {
-            alert("재직 상태를 선택해주세요.");
-            return;
-        }
-        if(!validators.isValidDate(joinedDate.value)) {
-            alert("입사일 형식이 올바르지 않습니다.");
-            return;
-        }
-        if(!validators.isValidCommonCode(employ.value)) {
-            alert("고용유형을 선택해주세요.");
-            return;
-        }
-        if(!validators.isValidPhone(phone.value)) {
-            alert("전화번호 형식이 올바르지 않습니다.");
-            return;
-        }
-        if(!validators.isValidCommonCode(dept.value)) {
-            alert("부서를 선택해주세요.");
+        if(!validators.isValidStandardTime(standardTime)) {
+            alert("공정 시간은 1 이상의 숫자여야 합니다.");
             return;
         }
 
         confirmModal.show();
     });
 
-    // 취소 버튼
-    form.querySelector("button.btn-secondary").addEventListener("click", () => {
-        window.close();
-    });
+    // 취소 버튼 이벤트
+    const closeBtn = document.querySelector(".btn.btn-secondary");
+    if (closeBtn) {
+        closeBtn.addEventListener("click", () => {
+            window.close();
+        });
+    }
 
     // confirm 모달 확인 버튼
     confirmedModalBtn.addEventListener("click", async () => {
         try {
             const res = await saveData();
-            if(res.status !== 200) {
-                console.error("Failed to save data:", res.message);
-            }
 
             confirmModal.hide();
-            document.querySelector(".alertModal .modal-body").textContent = res.message;
+            document.querySelector(".alertModal .modal-body").textContent = res.message || "공정이 성공적으로 추가되었습니다.";
             alertModal.show();
 
         } catch (error) {
             console.error("Error saving data:", error);
+            alert("데이터 저장 중 오류가 발생했습니다: " + error.message);
+            confirmModal.hide();
         }
     });
 
@@ -153,53 +81,53 @@ const setupEventListeners = () => {
 
         // 부모 창의 그리드 리프레시
         if (window.opener && !window.opener.closed) {
-            window.opener.postMessage({ type: "ADD_REFRESH_EMPLOYEES" }, "*");
+            window.opener.postMessage({ type: "ADD_REFRESH_PROCESSES" }, "*");
         }
 
         window.close();
     });
 }
 
-// 주소 입력
-function handleAddressClick(event) {
-    if (event.target.disabled) return;
-
-    new daum.Postcode({
-        oncomplete: function(data) {
-            const fullAddr = data.address; // 도로명 주소
-            document.querySelector("input[name='address']").value = fullAddr;
-        }
-    }).open();
-}
-
 // 저장
 async function saveData() {
-    const empInfo = getEmpInfo()
+    const processName = document.querySelector("input[name='processName']").value;
+    const description = document.querySelector("textarea[name='description']").value;
+    const processTypeCode = document.querySelector("select[name='processType']").value;
+    const standardTime = document.querySelector("input[name='standardTime']").value;
 
-    // fetch data
-    const data = {};
+    const data = {
+        processName: processName,
+        description: description,
+        processTypeCode: processTypeCode,
+        standardTime: parseInt(standardTime)
+    };
 
-    empInfo.forEach((input) => {
-        data[input.name] = input.name !== 'phone' ? input.value: formatPhoneNumber(input.value)
-    })
+    console.log("전송 데이터:", data);
 
     try {
-        const res = await fetch(`/api/employee`, {
+        const res = await fetch(`/api/process`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                empId: user.id // 사용자 ID를 헤더에 포함
             },
             body: JSON.stringify(data),
         });
         return res.json();
-
     } catch (e) {
         console.error(e);
+        throw e;
     }
 }
 
-window.onload = () => {
-    init();
+window.onload = async () => {
+    try {
+        await init();
+        console.log("페이지 초기화 완료");
+    } catch (error) {
+        console.error("초기화 오류:", error);
+    }
+
     // 부모에게 준비 완료 신호 보내기
     if (window.opener) {
         window.opener.postMessage("addReady", "*");
