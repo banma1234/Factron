@@ -2,6 +2,7 @@
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout/base.html}">
 <head>
     <title>Factron</title>
@@ -11,32 +12,24 @@
     <section>
         <div class="header-row">
             <h4 class="page__name">라인 목록</h4>
-            <button class="btn btn-primary modBtn" name="addNewEmp" type="button">라인 추가</button>
+            <button class="btn btn-primary modBtn" name="addNewLine" type="button" sec:authorize="hasAnyAuthority('ATH007')">라인 추가</button>
         </div>
         <form class="search__form mb-2">
             <div class="select__container">
 
-                <select class="form-select" name="deptCode">
-                    <option value="">부서</option>
-                </select>
-                <select class="form-select" name="positionCode">
-                    <option value="">직급</option>
-                </select>
-                <select class="form-select" name="isActive">
-                    <option value="">재직여부</option>
-                    <option value="Y">재직</option>
-                    <option value="N">퇴직</option>
+                <select class="form-select" name="lineStatusCode">
+                    <option value="">라인 가동 여부</option>
                 </select>
             </div>
             <div class="input-group">
-                <input class="form-control" type="text" name="name" placeholder="이름 또는 사원번호"><br/>
-                <button class="btn btn-outline-secondary empSrhBtn" type="button">검색</button>
+                <input class="form-control" type="text" name="lineName" placeholder="라인명"><br/>
+                <button class="btn btn-outline-secondary lineSrhBtn" type="button">검색</button>
             </div>
         </form>
 
         <!-- list grid -->
         <article>
-            <div id="employee_grid">
+            <div id="line_grid">
 
             </div>
         </article>
@@ -45,7 +38,7 @@
 
 <th:block layout:fragment="javascript">
     <!-- js import -->
-    <script th:src="@{/js/employee/employee.js}"></script>
+    <script th:src="@{/js/line/line.js}"></script>
 </th:block>
 </body>
 </html>
