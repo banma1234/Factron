@@ -66,7 +66,20 @@ const init = () => {
         const rowData = approvalGrid.getRow(rowKey);
 
         if (rowData && rowData.approvalId) {
-            const popup = window.open("/approval/salesApproval-form", '_blank', 'width=800,height=800');
+            let formUrl = "";
+            switch (rowData.apprTypeCode) {
+                case "SLS001":
+                    formUrl = "/approval/contractApproval-form";
+                    break;
+                case "SLS002":
+                    formUrl = "/approval/purchaseApproval-form";
+                    break;
+                default:
+                    alert("유효하지 않은 결재 유형입니다.");
+                    return;
+            }
+
+            const popup = window.open(formUrl, '_blank', 'width=800,height=800');
             if (!popup) {
                 alert('팝업이 차단되었습니다. 팝업 차단 해제 후 다시 시도하세요.');
                 return;

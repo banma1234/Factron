@@ -1,6 +1,7 @@
 package com.itwillbs.factron.service.purchase;
 
 import com.itwillbs.factron.dto.purchase.RequestSearchPurchaseDTO;
+import com.itwillbs.factron.dto.purchase.ResponsePurchaseItemDTO;
 import com.itwillbs.factron.dto.purchase.ResponseSearchPurchaseDTO;
 import com.itwillbs.factron.mapper.purchase.PurchaseMapper;
 import com.itwillbs.factron.repository.purchase.PurchaseRepository;
@@ -20,5 +21,9 @@ public class PurchaseServiceImpl implements PurchaseServcie{
     @Override
     public List<ResponseSearchPurchaseDTO> getPurchaseList(RequestSearchPurchaseDTO requestSearchPurchaseDTO){
         return purchaseMapper.getPurchaseList(requestSearchPurchaseDTO);
+    }
+
+    public List<ResponsePurchaseItemDTO> getPurchaseItemsByPurchaseId(Long purchaseId) {
+        return purchaseMapper.getPurchaseItemsByPurchaseId(purchaseId);
     }
 }
