@@ -100,7 +100,7 @@ const init = () => {
         })
     }
 
-    // 사원 목록 조회
+    // 공정 목록 조회
     async function getProcesses() {
 
         const selectProcessType = document.querySelector("select[name='processTypeCode']");
