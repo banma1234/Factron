@@ -7,6 +7,7 @@ import com.itwillbs.factron.dto.client.ResponseClientDTO;
 import com.itwillbs.factron.service.client.ClientService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +18,9 @@ import java.util.List;
 public class ClientRestController {
 
     private final ClientService clientService;
+
+    @Value("${custom.api.secret}")
+    private String API_SECRET_KEY;
 
     @GetMapping("")
     public ResponseDTO<List<ResponseClientDTO>> getClient(
@@ -33,6 +37,22 @@ public class ClientRestController {
                     800,
                     "조회할 수 없습니다.",
                     null
+            );
+        }
+    }
+
+    @GetMapping("/openapi/businessnumber")
+    public ResponseDTO<Boolean> validBusinessNumber(String businessNumber) {
+
+
+
+        try {
+            return ResponseDTO.success(clientService.validBusinessNumber(businessNumber, API_SECRET_KEY));
+        } catch (Exception e) {
+            return ResponseDTO.fail(
+                    800,
+                    "검증에 실패했습니다.",
+                    false
             );
         }
     }

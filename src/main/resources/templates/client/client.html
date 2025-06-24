@@ -26,6 +26,26 @@
   <article>
     <div id="grid_client"></div>
   </article>
+
+  <!-- confirm modal -->
+  <div class="modal fade confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+          <form class="search__form mb-2">
+            <div class="input-group">
+              <input class="form-control" type="text" name="srchBusinessNumber" placeholder="사업자등록번호" />
+              <button class="btn btn-outline-secondary" name="modalSrchBtn" type="button">검색</button>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" name="confirmEditBtn">확인</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 <th:block layout:fragment="javascript">
   <!-- js import -->

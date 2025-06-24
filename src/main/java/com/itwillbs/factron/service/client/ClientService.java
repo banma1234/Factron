@@ -13,4 +13,6 @@ public interface ClientService {
     Void saveClientList(@Valid List<RequestPostClientDTO> clientDTOList);
 
     Void updateClientList(@Valid List<RequestPutClientDTO> clientDTOList);
+
+    Boolean validBusinessNumber(String businessNumber, String API_SECRET_KEY);
 }

@@ -93,6 +93,14 @@ public class ClientServiceImpl implements ClientService {
         return null;
     }
 
+    @Override
+    public Boolean validBusinessNumber(String businessNumber, String API_SECRET_KEY) {
+
+
+
+        return false;
+    }
+
     private List<ResponseClientDTO> toClientDTOList(List<Client> clientList) {
 
         return clientList.stream()

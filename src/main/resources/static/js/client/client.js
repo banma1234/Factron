@@ -11,6 +11,8 @@ const NEW_ROW = {
 
 const init = () => {
 
+    const confirmModal = new bootstrap.Modal(document.getElementsByClassName("confirmModal")[0]);
+
     const clientGrid = initGrid(
         document.getElementById('grid_client'),
         400,
@@ -30,7 +32,6 @@ const init = () => {
                 header: '사업자등록번호',
                 name: 'business_number',
                 align: 'center',
-                editor: 'text'
             },
             {
                 header: '주소',
@@ -80,6 +81,12 @@ const init = () => {
         }
     }
 
+    const refreshGridData = () => {
+        getClient("").then(res => {
+            clientGrid.resetData(res.data);
+        })
+    }
+
     const updateModifiedRows = () => {
         const { createdRows, updatedRows } = clientGrid.getModifiedRows();
 
@@ -93,7 +100,6 @@ const init = () => {
             value === undefined ||
             (typeof value === 'string' && value.trim() === '');
 
-        // 유효성 검사 함수
         const validateBlankField = row => {
             return Object.entries(row).some(([key, value]) => {
                 key !== 'id' && key !== 'remark' && isEmpty(value)
@@ -158,7 +164,7 @@ const init = () => {
             Promise.all(requestList)
                 .then(res => {
                     clientGrid.clearModifiedData();
-                    alert("힝 완료!");
+                    refreshGridData();
                 })
 
         } catch (e) {
@@ -167,8 +173,14 @@ const init = () => {
 
     }
 
-    getClient("").then(res => {
-        clientGrid.resetData(res.data);
+    refreshGridData();
+
+    clientGrid.on('click', e => {
+        const { columnName, rowKey } = e;
+
+        if (columnName === "business_number") {
+            confirmModal.show();
+        }
     })
 
     document.querySelector("button[name='appendClientBtn']")
