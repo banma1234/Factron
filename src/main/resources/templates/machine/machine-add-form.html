@@ -15,107 +15,53 @@
   <form>
     <div class="row mb-3">
       <div class="col-md-6">
-        <span class="form-label">이름</span>
-        <input type="text" name="empName" class="form-control" placeholder="이름을 입력하세요">
+        <span class="form-label">설비명</span>
+        <input type="text" name="machineName" class="form-control" placeholder="설비명을 입력하세요">
       </div>
       <div class="col-md-6">
-        <span class="form-label">사원번호</span>
-        <input type="number" name="empId" class="form-control" disabled>
+        <span class="form-label">설비 번호</span>
+        <input type="number" name="machineId" class="form-control" disabled>
       </div>
     </div>
-    <div class="row mb-3">
-      <div class="col-md-6">
-        <span class="form-label">주민번호</span>
-        <div class="input-group">
-          <input maxlength="6" type="text" name="birth" class="form-control" placeholder="생년월일">
-          <span class="form-label">-</span>
-          <input maxlength="7" type="password" name="rrnBack" class="form-control" placeholder="뒷자리">
-        </div>
-      </div>
-      <div class="col-md-6">
-        <span class="form-label">성별</span>
-        <select name="gender" class="form-select">
-          <option value="">선택</option>
-          <option value="M">남</option>
-          <option value="F">여</option>
 
-        </select>
-      </div>
-    </div>
     <div class="row mb-3">
       <div class="col-md-6">
-        <span class="form-label">이메일</span>
-        <input type="text" name="email" class="form-control" placeholder="이메일을 입력하세요">
+        <span class="form-label">제조사</span>
+        <input type="text" name="manufacturer" class="form-control" placeholder="제조사를 입력하세요">
       </div>
       <div class="col-md-6">
-        <span class="form-label">최종학력</span>
-        <select name="eduLevelCode" class="form-select">
-          <option value="">선택</option>
-        </select>
+        <span class="form-label">구입 일자</span>
+        <input type="date" name="buyDate" class="form-control" placeholder="구입 일자를 입력하세요">
       </div>
     </div>
+
     <div class="row mb-3">
       <div class="col-md-6">
-        <span class="form-label">주소</span>
-        <input type="text" name="address" class="form-control" readonly placeholder="주소를 입력하세요">
+        <span class="form-label">소속 공정번호</span>
+        <input type="number" name="processId" class="form-control" disabled>
       </div>
       <div class="col-md-6">
-        <span class="form-label">퇴사날짜</span>
-        <input type="date" name="quitDate" class="form-control" disabled>
+        <span class="form-label">소속 공정명</span>
+        <input type="text" name="processName" class="form-control" disabled>
       </div>
     </div>
-    <div class="row mb-3">
-      <div class="col-md-6">
-        <span class="form-label">직급</span>
-        <select name="positionCode" class="form-select">
-          <option value="">선택</option>
-        </select>
-      </div>
-      <div class="col-md-6">
-        <span class="form-label">재직상태</span>
-        <select name="isActive" class="form-select" disabled>
-          <option value="">선택</option>
-          <option value="Y">재직</option>
-          <option value="N">퇴사</option>
-        </select>
-      </div>
-    </div>
-    <div class="row mb-3">
-      <div class="col-md-6">
-        <span class="form-label">입사일</span>
-        <input type="date" name="joinedDate" class="form-control" disabled>
-      </div>
-      <div class="col-md-6">
-        <span class="form-label">고용유형</span>
-        <select name="employCode" class="form-select">
-          <option value="">선택</option>
-        </select>
-      </div>
-    </div>
-    <div class="row mb-3">
-      <div class="col-md-6">
-        <span class="form-label">전화번호</span>
-        <input type="text" name="phone" class="form-control" placeholder="숫자만 입력하세요">
-      </div>
-      <div class="col-md-6">
-        <span class="form-label">부서</span>
-        <select name="deptCode" class="form-select">
-          <option value="">선택</option>
-        </select>
-      </div>
-    </div>
+
+    <!-- 공정 (설비 미소유) 검색 -->
+    <div th:replace="~{search-process :: searchProcess}"></div>
+
+    <!-- 버튼 영역 -->
     <div class="d-flex justify-content-end mt-4 gap-2">
       <button type="button" class="btn btn-primary confirmAddBtn">추가</button>
-      <button type="button" class="btn btn-secondary">취소</button>
+      <button type="button" class="btn btn-secondary cancelBtn">취소</button>
     </div>
   </form>
 
-  <!-- confirm modal -->
+  <!-- 확인 모달 -->
   <div class="modal fade confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-body">
-          사원을 추가하시겠습니까?
+          설비를 추가하시겠습니까?
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-primary confirmModalBtn">확인</button>
@@ -125,7 +71,7 @@
     </div>
   </div>
 
-  <!-- alert modal -->
+  <!-- 알림 모달 -->
   <div class="modal fade alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -140,12 +86,8 @@
   </div>
 </div>
 
-<!-- script 블록 -->
+<!-- 스크립트 블록 -->
 <th:block layout:fragment="javascript">
-  <script th:src="@{//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js}"></script>
-  <script th:src="@{/js/employee/employee-add-form.js}"></script>
+  <script th:src="@{/js/machine/machine-add-form.js}"></script>
 </th:block>
-
 </body>
-</html>
-
