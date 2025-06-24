@@ -7,36 +7,141 @@
 
     <!-- BOM 목록 조회 -->
     <select id="getBOMList" parameterType="com.itwillbs.factron.dto.product.RequestBOMDTO" resultType="com.itwillbs.factron.dto.product.ResponseBOMDTO">
+        -- 최상위 노드 선택
+        WITH root_nodes AS (
+            SELECT
+                id AS root_id,
+                name AS root_name
+            FROM ITEM
+            <where>
+                <choose>
+                    <when test="srhIdOrName != null and srhIdOrName != ''">
+                        (UPPER(name) LIKE '%' || UPPER(#{srhIdOrName}) || '%'
+                        OR UPPER(id) LIKE '%' || UPPER(#{srhIdOrName}) || '%')
+                    </when>
+                    <otherwise>
+                        type_code = 'ITP003'
+                    </otherwise>
+                </choose>
+            </where>
+        ),
+        -- 자식 제품 조회
+        product_bom (
+            id,
+            parent_item_id,
+            parent_item_name,
+            child_prod_id,
+            child_prod_name,
+            prod_type,
+            consumption,
+            unit_name
+        ) AS (
+            SELECT
+                b.id,
+                b.parent_item_id,
+                pi.name AS parent_item_name,
+                b.child_item_id AS child_prod_id,
+                ci.name AS child_prod_name,
+                s2.name AS prod_type,
+                b.consumption,
+                s1.name AS unit_name
+            FROM BOM b
+            JOIN ITEM pi ON b.parent_item_id = pi.id
+            JOIN ITEM ci ON b.child_item_id = ci.id
+            JOIN DETAIL_SYS_CODE s1 ON ci.unit = s1.detail_code
+            JOIN DETAIL_SYS_CODE s2 ON ci.type_code = s2.detail_code
+            WHERE b.parent_item_id IN (SELECT root_id FROM root_nodes)
+
+            UNION ALL
+
+            SELECT
+                b.id,
+                b.parent_item_id,
+                pi.name AS parent_item_name,
+                ci.id AS child_prod_id,
+                ci.name AS child_prod_name,
+                s2.name AS prod_type,
+                b.consumption,
+                s1.name AS unit_name
+            FROM BOM b
+            JOIN ITEM pi ON b.parent_item_id = pi.id
+            JOIN ITEM ci ON b.child_item_id = ci.id
+            JOIN DETAIL_SYS_CODE s1 ON ci.unit = s1.detail_code
+            JOIN DETAIL_SYS_CODE s2 ON ci.type_code = s2.detail_code
+            JOIN product_bom pb ON b.parent_item_id = pb.child_prod_id
+        ),
+        -- 자식 자재 조회
+        material_bom AS (
+            SELECT
+                b.id,
+                b.parent_item_id,
+                pi.name AS parent_item_name,
+                m.id AS child_prod_id,
+                m.name AS child_prod_name,
+                '원자재' AS prod_type,
+                b.consumption,
+                s1.name AS unit_name
+            FROM BOM b
+            JOIN ITEM pi ON b.parent_item_id = pi.id
+            JOIN MATERIAL m ON b.child_material_id = m.id
+            JOIN DETAIL_SYS_CODE s1 ON m.unit = s1.detail_code
+            WHERE b.parent_item_id IN (
+                SELECT parent_item_id FROM product_bom
+                UNION
+                SELECT child_prod_id FROM product_bom
+                UNION
+                SELECT root_id FROM root_nodes
+            )
+        ),
+        no_bom_products AS (
+        -- BOM이 등록되지 않은 완제품 조회
+            SELECT
+                NULL AS id,
+                i.id AS parent_item_id,
+                i.name AS parent_item_name,
+                NULL AS child_prod_id,
+                NULL AS child_prod_name,
+                NULL AS prod_type,
+                NULL AS consumption,
+                NULL AS unit_name
+            FROM ITEM i
+            WHERE i.type_code = 'ITP003'
+            AND i.id IN (SELECT root_id FROM root_nodes)
+            AND i.id NOT IN (SELECT DISTINCT parent_item_id FROM BOM)
+        )
         SELECT
-            b.id,
-            b.parent_item_id,
-            i1.name AS parent_item_name,
-            CASE WHEN b.child_item_id IS NOT NULL
-                THEN b.child_item_id
-                ELSE b.child_material_id
-            END AS child_prod_id,
-            CASE WHEN b.child_item_id IS NOT NULL
-                THEN i2.name
-                ELSE m.name
-            END AS child_prod_name,
-            CASE WHEN b.child_item_id IS NOT NULL
-                THEN 'ITEM'
-                ELSE 'MATERIAL'
-            END AS prod_type,
-            b.consumption,
-            s.name AS unit_name
-        FROM BOM b
-        JOIN ITEM i1 ON b.parent_item_id = i1.id
-        LEFT JOIN ITEM i2 ON b.child_item_id = i2.id
-        LEFT JOIN MATERIAL m ON b.child_material_id = m.id
-        LEFT JOIN DETAIL_SYS_CODE s ON i1.unit = s.detail_code
-        <where>
-            <if test="srhIdOrName != null and srhIdOrName != ''">
-                AND (i1.name LIKE '%' || #{srhIdOrName} || '%'
-                OR i1.id LIKE '%' || #{srhIdOrName} || '%')
-            </if>
-        </where>
---         ORDER BY w.work_date DESC, w.id DESC
+            id,
+            parent_item_id,
+            parent_item_name,
+            child_prod_id,
+            child_prod_name,
+            prod_type,
+            consumption,
+            unit_name
+        FROM (
+            SELECT DISTINCT * FROM product_bom
+            UNION ALL
+            SELECT * FROM material_bom
+            UNION ALL
+            SELECT * FROM no_bom_products
+        )
+        ORDER BY parent_item_id, child_prod_name
     </select>
+
+    <!-- 삭제할 BOM 모두 조회 -->
+    <select id="findDelBomList" parameterType="com.itwillbs.factron.dto.product.RequestBOMDTO" resultType="java.lang.Long">
+        SELECT id
+        FROM BOM
+        START WITH id = #{id}
+        CONNECT BY PRIOR child_item_id = parent_item_id
+    </select>
+
+    <!-- BOM 삭제 -->
+    <delete id="deleteBOM" parameterType="list">
+        DELETE FROM BOM WHERE id IN
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
 
 </mapper>

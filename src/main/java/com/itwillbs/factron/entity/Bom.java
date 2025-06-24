@@ -32,4 +32,9 @@ public class Bom {
 
     @Column(name = "consumption", nullable = false)
     private Long consumption; // 소모량
+
+    // BOM 수정 (소요량)
+    public void changeConsumption(Long consumption) {
+        this.consumption = consumption;
+    }
 }

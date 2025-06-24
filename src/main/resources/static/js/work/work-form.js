@@ -102,7 +102,9 @@ const init = () => {
     }
 
     // 공통코드 세팅
-    setSelectBox("WRK", "workCode");
+    setSelectBox("WRK", "workCode", {
+        filter: (code) => code.detail_code !== "WRK001"
+    });
 };
 
 window.onload = () => {
