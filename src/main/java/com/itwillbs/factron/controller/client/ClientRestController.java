@@ -1,8 +1,8 @@
 package com.itwillbs.factron.controller.client;
 
 import com.itwillbs.factron.dto.ResponseDTO;
-import com.itwillbs.factron.dto.client.ClientDTO;
-import com.itwillbs.factron.dto.client.RequestClientDTO;
+import com.itwillbs.factron.dto.client.RequestPostClientDTO;
+import com.itwillbs.factron.dto.client.RequestPutClientDTO;
 import com.itwillbs.factron.dto.client.ResponseClientDTO;
 import com.itwillbs.factron.service.client.ClientService;
 import jakarta.validation.Valid;
@@ -38,7 +38,7 @@ public class ClientRestController {
     }
 
     @PostMapping("")
-    public ResponseDTO<Void> saveClient(@Valid @RequestBody List<RequestClientDTO> clientDTOList) {
+    public ResponseDTO<Void> saveClient(@Valid @RequestBody List<RequestPostClientDTO> clientDTOList) {
 
         try {
             return ResponseDTO.success(clientService.saveClientList(clientDTOList));
@@ -51,4 +51,17 @@ public class ClientRestController {
         }
     }
 
+    @PutMapping("")
+    public ResponseDTO<Void> updateClient(@Valid @RequestBody List<RequestPutClientDTO> clientDTOList) {
+
+        try {
+            return ResponseDTO.success(clientService.updateClientList(clientDTOList));
+        } catch (Exception e) {
+            return ResponseDTO.fail(
+                    800,
+                    "수정에 실패했습니다.",
+                    null
+            );
+        }
+    }
 }

@@ -1,8 +1,6 @@
 package com.itwillbs.factron.service.client;
 
-import com.itwillbs.factron.dto.client.ClientDTO;
-import com.itwillbs.factron.dto.client.RequestClientDTO;
-import com.itwillbs.factron.dto.client.ResponseClientDTO;
+import com.itwillbs.factron.dto.client.*;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +10,7 @@ import java.util.List;
 public interface ClientService {
     List<ResponseClientDTO> getClient(String name);
 
-    Void saveClientList(@Valid List<RequestClientDTO> clientDTOList);
+    Void saveClientList(@Valid List<RequestPostClientDTO> clientDTOList);
 
+    Void updateClientList(@Valid List<RequestPutClientDTO> clientDTOList);
 }

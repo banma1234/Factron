@@ -1,7 +1,8 @@
 package com.itwillbs.factron.service.client;
 
 import com.itwillbs.factron.common.component.AuthorizationChecker;
-import com.itwillbs.factron.dto.client.RequestClientDTO;
+import com.itwillbs.factron.dto.client.RequestPostClientDTO;
+import com.itwillbs.factron.dto.client.RequestPutClientDTO;
 import com.itwillbs.factron.dto.client.ResponseClientDTO;
 import com.itwillbs.factron.entity.Client;
 import com.itwillbs.factron.repository.client.ClientRepository;
@@ -11,6 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -47,7 +52,7 @@ public class ClientServiceImpl implements ClientService {
      * */
     @Transactional
     @Override
-    public Void saveClientList(@Valid List<RequestClientDTO> clientDTOList) {
+    public Void saveClientList(@Valid List<RequestPostClientDTO> clientDTOList) {
 
         if(!authorizationChecker.hasAnyAuthority("ATH003", "ATH004")) {
             throw new SecurityException("권한이 없습니다.");
@@ -59,6 +64,35 @@ public class ClientServiceImpl implements ClientService {
         return null;
     }
 
+    @Transactional
+    @Override
+    public Void updateClientList(@Valid List<RequestPutClientDTO> clientDTOList) {
+
+        if(!authorizationChecker.hasAnyAuthority("ATH003", "ATH004")) {
+            throw new SecurityException("권한이 없습니다.");
+        }
+
+        List<Long> targetIdList = clientDTOList.stream()
+                .map(RequestPutClientDTO :: getId)
+                .toList();
+
+        try {
+            Map<Long, Client> clientMap = clientRepository.findAllById(targetIdList)
+                    .stream()
+                    .collect(Collectors.toMap(Client::getId, Function.identity()));
+
+            clientDTOList.forEach(target -> {
+
+                Client client = clientMap.get(target.getId());
+                client.updateClient(target);
+            });
+        } catch (Exception e) {
+            throw new NoSuchElementException("수정 대상이 존재하지 않습니다.");
+        }
+
+        return null;
+    }
+
     private List<ResponseClientDTO> toClientDTOList(List<Client> clientList) {
 
         return clientList.stream()
@@ -66,10 +100,10 @@ public class ClientServiceImpl implements ClientService {
                 .toList();
     }
 
-    private List<Client> toClientEntity(List<RequestClientDTO> DTOList) {
+    private List<Client> toClientEntity(List<RequestPostClientDTO> DTOList) {
 
         return DTOList.stream()
-                .map(RequestClientDTO :: toEntity)
+                .map(RequestPostClientDTO :: toEntity)
                 .toList();
     }
 }
