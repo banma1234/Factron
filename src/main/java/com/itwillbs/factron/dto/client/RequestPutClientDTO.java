@@ -1,13 +1,13 @@
 package com.itwillbs.factron.dto.client;
 
-import com.itwillbs.factron.entity.Client;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class RequestPutClientDTO {
 
-    @NotBlank(message = "id는 필수 입력값입니다.")
+    @NotNull(message = "id는 필수 입력값입니다.")
     private Long id;
 
     @NotBlank(message = "거래처명은 필수 입력값입니다.")
