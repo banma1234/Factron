@@ -27,10 +27,24 @@
             </div>
         </form>
 
-        <!-- list grid -->
+        <!-- line list grid -->
         <article>
             <div id="line_grid">
 
+            </div>
+        </article>
+
+        <div class="mt-4">
+            <div class="header-row">
+                <h5 class="page__name">라인 상세 공정</h5>
+                <!-- 필요시 공정 관련 버튼으로 변경 -->
+                <button class="btn btn-primary modBtn" name="addLineProcess" type="button" sec:authorize="hasAnyAuthority('ATH007')">공정 수정</button>
+            </div>
+        </div>
+
+        <!-- line process list grid -->
+        <article>
+            <div id="line_process_grid">
             </div>
         </article>
     </section>

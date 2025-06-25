@@ -9,9 +9,10 @@ const toUpperCase = (str) => {
 }
 
 const init = () => {
+
     const lineGrid = initGrid(
         document.getElementById('line_grid'),
-        400,
+        300,
         [
             {
                 header: '번호',
@@ -46,6 +47,55 @@ const init = () => {
         ]
     );
 
+    const lineProcessGrid = initGrid(
+        document.getElementById('line_process_grid'),
+        200,
+        [
+            {
+                header: '번호',
+                name: 'id',
+                hidden: true
+            },
+            {
+                header: '공정번호',
+                name: 'processId',
+                align: 'center'
+            },
+            {
+                header: '공정명',
+                name: 'processName',
+                align: 'center'
+            },
+            {
+                header: '공정유형',
+                name: 'processTypeName',
+                align: 'center'
+            },
+            {
+                header: '소속 라인',
+                name: 'lineName',
+                align: 'center'
+            },
+            {
+                header: '공정 시간',
+                name: 'standardTime',
+                align: 'center',
+                formatter: (value) => {
+                    return value.value ? `${value.value}분` : '';
+                }
+            },
+            {
+                header: '설비 유무',
+                name: 'hasMachine',
+                align: 'center',
+                formatter: (value) => {
+                    const upperValue = toUpperCase(value.value)
+                    return `${upperValue==='Y' ? '보유' : '미보유'}`;
+                }
+            }
+        ]
+    );
+
     // 검색 버튼 클릭 이벤트
     document.querySelector(".lineSrhBtn").addEventListener("click", function(e) {
         e.preventDefault();
@@ -62,16 +112,37 @@ const init = () => {
         getLines();
     });
 
-    // 공정 추가 버튼 클릭
-    const addBtn = document.querySelector("button[name='addNewLine']");
-    if(addBtn){
-        addBtn.addEventListener("click", (e) => {
+    //  라인 추가 버튼 클릭
+    const addLineBtn = document.querySelector("button[name='addNewLine']");
+    if(addLineBtn){
+        addLineBtn.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
 
             addNewLine();
         })
     }
+
+    // 공정 추가 버튼 클릭
+    const addProcessBtn = document.querySelector("button[name='addNewProcess']");
+    if(addProcessBtn){
+        addProcessBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            addNewLineProcess();
+        })
+    }
+
+    // 라인 선택 시 해당 라인에 소속된 공정 목록 표시
+    lineGrid.on('click', (e) => {
+        const rowKey = e.rowKey;
+        const rowData = lineGrid.getRow(rowKey);
+
+        if (rowData && rowData.lineId) {
+            getLineProcesses(rowData.lineId, rowData.lineName);
+        }
+    });
 
     // 라인 목록 조회
     async function getLines() {
@@ -177,6 +248,36 @@ const init = () => {
             });
         }
     });
+
+    // 선택한 라인에 소속된 공정 목록 조회
+    function getLineProcesses(lineId, lineName) {
+        // params 생성
+        const params = new URLSearchParams();
+        params.append("lineId", lineId);
+
+        // 공정 목록 조회
+        fetch(`/api/process?${params.toString()}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(res => res.json())
+            .then(res => {
+                if(res.status === 200){
+                    console.log(res.data);
+
+                    return lineProcessGrid.resetData(res.data);
+                } else {
+                    alert(res.message);
+                }
+                return lineProcessGrid.resetData([]);
+            })
+            .catch(e => {
+                console.error("공정 목록 조회 실패:", e);
+                alert("공정 목록을 불러오는데 실패했습니다.");
+                return lineProcessGrid.resetData([]);
+            });
+    }
 
     // 공통코드 세팅
     setSelectBox("LIS", "lineStatusCode");
