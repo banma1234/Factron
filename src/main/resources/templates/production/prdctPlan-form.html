@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/popup-base.html}">
+<head>
+    <title>Factron</title>
+    <th:block layout:fragment="style">
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2 class="mb-4">생산계획 등록</h2>
+    <!-- form -->
+    <form>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <span class="form-label">제품코드</span>
+                <input type="text" name="itemId" class="form-control" readonly>
+            </div>
+            <div class="col-md-6">
+                <span class="form-label">제품명</span>
+                <input type="text" name="itemName" class="form-control" readonly>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <span class="form-label">생산수량</span>
+                <input type="text" name="quantity" class="form-control">
+            </div>
+            <div class="col-md-6">
+                <span class="form-label">단위</span>
+                <input type="text" name="unit" class="form-control" readonly>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <span class="form-label">시작 날짜</span>
+                <input type="date" name="startDate" class="form-control">
+            </div>
+            <div class="col-md-6">
+                <span class="form-label">종료 날짜</span>
+                <input type="date" name="endDate" class="form-control">
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end mt-4 gap-2">
+            <button type="button" class="btn btn-primary saveBtn">저장</button>
+            <button type="button" class="btn btn-secondary">취소</button>
+        </div>
+    </form>
+
+    <!-- confirm modal -->
+    <div class="modal fade confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    생산계획을 저장하시겠습니까?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary confirmEditBtn">확인</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- alert modal -->
+    <div class="modal fade alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    저장이 완료되었습니다!
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary alertBtn">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- script 블록 -->
+<th:block layout:fragment="javascript">
+    <script th:src="@{/js/production/prdctPlan-form.js}"></script>
+</th:block>
+
+</body>
+</html>

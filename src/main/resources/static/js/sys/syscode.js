@@ -25,7 +25,8 @@ const sysInit = () => {
                 name: 'is_active',
                 align: 'center',
             },
-        ]
+        ],
+        ['rowNum']
     )
 
     /**
@@ -50,7 +51,8 @@ const sysInit = () => {
                 name: 'is_active',
                 align: 'center',
             },
-        ]
+        ],
+        ['rowNum']
     )
 
     /**
