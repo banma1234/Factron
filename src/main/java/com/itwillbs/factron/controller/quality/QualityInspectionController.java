@@ -1,8 +1,12 @@
 package com.itwillbs.factron.controller.quality;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class QualityInspectionController {
-    // 품질 검사 페이지 (2개로 할까 하나로 할까??!)
+    @GetMapping("/quality")
+    public String quality() {
+        return "/quality/quality-inspection";
+    }
 }
