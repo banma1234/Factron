@@ -11,6 +11,4 @@ public interface CommuteMapper {
 
     // 출퇴근 기록을 조회하는 메서드
     List<ResponseCommuteDTO> selectCommuteHistories(RequestCommuteDTO requestDto);
-
-
 }
