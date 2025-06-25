@@ -18,8 +18,15 @@
     box-sizing: border-box;
 }
 
-.unitName {
-    width: 70px;
-    height: 38px;
-    display: block;
+input[name='unitName'] {
+    width: 70%;
+}
+
+input[name='unitName'] {
+    width: 30%;
+    text-align: center;
+}
+
+.tui-tree-content-wrapper {
+    width: 100% !important;
 }
