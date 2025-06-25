@@ -78,20 +78,16 @@ public class QualityInspectionServiceImpl implements QualityInspectionService {
     @Override
     @Transactional(readOnly = true)
     public List<ResponseQualityStandardDTO> getQualityInspectionStandards(RequestInspStdSrhDTO requestDTO) {
-        log.info("requestDTO: {}", requestDTO);
         List<ResponseQualityStandardDTO> standards = qualityInspectionStandardMapper.getQualityInspectionByIdOrName(requestDTO);
-        log.info("standards : {}", standards);
         return standards;
     }
 
     @Override
     public List<ResponseQualityStandardDTO> getQualityInspectionStandardsByInspectionId(String inspectionId) {
-        log.info("itemNameOrId: {}", inspectionId);
         List<ResponseQualityStandardDTO> standards =qualityInspectionStandardRepository
                 .findByQualityInspectionId(Long.parseLong(inspectionId))
                 .stream()
                 .map(ResponseQualityStandardDTO::new).collect(Collectors.toList());
-        log.info("standards: {}", standards);
         return standards;
     }
 
