@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/base.html}">
+<head>
+    <title>Factron</title>
+    <th:block layout:fragment="style">
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <section>
+        <div class="header-row">
+            <h4 class="page__name">생산계획 관리</h4>
+            <button class="btn btn-primary registPrdctPlan" sec:authorize="hasAnyAuthority('ATH007', 'ATH003')">생산계획 등록</button>
+        </div>
+        <form class="search__form mb-2">
+            <div class="select__container">
+                <input class="form-control" type="text" name="srhId" placeholder="생산계획 번호">
+                <input class="form-control" type="text" name="srhItemIdOrName" placeholder="품목코드 또는 품목명">
+            </div>
+            <div class="input-group">
+                <input class="form-control" type="text" name="srhEmpIdOrName" placeholder="이름 또는 사원번호"><br/>
+                <button class="btn btn-outline-secondary srhBtn" type="submit">검색</button>
+            </div>
+        </form>
+        <!-- list grid -->
+        <article>
+            <div id="prdctPlanGrid">
+
+            </div>
+        </article>
+    </section>
+</div>
+
+<th:block layout:fragment="javascript">
+    <!-- js import -->
+    <script th:src="@{/js/production/prdctPlan.js}"></script>
+</th:block>
+</body>
+</html>
