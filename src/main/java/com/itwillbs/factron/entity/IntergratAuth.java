@@ -40,4 +40,7 @@ public class IntergratAuth {
         this.isActive = newIsActive;
     }
 
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 }

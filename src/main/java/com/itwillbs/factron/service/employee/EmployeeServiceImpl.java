@@ -1,6 +1,7 @@
 package com.itwillbs.factron.service.employee;
 
 import com.itwillbs.factron.common.component.AESUtil;
+import com.itwillbs.factron.common.component.PasswordService;
 import com.itwillbs.factron.dto.employee.RequestEmployeeNewDTO;
 import com.itwillbs.factron.dto.employee.RequestEmployeeSrhDTO;
 import com.itwillbs.factron.dto.employee.ResponseEmployeeSrhDTO;
@@ -33,6 +34,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final IntergratAuthRepository intergratAuthRepository;
     private final EmployeeMapper employeeMapper;
     private final AESUtil aesUtil;
+    private final PasswordService passwordService;
 
     @Override
     public List<ResponseEmployeeSrhDTO> getEmployees(RequestEmployeeSrhDTO requestEmployeeSrhDTO) {
@@ -108,7 +110,31 @@ public class EmployeeServiceImpl implements EmployeeService {
                 ()-> new EntityNotFoundException("존재하지 않는 회원번호입니다.")
         );
 
-        IntergratAuth newIntergratAuth = reqEmployeeNewDTO.toIntergratAuth(newEmp);
+        // 사원 권한 설정
+        String newAuthCode = switch (newEmp.getDeptCode()) {
+            case "DEP001" -> "ATH002";           // 인사
+            case "DEP002" -> {
+                if("POS006".equals(newEmp.getPositionCode()) || "POS007".equals(newEmp.getPositionCode()))
+                    yield "ATH003";
+                else
+                    yield "ATH001";
+            }        // 관리자
+            case "DEP005" ->  "ATH004";    // 재무
+            case "DEP006" -> {
+                if("POS005".equals(newEmp.getPositionCode()))
+                    yield "ATH006";
+                else
+                    yield "ATH001";
+            }   // 생산
+            default -> "ATH001";
+        };
+
+        // 비밀번호 암호화 (전화번호를 기본 비밀번호로 사용)
+        String encodedPassword = passwordService.generateDefaultPassword(reqEmployeeNewDTO.getPhone());
+        
+        IntergratAuth newIntergratAuth = reqEmployeeNewDTO.toIntergratAuth(newEmp, newAuthCode);
+        newIntergratAuth.updatePassword(encodedPassword); // 암호화된 비밀번호 설정
+
         intergratAuthRepository.save(newIntergratAuth);
     }
 

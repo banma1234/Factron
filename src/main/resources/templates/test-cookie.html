@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>쿠키 테스트</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>쿠키 테스트 페이지</h2>
+        
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>현재 쿠키 정보</h5>
+                    </div>
+                    <div class="card-body">
+                        <pre id="cookieInfo">쿠키 정보를 확인하려면 버튼을 클릭하세요.</pre>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>서버 응답</h5>
+                    </div>
+                    <div class="card-body">
+                        <pre id="serverResponse">서버 응답을 확인하려면 버튼을 클릭하세요.</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>기본 테스트 버튼</h5>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-primary me-2" onclick="checkCookies()">쿠키 확인</button>
+                        <button class="btn btn-success me-2" onclick="testSessionAPI()">세션 정보 조회</button>
+                        <button class="btn btn-info" onclick="testUserAction()">사용자 작업 테스트</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 권한별 버튼 테스트 -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>권한별 버튼 테스트</h5>
+                    </div>
+                    <div class="card-body">
+                        <h6>인사 관리 권한 (ATH002) 필요</h6>
+                        <button class="btn btn-warning me-2" data-requires-authority="ATH002" onclick="alert('사원 추가 기능')">사원 추가</button>
+                        <button class="btn btn-warning me-2" data-requires-authority="ATH002" onclick="alert('인사발령 관리')">인사발령 관리</button>
+                        
+                        <hr>
+                        <h6>관리자 권한 (ROLE_ADMIN) 필요</h6>
+                        <button class="btn btn-danger me-2" data-requires-authority="ROLE_ADMIN" onclick="alert('시스템 관리')">시스템 관리</button>
+                        <button class="btn btn-danger me-2" data-requires-authority="ROLE_ADMIN" onclick="alert('사용자 관리')">사용자 관리</button>
+                        
+                        <hr>
+                        <h6>일반 사용자 권한 (ROLE_USER) 필요</h6>
+                        <button class="btn btn-secondary me-2" data-requires-authority="ROLE_USER" onclick="alert('내 정보 조회')">내 정보 조회</button>
+                        <button class="btn btn-secondary me-2" data-requires-authority="ROLE_USER" onclick="alert('근태 조회')">근태 조회</button>
+                        
+                        <hr>
+                        <h6>생산팀 (DEP006) 전용</h6>
+                        <button class="btn btn-success me-2" data-requires-dept="DEP006" onclick="alert('공정 관리')">공정 관리</button>
+                        <button class="btn btn-success me-2" data-requires-dept="DEP006" onclick="alert('품질 관리')">품질 관리</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 권한 정보 표시 -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>현재 사용자 권한 정보</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="userInfo">사용자 정보를 확인하려면 버튼을 클릭하세요.</div>
+                        <button class="btn btn-outline-primary mt-2" onclick="displayUserInfo()">사용자 정보 표시</button>
+                        <button class="btn btn-outline-secondary mt-2 ms-2" onclick="testAuthorityCheck()">권한 체크 테스트</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 쿠키 확인
+        function checkCookies() {
+            const cookies = document.cookie;
+            const cookieInfo = document.getElementById('cookieInfo');
+            
+            if (cookies) {
+                cookieInfo.textContent = cookies;
+            } else {
+                cookieInfo.textContent = '쿠키가 없습니다.';
+            }
+        }
+        
+        // 세션 정보 조회 API 테스트
+        async function testSessionAPI() {
+            const responseDiv = document.getElementById('serverResponse');
+            
+            try {
+                const response = await fetch('/testList/session');
+                const data = await response.json();
+                
+                responseDiv.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                responseDiv.textContent = '에러: ' + error.message;
+            }
+        }
+        
+        // 사용자 작업 테스트
+        async function testUserAction() {
+            const responseDiv = document.getElementById('serverResponse');
+            
+            try {
+                const response = await fetch('/testList/user-action');
+                const data = await response.json();
+                
+                responseDiv.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                responseDiv.textContent = '에러: ' + error.message;
+            }
+        }
+        
+        // 사용자 정보 표시
+        function displayUserInfo() {
+            const userInfoDiv = document.getElementById('userInfo');
+            const userInfo = window.getSessionInfo();
+            
+            if (userInfo) {
+                userInfoDiv.innerHTML = `
+                    <strong>사용자 ID:</strong> ${userInfo.employeeId}<br>
+                    <strong>사용자명:</strong> ${userInfo.employeeName}<br>
+                    <strong>권한:</strong> ${userInfo.authorities}<br>
+                    <strong>부서코드:</strong> ${userInfo.deptCode || '없음'}
+                `;
+            } else {
+                userInfoDiv.textContent = '사용자 정보를 가져올 수 없습니다.';
+            }
+        }
+        
+        // 권한 체크 테스트
+        function testAuthorityCheck() {
+            const userInfoDiv = document.getElementById('userInfo');
+            const authorities = ['ATH002', 'ROLE_ADMIN', 'ROLE_USER'];
+            let result = '<strong>권한 체크 결과:</strong><br>';
+            
+            authorities.forEach(auth => {
+                const hasAuth = window.hasAuthority(auth);
+                result += `${auth}: ${hasAuth ? '✅ 있음' : '❌ 없음'}<br>`;
+            });
+            
+            userInfoDiv.innerHTML = result;
+        }
+        
+        // 페이지 로드 시 쿠키 확인 및 UI 업데이트
+        document.addEventListener('DOMContentLoaded', function() {
+            checkCookies();
+            
+            // 권한별 UI 업데이트 (common.js에서 정의된 함수)
+            if (window.updateUIByAuthority) {
+                window.updateUIByAuthority();
+            }
+        });
+    </script>
+</body>
+</html> 

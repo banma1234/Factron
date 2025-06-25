@@ -5,7 +5,17 @@ const init = () => {
     const alertBtn = document.querySelector(".alertBtn");
     const confirmApproveBtn = document.querySelector(".confirmApproveBtn");
     const confirmRejectBtn = document.querySelector(".confirmRejectBtn");
+    // 모달 인스턴스 선언 추가
+    const approveModal = new bootstrap.Modal(document.querySelector(".approveModal"));
+    const rejectModal = new bootstrap.Modal(document.querySelector(".rejectModal"));
 
+    document.querySelector(".approveBtn").addEventListener("click", () => {
+        approveModal.show();
+    });
+
+    document.querySelector(".rejectBtn").addEventListener("click", () => {
+        rejectModal.show();
+    });
     // ✅ 부모 창 메시지 수신
     window.addEventListener("message", (event) => {
         const data = event.data;
@@ -35,19 +45,22 @@ const init = () => {
         }
     });
 
-    // ✅ 승인 버튼 클릭
+    // 승인
     confirmApproveBtn.addEventListener("click", async () => {
+        approveModal.hide(); // ✅ 모달 닫기
         const result = await sendApproval("APV002");
         handleAlert(result);
     });
 
-    // ✅ 반려 버튼 클릭
+// 반려
     confirmRejectBtn.addEventListener("click", async () => {
         const reason = document.querySelector("textarea[name='rejectReasonInput']").value.trim();
         if (!reason) {
             alert("반려 사유를 입력해주세요.");
             return;
         }
+
+        rejectModal.hide(); // ✅ 모달 닫기
 
         form.querySelector("textarea[name='rejectionReason']").value = reason;
         const result = await sendApproval("APV003");
