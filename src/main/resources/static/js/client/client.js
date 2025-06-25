@@ -90,7 +90,6 @@ const init = () => {
     const refreshGridData = () => {
         getClient("").then(res => {
             clientGrid.resetData(res.data);
-
         })
     }
 
@@ -252,8 +251,20 @@ const init = () => {
             })
         })
 
+    document.querySelector("button[name='srhBtn']")
+        .addEventListener('click', e => {
+            e.preventDefault();
+
+            const keyword = document.querySelector("input[name='srhClient']").value;
+
+            getClient(keyword).then(res => {
+                clientGrid.resetData(res.data);
+            })
+        })
+
     confirmBtn.addEventListener('click', e => {
         e.preventDefault();
+        e.stopPropagation();
 
         const businessNumber = businessNumberInput.value;
 
