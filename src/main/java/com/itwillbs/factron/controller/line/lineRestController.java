@@ -30,9 +30,20 @@ public class lineRestController {
     public ResponseDTO<Void> addLine(@RequestHeader("empId") Long empId,
                                      @RequestBody @Valid RequestAddLineDTO requestDto) {
 
-        lineService.addLine(requestDto, empId);
+        try {
+            lineService.addLine(requestDto, empId);
 
-        return ResponseDTO.success("라인을 추가하였습니다", null);
+            return ResponseDTO.success("라인을 추가하였습니다", null);
+        } catch (EntityNotFoundException e) {
+
+            return ResponseDTO.fail(800, e.getMessage(), null);
+        } catch (IllegalArgumentException e) {
+
+            return ResponseDTO.fail(801, e.getMessage(), null);
+        } catch (IllegalStateException e) {
+
+            return ResponseDTO.fail(802, e.getMessage(), null);
+        }
     }
 
     // 라인 수정 API
