@@ -684,7 +684,7 @@ class FactronApplicationTests {
 		// 2. 거래처 생성
 		Client vendor1 = Client.builder()
 				.name("삼성전자")
-				.businessNumber("123-45-67890")
+				.businessNumber("1234567890")
 				.address("서울특별시 서초구 삼성로 1")
 				.contact("02-1234-5678")
 				.ceo("이재용")
@@ -694,7 +694,7 @@ class FactronApplicationTests {
 
 		Client vendor2 = Client.builder()
 				.name("LG화학")
-				.businessNumber("987-65-43210")
+				.businessNumber("9876543210")
 				.address("서울특별시 강서구 LG로 2")
 				.contact("02-8765-4321")
 				.ceo("구광모")
