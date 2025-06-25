@@ -1,10 +1,12 @@
 package com.itwillbs.factron.service.client;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.itwillbs.factron.dto.client.*;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public interface ClientService {
@@ -14,5 +16,5 @@ public interface ClientService {
 
     Void updateClientList(@Valid List<RequestPutClientDTO> clientDTOList);
 
-    Boolean validBusinessNumber(String businessNumber, String API_SECRET_KEY);
+    Boolean validBusinessNumber(BusinessNumberDTO businessNumber, String API_SECRET_KEY) throws JsonProcessingException;
 }

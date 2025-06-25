@@ -1,7 +1,11 @@
 package com.itwillbs.factron.service.client;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itwillbs.factron.common.component.AuthorizationChecker;
+import com.itwillbs.factron.dto.client.BusinessNumberDTO;
 import com.itwillbs.factron.dto.client.RequestPostClientDTO;
 import com.itwillbs.factron.dto.client.RequestPutClientDTO;
 import com.itwillbs.factron.dto.client.ResponseClientDTO;
@@ -9,7 +13,9 @@ import com.itwillbs.factron.entity.Client;
 import com.itwillbs.factron.repository.client.ClientRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.MediaType;
+import org.springframework.security.web.firewall.RequestRejectedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -18,6 +24,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -28,7 +35,6 @@ public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
     private final AuthorizationChecker authorizationChecker;
-    private final WebClient webClient;
 
     /**
      * 거래처 정보 조회 및 검색
@@ -99,9 +105,10 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public Boolean validBusinessNumber(String businessNumber, String API_SECRET_KEY) {
+    public Boolean validBusinessNumber(BusinessNumberDTO businessNumber, String API_SECRET_KEY) throws JsonProcessingException {
 
-        String OPENAPI_URL = "http://api.odcloud.kr/api/nts-businessman/v1/validate?serviceKey=" + API_SECRET_KEY;
+        WebClient webClient = WebClient.create();
+        String OPENAPI_URL = "https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=" + API_SECRET_KEY;
 
         Mono<JsonNode> result = webClient.post()
                 .uri(OPENAPI_URL)
@@ -110,17 +117,9 @@ public class ClientServiceImpl implements ClientService {
                 .retrieve()
                 .bodyToMono(JsonNode.class);
 
-        String statusCode = result.block().get("status_code").asText();
+        String statusCode = Objects.requireNonNull(result.block()).get("status_code").asText();
 
-        switch (statusCode) {
-            case "OK":
-                return true;
-            case "BAD_JSON_REQUEST":
-                return false;
-        }
-
-
-        return false;
+        return statusCode.equals("OK");
     }
 
     private List<ResponseClientDTO> toClientDTOList(List<Client> clientList) {

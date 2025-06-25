@@ -1,6 +1,7 @@
 package com.itwillbs.factron.controller.client;
 
 import com.itwillbs.factron.dto.ResponseDTO;
+import com.itwillbs.factron.dto.client.BusinessNumberDTO;
 import com.itwillbs.factron.dto.client.RequestPostClientDTO;
 import com.itwillbs.factron.dto.client.RequestPutClientDTO;
 import com.itwillbs.factron.dto.client.ResponseClientDTO;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/client")
@@ -41,10 +43,8 @@ public class ClientRestController {
         }
     }
 
-    @GetMapping("/openapi/businessnumber")
-    public ResponseDTO<Boolean> validBusinessNumber(String businessNumber) {
-
-
+    @PostMapping("/openapi/businessnumber")
+    public ResponseDTO<Boolean> validBusinessNumber(@Valid @RequestBody BusinessNumberDTO businessNumber) {
 
         try {
             return ResponseDTO.success(clientService.validBusinessNumber(businessNumber, API_SECRET_KEY));
