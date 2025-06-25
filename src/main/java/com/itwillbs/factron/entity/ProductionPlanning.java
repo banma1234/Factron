@@ -27,8 +27,11 @@ public class ProductionPlanning {
     @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false)
     private Employee employee; // 생산 계획 담당 직원 ID
 
-    @Column(name = "deadline", nullable = false)
-    private LocalDate deadline; // 생산 기한
+    @Column(name = "start_date", nullable = false)
+    private LocalDate startDate; // 생산 시작일
+
+    @Column(name = "end_date", nullable = false)
+    private LocalDate endDate; // 생산 종료일
 
     @Column(name = "quantity", nullable = false)
     private Long quantity; // 생산 수량
