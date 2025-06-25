@@ -1,5 +1,6 @@
 package com.itwillbs.factron.service.client;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.itwillbs.factron.common.component.AuthorizationChecker;
 import com.itwillbs.factron.dto.client.RequestPostClientDTO;
 import com.itwillbs.factron.dto.client.RequestPutClientDTO;
@@ -8,8 +9,11 @@ import com.itwillbs.factron.entity.Client;
 import com.itwillbs.factron.repository.client.ClientRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
@@ -24,6 +28,7 @@ public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
     private final AuthorizationChecker authorizationChecker;
+    private final WebClient webClient;
 
     /**
      * 거래처 정보 조회 및 검색
@@ -96,6 +101,23 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public Boolean validBusinessNumber(String businessNumber, String API_SECRET_KEY) {
 
+        String OPENAPI_URL = "http://api.odcloud.kr/api/nts-businessman/v1/validate?serviceKey=" + API_SECRET_KEY;
+
+        Mono<JsonNode> result = webClient.post()
+                .uri(OPENAPI_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(businessNumber)
+                .retrieve()
+                .bodyToMono(JsonNode.class);
+
+        String statusCode = result.block().get("status_code").asText();
+
+        switch (statusCode) {
+            case "OK":
+                return true;
+            case "BAD_JSON_REQUEST":
+                return false;
+        }
 
 
         return false;
