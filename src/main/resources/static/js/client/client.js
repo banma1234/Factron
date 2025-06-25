@@ -1,7 +1,10 @@
+/**
+ * 새로운 row 추가시 셀에 입력될 데이터 기본값
+ * */
 const NEW_ROW = {
     id: undefined,
     name: '',
-    business_number: '',
+    business_number: undefined,
     address: '',
     contact: '',
     ceo: '',
@@ -11,14 +14,38 @@ const NEW_ROW = {
 
 const init = () => {
 
+    /**
+     * 사업자등록번호 입력 모달창
+     * */
     const confirmModal = new bootstrap.Modal(document.getElementsByClassName("confirmModal")[0]);
-    const alertModal = new bootstrap.Modal(document.getElementsByClassName("alertModal")[0]);
+    /**
+     * 사업자등록번호 입력 완료 버튼
+     * */
     const confirmBtn = document.querySelector("button[name='confirmBtn']");
-    const alertBtn = document.querySelector("button[name='alertBtn']");
-    const alertModalText = document.querySelector(".alert-modal-text");
+    /**
+     * 사업자등록번호 입력하는 인풋
+     * */
     const businessNumberInput = document.querySelector("input[name='srchBusinessNumber']");
+    /**
+     * 사업자등록번호 추가/수정할 대상 셀의 좌표값(rowKey)
+     * */
     let selectedRowDataKey = undefined;
+    /**
+     * alert 띄우는 모달창
+     * */
+    const alertModal = new bootstrap.Modal(document.getElementsByClassName("alertModal")[0]);
+    /**
+     * alert 모달 종료버튼
+     * */
+    const alertBtn = document.querySelector("button[name='alertBtn']");
+    /**
+     * alert 모달 내부 텍스트
+     * */
+    const alertModalText = document.querySelector(".alert-modal-text");
 
+    /**
+     * `client` 테이블 초기화
+     * */
     const clientGrid = initGrid(
         document.getElementById('grid_client'),
         400,
@@ -72,6 +99,11 @@ const init = () => {
         ]
     );
 
+    /**
+     * `client` 요청 api
+     * @param {string} name 거래처명
+     * @return JSON
+     * */
     const getClient = async (name) => {
         try {
             const res = await fetch(`/api/client?name=${name}`, {
@@ -87,14 +119,23 @@ const init = () => {
         }
     }
 
+    /**
+     * client 테이블 새로고침
+     * */
     const refreshGridData = () => {
         getClient("").then(res => {
             clientGrid.resetData(res.data);
         })
     }
 
+    /**
+     * 사업자등록번호 검증 요청 api. 내부서버로 요청 보냄.
+     * @param {string} businessNumber 사업자등록번호
+     * @return JSON
+     * */
     const validateBusinessNumber = async (businessNumber) => {
         try {
+            // 사업자등록번호 숫자 10자리 validation
             if (!businessNumber.match(/^[0-9]{10}$/)) {
                 alertModalText.textContent = "사업자등록번호는 10자리의 숫자만 허용됩니다.";
                 alertModal.show();
@@ -107,8 +148,9 @@ const init = () => {
                 headers: {
                     "Content-Type": "application/json"
                 },
+                // 공공 api requestBody 형식에 맞게 전송
                 body: JSON.stringify({
-                    b_no: [businessNumber + ""]
+                    b_no: [businessNumber]
                 })
             })
 
@@ -118,25 +160,35 @@ const init = () => {
         }
     }
 
+    /**
+     * client 테이블 변경값 수정 요청 api
+     * @return JSON
+     * */
     const updateModifiedRows = () => {
         const { createdRows, updatedRows } = clientGrid.getModifiedRows();
 
+        // 수정된 데이터 없을시 에러
         if (createdRows.length === 0 && updatedRows.length === 0) {
-            alert('수정된 데이터가 없습니다.');
-            return;
+            alertModalText.textContent = "수정된 데이터가 없습니다.";
+            alertModal.show();
+
+            throw new Error("수정된 데이터가 없습니다.");
         }
 
+        // 공백검사 함수
         const isEmpty = value =>
             value === null ||
             value === undefined ||
             (typeof value === 'string' && value.trim() === '');
 
+        // id, 비고 제외 공백검사 실시
         const validateBlankField = row => {
             return Object.entries(row).some(([key, value]) => {
                 key !== 'id' && key !== 'remark' && isEmpty(value)
             });
         };
 
+        // 삽입 body
         const POST_BODY = createdRows.filter(row => !row.id)
             .map(row => ({
                 name: row.name,
@@ -148,6 +200,7 @@ const init = () => {
                 remark: row.remark,
             }));
 
+        // 수정 body
         const PUT_BODY = updatedRows.filter(row => row.id)
             .map(row => ({
                 id: row.id,
@@ -160,14 +213,17 @@ const init = () => {
                 remark: row.remark,
             }));
 
+        // 폼 내부에 빈칸 있을 시 에러
         if (POST_BODY.find(validateBlankField) || POST_BODY.find(validateBlankField)) {
             alert('입력하지 않은 필드값이 존재합니다.');
             return;
         }
 
         try {
+            // Promise.all로 일괄처리 하기 위한 request 배열
             const requestList = [];
 
+            // POST 요청 request 배열에 삽입
             if (POST_BODY.length > 0) {
                 requestList.push(
                     fetch(`/api/client`, {
@@ -180,6 +236,7 @@ const init = () => {
                 )
             }
 
+            // PUT 요청 request 배열에 삽입
             if (PUT_BODY.length > 0) {
                 requestList.push(
                     fetch(`/api/client`, {
@@ -192,6 +249,7 @@ const init = () => {
                 )
             }
 
+            // 일괄 요청
             Promise.all(requestList)
                 .then(res => {
                     clientGrid.clearModifiedData();
@@ -206,27 +264,42 @@ const init = () => {
 
     refreshGridData();
 
+    // ========================================================================
+    // 이벤트리스너
+
+    /**
+     * 사업자 등록번호 클릭시 입력 모달 띄우기 이벤트
+     * */
     clientGrid.on('click', e => {
         const { columnName, rowKey } = e;
 
+        // 클릭한 셀의 컬럼명이 "사업자등록번호"일 경우 수행
         if (columnName === "business_number") {
             selectedRowDataKey = rowKey;
 
             confirmModal.show();
+            // 사업자등록번호 등록버튼 비활성화(초기상태)
             confirmBtn.disabled = true;
         }
     })
 
+    /**
+     * client 테이블에 새로운 row 추가 이벤트
+     * */
     document.querySelector("button[name='appendClientBtn']")
         .addEventListener('click', e => {
             e.preventDefault();
 
+            // 테이블의 가장 첫번째 열에 빈 row 삽입
             clientGrid.appendRow(NEW_ROW, {
                 at: 0,
                 focus: true
             });
         });
 
+    /**
+     * client 테이블 변경사항 저장 이벤트
+     * */
     document.querySelector("button[name='saveClientBtn']")
         .addEventListener('click', e => {
             e.preventDefault();
@@ -236,6 +309,9 @@ const init = () => {
             alertModal.show();
         })
 
+    /**
+     * 사업자등록번호 검색 버튼 이벤트
+     * */
     document.querySelector("button[name='modalSrchBtn']")
         .addEventListener('click', e => {
             e.preventDefault();
@@ -244,6 +320,7 @@ const init = () => {
             const businessNumber = businessNumberInput.value;
 
             validateBusinessNumber(businessNumber).then(res => {
+                // 사업자등록번호 검증 완료시 등록버튼 활성화
                 if (res.data) {
                     confirmBtn.className = "btn btn-outline-primary";
                     confirmBtn.disabled = false;
@@ -251,6 +328,9 @@ const init = () => {
             })
         })
 
+    /**
+     * client 테이블 거래처명 검색 이벤트
+     * */
     document.querySelector("button[name='srhBtn']")
         .addEventListener('click', e => {
             e.preventDefault();
@@ -262,6 +342,9 @@ const init = () => {
             })
         })
 
+    /**
+     * 사업자등록번호 입력 확인 이벤트
+     * */
     confirmBtn.addEventListener('click', e => {
         e.preventDefault();
         e.stopPropagation();
@@ -270,6 +353,7 @@ const init = () => {
 
         confirmBtn.className = "btn btn-secondary";
 
+        // 해당 셀 검증 후 등록한 사업자등록번호 입력
         if (clientGrid.getRow(selectedRowDataKey)) {
             clientGrid.setValue(selectedRowDataKey, "business_number", businessNumber);
         }
@@ -278,6 +362,9 @@ const init = () => {
         confirmModal.hide();
     })
 
+    /**
+     * alert 모달 닫기 이벤트
+     * */
     alertBtn.addEventListener('click', e => {
         alertModal.hide();
     })

@@ -1,6 +1,5 @@
 package com.itwillbs.factron.entity;
 
-import com.itwillbs.factron.dto.client.RequestClientDTO;
 import com.itwillbs.factron.dto.client.RequestPutClientDTO;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;

@@ -5,6 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * POST 요청 DTO
+ * */
 @Data
 public class RequestPostClientDTO {
 
@@ -27,17 +30,6 @@ public class RequestPostClientDTO {
     private String contact_manager;
 
     private String remark;
-
-    @Builder
-    public RequestPostClientDTO(String name, String business_number, String address, String contact, String ceo, String contact_manager, String remark) {
-        this.name = name;
-        this.business_number = business_number;
-        this.address = address;
-        this.contact = contact;
-        this.ceo = ceo;
-        this.contact_manager = contact_manager;
-        this.remark = remark;
-    }
 
     /**
      * DTO -> Entity 변환

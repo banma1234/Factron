@@ -1,9 +1,7 @@
 package com.itwillbs.factron.service.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itwillbs.factron.common.component.AuthorizationChecker;
 import com.itwillbs.factron.dto.client.BusinessNumberDTO;
 import com.itwillbs.factron.dto.client.RequestPostClientDTO;
@@ -13,9 +11,7 @@ import com.itwillbs.factron.entity.Client;
 import com.itwillbs.factron.repository.client.ClientRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.MediaType;
-import org.springframework.security.web.firewall.RequestRejectedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -46,6 +42,7 @@ public class ClientServiceImpl implements ClientService {
 
         List<Client> clientList;
 
+        // 파라미터 존재시 검색, 그렇지 않으면 전체조회
         if(name == null || name.isEmpty()) {
             clientList = clientRepository.findAll();
         } else {
@@ -65,6 +62,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public Void saveClientList(@Valid List<RequestPostClientDTO> clientDTOList) {
 
+        // 재무, 관리자 권한 체크
         if(!authorizationChecker.hasAnyAuthority("ATH003", "ATH004")) {
             throw new SecurityException("권한이 없습니다.");
         }
@@ -75,10 +73,16 @@ public class ClientServiceImpl implements ClientService {
         return null;
     }
 
+    /**
+     * 거래처 정보 다중 수정
+     * @param clientDTOList PUT 요청 DTO List
+     * @return Void
+     * */
     @Transactional
     @Override
     public Void updateClientList(@Valid List<RequestPutClientDTO> clientDTOList) {
 
+        // 재무, 관리자 권한 체크
         if(!authorizationChecker.hasAnyAuthority("ATH003", "ATH004")) {
             throw new SecurityException("권한이 없습니다.");
         }
@@ -104,6 +108,12 @@ public class ClientServiceImpl implements ClientService {
         return null;
     }
 
+    /**
+     * 사업자등록번호 검증. 외부에 api 요청 보내고 그 결과값을 뷰로 전달
+     * @param businessNumber 사업자등록번호 객체
+     * @param API_SECRET_KEY 공공 api 시크릿 키
+     * return Boolean
+     * */
     @Override
     public Boolean validBusinessNumber(BusinessNumberDTO businessNumber, String API_SECRET_KEY) throws JsonProcessingException {
 
@@ -122,6 +132,9 @@ public class ClientServiceImpl implements ClientService {
         return statusCode.equals("OK");
     }
 
+    /**
+     * Entity => DTO 변환
+     * */
     private List<ResponseClientDTO> toClientDTOList(List<Client> clientList) {
 
         return clientList.stream()
@@ -129,6 +142,9 @@ public class ClientServiceImpl implements ClientService {
                 .toList();
     }
 
+    /**
+     * DTO => Entity 변환
+     * */
     private List<Client> toClientEntity(List<RequestPostClientDTO> DTOList) {
 
         return DTOList.stream()

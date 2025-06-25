@@ -4,6 +4,9 @@ import com.itwillbs.factron.entity.Client;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * client 반환 DTO
+ * */
 @Data
 public class ResponseClientDTO {
 

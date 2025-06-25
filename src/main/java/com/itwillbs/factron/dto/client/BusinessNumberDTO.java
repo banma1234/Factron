@@ -5,6 +5,9 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * 사업자등록번호 요청 DTO
+ * */
 @Data
 public class BusinessNumberDTO {
 
