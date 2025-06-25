@@ -78,7 +78,7 @@ window.getUserInfoFromCookie = getUserInfoFromCookie;
 window.displayUserInfo = displayUserInfo;
 
 // grid 초기화
-window.initGrid = (gridEl, bodyHeight, columns) => {
+window.initGrid = (gridEl, bodyHeight, columns, rowHeaders = []) => {
     const Grid = tui.Grid;
 
     // 테마
@@ -107,6 +107,7 @@ window.initGrid = (gridEl, bodyHeight, columns) => {
         scrollX: false,
         scrollY: true,
         bodyHeight: bodyHeight,
+        rowHeaders: rowHeaders,
         columns: columns,
     });
 }
@@ -123,12 +124,19 @@ window.getSysCodeList = async (mainCode)  =>  {
 }
 
 // 셀렉박스 옵션 설정
-window.setSelectBox = (mainCode, selectTagName) => {
+window.setSelectBox = (mainCode, selectTagName, option = {}) => {
     getSysCodeList(mainCode).then((data) => {
         const selectTag = document.querySelector(`select[name=${selectTagName}]`);
 
         if(data.status === 200){
-            data.data.forEach((code) => {
+            let codeList = data.data;
+
+            // 커스텀 데이터 필터
+            if (typeof option.filter === 'function') {
+                codeList = codeList.filter(option.filter);
+            }
+
+            codeList.forEach((code) => {
                 const optionElement = document.createElement("option");
                 optionElement.value = code.detail_code;
                 optionElement.textContent = code.name;
@@ -150,3 +158,16 @@ window.getKoreaToday = () => {
     now.setHours(now.getHours() + 9); // UTC+9
     return now.toISOString().slice(0, 10);
 }
+
+// 숫자 3자리 콤마 찍기
+window.formatNumber = (value) => {
+    if (value == null || value === '' || isNaN(value)) return '';
+    return Number(value).toLocaleString();
+};
+
+// 숫자 콤마 제거
+window.unformatNumber = (value) => {
+    if (typeof value !== 'string') return value;
+    const unformatted = value.replace(/,/g, '');
+    return unformatted === '' ? '' : Number(unformatted);
+};

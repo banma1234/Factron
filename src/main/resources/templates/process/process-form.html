@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/popup-base.html}">
+<head>
+  <title>Factron</title>
+  <th:block layout:fragment="style">
+  </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+  <h2 class="mb-4">공정 정보</h2>
+  <!-- form -->
+  <form>
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <span class="form-label">공정명</span>
+        <input type="text" name="processName" class="form-control" placeholder="공정명을 입력하세요" disabled>
+      </div>
+      <div class="col-md-6">
+        <span class="form-label">공정 번호</span>
+        <input type="number" name="processId" class="form-control" disabled>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-12">
+        <span class="form-label">공정 설명</span>
+        <textarea name="description" class="form-control" placeholder="공정 설명을 입력하세요" rows="3" disabled></textarea>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <span class="form-label">공정 유형</span>
+        <select name="processType" class="form-select" disabled>
+          <option value="">공정 유형</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <span class="form-label">라인</span>
+        <input type="text" name="lineName" class="form-control" disabled>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <span class="form-label">공정 시간 (분)</span>
+        <input type="text" name="standardTime" class="form-control" placeholder="분 단위 공정 시간을 입력하세요" disabled>
+      </div>
+      <div class="col-md-6">
+        <span class="form-label">설비 유무</span>
+        <input type="text" name="hasMachine" class="form-control" disabled>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <span class="form-label">공정 생성일</span>
+        <input type="date" name="createdAt" class="form-control" disabled>
+      </div>
+      <div class="col-md-6">
+        <span class="form-label">공정 등록자 사번</span>
+        <input type="number" name="createdBy" class="form-control" disabled>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-end mt-4 gap-2">
+      <button type="button" class="btn btn-primary modBtn" sec:authorize="hasAnyAuthority('ATH007')">수정</button>
+      <button type="button" class="btn btn-secondary">닫기</button>
+    </div>
+  </form>
+
+  <!-- confirm modal -->
+  <div class="modal fade confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+          공정을 저장하시겠습니까?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary confirmEditBtn">확인</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- alert modal -->
+  <div class="modal fade alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+          저장이 완료되었습니다!
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary alertBtn">확인</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- script 블록 -->
+<th:block layout:fragment="javascript">
+  <script th:src="@{//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js}"></script>
+  <script th:src="@{/js/process/process-form.js}"></script>
+</th:block>
+
+</body>
+</html>
+
