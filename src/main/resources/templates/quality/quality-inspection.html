@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base.html}">>
+<head>
+    <meta charset="UTF-8">
+    <title>Factron</title>
+    <th:block layout:fragment="style">
+      <link rel="stylesheet" th:href="@{/css/sys/syscode.css}" />
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+  <h4 class="page__name">품질검사 관리</h4>
+  <article class="sys__container">
+    <section class="sys__grid__container">
+      <form class="sys__form mb-2">
+        <div class="input-group">
+          <input class="form-control sysInput" type="text" name="inspName" placeholder="품질 검사">
+          <button class="btn btn-outline-secondary" name="inspSrhBtn" type="button">검색</button>
+        </div>
+        <div class="select__container">
+          <button class="btn btn-primary" name="addInspRow" type="button">추가</button>
+          <button class="btn btn-outline-primary" name="updateInsp" type="button">저장</button>
+        </div>
+      </form>
+      <!-- list grid -->
+      <article>
+        <div id="grid_insp">
+
+        </div>
+      </article>
+    </section>
+    <section class="sys__grid__container">
+      <form class="sys__form mb-2">
+        <div class="input-group">
+          <input
+                  class="form-control sysInput"
+                  type="text"
+                  name="itemName"
+                  placeholder="제품"
+          >
+          <button class="btn btn-outline-secondary" name="stdSrhBtn" type="button">검색</button>
+        </div>
+        <div class="select__container">
+          <button class="btn btn-primary" name="addInspStdRow" type="button">추가</button>
+          <button class="btn btn-outline-primary" name="updateInspStd" type="button">저장</button>
+          <button class="btn btn-outline-primary" name="deleteInspStd" type="button">삭제</button>
+        </div>
+      </form>
+      <!-- list grid -->
+      <article>
+        <div id="grid_std">
+
+        </div>
+      </article>
+    </section>
+  </article>
+</div>
+<th:block layout:fragment="javascript">
+  <!-- js import -->
+  <script th:src="@{/js/quality/quality.js}"></script>
+</th:block>
+</body>
+</html>
