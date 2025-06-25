@@ -3,50 +3,6 @@ const removeSpaces = (str) => {
     return str.replace(/\s+/g, '');
 }
 
-const initSelectGrid = (gridEl, bodyHeight, columns, option = []) => {
-    const Grid = tui.Grid;
-
-    // 테마
-    Grid.applyTheme('default',  {
-        cell: {
-            normal: {
-                border: 'gray'
-            },
-            header: {
-                background: 'gray',
-                text: 'white',
-                border: 'gray'
-            },
-            rowHeaders: {
-                header: {
-                    background: 'gray',
-                    text: 'white'
-                }
-            }
-        }
-    });
-
-    // 세팅
-    return new Grid({
-        el: gridEl,
-        scrollX: false,
-        // header: {
-        //     complexColumns:[
-        //         {
-        //             header: '',
-        //             name: 'itemName',
-        //             childNames: ['id','qualityInspectionId','itemId','targetValue','upperLimit','lowerLimit','unit',],
-        //         },
-        //     ],
-        //     height: 60,
-        // },
-        scrollY: true,
-        rowHeaders: option,
-        bodyHeight: bodyHeight,
-        columns: columns,
-    });
-}
-
 const init = () => {
     const inspGrid = initGrid(
         document.getElementById('grid_insp'),
@@ -78,7 +34,7 @@ const init = () => {
         ]
     );
 
-    const stdGrid = initSelectGrid(
+    const stdGrid = initGrid(
         document.getElementById('grid_std'),
         400,
         [
@@ -123,7 +79,8 @@ const init = () => {
                 align: 'center',
                 editor: 'text'
             }
-        ],['checkbox']
+        ],
+        rowHeaders = ['checkbox']
     );
 
     async function getInspections() {
@@ -614,7 +571,7 @@ const init = () => {
 
         if(notExistInDb.length > 0){
             stdGrid.removeCheckedRows();
-            getQualityStandards();
+            // getQualityStandards();
         }
 
     }
