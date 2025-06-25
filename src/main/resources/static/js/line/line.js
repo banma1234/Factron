@@ -93,8 +93,23 @@ const init = () => {
                     return `${upperValue==='Y' ? '보유' : '미보유'}`;
                 }
             }
-        ]
+        ],
+        ['checkbox'] // 체크박스 추가
     );
+
+    // 페이지 로드 시 공정 수정 버튼과 삭제 버튼 비활성화
+    const addLineProcessBtn = document.querySelector("button[name='addLineProcess']");
+    const deleteLineProcessBtn = document.querySelector("button[name='deleteLineProcess']");
+
+    if(addLineProcessBtn) {
+        addLineProcessBtn.disabled = true;
+    }
+    if(deleteLineProcessBtn) {
+        deleteLineProcessBtn.disabled = true;
+    }
+
+    // 전역 변수로 현재 선택된 라인 정보 저장
+    let currentSelectedLine = null;
 
     // 검색 버튼 클릭 이벤트
     document.querySelector(".lineSrhBtn").addEventListener("click", function(e) {
@@ -123,15 +138,39 @@ const init = () => {
         })
     }
 
-    // 공정 추가 버튼 클릭
-    const addProcessBtn = document.querySelector("button[name='addNewProcess']");
-    if(addProcessBtn){
-        addProcessBtn.addEventListener("click", (e) => {
+    // 공정 수정 버튼 클릭 이벤트 수정
+    if(addLineProcessBtn){
+        addLineProcessBtn.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
 
-            addNewLineProcess();
+            // 라인이 선택되어 있을 때만 처리
+            if (currentSelectedLine) {
+                // 기존 로직 호출 또는 새로운 로직 구현
+                addNewLineProcess(currentSelectedLine);
+            }
         })
+    }
+
+    // 선택 공정 삭제 버튼 클릭 이벤트 추가
+    if(deleteLineProcessBtn) {
+        deleteLineProcessBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            // 선택된 행 데이터 가져오기
+            const checkedRows = lineProcessGrid.getCheckedRows();
+
+            if(checkedRows.length === 0) {
+                alert("선택된 공정이 없습니다.");
+                return;
+            }
+
+            if(confirm(`선택한 ${checkedRows.length}개의 공정을 라인에서 삭제하시겠습니까?`)) {
+                // 삭제 로직 구현
+                deleteSelectedProcesses(checkedRows);
+            }
+        });
     }
 
     // 라인 선택 시 해당 라인에 소속된 공정 목록 표시
@@ -140,9 +179,54 @@ const init = () => {
         const rowData = lineGrid.getRow(rowKey);
 
         if (rowData && rowData.lineId) {
+            // 공정 목록 조회
             getLineProcesses(rowData.lineId, rowData.lineName);
+
+            // 공정 수정 버튼 활성화
+            if (addLineProcessBtn) {
+                addLineProcessBtn.disabled = false;
+            }
+
+            // 공정 삭제 버튼은 체크박스 선택 전이므로 여전히 비활성화 유지
+            if (deleteLineProcessBtn) {
+                deleteLineProcessBtn.disabled = true;
+            }
+
+            // 선택된 라인 정보 저장
+            currentSelectedLine = {
+                lineId: rowData.lineId,
+                lineName: rowData.lineName,
+                description: rowData.description || ''  // 설명 정보도 저장
+            };
         }
     });
+
+    // 체크박스 선택 상태 변경 이벤트 감지
+    lineProcessGrid.on('check', () => {
+        updateDeleteButtonState();
+    });
+
+    lineProcessGrid.on('uncheck', () => {
+        updateDeleteButtonState();
+    });
+
+    // 체크박스 전체 선택/해제 이벤트 감지
+    lineProcessGrid.on('checkAll', () => {
+        updateDeleteButtonState();
+    });
+
+    lineProcessGrid.on('uncheckAll', () => {
+        updateDeleteButtonState();
+    });
+
+    // 삭제 버튼 상태 업데이트 함수
+    function updateDeleteButtonState() {
+        if (deleteLineProcessBtn) {
+            // 체크된 행이 하나라도 있으면 삭제 버튼 활성화
+            const checkedRows = lineProcessGrid.getCheckedRows();
+            deleteLineProcessBtn.disabled = checkedRows.length === 0;
+        }
+    }
 
     // 라인 목록 조회
     async function getLines() {
@@ -183,8 +267,44 @@ const init = () => {
             });
     }
 
+    // 선택된 공정 삭제 함수
+    async function deleteSelectedProcesses(processes) {
+        try {
+            // 삭제할 공정 ID 목록
+            const processIds = processes.map(process => parseInt(process.processId));
+
+            // API 요청
+            const response = await fetch('/api/line/disconnect-process', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'empId': user.id // 현재 로그인한 사원의 ID를 헤더에 추가
+                },
+                body: JSON.stringify({
+                    processIds: processIds
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.status === 200) {
+                alert('선택한 공정이 라인에서 삭제되었습니다.');
+
+                // 공정 목록 다시 불러오기 (현재 선택된 라인 정보 사용)
+                if (currentSelectedLine) {
+                    getLineProcesses(currentSelectedLine.lineId, currentSelectedLine.lineName);
+                }
+            } else {
+                alert(result.message || '공정 삭제에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error('공정 삭제 중 오류 발생:', error);
+            alert('공정 삭제 중 오류가 발생했습니다.');
+        }
+    }
+
     const addNewLine = () => {
-        const popup = window.open('/line-newForm', '_blank', 'width=800,height=750');
+        const popup = window.open('/line-newForm', '_blank', 'width=800,height=850');
 
         if (!popup) {
             alert("팝업이 차단되었습니다. 팝업 차단을 해제해주세요.");
@@ -205,6 +325,39 @@ const init = () => {
 
             if (message && message.type === "ADD_REFRESH_LINES") {
                 getLines(); // 안전하게 리프레시 실행
+            }
+        });
+    }
+
+    // 상세 공정 추가 함수
+    const addNewLineProcess = (lineInfo) => {
+        const popup = window.open('/line-process-form', '_blank', 'width=800,height=850');
+
+        if (!popup) {
+            alert("팝업이 차단되었습니다. 팝업 차단을 해제해주세요.");
+            return;
+        }
+
+        // 자식 창으로부터 'ready' 먼저 수신 후 postMessage 실행
+        const messageHandler = (event) => {
+            if (event.data === 'lineProcessReady') {
+                popup.postMessage({
+                    lineId: lineInfo.lineId,
+                    lineName: lineInfo.lineName,
+                    description: lineInfo.description || '' // 라인 설명 정보도 함께 전달
+                }, "*");
+                window.removeEventListener("message", messageHandler);
+            }
+        };
+        window.addEventListener("message", messageHandler);
+
+        // 팝업 종료시 공정 리스트 새로 호출
+        window.addEventListener("message", (event) => {
+            const message = event.data;
+
+            if (message && message.type === "REFRESH_LINE_PROCESSES") {
+                // 라인 공정 목록 다시 불러오기
+                getLineProcesses(lineInfo.lineId, lineInfo.lineName);
             }
         });
     }
@@ -242,7 +395,7 @@ const init = () => {
 
                 const message = event.data;
 
-                if (message && message.type === "REFRESH_MACHINES") {
+                if (message && message.type === "REFRESH_LINES") {
                     getLines(); // 안전하게 리프레시 실행
                 }
             });
@@ -266,16 +419,30 @@ const init = () => {
                 if(res.status === 200){
                     console.log(res.data);
 
-                    return lineProcessGrid.resetData(res.data);
+                    // 데이터 리셋 후 삭제 버튼 상태도 업데이트
+                    lineProcessGrid.resetData(res.data);
+
+                    // 데이터가 로드된 후 삭제 버튼 상태 업데이트 (초기에는 비활성화)
+                    if(deleteLineProcessBtn) {
+                        deleteLineProcessBtn.disabled = true;
+                    }
+
+                    return;
                 } else {
                     alert(res.message);
                 }
-                return lineProcessGrid.resetData([]);
+                lineProcessGrid.resetData([]);
+                if(deleteLineProcessBtn) {
+                    deleteLineProcessBtn.disabled = true;
+                }
             })
             .catch(e => {
                 console.error("공정 목록 조회 실패:", e);
                 alert("공정 목록을 불러오는데 실패했습니다.");
-                return lineProcessGrid.resetData([]);
+                lineProcessGrid.resetData([]);
+                if(deleteLineProcessBtn) {
+                    deleteLineProcessBtn.disabled = true;
+                }
             });
     }
 

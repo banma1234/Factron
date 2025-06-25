@@ -22,4 +22,9 @@ public class lineController {
     public String lineNewFrom() {
         return "/line/line-add-form";
     }
+
+    @GetMapping("/line-process-form")
+    public String lineProcessform() {
+        return "/line/line-process-form";
+    }
 }
