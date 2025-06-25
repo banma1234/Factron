@@ -32,4 +32,11 @@ public class Machine {
 
     @Column(name = "buy_date", nullable = false)
     private LocalDate buyDate; // 구입일
+
+    // 설비 정보 수정 메소드
+    public void updateMachineInfo(String name, String manufacturer, LocalDate buyDate) {
+        this.name = name;
+        this.manufacturer = manufacturer;
+        this.buyDate = buyDate;
+    }
 }
