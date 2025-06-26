@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -19,4 +21,6 @@ public class RequestAddLineDTO {
 
     @Size(max = 70, message = "설명은 70자 이내로 입력해주세요.")
     private String description; // 라인 설명 (선택)
+
+    private List<Long> processIds;
 }

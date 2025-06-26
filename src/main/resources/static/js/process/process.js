@@ -143,7 +143,7 @@ const init = () => {
     }
 
     const addNewProcess = () => {
-        const popup = window.open('/process-newForm', '_blank', 'width=800,height=750');
+        const popup = window.open('/process-newForm', '_blank', 'width=800,height=600');
 
         if (!popup) {
             alert("팝업이 차단되었습니다. 팝업 차단을 해제해주세요.");
@@ -173,7 +173,7 @@ const init = () => {
         const rowData = processGrid.getRow(rowKey);
         // 새 창에서 해당 ID를 기반으로 상세페이지 오픈
         if (rowData && (rowKey || rowKey === 0)) {
-            const popup = window.open('/process-form', '_blank', 'width=800,height=750');
+            const popup = window.open('/process-form', '_blank', 'width=800,height=600');
 
             if (!popup) {
                 alert("팝업이 차단되었습니다. 팝업 차단을 해제해주세요.");
