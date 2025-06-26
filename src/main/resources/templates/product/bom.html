@@ -2,13 +2,14 @@
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout/base.html}">>
 <head>
-    <meta charset="UTF-8">
-    <title>Factron</title>
-    <th:block layout:fragment="style">
-      <link rel="stylesheet" th:href="@{/css/product/bom.css}" />
-    </th:block>
+  <meta charset="UTF-8">
+  <title>Factron</title>
+  <th:block layout:fragment="style">
+    <link rel="stylesheet" th:href="@{/css/product/bom.css}" />
+  </th:block>
 
   <script src="https://uicdn.toast.com/tui-tree/latest/tui-tree.js"></script>
   <link rel="stylesheet" href="https://uicdn.toast.com/tui-tree/latest/tui-tree.css"/>
@@ -60,19 +61,19 @@
             <input type="text" class="form-control" name="prodType" readonly disabled>
           </div>
           <div class="col-md-6">
-            <span class="form-label">소요량</span>
-            <div class="input-group">
-              <input type="text" class="form-control text-end" name="consumption" disabled>
-              <span class="input-group-text unitName"></span>
+            <label class="form-label d-block">소요량</label>
+            <div class="d-flex">
+              <input type="text" class="form-control text-end me-2" name="consumption" disabled>
+              <input type="text" class="form-control" name="unitName" readonly disabled>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="d-flex justify-content-end editBOM">
+      <div class="d-flex justify-content-end editBOM" sec:authorize="hasAnyAuthority('ATH007', 'ATH003')">
         <button class="btn btn-primary registBOM">추가</button>
         <button class="btn btn-primary ms-2 updateBOM">수정</button>
-        <button class="btn btn-primary ms-2 deleteBOM">삭제</button>
+        <button class="btn btn-danger ms-2 deleteBOM">삭제</button>
       </div>
       <div class="d-flex justify-content-end confirmBOM d-none">
         <button class="btn btn-primary saveBtn">저장</button>
