@@ -10,14 +10,14 @@ public interface lineService {
     List<ResponseLineInfoDTO> getLineList(RequestLineInfoDTO requestDto);
 
     // 라인 추가
-    void addLine(RequestAddLineDTO requestDto, Long empId);
+    void addLine(RequestAddLineDTO requestDto);
 
     // 라인 수정
-    void updateLine(RequestUpdateLineDTO requestDto, Long empId);
+    void updateLine(RequestUpdateLineDTO requestDto);
 
     // 라인에 여러 공정 연결
-    void connectProcessesToLine(RequestConnectProcessesToLineDTO requestDto, Long empId);
+    void connectProcessesToLine(RequestConnectProcessesToLineDTO requestDto);
 
     // 라인에 여러 공정 연결 해제
-    void disconnectProcessesFromLine(RequestDisconnectProcessesFromLineDTO requestDto, Long empId);
+    void disconnectProcessesFromLine(RequestDisconnectProcessesFromLineDTO requestDto);
 }

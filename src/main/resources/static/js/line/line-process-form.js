@@ -96,8 +96,7 @@ async function saveData() {
         const response = await fetch('/api/line/connect-process', {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json',
-                'empId': user.id // 사용자 ID 헤더 추가
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 lineId: parseInt(lineId),

@@ -21,11 +21,11 @@ public class CommuteRestController {
 
     // 출근
     @PostMapping()
-    public ResponseDTO<Void> commuteIn(@RequestHeader("empId") String employeeId) {
+    public ResponseDTO<Void> commuteIn() {
 
         try {
 
-            commuteService.commuteIn(employeeId);
+            commuteService.commuteIn();
 
             return ResponseDTO.success("출근이 완료되었습니다", null);
         } catch (EntityNotFoundException e) {
@@ -39,11 +39,11 @@ public class CommuteRestController {
 
     // 퇴근
     @PutMapping()
-    public ResponseDTO<Void> commuteOut(@RequestHeader("empId") String employeeId) {
+    public ResponseDTO<Void> commuteOut() {
 
         try {
 
-            commuteService.commuteOut(employeeId);
+            commuteService.commuteOut();
 
             return ResponseDTO.success("퇴근이 완료되었습니다", null);
         } catch (EntityNotFoundException e) {

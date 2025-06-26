@@ -22,12 +22,11 @@ public class MachineRestController {
 
     // 설비 추가 API
     @PostMapping()
-    public ResponseDTO<Void> addProcess(@RequestHeader("empId") Long empId,
-                                        @RequestBody @Valid RequestAddMachineDTO requestDto) {
+    public ResponseDTO<Void> addProcess(@RequestBody @Valid RequestAddMachineDTO requestDto) {
 
         try {
 
-            machineService.addMachine(requestDto, empId);
+            machineService.addMachine(requestDto);
 
             return ResponseDTO.success("설비를 추가하였습니다", null);
         } catch (EntityNotFoundException e) {
@@ -41,12 +40,11 @@ public class MachineRestController {
 
     // 설비 수정 API
     @PutMapping()
-    public ResponseDTO<Void> updateMachine(@RequestHeader("empId") Long empId,
-                                           @RequestBody @Valid RequestUpdateMachineDTO requestDto) {
+    public ResponseDTO<Void> updateMachine(@RequestBody @Valid RequestUpdateMachineDTO requestDto) {
 
         try {
 
-            machineService.updateMachine(requestDto, empId);
+            machineService.updateMachine(requestDto);
 
             return ResponseDTO.success("설비를 수정하였습니다", null);
         } catch (EntityNotFoundException e) {
