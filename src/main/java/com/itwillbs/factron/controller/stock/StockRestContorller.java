@@ -6,10 +6,7 @@ import com.itwillbs.factron.dto.stock.ResponseStockSrhDTO;
 import com.itwillbs.factron.service.stock.StockService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,6 +24,16 @@ public class StockRestContorller {
             return ResponseDTO.success(stocks);
         } catch (Exception e) {
             log.error("Error searching stocks: ", e);
+            return ResponseDTO.fail(500, e.getMessage(), null);
+        }
+    }
+
+    @GetMapping("/{productId}")
+    public ResponseDTO<List<ResponseStockSrhDTO>> getSingleItemStock(@PathVariable("productId") String productId) {
+        try{
+            List<ResponseStockSrhDTO> stock = stockService.getSingleStock(productId);
+            return  ResponseDTO.success(null);
+        }catch (Exception e) {
             return ResponseDTO.fail(500, e.getMessage(), null);
         }
     }
