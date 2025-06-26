@@ -37,15 +37,15 @@ public class CommuteServiceImpl implements CommuteService {
 
     /**
      * 출근 처리 메소드
-     * @param employeeId 사원 ID
      */
     @Override
     @Transactional
-    public void commuteIn(String employeeId) {
+    public void commuteIn() {
 
-        log.info("출근 처리: employeeId={}", employeeId);
+        // AuthorizationChecker를 사용하여 현재 로그인한 사용자 ID 가져오기
+        Long empId = authorizationChecker.getCurrentEmployeeId();
 
-        Long empId = Long.parseLong(employeeId);
+        log.info("출근 처리 : 현재 로그인한 사원 ID: {}", empId);
 
         // 1. 사원 조회
         Employee employee = employeeRepository.findById(empId)
@@ -73,15 +73,15 @@ public class CommuteServiceImpl implements CommuteService {
 
     /**
      * 퇴근 처리 메소드
-     * @param employeeId 사원 ID
      */
     @Override
     @Transactional
-    public void commuteOut(String employeeId) {
+    public void commuteOut() {
 
-        log.info("퇴근 처리: employeeId={}", employeeId);
+        // AuthorizationChecker를 사용하여 현재 로그인한 사용자 ID 가져오기
+        Long empId = authorizationChecker.getCurrentEmployeeId();
 
-        Long empId = Long.parseLong(employeeId);
+        log.info("퇴근 처리 : 현재 로그인한 사원 ID: {}", empId);
 
         // 1. 사원 조회
         Employee employee = employeeRepository.findById(empId)

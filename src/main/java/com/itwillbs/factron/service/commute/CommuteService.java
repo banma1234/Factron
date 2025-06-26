@@ -8,10 +8,10 @@ import java.util.List;
 public interface CommuteService {
 
     // 출근 기록을 저장하는 메서드
-    void commuteIn(String employeeId);
+    void commuteIn();
 
     // 퇴근 기록을 저장하는 메서드
-    void commuteOut(String employeeId);
+    void commuteOut();
 
     // 출근 기록을 조회하는 메서드
     List<ResponseCommuteDTO> getCommuteHistories(RequestCommuteDTO requestCommuteDto);
