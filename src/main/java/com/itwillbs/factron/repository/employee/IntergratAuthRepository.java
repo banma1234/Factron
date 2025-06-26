@@ -10,4 +10,5 @@ import java.util.Optional;
 @Repository
 public interface IntergratAuthRepository extends JpaRepository<IntergratAuth, Long> {
     Optional<IntergratAuth> findByEmployee(Employee targetEmp);
+    Optional<IntergratAuth> findByEmployeeId(Long id);
 }

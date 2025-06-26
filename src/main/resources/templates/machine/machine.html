@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/base.html}">
+<head>
+    <title>Factron</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section>
+        <div class="header-row">
+            <h4 class="page__name">설비 목록</h4>
+            <button class="btn btn-primary modBtn" name="addNewMachine" type="button" sec:authorize="hasAnyAuthority('ATH007')">설비 추가</button>
+        </div>
+        <form class="search__form mb-2 d-flex justify-content-end">
+            <div class="input-group" style="width: auto;">
+                <input class="form-control" type="text" name="machineNameOrManufacturer" placeholder="설비명 또는 제조사">
+                <button class="btn btn-outline-secondary MachineOrManufacSrhBtn" type="button">검색</button>
+            </div>
+        </form>
+
+        <!-- list grid -->
+        <article>
+            <div id="machine_grid">
+
+            </div>
+        </article>
+    </section>
+</div>
+
+<th:block layout:fragment="javascript">
+    <!-- js import -->
+    <script th:src="@{/js/machine/machine.js}"></script>
+</th:block>
+</body>
+</html>
