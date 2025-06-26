@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Builder
@@ -28,4 +30,7 @@ public class LotHistory {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "work_order_id", referencedColumnName = "id", nullable = false)
     private WorkOrder workOrder; // 작업 지시 ID
+
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt; // 등록일
 }

@@ -11,6 +11,7 @@ import com.itwillbs.factron.repository.process.ProcessRepository;
 import com.itwillbs.factron.repository.product.BomRepository;
 import com.itwillbs.factron.repository.product.ItemRepository;
 import com.itwillbs.factron.repository.product.MaterialRepository;
+import com.itwillbs.factron.repository.production.ProductionPlanningRepository;
 import com.itwillbs.factron.repository.storage.StockRepository;
 import com.itwillbs.factron.repository.storage.StorageRepository;
 import com.itwillbs.factron.repository.syscode.DetailSysCodeRepository;
@@ -23,7 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @SpringBootTest
@@ -58,6 +61,9 @@ class FactronApplicationTests {
 	private ClientRepository clientRepository;
 	@Autowired
 	private StockRepository stockRepository;
+
+	@Autowired
+	private ProductionPlanningRepository prdctPlanRepository;
 
 	@Test
 	@Transactional
@@ -745,6 +751,40 @@ class FactronApplicationTests {
 					.storage(rawMaterialStorage)
 					.quantity(20L)
 					.build());
+		}
+	}
+
+	@Test
+	@Transactional
+	@Commit
+	void insertPrdctPlanData() {
+		// 1. 담당 사원 조회
+		Employee employee = employeeRepository.findById(25060001L).orElse(null);
+
+		// 2. 오늘 날짜 기준
+		LocalDate today = LocalDate.now();
+		String dateStr = today.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+		// 3. 생산 계획용 아이템 리스트 조회
+		List<Item> finishedItems = itemRepository.findAll().stream()
+				.filter(item -> "ITP003".equals(item.getTypeCode()))
+				.toList();
+
+		// 4. 각 아이템에 대해 더미 데이터 생성
+		int sequence = 1;
+		for (Item item : finishedItems) {
+			String id = String.format("PP%s-%03d", dateStr, sequence++); // ex: PP20250625-001
+
+			ProductionPlanning planning = ProductionPlanning.builder()
+					.id(id)
+					.item(item)
+					.employee(employee)
+					.startDate(today)
+					.endDate(today.plusDays(5 + sequence))
+					.quantity(100L * sequence)
+					.build();
+
+			prdctPlanRepository.save(planning);
 		}
 	}
 }

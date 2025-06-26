@@ -18,11 +18,11 @@ public class Stock {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id; // 재고 ID
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id", referencedColumnName = "id")
     private Item item; // 재고 제품 정보
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "material_id", referencedColumnName = "id")
     private Material material; // 재고 자재 정보
 

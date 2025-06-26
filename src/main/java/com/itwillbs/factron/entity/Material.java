@@ -2,13 +2,13 @@ package com.itwillbs.factron.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "material")
@@ -21,7 +21,7 @@ public class Material extends BaseEntity {
     private String name; // 자재 이름
 
     @Column(name = "unit", length = 50, nullable = false)
-    private String unit; // 단위 (예: EA, kg, L 등)
+    private String unit; // 단위 코드
 
     @Column(name = "info", length = 100, nullable = false)
     private String info; // 자재 유형
