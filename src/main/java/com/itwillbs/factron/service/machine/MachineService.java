@@ -11,10 +11,10 @@ import java.util.List;
 public interface MachineService {
 
     // 설비 추가
-    void addMachine(RequestAddMachineDTO requestDto, Long empId);
+    void addMachine(RequestAddMachineDTO requestDto);
 
     // 설비 수정
-    void updateMachine(RequestUpdateMachineDTO requestDto, Long empId);
+    void updateMachine(RequestUpdateMachineDTO requestDto);
 
     // 설비 목록 조회
     List<ResponseMachineInfoDTO> getMachineList(RequestMachineInfoDTO requestDto);

@@ -87,8 +87,7 @@ async function saveData() {
         const res = await fetch(`/api/line`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
-                "empId": user.id
+                "Content-Type": "application/json"
             },
             body: JSON.stringify(data),
         });

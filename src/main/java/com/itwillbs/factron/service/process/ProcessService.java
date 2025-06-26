@@ -11,10 +11,10 @@ import java.util.List;
 public interface ProcessService {
 
     // 공정 추가
-    void addProcess(RequestAddProcessDTO requestDto, Long empId);
+    void addProcess(RequestAddProcessDTO requestDto);
 
     // 공정 수정
-    void updateProcess(RequestUpdateProcessDTO dto, Long empId);
+    void updateProcess(RequestUpdateProcessDTO requestDto);
 
     // 공정 목록 조회
     List<ResponseProcessInfoDTO> getProcessList(RequestProcessInfoDTO requestDto);

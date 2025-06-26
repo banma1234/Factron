@@ -277,8 +277,7 @@ const init = () => {
             const response = await fetch('/api/line/disconnect-process', {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'empId': user.id // 현재 로그인한 사원의 ID를 헤더에 추가
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     processIds: processIds
