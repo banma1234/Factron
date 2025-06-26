@@ -20,7 +20,7 @@ public class Machine {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id; // 설비 ID
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "process_id", referencedColumnName = "id", nullable = false)
     private Process process; // 연관된 공정 정보
 
