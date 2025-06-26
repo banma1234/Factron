@@ -1,5 +1,6 @@
 package com.itwillbs.factron.service.commute;
 
+import com.itwillbs.factron.common.component.AuthorizationChecker;
 import com.itwillbs.factron.dto.commute.RequestCommuteDTO;
 import com.itwillbs.factron.dto.commute.ResponseCommuteDTO;
 import com.itwillbs.factron.entity.CommuteHistory;
@@ -31,6 +32,8 @@ public class CommuteServiceImpl implements CommuteService {
     private final WorkRepository workRepository;
 
     private final CommuteMapper commuteMapper;
+
+    private final AuthorizationChecker authorizationChecker;
 
     /**
      * 출근 처리 메소드
@@ -148,14 +151,18 @@ public class CommuteServiceImpl implements CommuteService {
 
     /**
      * 오늘 출근 상태 조회 메소드
-     * @param empId 사원 ID
      * @return 출근 상태 (IN, DONE, NONE)
      */
     @Override
-    public String getTodayCommuteStatus(String empId) {
+    public String getTodayCommuteStatus() {
+
+        // AuthorizationChecker를 사용하여 현재 로그인한 사용자 ID 가져오기
+        Long empId = authorizationChecker.getCurrentEmployeeId();
+
+        log.info("현재 로그인한 사원 ID: {}", empId);
 
         // 1. 사원 정보 조회 (예: employeeRepository.findById)
-        Employee employee = employeeRepository.findById(Long.parseLong(empId))
+        Employee employee = employeeRepository.findById(empId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 사원이 없습니다."));
 
         // 2. 오늘 날짜의 시작과 끝 계산
