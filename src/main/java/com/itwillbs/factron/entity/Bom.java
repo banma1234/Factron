@@ -19,7 +19,7 @@ public class Bom {
     private Long id; // BOM ID
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parant_item_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "parent_item_id", referencedColumnName = "id", nullable = false)
     private Item parentItem; // 상위 제품
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,4 +32,9 @@ public class Bom {
 
     @Column(name = "consumption", nullable = false)
     private Long consumption; // 소모량
+
+    // BOM 수정 (소요량)
+    public void changeConsumption(Long consumption) {
+        this.consumption = consumption;
+    }
 }

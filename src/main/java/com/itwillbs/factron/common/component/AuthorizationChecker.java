@@ -98,9 +98,9 @@ public class AuthorizationChecker {
     /**
      * 현재 로그인한 사용자의 사원번호를 가져옵니다.
      */
-    public String getCurrentEmployeeId() {
+    public Long getCurrentEmployeeId() {
         HttpServletRequest request = getCurrentRequest();
-        return cookieSessionValidator.getCurrentEmployeeId(request);
+        return Long.parseLong(cookieSessionValidator.getCurrentEmployeeId(request));
     }
 
     /**
@@ -119,53 +119,5 @@ public class AuthorizationChecker {
     public void logCurrentUser(String action, String target) {
         String currentUser = getCurrentEmployeeName();
         log.info("{} - 사용자: {}, 대상: {}", action, currentUser, target);
-    }
-
-    /**
-     * 권한 체크와 함께 사용자 정보를 로그에 기록합니다.
-     */
-    public void checkAuthorityAndLog(String authority, String action, String target) {
-        checkAuthority(authority);
-        logCurrentUser(action, target);
-    }
-
-    /**
-     * 사원 관리 권한 체크와 함께 사용자 정보를 로그에 기록합니다.
-     */
-    public void checkEmployeeManagementAndLog(String action, String target) {
-        checkEmployeeManagementAuthority();
-        logCurrentUser(action, target);
-    }
-
-    /**
-     * 관리자 권한 체크와 함께 사용자 정보를 로그에 기록합니다.
-     */
-    public void checkAdminAndLog(String action, String target) {
-        checkAdminAuthority();
-        logCurrentUser(action, target);
-    }
-
-    // ========== 고급 기능들 ==========
-
-    /**
-     * 본인 정보인지 확인합니다.
-     */
-    public boolean isOwnInfo(String targetEmployeeId) {
-        String currentEmployeeId = getCurrentEmployeeId();
-        return targetEmployeeId.equals(currentEmployeeId);
-    }
-
-    /**
-     * 본인 정보이거나 특정 권한이 있는지 확인합니다.
-     */
-    public boolean isOwnInfoOrHasAuthority(String targetEmployeeId, String authority) {
-        return isOwnInfo(targetEmployeeId) || hasAuthority(authority);
-    }
-
-    /**
-     * 본인 정보이거나 여러 권한 중 하나라도 있는지 확인합니다.
-     */
-    public boolean isOwnInfoOrHasAnyAuthority(String targetEmployeeId, String... authorities) {
-        return isOwnInfo(targetEmployeeId) || hasAnyAuthority(authorities);
     }
 } 
