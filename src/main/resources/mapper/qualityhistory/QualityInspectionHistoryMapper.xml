@@ -15,7 +15,7 @@
             i.name AS itemName,
             l.id AS lotId,
             TO_CHAR(qh.inspection_date, 'YYYY-MM-DD') AS inspectionDate,
-            CAST(qh.result_value AS CHAR) AS resultValue,
+            TO_CHAR(qh.result_value) AS resultValue,
             qis.unit AS resultValueUnit,
             qh.result_code AS resultCode,
             dsc_result.name AS resultCodeName,

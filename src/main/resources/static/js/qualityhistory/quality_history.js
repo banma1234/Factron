@@ -121,68 +121,70 @@ const init = () => {
 
     if(addInspectionResultBtn) {
         addInspectionResultBtn.disabled = true;
+
+        // 결과 저장 버튼 클릭 이벤트
+        addInspectionResultBtn.addEventListener("click", function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            // 모든 행의 결과값 확인
+            const rowCount = qualityInspectionHistoryGrid.getRowCount();
+            let allValid = true;
+            let invalidReason = '';
+            let invalidRow = null;
+
+            for (let i = 0; i < rowCount; i++) {
+                const rowKey = qualityInspectionHistoryGrid.getRowAt(i).rowKey;
+                const value = qualityInspectionHistoryGrid.getValue(rowKey, 'resultValue');
+
+                // 값이 비어있는지 확인
+                if (!validators.isNotEmpty(value)) {
+                    allValid = false;
+                    invalidReason = '모든 품질검사 결과값을 입력하세요!!';
+                    break;
+                }
+
+                // 숫자 형식인지 확인
+                if (!validators.isNumeric(value)) {
+                    allValid = false;
+                    invalidRow = i + 1;
+                    invalidReason = `${invalidRow}번째 행의 결과값이 올바른 숫자 형식이 아닙니다.\n정수 또는 실수만 입력 가능합니다.`;
+                    break;
+                }
+            }
+
+            // 유효성 검사 실패 시 경고창 표시
+            if (!allValid) {
+                alert(invalidReason);
+                return;
+            }
+
+            // 모든 결과값이 유효한 경우 저장 로직 실행
+            saveQualityInspectionResults();
+        }, false);
     }
 
     // 전역 변수로 현재 선택된 라인 정보 저장
     let currentSelectedLine = null;
 
     // 검색 버튼 클릭 이벤트
-    document.querySelector(".srhBtn").addEventListener("click", function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        getWorkOrders();
-
-    }, false);
+    const searchBtn = document.querySelector(".srhBtn");
+    if (searchBtn) {
+        searchBtn.addEventListener("click", function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            getWorkOrders();
+        }, false);
+    }
 
     // 엔터 시 검색
-    document.querySelector(".search__form").addEventListener("submit", function(e) {
-        e.preventDefault();
-
-        getWorkOrders();
-    });
-
-    // 결과 저장 버튼 클릭 이벤트
-    document.querySelector("button[name='addInspectionResult']").addEventListener("click", function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        // 모든 행의 결과값 확인
-        const rowCount = qualityInspectionHistoryGrid.getRowCount();
-        let allValid = true;
-        let invalidReason = '';
-        let invalidRow = null;
-
-        for (let i = 0; i < rowCount; i++) {
-            const rowKey = qualityInspectionHistoryGrid.getRowAt(i).rowKey;
-            const value = qualityInspectionHistoryGrid.getValue(rowKey, 'resultValue');
-
-            // 값이 비어있는지 확인
-            if (!validators.isNotEmpty(value)) {
-                allValid = false;
-                invalidReason = '모든 품질검사 결과값을 입력하세요!!';
-                break;
-            }
-
-            // 숫자 형식인지 확인
-            if (!validators.isNumeric(value)) {
-                allValid = false;
-                invalidRow = i + 1;
-                invalidReason = `${invalidRow}번째 행의 결과값이 올바른 숫자 형식이 아닙니다.\n정수 또는 실수만 입력 가능합니다.`;
-                break;
-            }
-        }
-
-        // 유효성 검사 실패 시 경고창 표시
-        if (!allValid) {
-            alert(invalidReason);
-            return;
-        }
-
-        // 모든 결과값이 유효한 경우 저장 로직 실행
-        saveQualityInspectionResults();
-
-    }, false);
+    const searchForm = document.querySelector(".search__form");
+    if (searchForm) {
+        searchForm.addEventListener("submit", function(e) {
+            e.preventDefault();
+            getWorkOrders();
+        });
+    }
 
     // 작업지시 선택 시 해당 작업지시의 품질검사 이력 목록 표시
     completedWorkOrderGrid.on('click', (e) => {
@@ -193,9 +195,18 @@ const init = () => {
             // 품질검사 이력 목록 조회
             getQualityInspectionHistories(rowData.workOrderId);
 
-            // 품질검사 결과 저장 버튼 활성화
+            // 품질검사 결과 저장 버튼 활성화/비활성화 (작업 상태가 '완료'인 경우 비활성화)
             if (addInspectionResultBtn) {
-                addInspectionResultBtn.disabled = false;
+                if (rowData.workStatus === '완료') {
+                    // 작업 상태가 완료인 경우 버튼 비활성화
+                    addInspectionResultBtn.disabled = true;
+
+                    // 선택적으로 사용자에게 알림 표시
+                    // alert('완료된 작업지시에 대해서는 품질검사 결과를 저장할 수 없습니다.');
+                } else {
+                    // 그 외의 경우 버튼 활성화
+                    addInspectionResultBtn.disabled = false;
+                }
             }
 
             // 선택된 작업지시 정보 저장
@@ -209,14 +220,20 @@ const init = () => {
 
     // 작업지시 목록 조회
     async function getWorkOrders() {
+        // 안전하게 요소 가져오기
+        const itemIdOrNameInput = document.querySelector("input[name='srhItemIdOrName']");
+        const prdctPlanIdInput = document.querySelector("input[name='srhProductionPlanId']");
+        const workOrderIdInput = document.querySelector("input[name='srhWorkOrderId']");
+        const statusCodeSelect = document.querySelector("select[name='workOrderStatusCode']");
 
         // 검색어 추출
-        const itemIdOrName = removeSpaces(document.querySelector("input[name='srhItemIdOrName']").value);
-        const prdctPlanId = removeSpaces(document.querySelector("input[name='srhProductionPlanId']").value);
-        const workOrderId = removeSpaces(document.querySelector("input[name='srhWorkOrderId']").value);
+        const itemIdOrName = itemIdOrNameInput ? removeSpaces(itemIdOrNameInput.value) : '';
+        const prdctPlanId = prdctPlanIdInput ? removeSpaces(prdctPlanIdInput.value) : '';
+        const workOrderId = workOrderIdInput ? removeSpaces(workOrderIdInput.value) : '';
 
-        // 작업지시 상태 코드 추출
-        const statusCodes = document.querySelector("select[name='workOrderStatusCode']").value || "WKS003,WKS004";
+        // 작업지시 상태 코드 추출 - 값이 없으면 WKS003,WKS004 사용 (기본값 유지)
+        const statusCodeValue = statusCodeSelect ? statusCodeSelect.value : '';
+        const statusCodes = statusCodeValue || "WKS003,WKS004";
 
         // 콤마로 구분된 문자열을 배열로 변환
         const statusCodesArray = statusCodes.split(',');
@@ -231,7 +248,9 @@ const init = () => {
 
         // 각 상태 코드를 개별적으로 추가 (서버에서 List로 인식)
         statusCodesArray.forEach(code => {
-            params.append("statusCodes", code.trim());
+            if(code.trim()) {  // 빈 문자열이 아닌 경우만 추가
+                params.append("statusCodes", code.trim());
+            }
         });
 
         // 작업지시 목록 조회
@@ -245,6 +264,7 @@ const init = () => {
                 if(res.status === 200){
                     // 데이터 매핑 처리
                     const mappedData = res.data.map(rowData => {
+                        console.log("서버에서 받은 원본 데이터:", rowData);
                         return {
                             id: rowData.id,                       // 번호 (hidden)
                             workOrderId: rowData.id,              // 작업지시 번호
