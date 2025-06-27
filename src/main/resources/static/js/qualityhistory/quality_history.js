@@ -57,6 +57,11 @@ const init = () => {
                 hidden: true
             },
             {
+                header: '품질 검사 이력번호',
+                name: 'qualityInspectionHistoryId',
+                align: 'center'
+            },
+            {
                 header: '품질 검사명',
                 name: 'qualityInspectionName',
                 align: 'center'
@@ -82,9 +87,10 @@ const init = () => {
                 align: 'center'
             },
             {
-                header: '결과값',
+                header: '결과값 [입력]',
                 name: 'resultValue',
-                align: 'center'
+                align: 'center',
+                editor: 'text'
             },
             {
                 header: '결과',
@@ -125,6 +131,29 @@ const init = () => {
         getWorkOrders();
     });
 
+    // 작업지시 선택 시 해당 작업지시의 품질검사 이력 목록 표시
+    completedWorkOrderGrid.on('click', (e) => {
+        const rowKey = e.rowKey;
+        const rowData = completedWorkOrderGrid.getRow(rowKey);
+
+        if (rowData && rowData.workOrderId) {
+            // 품질검사 이력 목록 조회
+            getQualityInspectionHistories(rowData.workOrderId);
+
+            // 품질검사 결과 저장 버튼 항상 비활성화 상태 유지
+            if (addInspectionResultBtn) {
+                addInspectionResultBtn.disabled = true;
+            }
+
+            // 선택된 작업지시 정보 저장
+            currentSelectedLine = {
+                workOrderId: rowData.workOrderId,
+                itemId: rowData.itemId,
+                itemName: rowData.itemName
+            };
+        }
+    });
+
     // 작업지시 목록 조회
     async function getWorkOrders() {
 
@@ -162,14 +191,14 @@ const init = () => {
             .then(res => {
                 if(res.status === 200){
                     // 데이터 매핑 처리
-                    const mappedData = res.data.map(item => {
+                    const mappedData = res.data.map(rowData => {
                         return {
-                            id: item.id,                       // 번호 (hidden)
-                            workOrderId: item.id,              // 작업지시 번호
-                            itemId: item.itemId,               // 작업 제품번호
-                            itemName: item.itemName,           // 작업 제품명
-                            productionPlanId: item.productionId, // 생산 계획 번호
-                            workStatus: item.status            // 작업 상태
+                            id: rowData.id,                       // 번호 (hidden)
+                            workOrderId: rowData.id,              // 작업지시 번호
+                            itemId: rowData.itemId,               // 작업 제품번호
+                            itemName: rowData.itemName,           // 작업 제품명
+                            productionPlanId: rowData.productionId, // 생산 계획 번호
+                            workStatus: rowData.status            // 작업 상태
                         };
                     });
 
@@ -182,6 +211,50 @@ const init = () => {
             .catch(e => {
                 alert(e);
             });
+    }
+
+    // 품질검사 이력 목록 조회 함수
+    async function getQualityInspectionHistories(workOrderId) {
+        try {
+            // API 호출
+            const response = await fetch(`/api/quality/history?workOrderId=${workOrderId}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+
+            const result = await response.json();
+
+            if (result.status === 200) {
+                // 데이터 매핑 처리
+                const mappedData = result.data.map(rowData => {
+                    return {
+                        id: rowData.qualityHistoryId,
+                        qualityInspectionHistoryId: rowData.qualityHistoryId,
+                        qualityInspectionName: rowData.qualityInspectionName,
+                        itemId: rowData.itemId,
+                        itemName: rowData.itemName,
+                        lotId: rowData.lotId || '-',
+                        inspectionDate: rowData.inspectionDate || '-',
+                        resultValue: rowData.resultValue || '',
+                        resultCodeName: rowData.resultCodeName || '-',
+                        historyStatus: rowData.statusCodeName
+                    };
+                });
+
+                // 그리드 데이터 설정
+                qualityInspectionHistoryGrid.resetData(mappedData);
+
+            } else {
+                alert(result.message);
+                qualityInspectionHistoryGrid.resetData([]);
+            }
+        } catch (error) {
+            console.error('품질검사 이력 조회 오류:', error);
+            alert('품질검사 이력 조회 중 오류가 발생했습니다.');
+            qualityInspectionHistoryGrid.resetData([]);
+        }
     }
 
     // 공통코드 세팅
