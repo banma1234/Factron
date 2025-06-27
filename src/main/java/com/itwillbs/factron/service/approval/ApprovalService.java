@@ -12,4 +12,6 @@ public interface ApprovalService {
 
     //결재(승인, 반려)
     void updateApproval(RequestApprovalDTO requestApprovalDTO);
+
+
 }
