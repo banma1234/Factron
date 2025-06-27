@@ -87,6 +87,7 @@ public class ApprovalServiceImpl implements ApprovalService {
         // 결재 반려 처리
         else if ("APV003".equals(requestApprovalDTO.getApprovalStatus())) {
             approval.reject(approver, requestApprovalDTO.getRejectionReason());
+
         }
         // 유효하지 않은 결재 상태일 경우 예외 처리
         else {
