@@ -25,22 +25,20 @@ public class ProcessRestController {
 
     // 공정 추가 API
     @PostMapping()
-    public ResponseDTO<Void> addProcess(@RequestHeader("empId") Long empId,
-                                        @RequestBody @Valid RequestAddProcessDTO requestDto) {
+    public ResponseDTO<Void> addProcess(@RequestBody @Valid RequestAddProcessDTO requestDto) {
 
-        processService.addProcess(requestDto, empId);
+        processService.addProcess(requestDto);
 
         return ResponseDTO.success("공정을 추가하였습니다", null);
     }
 
     // 공정 수정 API
     @PutMapping()
-    public ResponseDTO<Void> updateProcess(@RequestHeader("empId") Long empId,
-                                           @RequestBody @Valid RequestUpdateProcessDTO requestDto) {
+    public ResponseDTO<Void> updateProcess(@RequestBody @Valid RequestUpdateProcessDTO requestDto) {
 
         try {
 
-            processService.updateProcess(requestDto, empId);
+            processService.updateProcess(requestDto);
 
             return ResponseDTO.success("공정을 수정하였습니다", null);
         } catch (EntityNotFoundException e) {
