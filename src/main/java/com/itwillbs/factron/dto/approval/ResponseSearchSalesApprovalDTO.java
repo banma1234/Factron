@@ -28,4 +28,5 @@ public class ResponseSearchSalesApprovalDTO {
 
     private String approvalStatusCode;  // 결재 상태 코드
     private String approvalStatusName;  // 결재 상태 이름 (대기, 승인, 반려)
+    private String rejectionReason;
 }

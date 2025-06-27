@@ -1,10 +1,151 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/popup-base.html}">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Factron</title>
 </head>
 <body>
+<div layout:fragment="content">
+    <form>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="col-md-6">
+                <h2 class="mb-0">수주 결재</h2>
+            </div>
+            <div class="col-md-3">
+                <span class="form-label">결재 번호</span>
+                <input type="text" name="approvalId" class="form-control" disabled>
+            </div>
+        </div>
 
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <span class="form-label">수주 등록자</span>
+                <input type="text" name="employeeName" class="form-control" disabled>
+            </div>
+            <div class="col-md-6">
+                <span class="form-label">등록자 사번</span>
+                <input type="text" name="employeeId" class="form-control" disabled>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <span class="form-label">거래처명</span>
+                <input type="text" name="clientName" class="form-control" disabled>
+            </div>
+            <div class="col-md-6">
+                <span class="form-label">납기일</span>
+                <input type="text" name="deadline" class="form-control" disabled>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+<!--            <div class="col-md-6">-->
+<!--                <span class="form-label">상태</span>-->
+<!--                <input type="text" name="statusName" class="form-control" disabled>-->
+<!--            </div>-->
+            <div class="col-md-6">
+                <span class="form-label">등록일</span>
+                <input type="text" name="createdAt" class="form-control" disabled>
+            </div>
+        </div>
+
+        <!-- 수주 품목 -->
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <span class="form-label">수주 품목</span>
+                <div class="contract-items d-flex flex-column gap-1 border rounded p-2 bg-light"
+                     style="max-height: 180px; overflow-y: auto;"></div> <!-- 3줄 높이 제한 -->
+
+                <!-- 총금액 표시 -->
+                <div class="bg-white p-2 rounded border d-flex justify-content-between mt-2">
+                    <span><strong>총금액</strong></span>
+                    <span name="totalAmount" class="fw-bold text-end">₩0</span>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="approval-result-section mt-4">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <span class="form-label">결재자 사원번호</span>
+                    <input type="text" name="approverId" class="form-control" disabled>
+                </div>
+                <div class="col-md-6">
+                    <span class="form-label">결재자 성명</span>
+                    <input type="text" name="approverName" class="form-control" disabled>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <span class="form-label">결재 날짜</span>
+                    <input type="text" name="confirmedDate" class="form-control" disabled>
+                </div>
+                <div class="col-md-6">
+                    <span class="form-label">승인 여부</span>
+                    <input type="text" name="approvalStatus" class="form-control" disabled>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-12">
+                    <span class="form-label">반려 사유</span>
+                    <textarea name="rejectionReason" class="form-control" rows="3" disabled></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end mt-4 gap-2">
+            <button type="button" class="btn btn-primary approveBtn">승인</button>
+            <button type="button" class="btn btn-secondary rejectBtn">반려</button>
+        </div>
+    </form>
+
+    <!-- 승인/반려/알림 모달 -->
+    <div class="modal fade approveModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">승인 하시겠습니까?</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary confirmApproveBtn">확인</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade rejectModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <label class="form-label">반려 사유를 입력하세요</label>
+                    <textarea name="rejectReasonInput" class="form-control" rows="4" placeholder="반려 사유 입력"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary confirmRejectBtn">확인</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade alertModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">처리 결과 메시지</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary alertBtn">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="javascript">
+    <script th:src="@{/js/approval/contractApproval-form.js}"></script>
+</th:block>
 </body>
 </html>

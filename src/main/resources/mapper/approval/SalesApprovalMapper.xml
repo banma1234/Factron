@@ -71,7 +71,9 @@
         APP.APPROVER_ID AS approverId,
 
         APP.APPROVAL_STATUS_CODE AS approvalStatusCode,
-        STATUS_CODE.NAME AS approvalStatusName
+        STATUS_CODE.NAME AS approvalStatusName,
+
+        APP.REJECT_REASON AS rejectionReason  <!-- 여기 반려사유 컬럼 추가 -->
 
         FROM APPROVAL APP
         LEFT JOIN EMPLOYEE REQ_EMP ON REQ_EMP.ID = APP.REQUESTER_ID
@@ -122,7 +124,6 @@
                 )
                 )
             </if>
-
         </where>
 
         ORDER BY APP.ID DESC

@@ -79,7 +79,7 @@ const init = () => {
                     return;
             }
 
-            const popup = window.open(formUrl, '_blank', 'width=800,height=800');
+            const popup = window.open(formUrl, '_blank', 'width=800,height=1000');
             if (!popup) {
                 alert('팝업이 차단되었습니다. 팝업 차단 해제 후 다시 시도하세요.');
                 return;

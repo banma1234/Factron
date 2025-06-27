@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class ResponseContractItemDTO {
-    private Long itemId;
+    private String itemId;
     private String itemName;
-    private int quantity;
-    private int price;
-    private int amount;
+    private Long quantity;
+    private Long price;
+    private Long amount;
 }
