@@ -5,7 +5,6 @@
 
 <mapper namespace="com.itwillbs.factron.mapper.qualityhistory.QualityInspectionHistoryMapper">
 
-    <!-- 작업지시 ID에 따른 품질 검사 이력 조회 -->
     <select id="findQualityHistoryByWorkOrderId" parameterType="String" resultType="com.itwillbs.factron.dto.qualityhistory.ResponseQualityHistoryInfoDTO">
         SELECT
             qh.id AS qualityHistoryId,
@@ -17,6 +16,7 @@
             l.id AS lotId,
             TO_CHAR(qh.inspection_date, 'YYYY-MM-DD') AS inspectionDate,
             CAST(qh.result_value AS CHAR) AS resultValue,
+            qis.unit AS resultValueUnit,
             qh.result_code AS resultCode,
             dsc_result.name AS resultCodeName,
             qh.status_code AS statusCode,
@@ -31,6 +31,8 @@
             item i ON qh.item_id = i.id
                 LEFT JOIN
             lot l ON qh.lot_id = l.id
+                LEFT JOIN
+            quality_inspection_standard qis ON qh.quality_inspection_id = qis.quality_inspection_id AND qh.item_id = qis.item_id
                 LEFT JOIN
             detail_sys_code dsc_result ON qh.result_code = dsc_result.detail_code
                 LEFT JOIN

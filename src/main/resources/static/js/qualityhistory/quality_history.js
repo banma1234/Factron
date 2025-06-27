@@ -7,6 +7,12 @@ const toUpperCase = (str) => {
     if (typeof str !== 'string') return '';
     return str.toUpperCase();
 }
+// form validation 확인
+const validators = {
+    isNotEmpty: val => val !== null && val !== undefined && val.trim() !== '',
+    isNumeric: val => /^-?\d+(\.\d+)?$/.test(val.trim()),
+    isValidDate: date => /^\d{4}-\d{2}-\d{2}$/.test(date)
+};
 
 const init = () => {
 
@@ -93,6 +99,11 @@ const init = () => {
                 editor: 'text'
             },
             {
+                header: '결과값 단위',
+                name: 'resultValueUnit',
+                align: 'center'
+            },
+            {
                 header: '결과',
                 name: 'resultCodeName',
                 align: 'center'
@@ -131,6 +142,48 @@ const init = () => {
         getWorkOrders();
     });
 
+    // 결과 저장 버튼 클릭 이벤트
+    document.querySelector("button[name='addInspectionResult']").addEventListener("click", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // 모든 행의 결과값 확인
+        const rowCount = qualityInspectionHistoryGrid.getRowCount();
+        let allValid = true;
+        let invalidReason = '';
+        let invalidRow = null;
+
+        for (let i = 0; i < rowCount; i++) {
+            const rowKey = qualityInspectionHistoryGrid.getRowAt(i).rowKey;
+            const value = qualityInspectionHistoryGrid.getValue(rowKey, 'resultValue');
+
+            // 값이 비어있는지 확인
+            if (!validators.isNotEmpty(value)) {
+                allValid = false;
+                invalidReason = '모든 품질검사 결과값을 입력하세요!!';
+                break;
+            }
+
+            // 숫자 형식인지 확인
+            if (!validators.isNumeric(value)) {
+                allValid = false;
+                invalidRow = i + 1;
+                invalidReason = `${invalidRow}번째 행의 결과값이 올바른 숫자 형식이 아닙니다.\n정수 또는 실수만 입력 가능합니다.`;
+                break;
+            }
+        }
+
+        // 유효성 검사 실패 시 경고창 표시
+        if (!allValid) {
+            alert(invalidReason);
+            return;
+        }
+
+        // 모든 결과값이 유효한 경우 저장 로직 실행
+        saveQualityInspectionResults();
+
+    }, false);
+
     // 작업지시 선택 시 해당 작업지시의 품질검사 이력 목록 표시
     completedWorkOrderGrid.on('click', (e) => {
         const rowKey = e.rowKey;
@@ -140,9 +193,9 @@ const init = () => {
             // 품질검사 이력 목록 조회
             getQualityInspectionHistories(rowData.workOrderId);
 
-            // 품질검사 결과 저장 버튼 항상 비활성화 상태 유지
+            // 품질검사 결과 저장 버튼 활성화
             if (addInspectionResultBtn) {
-                addInspectionResultBtn.disabled = true;
+                addInspectionResultBtn.disabled = false;
             }
 
             // 선택된 작업지시 정보 저장
@@ -238,6 +291,7 @@ const init = () => {
                         lotId: rowData.lotId || '-',
                         inspectionDate: rowData.inspectionDate || '-',
                         resultValue: rowData.resultValue || '',
+                        resultValueUnit: rowData.resultValueUnit || '-',
                         resultCodeName: rowData.resultCodeName || '-',
                         historyStatus: rowData.statusCodeName
                     };

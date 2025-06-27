@@ -20,6 +20,7 @@ public class ResponseQualityHistoryInfoDTO {
     private String lotId; // 로트 ID (로트 번호)
     private String inspectionDate; // 검사 일시 (yyyy-MM-dd)
     private String resultValue; // 검사 결과 값
+    private String resultValueUnit; // 검사 결과 단위 (예: mm, g 등)
     private String resultCode; // 검사 결과 코드 (예: 합격, 불합격)
     private String resultCodeName; // 검사 결과 코드 이름 (예: 합격, 불합격)
     private String statusCode; // 상태 코드 (예: 대기, 완료)
