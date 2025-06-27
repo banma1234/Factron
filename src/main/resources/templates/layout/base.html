@@ -28,7 +28,7 @@
             <li class="nav-item">
                 <a class="nav-link menu-toggle" href="#">
                     <div class="nav-link menu-item" th:with="type='person_manager'">
-                        <div th:replace="layout/icon :: icon(${type})"></div>
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
                         <span>인사 관리</span>
                     </div>
                 </a>
@@ -44,7 +44,7 @@
             <li class="nav-item">
                 <a class="nav-link menu-toggle" href="#">
                     <div class="nav-link menu-item" th:with="type='commute_manager'">
-                        <div th:replace="layout/icon :: icon(${type})"></div>
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
                         <span>근태 관리</span>
                     </div>
                 </a>
@@ -63,7 +63,7 @@
             <li class="nav-item">
                 <a class="nav-link menu-toggle" href="#">
                     <div class="nav-link menu-item" th:with="type='approval_manager'">
-                        <div th:replace="layout/icon :: icon(${type})"></div>
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
                         <span>전자결재</span>
                     </div>
                 </a>
@@ -73,15 +73,15 @@
                     </a></li>
                 </ul>
                 <ul class="submenu nav flex-column">
-                    <li><a class="nav-link sub-link" href="/financial">
-                        <span>재무결재 목록</span>
+                    <li><a class="nav-link sub-link" href="/salesApproval">
+                        <span>영업결재 목록</span>
                     </a></li>
                 </ul>
             </li>
             <li class="nav-item">
                 <a class="nav-link menu-toggle" href="#">
                     <div class="nav-link menu-item" th:with="type='busniess'">
-                        <div th:replace="layout/icon :: icon(${type})"></div>
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
                         <span>영업 관리</span>
                     </div>
                 </a>
@@ -99,7 +99,7 @@
             <li class="nav-item">
                 <a class="nav-link menu-toggle" href="#">
                     <div class="nav-link menu-item" th:with="type='master_data'">
-                        <div th:replace="layout/icon :: icon(${type})"></div>
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
                         <span>기준 정보</span>
                     </div>
                 </a>
@@ -147,7 +147,7 @@
             <li class="nav-item">
                 <a class="nav-link menu-toggle" href="#">
                     <div class="nav-link menu-item" th:with="type='product'">
-                        <div th:replace="layout/icon :: icon(${type})"></div>
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
                         <span>생산 관리</span>
                     </div>
                 </a>
@@ -165,7 +165,7 @@
             <li class="nav-item">
                 <a class="nav-link menu-toggle" href="#">
                     <div class="nav-link menu-item" th:with="type='process'">
-                        <div th:replace="layout/icon :: icon(${type})"></div>
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
                         <span>공정 관리</span>
                     </div>
                 </a>
@@ -193,7 +193,7 @@
             <li class="nav-item">
                 <a class="nav-link menu-toggle" href="#">
                     <div class="nav-link menu-item" th:with="type='storage'">
-                        <div th:replace="layout/icon :: icon(${type})"></div>
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
                         <span>창고 관리</span>
                     </div>
                 </a>
@@ -216,7 +216,7 @@
             <li class="nav-item">
                 <a class="nav-link menu-toggle" href="#">
                     <div class="nav-link menu-item" th:with="type='admin_manager'">
-                        <div th:replace="layout/icon :: icon(${type})"></div>
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
                         <span>관리자</span>
                     </div>
                 </a>
@@ -238,7 +238,7 @@
             <!-- 햄버거 버튼은 모바일에서만 보임 -->
             <button class="btn btn-outline-secondary d-xl-none me-2 border__none hamberger" type="button">
                 <div th:with="type='hamberger'">
-                    <div th:replace="layout/icon :: icon(${type})"></div>
+                    <div th:replace="~{layout/icon :: icon(${type})}"></div>
                 </div>
             </button>
             <a class="navbar-brand" href="/commute">
