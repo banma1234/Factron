@@ -96,7 +96,8 @@ const init = () => {
                 header: '결과값 [입력]',
                 name: 'resultValue',
                 align: 'center',
-                editor: 'text'
+                // 권한에 따라 에디터 활성화 여부 설정
+                editor: window.user.authCode === 'ATH007' ? 'text' : false
             },
             {
                 header: '결과값 단위',
@@ -302,6 +303,12 @@ const init = () => {
             if (result.status === 200) {
                 // 데이터 매핑 처리
                 const mappedData = result.data.map(rowData => {
+
+                    // 객체를 반환하기 전에 조건에 따라 resultValue 값을 결정
+                    const resultValue = window.user.authCode !== 'ATH007'
+                        ? rowData.resultValue || '-'
+                        : rowData.resultValue || '';
+
                     return {
                         id: rowData.qualityHistoryId,
                         qualityInspectionHistoryId: rowData.qualityHistoryId,
@@ -310,7 +317,7 @@ const init = () => {
                         itemName: rowData.itemName,
                         lotId: rowData.lotId || '-',
                         inspectionDate: rowData.inspectionDate || '-',
-                        resultValue: rowData.resultValue || '',
+                        resultValue: resultValue,
                         resultValueUnit: rowData.resultValueUnit || '-',
                         resultCodeName: rowData.resultCodeName || '-',
                         historyStatus: rowData.statusCodeName
