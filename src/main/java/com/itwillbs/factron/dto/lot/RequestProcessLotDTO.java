@@ -11,11 +11,8 @@ import lombok.Data;
 @Data
 public class RequestProcessLotDTO {
 
-    @NotBlank(message = "LOT id는 필수 입력값입니다.")
-    private String id;
-
-    private String item_id;
-    private String material_id;
+    private Material material;
+    private Item item;
 
     @NotNull(message = "수량은 필수 입력값입니다.")
     private Long quantity;
@@ -24,19 +21,18 @@ public class RequestProcessLotDTO {
     @Pattern(regexp = "^PCS\\d{3}$", message = "공정 LOT 입력시 올바른 공통코드 형식을 따라야 합니다.")
     private String event_type;
 
-    public RequestProcessLotDTO(String id, String item_id, String material_id, Long quantity, String event_type) {
-        this.id = id;
-        this.item_id = item_id;
-        this.material_id = material_id;
+    public RequestProcessLotDTO(Material material, Item item, Long quantity, String event_type) {
+        this.material = material;
+        this.item = item;
         this.quantity = quantity;
         this.event_type = event_type;
     }
 
-    public Lot toEntity(Item item, Material material) {
+    public Lot toEntity(String LotId) {
         return Lot.builder()
-                .id(this.id)
-                .item(item)
-                .material(material)
+                .id(LotId)
+                .item(this.item)
+                .material(this.material)
                 .quantity(this.quantity)
                 .eventType(this.event_type)
                 .createdBy(20180924L)

@@ -1,6 +1,7 @@
 package com.itwillbs.factron.service.lot;
 
 import com.itwillbs.factron.dto.lot.RequestInboundLotDTO;
+import com.itwillbs.factron.dto.lot.RequestProcessLotDTO;
 import com.itwillbs.factron.entity.Lot;
 import com.itwillbs.factron.repository.lot.LotRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
  * LOT 번호를 생성하고 저장하는 서비스
@@ -19,64 +21,100 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class LotCreateServiceImpl {
+public class LotCreateServiceImpl implements LotCreateService {
 
     private final LotRepository lotRepository;
-    private LotService lotService;
+    private final LotService lotService;
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.BASIC_ISO_DATE;
 
     /**
-     * (입고) LOT생성
+     * (입고) LOT 생성
      * @param reqInbound (입고) LOT를 생성할 자재/물품 리스트
      * @return Void
-     * */
+     */
+    @Override
+    @Transactional
     public Void CreateInboundLot(List<RequestInboundLotDTO> reqInbound) {
 
-        String TODAY = LocalDateTime.now().format(DATE_FORMAT);
-        Map<String, String> requiredElement = Map.of(
-                "dateToday", TODAY,
-                "eventType", reqInbound.getFirst().getEvent_type().getPrefix()
-        );
-        Long sequence = lotService.getLotSequence(requiredElement);
+        if (reqInbound.isEmpty()) {
+            throw new NoSuchElementException("LOT 생성에 필요한 데이터가 없습니다.");
+        }
 
-        // LOT번호 생성
-        List<Lot> inboundLotList = createLots(reqInbound, TODAY, sequence);
+        String EVENT_TYPE = reqInbound.getFirst().getEvent_type().getPrefix();
+        // LOT_ID 생성에 필요한 데이터
+        Map<String, Object> LotIdElement = getSequenceForToday(EVENT_TYPE);
 
-        // LOT 테이블에 저장
-        lotRepository.saveAll(inboundLotList);
+        String TODAY = (String) LotIdElement.get("today");
+        long count = (Long) LotIdElement.get("sequence");
+
+        List<Lot> lotList = new ArrayList<>();
+
+        for (int i = 0; i < reqInbound.size(); i++) {
+
+            // LOT_ID 생성
+            String lotId = generateLotId(TODAY, EVENT_TYPE, count + i);
+            // LOT 생성
+            lotList.add(reqInbound.get(i).toEntity(lotId));
+        }
+
+        lotRepository.saveAll(lotList);
 
         return null;
     }
 
     /**
-     * 리스트를 순회하며 LOT 번호를 생성하고 부여하는 메소드
-     * @param reqInbound LOT를 생성할 자재/물품 리스트
-     * @param TODAY 오늘 날짜
-     * @param sequence 초기 순서
-     * @return inboundLotList (입고) LOT번호가 저장된 리스트
+     * (공정) LOT 생성
+     * @param reqInbound (공정) LOT를 생성할 공정
+     * @return Void
      * */
-    private static List<Lot> createLots(List<RequestInboundLotDTO> reqInbound, String TODAY, Long sequence) {
-        List<Lot> inboundLotList = new ArrayList<>();
+    @Override
+    @Transactional
+    public Void CreateProcessLot(RequestProcessLotDTO reqInbound) {
 
-        // 리스트 순환하며 각각의 물품, 자재에 LOT번호 부여
-        for(int i = 0; i< reqInbound.size(); i++) {
+        String EVENT_TYPE = reqInbound.getEvent_type();
+        // LOT_ID 생성에 필요한 데이터
+        Map<String, Object> LotIdElement = getSequenceForToday(EVENT_TYPE);
 
-            RequestInboundLotDTO DTO = reqInbound.get(i);
+        String TODAY = (String) LotIdElement.get("today");
+        long count = (Long) LotIdElement.get("sequence");
 
-            // LOT번호 형식 : 20180516-INB-0001
-            String LotId = String.format("%s-%s-%04d",
-                    TODAY,
-                    reqInbound.getFirst().getEvent_type(),
-                    sequence + i
-            );
+        // LOT_ID 생성
+        String lotId = generateLotId(TODAY, EVENT_TYPE, count + 1);
+        // LOT 생성
+        Lot lot = reqInbound.toEntity(lotId);
 
-            // LOT 생성
-            Lot LOT = DTO.toEntity(LotId);
+        lotRepository.save(lot);
 
-            inboundLotList.add(LOT);
+        return null;
+    }
 
-        }
-        return inboundLotList;
+    /**
+     * LOT_ID 생성 메서드
+     * @param date 오늘 날짜
+     * @param eventType LOT 유형
+     * @param sequence 순서
+     * @return String
+     */
+    private String generateLotId(String date, String eventType, long sequence) {
+        return String.format("%s-%s-%04d", date, eventType, sequence);
+    }
+
+    /**
+     * 날짜 및 시퀀스 조회
+     * @param eventTypePrefix LOT 유형
+     * return Map
+     */
+    private Map<String, Object> getSequenceForToday(String eventTypePrefix) {
+
+        String TODAY = LocalDateTime.now().format(DATE_FORMAT);
+        Map<String, String> requiredElement = Map.of(
+                "dateToday", TODAY,
+                "eventType", eventTypePrefix
+        );
+
+        Long sequence = lotService.getLotSequence(requiredElement);
+
+        return Map.of("today", TODAY, "sequence", sequence);
     }
 
 }

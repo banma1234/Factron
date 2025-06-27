@@ -22,4 +22,9 @@ public class LotServiceImpl implements LotService {
         return lotMapper.getLotSequence(map);
     }
 
+//    @Transactional
+//    public Void updateInboundLot () {
+//
+//    }
+
 }
