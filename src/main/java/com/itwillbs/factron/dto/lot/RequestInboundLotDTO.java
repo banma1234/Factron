@@ -10,11 +10,8 @@ import lombok.Data;
 @Data
 public class RequestInboundLotDTO {
 
-    @NotBlank(message = "LOT id는 필수 입력값입니다.")
-    private String id;
-
-    @NotBlank(message = "자재 id는 필수 입력값입니다..")
-    private String material_id;
+    @NotBlank(message = "자재는 필수 입력값입니다.")
+    private Material material;
 
     @NotNull(message = "수량은 필수 입력값입니다.")
     private Long quantity;
@@ -22,18 +19,17 @@ public class RequestInboundLotDTO {
     @NotNull(message = "유형 구분은 필수 입력값입니다.")
     private LotType event_type;
 
-    public RequestInboundLotDTO(String id, String material_id, Long quantity, LotType event_type) {
-        this.id = id;
-        this.material_id = material_id;
+    public RequestInboundLotDTO(Material material, Long quantity, LotType event_type) {
+        this.material = material;
         this.quantity = quantity;
         this.event_type = event_type;
     }
 
-    public Lot toEntity(Material material) {
+    public Lot toEntity(String LotId) {
         return Lot.builder()
-                .id(this.id)
+                .id(LotId)
                 .item(null)
-                .material(material)
+                .material(this.material)
                 .quantity(this.quantity)
                 .eventType(this.event_type.getPrefix())
                 .createdBy(20180924L)
