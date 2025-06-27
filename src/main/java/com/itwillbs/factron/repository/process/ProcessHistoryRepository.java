@@ -1,9 +1,57 @@
 package com.itwillbs.factron.repository.process;
 
+import com.itwillbs.factron.dto.process.ResponseProcessHistoryInfoDTO;
 import com.itwillbs.factron.entity.ProcessHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface ProcessHistoryRepository extends JpaRepository<ProcessHistory, Long> {
+    @Query("""
+        SELECT
+           new com.itwillbs.factron.dto.process.ResponseProcessHistoryInfoDTO(
+               CAST(ph.id AS string),
+               CAST(p.id AS string),
+               p.name,
+               CAST(ph.inputQuantity AS double),
+               CAST(ph.outputQuantity AS double),
+               CAST(ph.lot.id AS string),
+               CAST(wo.id AS string),
+               ph.startTime,
+               ph.startTime,
+               CAST(ph.coastTime AS double),
+               ph.statusCode,
+               dsc.name,
+               i.unit,
+               i.name
+           )
+       FROM ProcessHistory ph
+       JOIN ph.workOrder wo
+       JOIN wo.item i
+       JOIN ph.process p
+       JOIN DetailSysCode dsc ON ph.statusCode = dsc.detailCode
+       WHERE wo.id = :workOrderId
+    """)
+    List<ResponseProcessHistoryInfoDTO> findProcessHistoriesByWorkOrderId(@Param("workOrderId") String workOrderId);
 }
+
+/**
+     * String processHistoryId;
+ *     String processId;
+ *     String processName;
+ *     Double inputQuantity;
+ *     Double outputQuantity;
+ *     String lotId;
+ *     String workOrderId;
+ *     LocalDateTime startTime;
+ *     LocalDateTime endTime;
+ *     Double costTime;
+ *     String processStatusCode;
+ *     String processStatusName;
+ */
+
+
