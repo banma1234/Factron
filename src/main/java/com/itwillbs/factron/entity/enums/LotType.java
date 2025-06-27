@@ -4,8 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum LotType {
-    MATERIAL("INBOUND", "입고"),
-    INSPECTION("QUALITY", "검사");
+    INBOUND("INB", "입고"),
+    QUALITY("ISP", "검사");
 
     private final String prefix;
     private final String description;
