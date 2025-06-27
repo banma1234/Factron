@@ -46,7 +46,7 @@ const init = () => {
             return;
         }
         if (startTime >= endTime) {
-            alert("근무 시작 시간은 종료 시간보다 빨라야 합니다.");
+            alert("근무 시작 시간은 종료 시간보다 이전이어야 합니다.");
             return;
         }
 
@@ -102,7 +102,9 @@ const init = () => {
     }
 
     // 공통코드 세팅
-    setSelectBox("WRK", "workCode");
+    setSelectBox("WRK", "workCode", {
+        filter: (code) => code.detail_code !== "WRK001"
+    });
 };
 
 window.onload = () => {

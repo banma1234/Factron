@@ -20,7 +20,7 @@ public class Machine {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id; // 설비 ID
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "process_id", referencedColumnName = "id", nullable = false)
     private Process process; // 연관된 공정 정보
 
@@ -32,4 +32,11 @@ public class Machine {
 
     @Column(name = "buy_date", nullable = false)
     private LocalDate buyDate; // 구입일
+
+    // 설비 정보 수정 메소드
+    public void updateMachineInfo(String name, String manufacturer, LocalDate buyDate) {
+        this.name = name;
+        this.manufacturer = manufacturer;
+        this.buyDate = buyDate;
+    }
 }

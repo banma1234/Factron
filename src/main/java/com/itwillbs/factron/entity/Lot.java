@@ -2,13 +2,13 @@ package com.itwillbs.factron.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "lot")
@@ -24,10 +24,6 @@ public class Lot extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "material_id", referencedColumnName = "id")
     private Material material; // 자재 ID
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "work_order_id", referencedColumnName = "id")
-    private WorkOrder workOrder; // 작업 지시 ID
 
     @Column(name = "quantity", nullable = false)
     private Long quantity; // 수량

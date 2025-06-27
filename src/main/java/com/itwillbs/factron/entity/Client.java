@@ -1,6 +1,8 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.dto.client.RequestPutClientDTO;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,4 +40,18 @@ public class Client {
 
     @Column(name = "remark", length = 255)
     private String remark; // 비고사항
+
+    /**
+     * DTO 받아서 엔티티 업데이트
+     * @param DTO 요청 DTO
+     * */
+    public void updateClient(@Valid RequestPutClientDTO DTO) {
+        this.name = DTO.getName();
+        this.businessNumber = DTO.getBusiness_number();
+        this.address = DTO.getAddress();
+        this.contact = DTO.getContact();
+        this.ceo = DTO.getCeo();
+        this.contactManager = DTO.getContact_manager();
+        this.remark = DTO.getRemark();
+    }
 }

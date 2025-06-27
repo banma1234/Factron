@@ -2,7 +2,7 @@ html, body {
     margin: 0;
     padding: 0;
     font-family: "noto-sans-kr", "roboto", sans-serif;
-    font-size: 18px;
+    font-size: 16px;
     height: 100%;
     color: #2f2f2f;
     background-color: #f0f0f0;
@@ -83,7 +83,7 @@ a {
 
 .input-group{
     display: flex;
-    max-width: 250px;
+    width: auto;
     align-items: center;
 }
 

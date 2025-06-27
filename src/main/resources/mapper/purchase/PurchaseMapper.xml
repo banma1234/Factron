@@ -71,4 +71,21 @@
         ORDER BY P.CREATED_AT DESC
     </select>
 
+    <!-- 발주 품목 목록 조회 -->
+    <select id="getPurchaseItemsByPurchaseId"
+            parameterType="long"
+            resultType="com.itwillbs.factron.dto.purchase.ResponsePurchaseItemDTO">
+
+        SELECT
+            M.ID AS materialId,
+            M.NAME AS materialName,
+            PLIST.QUANTITY,
+            PLIST.PRICE,
+            (PLIST.QUANTITY * PLIST.PRICE) AS amount
+        FROM PURCHASE_LIST PLIST
+                 JOIN MATERIAL M ON PLIST.MATERIAL_ID = M.ID
+        WHERE PLIST.PURCHASE_ID = #{purchaseId}
+        ORDER BY M.NAME
+    </select>
+
 </mapper>
