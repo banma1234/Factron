@@ -20,12 +20,9 @@ public class WorkPerformance {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id; // 작업 실적 ID
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "work_order_id", referencedColumnName = "id", nullable = false)
     private WorkOrder workOrder; // 작업 지시 ID
-
-    @Column(name = "start_date", nullable = false)
-    private LocalDate startDate; // 작업 시작일
 
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate; // 작업 종료일
