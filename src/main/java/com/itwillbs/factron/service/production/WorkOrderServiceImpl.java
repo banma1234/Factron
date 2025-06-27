@@ -1,7 +1,9 @@
 package com.itwillbs.factron.service.production;
 
 import com.itwillbs.factron.dto.production.RequestWorkOrderDTO;
+import com.itwillbs.factron.dto.production.RequestWorkProdDTO;
 import com.itwillbs.factron.dto.production.ResponseWorkOrderDTO;
+import com.itwillbs.factron.dto.production.ResponseWorkProdDTO;
 import com.itwillbs.factron.entity.Employee;
 import com.itwillbs.factron.entity.Item;
 import com.itwillbs.factron.entity.Line;
@@ -39,6 +41,22 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     @Override
     public List<ResponseWorkOrderDTO> getWorkOrderList(RequestWorkOrderDTO requestWorkOrderDTO) {
         return workOrderMapper.getWorkOrderList(requestWorkOrderDTO);
+    }
+
+    /*
+     * 작업지시 내릴 수 있는 제품 목록 조회
+     * */
+    @Override
+    public List<ResponseWorkProdDTO> getWorkItemList(RequestWorkProdDTO requestWorkProdDTO) {
+        return workOrderMapper.getWorkItemList(requestWorkProdDTO);
+    }
+
+    /*
+     * 작업 제품 정보 및 투입 품목 목록 조회
+     * */
+    @Override
+    public List<ResponseWorkProdDTO> getInputProdList(RequestWorkProdDTO requestWorkProdDTO) {
+        return workOrderMapper.getInputProdList(requestWorkProdDTO);
     }
 
     /*

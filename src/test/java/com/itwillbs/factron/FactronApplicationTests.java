@@ -14,6 +14,7 @@ import com.itwillbs.factron.repository.product.ItemRepository;
 import com.itwillbs.factron.repository.product.MaterialRepository;
 import com.itwillbs.factron.repository.production.ProductionPlanningRepository;
 import com.itwillbs.factron.repository.production.WorkOrderRepository;
+import com.itwillbs.factron.repository.production.WorkerRepository;
 import com.itwillbs.factron.repository.quality.QualityInspectionHistoryRepository;
 import com.itwillbs.factron.repository.quality.QualityInspectionRepository;
 import com.itwillbs.factron.repository.quality.QualityInspectionStandardRepository;
@@ -85,6 +86,8 @@ class FactronApplicationTests {
 	private ProductionPlanningRepository prdctPlanRepository;
 	@Autowired
 	private WorkOrderRepository workOrderRepository;
+	@Autowired
+	private WorkerRepository workerRepository;
 
 	@Test
 	@Transactional
@@ -295,7 +298,7 @@ class FactronApplicationTests {
 					.gender(i % 2 == 1 ? "M" : "F")   // 홀수면 남자(M), 짝수면 여자(F)
 					.joinedDate(LocalDate.of(2025, 6, 13))
 					.quitDate(null)
-					.deptCode("DEP001")
+					.deptCode("DEP006")
 					.eduLevelCode("EDU001")
 					.employCode("HIR001")
 					.positionCode("POS001")
@@ -313,7 +316,7 @@ class FactronApplicationTests {
 
 			IntergratAuth auth = IntergratAuth.builder()
 					.isActive("Y")
-					.authCode("ATH002")
+					.authCode("ATH007")
 					.password("$2a$10$pHltqD3BTCs6/AdCrX9Zc.2/iGyylnIvtv.yvtL5nTSP7pHFzoX8G") // 5678
 					.employee(emp)
 					.build();
@@ -927,9 +930,11 @@ class FactronApplicationTests {
 	@Test
 	@Transactional
 	@Commit
-	void insertPrdctPlanWorkOrderData() {
+	void insertPlanOrderWorkerData() {
 		// 1. 담당 사원 조회
 		Employee employee = employeeRepository.findById(25060001L).orElse(null);
+		Employee employee2 = employeeRepository.findById(25060002L).orElse(null);
+		Employee employee3 = employeeRepository.findById(25060003L).orElse(null);
 
 		// 2. 오늘 날짜 기준
 		LocalDate today = LocalDate.now();
@@ -973,7 +978,21 @@ class FactronApplicationTests {
 					.startDate(today.plusDays(1))
 					.build();
 
-			workOrderRepository.save(workOrder);
+			workOrder = workOrderRepository.save(workOrder);
+
+			// 작업자 생성
+			Worker worker1 = Worker.builder()
+					.workOrder(workOrder)
+					.employee(employee2)
+					.build();
+
+			Worker worker2 = Worker.builder()
+					.workOrder(workOrder)
+					.employee(employee3)
+					.build();
+
+			workerRepository.save(worker1);
+			workerRepository.save(worker2);
 
 			sequence++;
 		}

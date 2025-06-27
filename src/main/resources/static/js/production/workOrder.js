@@ -1,4 +1,6 @@
 const init = () => {
+    const addWorkOrderBtn = document.querySelector(".registWorkOrder");
+
     // 생산계획 grid
     const planningGrid = initGrid(
         document.getElementById('planningGrid'),
@@ -122,6 +124,32 @@ const init = () => {
         }
     });
 
+    // 작업 추가
+    addWorkOrderBtn.addEventListener("click", function(e) {
+        e.preventDefault();
+
+        const rowKey = planningGrid.getFocusedCell()?.rowKey;
+        const selectedPlan = rowKey !== null ? planningGrid.getRow(rowKey) : null;
+        if (selectedPlan) {
+            console.log("선택된 생산계획:", selectedPlan);
+            const popup = window.open('/workorder/save', '_blank', 'width=800,height=850');
+
+            // 자식 창으로부터 'ready' 먼저 수신 후 postMessage 실행
+            const messageHandler = (event) => {
+                if (event.data === 'ready') {
+                    popup.postMessage({
+                        planId: selectedPlan.id,
+                        itemId: selectedPlan.itemId,
+                        quantity: selectedPlan.quantity
+                    }, "*");
+                    window.removeEventListener("message", messageHandler);
+                }
+            };
+            window.addEventListener("message", messageHandler);
+        }
+
+    }, false);
+
     // 생산계획 목록 조회
     async function getPrdctPlans() {
 
@@ -147,6 +175,7 @@ const init = () => {
             const data = await res.json();
             planningGrid.resetData(data.data); // grid에 세팅
             workOrderGrid.resetData([]); // 작업지시 grid 초기화
+            addWorkOrderBtn.disabled = true; // 작업 추가 버튼 비활성화
 
         } catch (e) {
             console.error(e);
@@ -171,6 +200,7 @@ const init = () => {
 
             const data = await res.json();
             workOrderGrid.resetData(data.data); // grid에 세팅
+            addWorkOrderBtn.disabled = false; // 작업 추가 버튼 활성화
 
         } catch (e) {
             console.error(e);
