@@ -14,6 +14,9 @@ public class LotServiceImpl implements LotService {
 
     private final LotMapper lotMapper;
 
+    /**
+     * 같은 조건의 LOT번호 개수 반환
+     * */
     @Override
     public Long getLotSequence (Map<String, String> map) {
         return lotMapper.getLotSequence(map);
