@@ -10,35 +10,34 @@
 <body>
 <div layout:fragment="content">
   <section>
-    <div class="header-row">
-      <h4 class="page__name">공정 이력 관리/h4>
-      <button class="btn btn-primary modBtn" name="addNewEmp" type="button">사원 추가</button>
-    </div>
-    <form class="search__form mb-2">
-      <div class="select__container">
-
-        <select class="form-select" name="deptCode">
-          <option value="">부서</option>
-        </select>
-        <select class="form-select" name="positionCode">
-          <option value="">직급</option>
-        </select>
-        <select class="form-select" name="isActive">
-          <option value="">재직여부</option>
-          <option value="Y">재직</option>
-          <option value="N">퇴직</option>
-        </select>
-      </div>
+    <h4 class="page__name">공정이력 관리</h4>
+    <form class="search__form">
+      <h5 class="page__name">작업지시 목록</h5>
+      <div class="select__container"></div>
       <div class="input-group">
-        <input class="form-control" type="text" name="name" placeholder="이름 또는 사원번호"><br/>
-        <button class="btn btn-outline-secondary empSrhBtn" type="button">검색</button>
+        <input class="form-control" type="text" name="srhId" placeholder="작업지시 번호">
+        <input class="form-control ms-1" type="text" name="srhItemIdOrName" placeholder="품목코드 또는 품목명">
+        <button class="btn btn-outline-secondary" name="workOrderBtn" type="submit">검색</button>
       </div>
     </form>
 
-    <!-- list grid -->
+    <!-- prdctPlan list grid -->
     <article>
-      <div id="process_history_grid">
+      <div id="workOrderGrid">
 
+      </div>
+    </article>
+
+    <div class="mt-4">
+      <div class="header-row">
+        <h5 class="page__name">작업지시별 공정 목록</h5>
+<!--        <button class="btn btn-primary registWorkOrder"></button>-->
+      </div>
+    </div>
+
+    <!-- workOrder list grid -->
+    <article>
+      <div id="processHistoryGrid">
       </div>
     </article>
   </section>
