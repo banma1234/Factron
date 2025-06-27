@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itwillbs.factron.mapper.qualityhistory.QualityInspectionHistoryMapper">
+
+    <select id="findQualityHistoryByWorkOrderId" parameterType="String" resultType="com.itwillbs.factron.dto.qualityhistory.ResponseQualityHistoryInfoDTO">
+        SELECT
+            qh.id AS qualityHistoryId,
+            qi.id AS qualityInspectionId,
+            qi.name AS qualityInspectionName,
+            wo.id AS workOrderId,
+            i.id AS itemId,
+            i.name AS itemName,
+            l.id AS lotId,
+            TO_CHAR(qh.inspection_date, 'YYYY-MM-DD') AS inspectionDate,
+            TO_CHAR(qh.result_value) AS resultValue,
+            qis.unit AS resultValueUnit,
+            qh.result_code AS resultCode,
+            dsc_result.name AS resultCodeName,
+            qh.status_code AS statusCode,
+            dsc_status.name AS statusCodeName
+        FROM
+            quality_inspection_history qh
+                LEFT JOIN
+            quality_inspection qi ON qh.quality_inspection_id = qi.id
+                LEFT JOIN
+            work_order wo ON qh.work_order_id = wo.id
+                LEFT JOIN
+            item i ON qh.item_id = i.id
+                LEFT JOIN
+            lot l ON qh.lot_id = l.id
+                LEFT JOIN
+            quality_inspection_standard qis ON qh.quality_inspection_id = qis.quality_inspection_id AND qh.item_id = qis.item_id
+                LEFT JOIN
+            detail_sys_code dsc_result ON qh.result_code = dsc_result.detail_code
+                LEFT JOIN
+            detail_sys_code dsc_status ON qh.status_code = dsc_status.detail_code
+        WHERE
+            wo.id = #{workOrderId}
+        ORDER BY
+            qh.id DESC
+    </select>
+
+</mapper>
