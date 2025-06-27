@@ -193,29 +193,27 @@ const init = () => {
         const rowData = completedWorkOrderGrid.getRow(rowKey);
 
         if (rowData && rowData.workOrderId) {
-            // 품질검사 이력 목록 조회
-            getQualityInspectionHistories(rowData.workOrderId);
+            // 선택된 작업지시 정보 저장 (workStatus 추가)
+            currentSelectedLine = {
+                workOrderId: rowData.workOrderId,
+                itemId: rowData.itemId,
+                itemName: rowData.itemName,
+                workStatus: rowData.workStatus  // 작업 상태 추가
+            };
+
+            // 품질검사 이력 목록 조회 (작업 상태 전달)
+            getQualityInspectionHistories(rowData.workOrderId, rowData.workStatus);
 
             // 품질검사 결과 저장 버튼 활성화/비활성화 (작업 상태가 '완료'인 경우 비활성화)
             if (addInspectionResultBtn) {
                 if (rowData.workStatus === '완료') {
                     // 작업 상태가 완료인 경우 버튼 비활성화
                     addInspectionResultBtn.disabled = true;
-
-                    // 선택적으로 사용자에게 알림 표시
-                    // alert('완료된 작업지시에 대해서는 품질검사 결과를 저장할 수 없습니다.');
                 } else {
                     // 그 외의 경우 버튼 활성화
                     addInspectionResultBtn.disabled = false;
                 }
             }
-
-            // 선택된 작업지시 정보 저장
-            currentSelectedLine = {
-                workOrderId: rowData.workOrderId,
-                itemId: rowData.itemId,
-                itemName: rowData.itemName
-            };
         }
     });
 
@@ -288,7 +286,7 @@ const init = () => {
     }
 
     // 품질검사 이력 목록 조회 함수
-    async function getQualityInspectionHistories(workOrderId) {
+    async function getQualityInspectionHistories(workOrderId, workStatus) {
         try {
             // API 호출
             const response = await fetch(`/api/quality/history?workOrderId=${workOrderId}`, {
@@ -303,9 +301,8 @@ const init = () => {
             if (result.status === 200) {
                 // 데이터 매핑 처리
                 const mappedData = result.data.map(rowData => {
-
-                    // 객체를 반환하기 전에 조건에 따라 resultValue 값을 결정
-                    const resultValue = window.user.authCode !== 'ATH007'
+                    // 조건 수정: ATH007 권한이 없거나 작업상태가 '완료'면 결과값은 '-'
+                    const resultValue = (window.user.authCode !== 'ATH007' || workStatus === '완료')
                         ? rowData.resultValue || '-'
                         : rowData.resultValue || '';
 
@@ -327,6 +324,20 @@ const init = () => {
                 // 그리드 데이터 설정
                 qualityInspectionHistoryGrid.resetData(mappedData);
 
+                // 기존 컬럼 설정 복사
+                const columns = qualityInspectionHistoryGrid.getColumns();
+
+                // 결과값 컬럼 찾기
+                const resultValueColumnIndex = columns.findIndex(col => col.name === 'resultValue');
+
+                if (resultValueColumnIndex >= 0) {
+                    // 결과값 컬럼 속성 수정
+                    const isEditable = workStatus !== '완료' && window.user.authCode === 'ATH007';
+                    columns[resultValueColumnIndex].editor = isEditable ? 'text' : false;
+
+                    // 수정된 컬럼 설정으로 업데이트
+                    qualityInspectionHistoryGrid.setColumns(columns);
+                }
             } else {
                 alert(result.message);
                 qualityInspectionHistoryGrid.resetData([]);
