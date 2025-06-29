@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base.html}">
+<head>
+    <title>입고 목록</title>
+    <th:block layout:fragment="style">
+        <link rel="stylesheet" th:href="@{/css/approval/approval.css}" />
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <section>
+        <h4 class="page__name">입고 목록</h4>
+        <form class="search__form mb-2">
+            <div class="select__container">
+
+            </div>
+
+            <div class="input-group">
+                <input class="form-control" type="text" name="srhName" placeholder="제품명/자재명">
+                <button class="btn btn-outline-secondary srhBtn" type="button">검색</button>
+            </div>
+        </form>
+        <article>
+            <div id="inboundGrid"></div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 12px;">
+                <button id="btnCompleteInbound" class="btn btn-primary">입고 완료</button>
+            </div>
+        </article>
+    </section>
+</div>
+
+<th:block layout:fragment="javascript">
+    <script th:src="@{/js/inbound/inbound.js}"></script>
+</th:block>
+</body>
+</html>
