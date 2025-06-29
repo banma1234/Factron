@@ -140,8 +140,7 @@ async function saveData() {
         const res = await fetch(`/api/machine`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
-                empId: user.id // 사용자 ID를 헤더에 포함
+                "Content-Type": "application/json"
             },
             body: JSON.stringify(data),
         });

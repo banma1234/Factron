@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itwillbs.factron.mapper.contract.ContractMapper">
+
+    <!--
+        수주 상세 목록 (결재기준)
+    -->
+    <select id="getContractsList"
+            parameterType="com.itwillbs.factron.dto.contract.RequestSearchContractDTO"
+            resultType="com.itwillbs.factron.dto.contract.ResponseSearchContractDTO">
+
+        SELECT
+        A.ID AS approvalId,
+        C.ID AS contractId,
+        E.ID AS employeeId,
+        E.NAME AS employeeName,
+        CL.ID AS clientId,
+        CL.NAME AS clientName,
+        C.DEADLINE,
+        C.STATUS_CODE AS statusCode,
+        STP.NAME AS statusName,
+        C.CREATED_AT AS createdAt,
+
+        -- 품목명 외 N건
+        CASE
+        WHEN COUNT(DISTINCT CLIST.ID) = 1 THEN MIN(IT.NAME)
+        ELSE MIN(IT.NAME) || ' 외 ' || (COUNT(DISTINCT CLIST.ID) - 1) || '건'
+        END AS itemSummary,
+
+        SUM(CLIST.QUANTITY * CLIST.PRICE) AS totalAmount
+
+        FROM CONTRACT C
+        JOIN EMPLOYEE E ON C.EMPLOYEE_ID = E.ID
+        JOIN CLIENT CL ON C.CLIENT_ID = CL.ID
+        LEFT JOIN APPROVAL A ON C.APPROVAL_ID = A.ID
+        LEFT JOIN CONTRACT_LIST CLIST ON C.ID = CLIST.CONTRACT_ID
+        LEFT JOIN ITEM IT ON CLIST.ITEM_ID = IT.ID
+        LEFT JOIN DETAIL_SYS_CODE STP ON C.STATUS_CODE = STP.DETAIL_CODE
+
+        <where>
+            <if test="srhApprovalId != null and srhApprovalId != ''">
+                AND A.ID = #{srhApprovalId}
+            </if>
+
+            <if test="startDate != null and startDate != ''">
+                AND C.CREATED_AT &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+            </if>
+
+            <if test="endDate != null and endDate != ''">
+                AND C.CREATED_AT &lt;= TO_DATE(#{endDate}, 'YYYY-MM-DD')
+            </if>
+
+            <if test="approvalStatusCode != null and approvalStatusCode != ''">
+                AND C.STATUS_CODE = #{approvalStatusCode}
+            </if>
+
+            <if test="approvalNameOrEmpId != null and approvalNameOrEmpId != ''">
+                AND (
+                E.NAME LIKE '%' || #{approvalNameOrEmpId} || '%'
+                OR (
+                REGEXP_LIKE(#{approvalNameOrEmpId}, '^[0-9]+')
+                AND TO_CHAR(E.ID) LIKE '%' || #{approvalNameOrEmpId} || '%'
+                )
+                OR CL.NAME LIKE '%' || #{approvalNameOrEmpId} || '%'
+                )
+            </if>
+        </where>
+
+        GROUP BY
+        A.ID, C.ID, E.ID, E.NAME, CL.ID, CL.NAME,
+        C.DEADLINE, C.STATUS_CODE, STP.NAME, C.CREATED_AT
+
+        ORDER BY C.CREATED_AT DESC
+    </select>
+
+    <!-- 수주 품목 목록 조회 -->
+    <select id="getContractItemsByContractId"
+            parameterType="long"
+            resultType="com.itwillbs.factron.dto.contract.ResponseContractItemDTO">
+
+        SELECT
+            IT.ID AS itemId,
+            IT.NAME AS itemName,
+            CLIST.QUANTITY,
+            CLIST.PRICE,
+            (CLIST.QUANTITY * CLIST.PRICE) AS amount
+        FROM CONTRACT_LIST CLIST
+                 JOIN ITEM IT ON CLIST.ITEM_ID = IT.ID
+        WHERE CLIST.CONTRACT_ID = #{contractId}
+        ORDER BY IT.NAME
+    </select>
+
+
+</mapper>

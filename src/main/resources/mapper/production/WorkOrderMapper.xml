@@ -46,4 +46,75 @@
         ORDER BY wo.id DESC
     </select>
 
+    <!-- 작업지시 내릴 수 있는 제품 목록 조회 -->
+    <select id="getWorkItemList" parameterType="com.itwillbs.factron.dto.production.RequestWorkProdDTO" resultType="com.itwillbs.factron.dto.production.ResponseWorkProdDTO">
+        SELECT
+            i.id AS prod_id,
+            i.name AS prod_name,
+            s1.name AS type,
+            #{quantity} AS quantity,
+            NVL(s.quantity, 0) AS stock_qty,
+            s2.name AS unit
+        FROM ITEM i
+        JOIN DETAIL_SYS_CODE s1 ON i.type_code = s1.detail_code
+        JOIN DETAIL_SYS_CODE s2 ON i.unit = s2.detail_code
+        LEFT JOIN STOCK s ON i.id = s.item_id
+        WHERE i.id = #{parentItemId}
+        AND i.id NOT IN (
+            SELECT item_id FROM WORK_ORDER WHERE production_id = #{planId}
+        )
+
+        UNION ALL
+
+        SELECT
+            i.id AS prod_id,
+            i.name AS prod_name,
+            s1.name AS type,
+            CONCAT(#{quantity}, SYS_CONNECT_BY_PATH(b.consumption, '*')) AS quantity,
+            NVL(s.quantity, 0) AS stock_qty,
+            s2.name AS unit
+        FROM BOM b
+        JOIN ITEM i ON b.child_item_id = i.id
+        JOIN DETAIL_SYS_CODE s1 ON i.type_code = s1.detail_code
+        JOIN DETAIL_SYS_CODE s2 ON i.unit = s2.detail_code
+        LEFT JOIN STOCK s ON i.id = s.item_id
+        WHERE i.id NOT IN (
+            SELECT item_id FROM WORK_ORDER WHERE production_id = #{planId}
+        )
+        START WITH b.parent_item_id = #{parentItemId}
+        CONNECT BY PRIOR b.child_item_id = b.parent_item_id
+    </select>
+
+    <!-- 작업 제품 정보 및 투입 품목 목록 조회 -->
+    <select id="getInputProdList" parameterType="com.itwillbs.factron.dto.production.RequestWorkProdDTO" resultType="com.itwillbs.factron.dto.production.ResponseWorkProdDTO">
+        SELECT
+            i.id AS prod_id,
+            i.name AS prod_name,
+            s1.name AS type,
+            b.consumption AS quantity,
+            NVL(s.quantity, 0) AS stock_qty,
+            s2.name AS unit
+        FROM BOM b
+        JOIN ITEM i ON b.child_item_id = i.id
+        JOIN DETAIL_SYS_CODE s1 ON i.type_code = s1.detail_code
+        JOIN DETAIL_SYS_CODE s2 ON i.unit = s2.detail_code
+        LEFT JOIN STOCK s ON i.id = s.item_id
+        WHERE b.parent_item_id = #{parentItemId}
+
+        UNION ALL
+
+        SELECT
+            m.id AS prod_id,
+            m.name AS prod_name,
+            '원자재' AS type,
+            b.consumption AS quantity,
+            NVL(s.quantity, 0) AS stock_qty,
+            s1.name AS unit
+        FROM BOM b
+        JOIN MATERIAL m ON b.child_material_id = m.id
+        JOIN DETAIL_SYS_CODE s1 ON m.unit = s1.detail_code
+        LEFT JOIN STOCK s ON m.id = s.material_id
+        WHERE b.parent_item_id = #{parentItemId}
+    </select>
+
 </mapper>
