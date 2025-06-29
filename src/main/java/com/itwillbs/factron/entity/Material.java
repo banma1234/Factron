@@ -1,6 +1,8 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.dto.material.MaterialRequestDTO;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,4 +31,10 @@ public class Material extends BaseEntity {
     @Column(name = "spec", length = 255, nullable = false)
     private String spec; // 자재 사양
 
+    public void updateMaterial(MaterialRequestDTO dto) {
+        this.unit = dto.getUnit();
+        this.name = dto.getName();
+        this.info = dto.getInfo();
+        this.spec = dto.getSpec();
+    }
 }
