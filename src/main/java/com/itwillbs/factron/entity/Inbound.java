@@ -47,4 +47,11 @@ public class Inbound {
 
     @Column(name = "status_code", length = 6, nullable = false)
     private String statusCode; // 상태 코드 (예: 완료, 대기 -> 자재만 입고 대기 가능)
+
+    //입고 완료
+    public void updateStatus() {
+        this.statusCode = "STS003"; // 입고 완료 상태 코드
+        this.inDate = LocalDate.now(); // 현재 날짜를 입고일로 설정
+    }
+
 }
