@@ -14,6 +14,7 @@ import com.itwillbs.factron.repository.product.ItemRepository;
 import com.itwillbs.factron.repository.product.MaterialRepository;
 import com.itwillbs.factron.repository.production.ProductionPlanningRepository;
 import com.itwillbs.factron.repository.production.WorkOrderRepository;
+import com.itwillbs.factron.repository.quality.QualityInspectionHistoryRepository;
 import com.itwillbs.factron.repository.quality.QualityInspectionRepository;
 import com.itwillbs.factron.repository.quality.QualityInspectionStandardRepository;
 import com.itwillbs.factron.repository.storage.InboundRepository;
@@ -65,6 +66,8 @@ class FactronApplicationTests {
 	private QualityInspectionRepository qualityInspectionRepository;
 	@Autowired
 	private QualityInspectionStandardRepository qualityInspectionStandardRepository;
+	@Autowired
+	private QualityInspectionHistoryRepository qualityInspectionHistoryRepository;
 
 	@Autowired
 	private StorageRepository storageRepository;
@@ -973,6 +976,42 @@ class FactronApplicationTests {
 			workOrderRepository.save(workOrder);
 
 			sequence++;
+		}
+	}
+
+	@Test
+	@Transactional
+	@Commit
+	void insertQualityInspectionHistoryDummyData() {
+		// 1. 검사 기준(qualityInspection) 조회
+		QualityInspection qualityInspection = qualityInspectionRepository.findAll().stream()
+				.findFirst()
+				.orElse(null);
+
+		// 2. 작업 지시(workOrder) 조회
+		WorkOrder workOrder = workOrderRepository.findAll().stream()
+				.findFirst()
+				.orElse(null);
+
+		// 3. 검사 대상 아이템(item) 조회
+		Item item = itemRepository.findAll().stream()
+				.findFirst()
+				.orElse(null);
+
+		// 4. 더미 데이터 3개 생성
+		for (int i = 0; i < 3; i++) {
+			QualityInspectionHistory history = QualityInspectionHistory.builder()
+					.qualityInspection(qualityInspection)
+					.workOrder(workOrder)
+					.item(item)
+					.lot(null)
+					.inspectionDate(null)
+					.resultValue(null)
+					.resultCode(null)
+					.statusCode("STS001")
+					.build();
+
+			qualityInspectionHistoryRepository.save(history);
 		}
 	}
 }

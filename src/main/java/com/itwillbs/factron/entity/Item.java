@@ -1,5 +1,6 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.dto.item.ItemRequestDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,4 +29,11 @@ public class Item extends BaseEntity {
 
     @Column(name = "type_code", length = 6, nullable = false)
     private String typeCode; // 제품 유형 코드
+
+    public void updateItem(ItemRequestDTO dto) {
+        this.name = dto.getName();
+        this.unit = dto.getUnit();
+        this.price = dto.getPrice();
+        this.typeCode = dto.getTypeCode();
+    }
 }
