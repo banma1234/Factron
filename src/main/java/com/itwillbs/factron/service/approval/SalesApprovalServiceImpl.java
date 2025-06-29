@@ -88,8 +88,8 @@ public class SalesApprovalServiceImpl implements SalesApprovalService {
                         .item(item)
                         .storage(storage)
                         .quantity((long) itemDTO.getQuantity())
-                        .outDate(LocalDate.now())
-                        .categoryCode("SLS001")
+                        .outDate(null)
+                        .categoryCode("ITP003")
                         .statusCode("STS001")
                         .contract(contract)
                         .build();
@@ -112,7 +112,7 @@ public class SalesApprovalServiceImpl implements SalesApprovalService {
 
         if ("APV002".equals(dto.getApprovalStatus())) {
             approval.approve(approver);
-            purchase.updateStatus("PST002");
+            purchase.updateStatus("STP002");
             purchaseRepository.save(purchase);
 
             Storage storage = storageRepository.findById(1L) // 입고 창고 ID로 변경
@@ -126,9 +126,9 @@ public class SalesApprovalServiceImpl implements SalesApprovalService {
                         .material(material)
                         .storage(storage)
                         .quantity(itemDTO.getQuantity())
-                        .inDate(LocalDate.now())
-                        .categoryCode("SLS002")
-                        .statusCode("PST002") // 입고 대기
+                        .inDate(null)
+                        .categoryCode("ITP001")
+                        .statusCode("STS001") // 입고 대기
                         .purchase(purchase)
                         .build();
 
@@ -137,7 +137,7 @@ public class SalesApprovalServiceImpl implements SalesApprovalService {
 
         } else if ("APV003".equals(dto.getApprovalStatus())) {
             approval.reject(approver, dto.getRejectionReason());
-            purchase.updateStatus("PST003");
+            purchase.updateStatus("STP003");
             purchaseRepository.save(purchase);
         } else {
             throw new IllegalArgumentException("유효하지 않은 결재 상태입니다.");

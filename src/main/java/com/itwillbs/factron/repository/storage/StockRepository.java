@@ -1,13 +1,17 @@
 package com.itwillbs.factron.repository.storage;
 
 import com.itwillbs.factron.dto.stock.ResponseStockSrhDTO;
+import com.itwillbs.factron.entity.Item;
+import com.itwillbs.factron.entity.Material;
 import com.itwillbs.factron.entity.Stock;
+import com.itwillbs.factron.entity.Storage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface StockRepository extends JpaRepository<Stock, Long> {
@@ -104,4 +108,8 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
         AND (i.id = :productId)
     """)
     List<ResponseStockSrhDTO> findSingleStock(@Param("productId") String productId);
+
+    Optional<Stock> findByItemAndStorage(Item item, Storage storage);
+    Optional<Stock> findByMaterialAndStorage(Material material, Storage storage);
+
 }
