@@ -23,6 +23,7 @@ import com.itwillbs.factron.repository.storage.StockRepository;
 import com.itwillbs.factron.repository.storage.StorageRepository;
 import com.itwillbs.factron.repository.syscode.DetailSysCodeRepository;
 import com.itwillbs.factron.repository.syscode.SysCodeRepository;
+import com.itwillbs.factron.service.lot.LotService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -88,6 +89,9 @@ class FactronApplicationTests {
 	private WorkOrderRepository workOrderRepository;
 	@Autowired
 	private WorkerRepository workerRepository;
+
+	@Autowired
+	private LotService lotService;
 
 	@Test
 	@Transactional
@@ -892,7 +896,7 @@ class FactronApplicationTests {
 					.build());
 
 			lotRepository.save(Lot.builder()
-					.id("LOT-M-" + System.currentTimeMillis())
+					.id("20101010-INB-0001")
 					.item(null)
 					.material(material1)
 					.quantity(100L)
@@ -915,7 +919,7 @@ class FactronApplicationTests {
 					.build());
 
 			lotRepository.save(Lot.builder()
-					.id("LOT-M-" + System.currentTimeMillis())
+					.id("20101010-INB-0002")
 					.item(null)
 					.material(material2)
 					.quantity(20L)
@@ -1031,5 +1035,16 @@ class FactronApplicationTests {
 
 			qualityInspectionHistoryRepository.save(history);
 		}
+	}
+
+	@Test
+	@Transactional
+	@Commit
+	void doTest() {
+
+		WorkOrder workOrder = workOrderRepository.findById("WO20250630-001")
+						.orElseThrow(() -> new RuntimeException("wow"));
+
+
 	}
 }
