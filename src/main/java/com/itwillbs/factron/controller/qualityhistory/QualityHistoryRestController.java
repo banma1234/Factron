@@ -28,10 +28,16 @@ public class QualityHistoryRestController {
     // 작업 지시 별 품질검사 이력 결과 저장 API
     @PutMapping()
     public ResponseDTO<Void> updateQualityHistoryList(
-            @RequestBody List<RequestUpdateQualityHistoryListDTO> requestDto) {
+            @RequestBody RequestUpdateQualityHistoryListDTO requestDto) {
 
-        qualityHistoryService.updateQualityHistoryList(requestDto);
+        try {
 
-        return ResponseDTO.success("품질 이력 검사 결과를 저장하였습니다", null);
+            qualityHistoryService.updateQualityHistoryList(requestDto);
+
+            return ResponseDTO.success("품질 이력 검사 결과를 저장하였습니다", null);
+        } catch (IllegalArgumentException e) {
+
+            return ResponseDTO.fail(800, e.getMessage(), null);
+        }
     }
 }

@@ -15,8 +15,6 @@ public class RequestUpdateQualityHistoryDTO {
 
     private Long qualityHistoryId; // 품질검사 이력 ID
 
-    private String itemId; // 제품 ID
-
     private Long qualityInspectionId; // 품질검사 ID
 
     @NotNull(message = "결과값은 필수입니다.")

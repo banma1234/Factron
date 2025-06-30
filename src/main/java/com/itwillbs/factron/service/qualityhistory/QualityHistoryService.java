@@ -12,5 +12,5 @@ public interface QualityHistoryService {
     List<ResponseQualityHistoryInfoDTO> getQualityHistoryList(RequestQualityHistoryInfoDTO requestDto);
 
     // 작업 지시 별 품질검사 이력 결과 저장
-    void updateQualityHistoryList(List<RequestUpdateQualityHistoryListDTO> requestDto);
+    void updateQualityHistoryList(RequestUpdateQualityHistoryListDTO requestDto);
 }

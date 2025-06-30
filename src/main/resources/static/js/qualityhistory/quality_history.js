@@ -358,20 +358,19 @@ const init = () => {
 
             // 요청 형식에 맞게 데이터 변환
             const qualityHistoryList = gridData.map(row => {
-                // 실제로 그리드에는 원본 데이터의 모든 필드가 저장되어 있으므로
-                // 원본 데이터에서 필요한 필드를 추출
                 return {
                     qualityHistoryId: row.id,
-                    itemId: row.itemId,
                     qualityInspectionId: row.qualityInspectionId,
                     resultValue: parseFloat(row.resultValue)
                 };
             });
 
             // API 요청 형식에 맞는 데이터 구성
-            const requestData = [{
+            const requestData = {
+                itemId: currentSelectedLine.itemId,
+                workOrderId: currentSelectedLine.workOrderId, // 작업지시 ID 추가
                 qualityHistoryList: qualityHistoryList
-            }];
+            };
 
             console.log('품질 검사 결과 저장 요청 데이터:', requestData);
 
@@ -388,10 +387,10 @@ const init = () => {
 
             if (result.status === 200) {
                 alert(result.message || '품질 검사 결과가 저장되었습니다.');
+                location.reload();
 
                 // 현재 선택된 작업지시가 있으면 품질검사 이력 목록 새로고침
                 if (currentSelectedLine && currentSelectedLine.workOrderId) {
-
                     getQualityInspectionHistories(currentSelectedLine.workOrderId, currentSelectedLine.workStatus);
                 }
             } else {
