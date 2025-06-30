@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface InboundRepository extends JpaRepository<Inbound, Long> {
+    boolean existsByPurchaseIdAndStatusCodeNot(Long purchaseId, String statusCode);
 }

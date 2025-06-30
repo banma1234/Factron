@@ -1,4 +1,4 @@
-// 작업수량 validation
+// 작업량 validation
 function isValidPositiveInteger(value) {
     const num = Number(value);
     return Number.isInteger(num) && num >= 1; // 1 이상 정수
@@ -25,13 +25,48 @@ const init = () => {
         // 해당 생산계획의 미작업 제품 목록 세팅
         getWorkItemList(data.itemId, data.planId, data.quantity).then(res => {
             const selectTag = document.querySelector(`select[name='orderItem']`);
+            const products = res.data;
 
-            res.data.forEach((prod) => {
+            products.forEach((prod) => {
+                // 완제품 생산수량에 따른 작업량 계산
+                let quantity = 1;
+                prod.quantity.split('*').map(qty => {
+                    quantity = quantity*qty;
+                });
+                prod.quantity = quantity;
+                // select box 세팅
                 const optionElement = document.createElement("option");
                 optionElement.value = prod.prodId;
                 optionElement.textContent = `${prod.prodName} (${prod.prodId}) - [${prod.type}]`;
 
                 selectTag.appendChild(optionElement);
+            });
+
+            // 해당 제품 선택 시 작업량, 재고량, 단위, 투입 품목 세팅
+            document.querySelector(`select[name='orderItem']`).addEventListener("change", (e) => {
+                const selectedProd = products.find(prod => prod.prodId === e.target.value);
+
+                if (selectedProd) {
+                    getInputProdList(selectedProd.prodId).then(res => {
+                        // 원본 소요량 baseQuantity로 저장
+                        const baseQtyData = res.data.map(row => ({
+                            ...row,
+                            baseQuantity: row.quantity,
+                            quantity: row.quantity * selectedProd.quantity // 소요량 * 작업수량
+                        }));
+
+                        form.querySelector("input[name='quantity']").value = selectedProd.quantity;
+                        form.querySelector("input[name='stockQty']").value = selectedProd.stockQty;
+                        form.querySelector("input[name='unit']").value = selectedProd.unit;
+                        form.querySelector("input[name='quantity']").focus();
+                        productGrid.resetData(baseQtyData);
+                    });
+                } else {
+                    form.querySelector("input[name='quantity']").value = '';
+                    form.querySelector("input[name='stockQty']").value = '';
+                    form.querySelector("input[name='unit']").value = '';
+                    productGrid.resetData([]);
+                }
             });
         });
 
@@ -107,10 +142,15 @@ const init = () => {
         ['checkbox']
     );
 
-    document.querySelector(`select[name='orderItem']`).addEventListener("change", (e) => {
-        // 작업 제품 선택 시 투입 품목 세팅
-        getInputProdList(e.target.value).then(res => {
-            productGrid.resetData(res.data);
+    // 작업량 변경 시 투입 품목 소요량 변경
+    form.querySelector("input[name='quantity']").addEventListener("input", (e) => {
+        const newQty = Number(e.target.value);
+
+        if (!isValidPositiveInteger(newQty)) return;
+
+        const currentData = productGrid.getData();
+        currentData.forEach((row, index) => {
+            productGrid.setValue(index, 'quantity', row.baseQuantity * newQty);
         });
     });
 
@@ -133,11 +173,11 @@ const init = () => {
             return;
         }
         if (quantity === '') {
-            alert('작업수량을 입력해주세요.');
+            alert('작업량을 입력해주세요.');
             return;
         }
         if (!isValidPositiveInteger(quantity)) {
-            alert('작업수량은 1 이상의 정수만 입력 가능합니다.');
+            alert('작업량은 1 이상의 정수만 입력 가능합니다.');
             return;
         }
         if (!startDate) {
@@ -152,9 +192,11 @@ const init = () => {
             alert("라인을 선택해주세요.");
             return;
         }
-        // 제품 선택 시 bom에 맞춰 자재/반제품 자동 세팅
-        // 작업량에 따라 투입 품목 소요량 변경
-        // 작업자를 선택해주세요
+        const selectedWorkers = workerGrid.getCheckedRows();
+        if (selectedWorkers.length === 0) {
+            alert("작업자를 한 명 이상 선택해주세요.");
+            return;
+        }
 
         // fetch data
         data = {
@@ -164,6 +206,8 @@ const init = () => {
             empId: user.id,
             startDate,
             quantity,
+            workers: selectedWorkers.map(w => w.employeeId),
+            inputProds: productGrid.getData()
         };
 
         confirmModal.show();
@@ -189,7 +233,7 @@ const init = () => {
 
         // 부모 창의 그리드 리프레시
         if (window.opener && !window.opener.closed) {
-            window.opener.getWorkOrders();
+            window.opener.postMessage({ type: "ADD_REFRESH_WORKORDERS" }, "*");
         }
 
         window.close();
@@ -213,12 +257,12 @@ const init = () => {
     }
 
     // 작업지시 내릴 수 있는 제품 목록 조회
-    async function getWorkItemList(parentItemId, planId, quantity) {
+    async function getWorkItemList(parentItemId, planId, planQty) {
         // fetch data
         const data = new URLSearchParams({
             parentItemId,
             planId,
-            quantity
+            planQty
         });
 
         try {
@@ -271,7 +315,7 @@ const init = () => {
     // 작업 가능한 사원 목록 조회
     async function getPossibleWorkerList() {
         try {
-            const res = await fetch(`/api/worker`, {
+            const res = await fetch(`/api/workorder/worker`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json"

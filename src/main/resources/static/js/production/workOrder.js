@@ -146,6 +146,16 @@ const init = () => {
                 }
             };
             window.addEventListener("message", messageHandler);
+
+            //팝업 종료시 작업 리스트 새로 호출
+            window.addEventListener("message", (event) => {
+
+                const message = event.data;
+
+                if (message && message.type === "ADD_REFRESH_WORKORDERS") {
+                    getWorkOrders(selectedPlan.id) // 안전하게 리프레시 실행
+                }
+            });
         }
 
     }, false);

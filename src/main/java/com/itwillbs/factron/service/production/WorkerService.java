@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface WorkerService {
 
-    List<ResponseWorkerDTO> getPossibleWorkerList();
+    List<ResponseWorkerDTO> getWorkerList(Long orderId);
 }

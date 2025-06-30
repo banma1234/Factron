@@ -1,9 +1,6 @@
 package com.itwillbs.factron.mapper.production;
 
-import com.itwillbs.factron.dto.production.RequestWorkOrderDTO;
-import com.itwillbs.factron.dto.production.RequestWorkProdDTO;
-import com.itwillbs.factron.dto.production.ResponseWorkOrderDTO;
-import com.itwillbs.factron.dto.production.ResponseWorkProdDTO;
+import com.itwillbs.factron.dto.production.*;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -25,4 +22,9 @@ public interface WorkOrderMapper {
      * 작업 제품 정보 및 투입 품목 목록 조회
      * */
     List<ResponseWorkProdDTO> getInputProdList(RequestWorkProdDTO requestWorkProdDTO);
+
+    /*
+     * 작업 가능한 사원 목록 조회
+     * */
+    List<ResponseWorkerDTO> getPossibleWorkerList();
 }
