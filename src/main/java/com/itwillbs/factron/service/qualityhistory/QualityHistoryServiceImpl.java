@@ -76,10 +76,6 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
 //
 //        checkAdminPermission(empId); // 관리자 권한 체크
 
-        // 품질 검사 LOT 생성 함수 호출
-        // (파라미터 : LotType.QUALITY, 양품 갯수, 제품 ID, 작업 지시 ID)
-        // Lot lot = 품질 검사 LOT 생성 함수(LotType.QUALITY, 양품 갯수, 제품 ID, 작업 지시 ID)
-
         // 품질 검사 결과 정의
         for (RequestUpdateQualityHistoryListDTO historyListDTO : requestDto) {
 
@@ -96,25 +92,33 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
                 Double resultValue = historyDTO.getResultValue();
 
                 if (resultValue >= standard.getLowerLimit() && resultValue <= standard.getUpperLimit()) {
+
                     resultCode = "QIR001"; // 합격
-                    log.info("품질검사 합격 - ID: {}, 결과값: {}, 기준: {} ~ {}",
+
+                    log.info("품질검사 합격 - 품질이력 ID: {}, 결과값: {}, 기준: {} ~ {}",
                             historyDTO.getQualityHistoryId(), resultValue,
                             standard.getLowerLimit(), standard.getUpperLimit());
                 } else {
+
                     resultCode = "QIR002"; // 불합격
-                    log.info("품질검사 불합격 - ID: {}, 결과값: {}, 기준: {} ~ {}",
+
+                    log.info("품질검사 불합격 - 품질이력 ID: {}, 결과값: {}, 기준: {} ~ {}",
                             historyDTO.getQualityHistoryId(), resultValue,
                             standard.getLowerLimit(), standard.getUpperLimit());
                 }
 
+                // 품질 검사 LOT 생성 함수 호출
+                // (파라미터 : LotType.QUALITY, 양품 갯수, 제품 ID, 작업 지시 ID)
+                // Lot lot = 품질 검사 LOT 생성 함수(LotType.QUALITY, 양품 갯수, 제품 ID, 작업 지시 ID)
+
                 // TODO: 여기서 resultCode를 사용하여 품질검사 이력 업데이트
+
+                // 품질 검사 이력 저장 (수정)
+
+                // 제품 입고 추가 (상태 : 완료)
+
+                // 재고 업데이트 (기존 제품 재고 존재 시 개수 수정, 없을 시 재고 추가)
             }
         }
-
-        // 품질 검사 이력 저장 (수정)
-
-        // 제품 입고 추가 (상태 : 완료)
-
-        // 재고 업데이트 (기존 제품 재고 존재 시 개수 수정, 없을 시 재고 추가)
     }
 }

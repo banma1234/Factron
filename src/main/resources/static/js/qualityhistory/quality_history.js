@@ -309,6 +309,7 @@ const init = () => {
                     return {
                         id: rowData.qualityHistoryId,
                         qualityInspectionHistoryId: rowData.qualityHistoryId,
+                        qualityInspectionId: rowData.qualityInspectionId, // 이 필드 추가
                         qualityInspectionName: rowData.qualityInspectionName,
                         itemId: rowData.itemId,
                         itemName: rowData.itemName,
@@ -346,6 +347,59 @@ const init = () => {
             console.error('품질검사 이력 조회 오류:', error);
             alert('품질검사 이력 조회 중 오류가 발생했습니다.');
             qualityInspectionHistoryGrid.resetData([]);
+        }
+    }
+
+    // 품질 검사 결과 저장 함수
+    async function saveQualityInspectionResults() {
+        try {
+            // 그리드의 모든 행 데이터 가져오기
+            const gridData = qualityInspectionHistoryGrid.getData();
+
+            // 요청 형식에 맞게 데이터 변환
+            const qualityHistoryList = gridData.map(row => {
+                // 실제로 그리드에는 원본 데이터의 모든 필드가 저장되어 있으므로
+                // 원본 데이터에서 필요한 필드를 추출
+                return {
+                    qualityHistoryId: row.id,
+                    itemId: row.itemId,
+                    qualityInspectionId: row.qualityInspectionId,
+                    resultValue: parseFloat(row.resultValue)
+                };
+            });
+
+            // API 요청 형식에 맞는 데이터 구성
+            const requestData = [{
+                qualityHistoryList: qualityHistoryList
+            }];
+
+            console.log('품질 검사 결과 저장 요청 데이터:', requestData);
+
+            // API 호출
+            const response = await fetch('/api/quality/history', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            const result = await response.json();
+
+            if (result.status === 200) {
+                alert(result.message || '품질 검사 결과가 저장되었습니다.');
+
+                // 현재 선택된 작업지시가 있으면 품질검사 이력 목록 새로고침
+                if (currentSelectedLine && currentSelectedLine.workOrderId) {
+
+                    getQualityInspectionHistories(currentSelectedLine.workOrderId, currentSelectedLine.workStatus);
+                }
+            } else {
+                alert(result.message || '품질 검사 결과 저장에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error('품질 검사 결과 저장 오류:', error);
+            alert('품질 검사 결과 저장 중 오류가 발생했습니다.');
         }
     }
 
