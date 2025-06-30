@@ -48,7 +48,13 @@ const init = () => {
             {
                 header: '양품 수량',
                 name: 'fectiveQuantity',
-                align: 'center'
+                align: 'center',
+                formatter: function({ row }) {
+                    // 숫자와 단위 사이에 한 칸 띄우기
+                    const qty = row.fectiveQuantity ?? '-';
+                    const unit = row.unit ? ' ' + row.unit : '';
+                    return qty + unit;
+                }
             },
             {
                 header: '작업 상태',
@@ -112,7 +118,13 @@ const init = () => {
             {
                 header: '결과',
                 name: 'resultCodeName',
-                align: 'center'
+                align: 'center',
+                formatter: function({ value }) {
+                    if (value === '불합격') {
+                        return `<span style="color: red; font-weight: bold;">${value}</span>`;
+                    }
+                    return value || '-';
+                }
             },
             {
                 header: '상태',
@@ -277,6 +289,7 @@ const init = () => {
                             itemName: rowData.itemName,           // 작업 제품명
                             productionPlanId: rowData.productionId, // 생산 계획 번호
                             fectiveQuantity: rowData.fectiveQuantity, // 유효 수량
+                            unit: rowData.unit,               // 단위 (추가된 필드)
                             workStatus: rowData.status            // 작업 상태
                         };
                     });
@@ -305,6 +318,13 @@ const init = () => {
 
             const result = await response.json();
 
+            // 품질검사 이력 데이터가 없으면 버튼 비활성화
+            if (!result.data || result.data.length === 0) {
+                qualityInspectionHistoryGrid.resetData([]);
+                if (addInspectionResultBtn) addInspectionResultBtn.disabled = true;
+                return;
+            }
+
             if (result.status === 200) {
                 // 데이터 매핑 처리
                 const mappedData = result.data.map(rowData => {
@@ -314,18 +334,18 @@ const init = () => {
                         : rowData.resultValue || '';
 
                     return {
-                        id: rowData.qualityHistoryId,
-                        qualityInspectionHistoryId: rowData.qualityHistoryId,
-                        qualityInspectionId: rowData.qualityInspectionId, // 이 필드 추가
-                        qualityInspectionName: rowData.qualityInspectionName,
-                        itemId: rowData.itemId,
-                        itemName: rowData.itemName,
-                        lotId: rowData.lotId || '-',
-                        inspectionDate: rowData.inspectionDate || '-',
-                        resultValue: resultValue,
-                        resultValueUnit: rowData.resultValueUnit || '-',
-                        resultCodeName: rowData.resultCodeName || '-',
-                        historyStatus: rowData.statusCodeName
+                        id: rowData.qualityHistoryId, // 품질 검사 이력번호
+                        qualityInspectionHistoryId: rowData.qualityHistoryId, // 품질 검사 이력번호
+                        qualityInspectionId: rowData.qualityInspectionId, // 품질 검사 ID
+                        qualityInspectionName: rowData.qualityInspectionName, // 품질 검사명
+                        itemId: rowData.itemId, // 제품 번호
+                        itemName: rowData.itemName, // 제품명
+                        lotId: rowData.lotId || '-', // LOT
+                        inspectionDate: rowData.inspectionDate || '-', // 검사일
+                        resultValue: resultValue, // 결과값
+                        resultValueUnit: rowData.resultValueUnit || '-', // 결과값 단위
+                        resultCodeName: rowData.resultCodeName || '-', // 결과
+                        historyStatus: rowData.statusCodeName || '-', // 상태
                     };
                 });
 
@@ -349,11 +369,13 @@ const init = () => {
             } else {
                 alert(result.message);
                 qualityInspectionHistoryGrid.resetData([]);
+                if (addInspectionResultBtn) addInspectionResultBtn.disabled = true;
             }
         } catch (error) {
             console.error('품질검사 이력 조회 오류:', error);
             alert('품질검사 이력 조회 중 오류가 발생했습니다.');
             qualityInspectionHistoryGrid.resetData([]);
+            if (addInspectionResultBtn) addInspectionResultBtn.disabled = true;
         }
     }
 
