@@ -62,21 +62,15 @@ public class InboundServiceImpl implements InboundService {
             // 2. 발주 상태 변경 (조건부)
             if (inbound.getPurchase() != null) {
                 Long purchaseId = inbound.getPurchase().getId();
-
-                // 발주ID에 입고 완료가 아닌 데이터가 존재하는지 확인
                 boolean existsInboundNotCompleted = inboundRepository.existsByPurchaseIdAndStatusCodeNot(purchaseId, "STS003");
 
                 if (!existsInboundNotCompleted) {
-                    // 입고가 모두 완료되었을 때 발주 상태 완료로 변경
                     Purchase purchase = purchaseRepository.findById(purchaseId)
                             .orElseThrow(() -> new IllegalArgumentException("발주 데이터를 찾을 수 없습니다: " + purchaseId));
-                    purchase.updateStatus("STP004");  // 발주 완료 상태로 변경
+                    purchase.updateStatus("STP004");  // 예: 발주 완료 상태
                     purchaseRepository.save(purchase);
                 }
             }
-
-
-
 
             // 3. 재고 수량 추가 또는 신규 생성
             if (inbound.getItem() != null) {
@@ -107,17 +101,25 @@ public class InboundServiceImpl implements InboundService {
                 }
             }
 
-            // 4. LOT 리스트에 추가
-            RequestInboundLotDTO lotDTO = new RequestInboundLotDTO(
-                    inbound.getMaterial(),
-                    inbound.getQuantity(),
-                    LotType.INBOUND
-            );
-            lotList.add(lotDTO);
+            // 4. LOT 리스트에 추가 (자재만 LOT 생성)
+            if (inbound.getMaterial() != null) {
+                RequestInboundLotDTO lotDTO = new RequestInboundLotDTO(
+                        inbound.getMaterial(),
+                        inbound.getQuantity(),
+                        LotType.INBOUND
+                );
+                lotList.add(lotDTO);
+            }
         }
 
-        // 5. LOT 생성 서비스 호출 (한 번에)
-        //lotCreateService.CreateInboundLot(lotList);
-    }
+        if (!lotList.isEmpty()) {
+            try {
+                lotCreateService.CreateInboundLot(lotList);
+            } catch (Exception e) {
+                log.error("[LOT 생성 실패] {}", e.getMessage(), e);
+                throw e;
+            }
+        }
 
+    }
 }
