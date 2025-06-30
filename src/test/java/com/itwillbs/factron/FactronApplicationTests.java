@@ -216,9 +216,8 @@ class FactronApplicationTests {
 
 		Map<String, String> sts = new HashMap<>();
 		sts.put("STS001", "대기");
-		sts.put("STS002", "시작");
+		sts.put("STS002", "취소");
 		sts.put("STS003", "완료");
-		sts.put("STS004", "취소");
 		detailCodeMap.put("STS", sts);
 
 		Map<String, String> unt = new HashMap<>();
@@ -840,9 +839,9 @@ class FactronApplicationTests {
 					.item(item1)
 					.material(null)
 					.storage(semiProductStorage)
-					.quantity(20L)
+					.quantity(10L)
 					.inDate(now)
-					.categoryCode("S") // 반제품
+					.categoryCode("ITP002") // 반제품
 					.statusCode("완료")
 					.build());
 
@@ -850,7 +849,7 @@ class FactronApplicationTests {
 					.id("LOT-S-" + System.currentTimeMillis())
 					.item(item1)
 					.material(null)
-					.quantity(20L)
+					.quantity(10L)
 					.eventType("입고")
 					.createdAt(LocalDateTime.now())
 					.createdBy(1L)
@@ -863,9 +862,9 @@ class FactronApplicationTests {
 					.item(item2)
 					.material(null)
 					.storage(finishedProductStorage)
-					.quantity(10L)
+					.quantity(5L)
 					.inDate(now)
-					.categoryCode("P") // 완제품
+					.categoryCode("ITP003") // 완제품
 					.statusCode("완료")
 					.build());
 
@@ -873,7 +872,7 @@ class FactronApplicationTests {
 					.id("LOT-P-" + System.currentTimeMillis())
 					.item(item2)
 					.material(null)
-					.quantity(10L)
+					.quantity(5L)
 					.eventType("입고")
 					.createdAt(LocalDateTime.now())
 					.createdBy(1L)
@@ -886,9 +885,9 @@ class FactronApplicationTests {
 					.item(null)
 					.material(material1)
 					.storage(rawMaterialStorage)
-					.quantity(50L)
+					.quantity(100L)
 					.inDate(now)
-					.categoryCode("M") // 자재
+					.categoryCode("ITP001") // 자재
 					.statusCode("완료")
 					.build());
 
@@ -896,7 +895,7 @@ class FactronApplicationTests {
 					.id("LOT-M-" + System.currentTimeMillis())
 					.item(null)
 					.material(material1)
-					.quantity(50L)
+					.quantity(100L)
 					.eventType("입고")
 					.createdAt(LocalDateTime.now())
 					.createdBy(1L)
@@ -909,9 +908,9 @@ class FactronApplicationTests {
 					.item(null)
 					.material(material2)
 					.storage(rawMaterialStorage)
-					.quantity(30L)
+					.quantity(20L)
 					.inDate(now)
-					.categoryCode("M")
+					.categoryCode("ITP001") // 자재
 					.statusCode("완료")
 					.build());
 
@@ -919,7 +918,7 @@ class FactronApplicationTests {
 					.id("LOT-M-" + System.currentTimeMillis())
 					.item(null)
 					.material(material2)
-					.quantity(30L)
+					.quantity(20L)
 					.eventType("입고")
 					.createdAt(LocalDateTime.now())
 					.createdBy(1L)

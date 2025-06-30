@@ -14,7 +14,7 @@ public class ResponseWorkProdDTO {
     private String prodId;
     private String prodName;
     private String type;
-    private String quantity; // Long으로 변환
+    private String quantity;
     private Long stockQty;
     private String unit;
 }

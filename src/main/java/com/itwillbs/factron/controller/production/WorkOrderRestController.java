@@ -1,10 +1,7 @@
 package com.itwillbs.factron.controller.production;
 
 import com.itwillbs.factron.dto.ResponseDTO;
-import com.itwillbs.factron.dto.production.RequestWorkOrderDTO;
-import com.itwillbs.factron.dto.production.RequestWorkProdDTO;
-import com.itwillbs.factron.dto.production.ResponseWorkOrderDTO;
-import com.itwillbs.factron.dto.production.ResponseWorkProdDTO;
+import com.itwillbs.factron.dto.production.*;
 import com.itwillbs.factron.service.production.WorkOrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -56,6 +53,18 @@ public class WorkOrderRestController {
     }
 
     /*
+     * 작업 가능한 사원 목록 조회
+     * */
+    @GetMapping("/worker")
+    public ResponseDTO<List<ResponseWorkerDTO>> getPossibleWorkerList() {
+        try {
+            return ResponseDTO.success(workOrderService.getPossibleWorkerList());
+        } catch (Exception e) {
+            return ResponseDTO.fail(800, "작업자 목록 조회에 실패했습니다.", workOrderService.getPossibleWorkerList());
+        }
+    }
+
+    /*
      * 작업지시 등록
      * */
     @PostMapping()
@@ -64,8 +73,10 @@ public class WorkOrderRestController {
             return ResponseDTO.success("작업지시 등록이 완료되었습니다!", workOrderService.registWorkOrder(requestWorkOrderDTO));
         } catch (NoSuchElementException nse) {
             return ResponseDTO.fail(800, nse.getMessage(), null);
+        } catch (IllegalArgumentException iae) {
+            return ResponseDTO.fail(801, iae.getMessage(), null);
         } catch (Exception e) {
-            return ResponseDTO.fail(801, "작업지시 등록에 실패했습니다.", null);
+            return ResponseDTO.fail(802, "작업지시 등록에 실패했습니다.", null);
         }
     }
 }

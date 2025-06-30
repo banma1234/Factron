@@ -9,7 +9,7 @@ import java.util.List;
 public interface WorkerMapper {
 
     /*
-     * 작업 가능한 사원 목록 조회
+     * 작업자 목록 조회
      * */
-    List<ResponseWorkerDTO> getPossibleWorkerList();
+    List<ResponseWorkerDTO> getWorkerList(Long orderId);
 }

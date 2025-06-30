@@ -13,6 +13,7 @@
             wo.item_id,
             i.name AS item_name,
             wo.quantity,
+            wp.fective_quantity,
             s1.name AS unit,
             l.name AS line_name,
             wo.start_date,
@@ -25,6 +26,7 @@
         JOIN LINE l ON wo.line_id = l.id
         JOIN DETAIL_SYS_CODE s2 ON wo.status_code = s2.detail_code
         JOIN EMPLOYEE e ON wo.employee_id = e.id
+        LEFT JOIN WORK_PERFORMANCE wp ON wo.id = wp.work_order_id
         <where>
             <if test="prdctPlanId != null and prdctPlanId != ''">
                 AND wo.production_id LIKE '%' || #{prdctPlanId} || '%'
@@ -52,7 +54,7 @@
             i.id AS prod_id,
             i.name AS prod_name,
             s1.name AS type,
-            #{quantity} AS quantity,
+            #{planQty} AS quantity,
             NVL(s.quantity, 0) AS stock_qty,
             s2.name AS unit
         FROM ITEM i
@@ -70,7 +72,7 @@
             i.id AS prod_id,
             i.name AS prod_name,
             s1.name AS type,
-            CONCAT(#{quantity}, SYS_CONNECT_BY_PATH(b.consumption, '*')) AS quantity,
+            CONCAT(#{planQty}, SYS_CONNECT_BY_PATH(b.consumption, '*')) AS quantity,
             NVL(s.quantity, 0) AS stock_qty,
             s2.name AS unit
         FROM BOM b
@@ -115,6 +117,28 @@
         JOIN DETAIL_SYS_CODE s1 ON m.unit = s1.detail_code
         LEFT JOIN STOCK s ON m.id = s.material_id
         WHERE b.parent_item_id = #{parentItemId}
+    </select>
+
+    <!-- 작업 가능한 사원 목록 조회 -->
+    <select id="getPossibleWorkerList" resultType="com.itwillbs.factron.dto.production.ResponseWorkerDTO">
+        SELECT
+            e.id AS employee_id,
+            e.name AS employee_name,
+            s1.name AS dept_name,
+            s2.name AS pos_name
+        FROM EMPLOYEE e
+        JOIN DETAIL_SYS_CODE s1 ON e.dept_code = s1.detail_code
+        JOIN DETAIL_SYS_CODE s2 ON e.position_code = s2.detail_code
+        WHERE e.dept_code = 'DEP006'    -- 생산부서
+        AND e.quit_date IS NULL         -- 재직중
+        AND NOT EXISTS (
+            SELECT 1
+            FROM WORKER w
+            JOIN WORK_ORDER wo ON w.work_order_id = wo.id
+            WHERE w.employee_id = e.id
+            AND wo.status_code != 'WKS004' -- 작업이 완료되지 않은 직원
+        )
+        ORDER BY e.id DESC
     </select>
 
 </mapper>

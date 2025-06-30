@@ -16,10 +16,10 @@ public class WorkerServiceImpl implements WorkerService {
     private final WorkerMapper workerMapper;
 
     /*
-    * 작업 가능한 사원 목록 조회
-    * */
+     * 작업자 목록 조회
+     * */
     @Override
-    public List<ResponseWorkerDTO> getPossibleWorkerList() {
-        return workerMapper.getPossibleWorkerList();
+    public List<ResponseWorkerDTO> getWorkerList(Long orderId) {
+        return workerMapper.getWorkerList(orderId);
     }
 }
