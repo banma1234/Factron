@@ -34,4 +34,13 @@ public class Lot extends BaseEntity {
     public void updateQuantity(Long quantity) {
         this.quantity = quantity;
     }
+
+    public Long subtractAsMuchAsPossible(Long amount) {
+        if (amount == null || amount <= 0) {
+            throw new IllegalArgumentException("차감 수량은 0보다 커야 합니다.");
+        }
+        Long subtracted = Math.min(this.quantity, amount);
+        this.quantity -= subtracted;
+        return subtracted; // 실제 차감된 수량 리턴
+    }
 }
