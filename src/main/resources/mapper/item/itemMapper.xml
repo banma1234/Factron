@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwillbs.factron.mapper.item.ItemMapper">
+
+    <select id="getItemList"
+            parameterType="com.itwillbs.factron.dto.item.ItemRequestDTO"
+            resultType="com.itwillbs.factron.dto.item.ItemResponseDTO">
+        SELECT
+        id AS itemId,
+        name,
+        unit,
+        price,
+        type_code AS typeCode,
+        created_at AS createdAt,
+        created_by AS createdBy
+        FROM item
+        <where>
+            <if test="itemName != null and itemName != ''">
+                AND name LIKE '%' || #{itemName} || '%'
+            </if>
+            <if test="itemStartDate != null and itemStartDate != ''">
+                AND created_at &gt;= TO_DATE(#{itemStartDate}, 'YYYY-MM-DD')
+            </if>
+            <if test="itemEndDate != null and itemEndDate != ''">
+                AND created_at &lt; TO_DATE(#{itemEndDate}, 'YYYY-MM-DD') + 1
+            </if>
+        </where>
+        ORDER BY created_at DESC
+    </select>
+
+</mapper>
