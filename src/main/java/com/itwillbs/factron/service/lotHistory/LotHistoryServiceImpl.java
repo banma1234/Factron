@@ -29,4 +29,5 @@ public class LotHistoryServiceImpl implements LotHistoryService {
 
         return null;
     }
+
 }
