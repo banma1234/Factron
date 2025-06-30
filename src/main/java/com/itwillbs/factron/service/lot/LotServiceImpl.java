@@ -46,13 +46,11 @@ public class LotServiceImpl implements LotService {
             LotList.clear();
             List<Lot> allLots = lotMapper.getInboundLotById(target);
 
-
             Long sum = 0L;
             for (Lot lot : allLots) {
                 if (sum > target.getQuantity()) {
                     break;
                 }
-
 
                 sum += lot.getQuantity();
                 LotList.add(lot);
