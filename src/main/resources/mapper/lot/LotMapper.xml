@@ -17,8 +17,10 @@
         FROM LOT
         <where>
             <choose>
-                <when test="item_id == null and event_type == 'INB'">
+                <when test="item_id == null">
                     material_id = #{material_id}
+                    AND
+                    UPPER(event_type) = 'INB'
                 </when>
                 <otherwise>
                     item_id = #{item_id}
