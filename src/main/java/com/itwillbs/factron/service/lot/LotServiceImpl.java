@@ -1,13 +1,16 @@
 package com.itwillbs.factron.service.lot;
 
 import com.itwillbs.factron.dto.lot.RequestLotUpdateDTO;
+import com.itwillbs.factron.dto.lotHistory.RequestLotHistoryDTO;
 import com.itwillbs.factron.entity.Lot;
 import com.itwillbs.factron.mapper.lot.LotMapper;
+import com.itwillbs.factron.service.lotHistory.LotHistoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
@@ -17,6 +20,7 @@ import java.util.*;
 public class LotServiceImpl implements LotService {
 
     private final LotMapper lotMapper;
+    private final LotHistoryService lotHistoryService;
 
     /**
      * 같은 조건의 LOT번호 개수 반환
@@ -63,10 +67,22 @@ public class LotServiceImpl implements LotService {
 
             for( Lot lot : map.get(target.getMaterial_id())) {
                 Long originalQuantity = lot.getQuantity();
+
+                if(originalQuantity == 0) {
+                    continue;
+                }
+
                 Long updatedQuantity = lot.getQuantity() - targetQuantity;
                 lot.updateQuantity(Math.max(0, updatedQuantity));
 
                 lotMapper.updateLotQuantity(lot);
+                lotHistoryService.addHistory(RequestLotHistoryDTO.builder()
+                        .lot_id(lot.getId())
+                        .quantity(Math.min(originalQuantity, targetQuantity))
+                        .work_order(target.getWork_order_id())
+                        .created_at(LocalDateTime.now())
+                        .build()
+                );
 
                 targetQuantity -= originalQuantity;
 
