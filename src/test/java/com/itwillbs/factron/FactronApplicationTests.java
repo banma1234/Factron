@@ -14,6 +14,7 @@ import com.itwillbs.factron.repository.product.ItemRepository;
 import com.itwillbs.factron.repository.product.MaterialRepository;
 import com.itwillbs.factron.repository.production.ProductionPlanningRepository;
 import com.itwillbs.factron.repository.production.WorkOrderRepository;
+import com.itwillbs.factron.repository.production.WorkPerformanceRepository;
 import com.itwillbs.factron.repository.production.WorkerRepository;
 import com.itwillbs.factron.repository.quality.QualityInspectionHistoryRepository;
 import com.itwillbs.factron.repository.quality.QualityInspectionRepository;
@@ -88,6 +89,8 @@ class FactronApplicationTests {
 	private WorkOrderRepository workOrderRepository;
 	@Autowired
 	private WorkerRepository workerRepository;
+	@Autowired
+	private WorkPerformanceRepository workPerformanceRepository;
 
 	@Test
 	@Transactional
@@ -1030,6 +1033,40 @@ class FactronApplicationTests {
 					.build();
 
 			qualityInspectionHistoryRepository.save(history);
+		}
+	}
+
+	@Test
+	@Transactional
+	@Commit
+	void insertWorkPerformanceData() {
+		// 1. 담당 사원 조회
+		Employee employee = employeeRepository.findById(25060001L).orElse(null);
+
+		// 2. 현재 날짜
+		LocalDate today = LocalDate.now();
+
+		// 3. 모든 작업지시 조회
+		List<WorkOrder> workOrders = workOrderRepository.findAll();
+
+		// 4. WorkPerformance 저장을 위한 repository 선언 필요
+		for (WorkOrder workOrder : workOrders) {
+			// 작업지시 수량을 반으로 나누어 양품/불량품 설정
+			Long totalQuantity = workOrder.getQuantity();
+			Long fectiveQuantity = totalQuantity / 2;
+			Long defectiveQuantity = totalQuantity - fectiveQuantity;
+
+			// 작업실적 생성
+			WorkPerformance performance = WorkPerformance.builder()
+					.workOrder(workOrder)
+					.endDate(today) // 현재 날짜를 작업 종료일로 설정
+					.fectiveQuantity(fectiveQuantity) // 총 수량의 절반을 양품으로
+					.defectiveQuantity(defectiveQuantity) // 나머지를 불량품으로
+					.employee(employee) // 지정된 직원 ID
+					.build();
+
+			// 작업실적 저장 (repository 선언 필요)
+			workPerformanceRepository.save(performance);
 		}
 	}
 }

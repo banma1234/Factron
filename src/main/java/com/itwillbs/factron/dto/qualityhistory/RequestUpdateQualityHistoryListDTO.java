@@ -17,5 +17,7 @@ public class RequestUpdateQualityHistoryListDTO {
 
     private String workOrderId; // 작업지시 ID
 
+    private Long fectiveQuantity;
+
     private List<RequestUpdateQualityHistoryDTO> qualityHistoryList; // 품질검사 이력 리스트
 }

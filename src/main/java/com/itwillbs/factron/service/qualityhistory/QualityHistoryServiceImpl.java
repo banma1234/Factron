@@ -35,7 +35,6 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
     private final ItemRepository itemRepository;
     private final StorageRepository storageRepository;
     private final InboundRepository inboundRepository;
-    private final WorkPerformanceRepository workPerformanceRepository;
     private final WorkOrderRepository workOrderRepository;
 
     private final AuthorizationChecker authorizationChecker;
@@ -150,12 +149,8 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
         // 모든 품질검사 항목이 합격일 때만 입고 처리
         if (allPassedInspection) {
 
-            // 양품 수량 계산
-            WorkPerformance workPerformance = workPerformanceRepository
-                    .findByWorkOrderId(workOrderId)
-                    .orElseThrow(() -> new IllegalArgumentException("작업 실적을 찾을 수 없습니다: " + workOrderId));
-
-            Long fectiveQuantity = workPerformance.getFectiveQuantity();
+            // 양품 수량 조회
+            Long fectiveQuantity = requestDto.getFectiveQuantity();
 
             // 제품 및 창고 정보 조회
             Item item = itemRepository.findById(itemId)

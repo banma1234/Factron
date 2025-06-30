@@ -46,6 +46,11 @@ const init = () => {
                 align: 'center'
             },
             {
+                header: '양품 수량',
+                name: 'fectiveQuantity',
+                align: 'center'
+            },
+            {
                 header: '작업 상태',
                 name: 'workStatus',
                 align: 'center'
@@ -198,7 +203,8 @@ const init = () => {
                 workOrderId: rowData.workOrderId,
                 itemId: rowData.itemId,
                 itemName: rowData.itemName,
-                workStatus: rowData.workStatus  // 작업 상태 추가
+                fectiveQuantity: rowData.fectiveQuantity,
+                workStatus: rowData.workStatus
             };
 
             // 품질검사 이력 목록 조회 (작업 상태 전달)
@@ -270,6 +276,7 @@ const init = () => {
                             itemId: rowData.itemId,               // 작업 제품번호
                             itemName: rowData.itemName,           // 작업 제품명
                             productionPlanId: rowData.productionId, // 생산 계획 번호
+                            fectiveQuantity: rowData.fectiveQuantity, // 유효 수량
                             workStatus: rowData.status            // 작업 상태
                         };
                     });
@@ -369,6 +376,7 @@ const init = () => {
             const requestData = {
                 itemId: currentSelectedLine.itemId,
                 workOrderId: currentSelectedLine.workOrderId, // 작업지시 ID 추가
+                fectiveQuantity: currentSelectedLine.fectiveQuantity, // 유효 수량 추가
                 qualityHistoryList: qualityHistoryList
             };
 
