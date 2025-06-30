@@ -9,8 +9,4 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class LotHistoryServiceImpl {
 
-   @Transactional
-   public Void updateInboundLotHistory() {
-
-   }
 }
