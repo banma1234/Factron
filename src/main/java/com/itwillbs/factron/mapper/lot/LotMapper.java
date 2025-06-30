@@ -16,4 +16,6 @@ public interface LotMapper {
     Long getLotSequence(Map<String, String> map);
 
     List<Lot> getInboundLotById(RequestLotUpdateDTO target);
+
+    void updateLotQuantity(Lot lot);
 }
