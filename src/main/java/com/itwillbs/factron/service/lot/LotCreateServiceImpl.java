@@ -2,6 +2,7 @@ package com.itwillbs.factron.service.lot;
 
 import com.itwillbs.factron.dto.lot.RequestInboundLotDTO;
 import com.itwillbs.factron.dto.lot.RequestProcessLotDTO;
+import com.itwillbs.factron.dto.lot.RequestQualityLotDTO;
 import com.itwillbs.factron.entity.Lot;
 import com.itwillbs.factron.repository.lot.LotRepository;
 import lombok.RequiredArgsConstructor;
@@ -72,6 +73,32 @@ public class LotCreateServiceImpl implements LotCreateService {
     public Void CreateProcessLot(RequestProcessLotDTO reqInbound) {
 
         String EVENT_TYPE = reqInbound.getEvent_type();
+        // LOT_ID 생성에 필요한 데이터
+        Map<String, Object> LotIdElement = getSequenceForToday(EVENT_TYPE);
+
+        String TODAY = (String) LotIdElement.get("today");
+        long count = (Long) LotIdElement.get("sequence");
+
+        // LOT_ID 생성
+        String lotId = generateLotId(TODAY, EVENT_TYPE, count + 1);
+        // LOT 생성
+        Lot lot = reqInbound.toEntity(lotId);
+
+        lotRepository.save(lot);
+
+        return null;
+    }
+
+    /**
+     * (검사) LOT 생성
+     * @param reqInbound (검사) LOT를 생성할 검사
+     * @return Void
+     * */
+    @Override
+    @Transactional
+    public Void CreateQualityLot(RequestQualityLotDTO reqInbound) {
+
+        String EVENT_TYPE = reqInbound.getEvent_type().getPrefix();
         // LOT_ID 생성에 필요한 데이터
         Map<String, Object> LotIdElement = getSequenceForToday(EVENT_TYPE);
 
