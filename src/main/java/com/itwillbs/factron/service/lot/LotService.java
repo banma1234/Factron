@@ -10,7 +10,7 @@ public interface LotService {
 
     public Long getLotSequence (Map<String, String> map);
 
-    public List<ResponseLotDTO> getLot();
+    public List<ResponseLotDTO> getLotById(String lotId);
 
-    public Void updateInboundLotQuantity (List<RequestLotUpdateDTO> materialList);
+    public Void updateLotQuantity (List<RequestLotUpdateDTO> materialList);
 }
