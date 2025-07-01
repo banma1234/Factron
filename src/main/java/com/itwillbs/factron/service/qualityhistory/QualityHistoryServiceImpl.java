@@ -13,7 +13,9 @@ import com.itwillbs.factron.repository.production.WorkPerformanceRepository;
 import com.itwillbs.factron.repository.quality.QualityInspectionHistoryRepository;
 import com.itwillbs.factron.repository.quality.QualityInspectionStandardRepository;
 import com.itwillbs.factron.repository.storage.InboundRepository;
+import com.itwillbs.factron.repository.storage.StockRepository;
 import com.itwillbs.factron.repository.storage.StorageRepository;
+import com.itwillbs.factron.service.inbound.InboundServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -36,6 +38,9 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
     private final StorageRepository storageRepository;
     private final InboundRepository inboundRepository;
     private final WorkOrderRepository workOrderRepository;
+    private final StockRepository stockRepository;
+
+    private final InboundServiceImpl inboundService;
 
     private final AuthorizationChecker authorizationChecker;
 
@@ -176,7 +181,8 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
             log.info("제품 입고 처리 완료 - 작업지시: {}, 제품: {}, 수량: {}, 창고: {}",
                     workOrderId, item.getId(), fectiveQuantity, storage.getId());
 
-            // TODO: 재고 수량 업데이트 등 추가 작업
+            // 재고 수량 추가 또는 신규 생성 함수 호출
+            inboundService.addOrCreateStock(inbound);
 
         } else {
 
