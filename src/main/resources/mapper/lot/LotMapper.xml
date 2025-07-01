@@ -15,10 +15,20 @@
     <select id="getInboundLotById" resultType="com.itwillbs.factron.entity.Lot" parameterType="com.itwillbs.factron.dto.lot.RequestLotUpdateDTO">
         SELECT id, item_id, material_id, quantity, event_type
         FROM LOT
-        WHERE
-            material_id = #{material_id}
-            AND
-            UPPER(event_type) = 'INB'
+        <where>
+            <choose>
+                <when test="item_id == null">
+                    material_id = #{material_id}
+                    AND
+                    UPPER(event_type) = 'INB'
+                </when>
+                <otherwise>
+                    item_id = #{item_id}
+                    AND
+                    UPPER(event_type) = 'ISP'
+                </otherwise>
+            </choose>
+        </where>
         ORDER BY created_at ASC
     </select>
 

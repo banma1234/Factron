@@ -13,7 +13,7 @@ const init = () => {
             },
             { header: '수량', name: 'quantity', align: 'center' },
             { header: '구분', name: 'categoryName', align: 'center' },
-            { header: '창고명', name: 'storageName', hidden: true },
+            { header: '창고명', name: 'storageName', align: 'center' },
             { header: '입고일자', name: 'inDate', align: 'center' },
             {
                 header: '상태', name: 'statusCode', align: 'center',
