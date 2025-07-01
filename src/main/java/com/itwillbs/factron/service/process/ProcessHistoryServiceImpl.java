@@ -1,15 +1,14 @@
 package com.itwillbs.factron.service.process;
 
+import com.itwillbs.factron.dto.lot.RequestProcessLotDTO;
 import com.itwillbs.factron.dto.process.RequestProcessHistDTO;
 import com.itwillbs.factron.dto.process.ResponseProcessHistoryInfoDTO;
-import com.itwillbs.factron.entity.Lot;
-import com.itwillbs.factron.entity.LotHistory;
-import com.itwillbs.factron.entity.ProcessHistory;
-import com.itwillbs.factron.entity.WorkOrder;
+import com.itwillbs.factron.entity.*;
 import com.itwillbs.factron.repository.lot.LotHistoryRepository;
 import com.itwillbs.factron.repository.lot.LotRepository;
 import com.itwillbs.factron.repository.process.ProcessHistoryRepository;
 import com.itwillbs.factron.repository.production.WorkOrderRepository;
+import com.itwillbs.factron.service.lot.LotCreateService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -28,6 +27,7 @@ public class ProcessHistoryServiceImpl implements ProcessHistoryService {
     private final LotHistoryRepository lotHistoryRepository;
     private final WorkOrderRepository workOrderRepository;
     private final LotRepository lotRepository;
+    private final LotCreateService lotCreateService;
 
     @Override
     public List<ResponseProcessHistoryInfoDTO> getProcessHistoryList(String workOrderId) {
@@ -43,8 +43,17 @@ public class ProcessHistoryServiceImpl implements ProcessHistoryService {
                 () -> new EntityNotFoundException("해당 작업지시가 없습니다.")
         );
 
+        Item item = workOrder.getItem();
+
         for(RequestProcessHistDTO.ProcessDTO process : requestDTO.getProcessList()){
-            // get new Lot
+
+
+            // 흐음... 갯수 적어야 할려나?
+            // CreateProcessLot 했을때 로트 리턴 받아야함
+            RequestProcessLotDTO newProc = new RequestProcessLotDTO(null, item, "공정", workOrderId);
+            Lot newLot = lotCreateService.CreateProcessLot(newProc);
+
+            //TODO: get new Lot
             String newLotId = "TEST1";
 
             Integer currProcess = processHistoryRepository.countCompletedProcessHistoriesByWorkOrderId(workOrderId);
@@ -57,7 +66,7 @@ public class ProcessHistoryServiceImpl implements ProcessHistoryService {
 
                 log.info("prevLot : {}", prevLot);
 
-                // add new Lot Structure
+                //TODO: add new Lot Structure
             }else{
                 List<LotHistory> prevLots = lotHistoryRepository.findByWorkOrderId(workOrderId);
                 if(prevLots.size() <= 0){
@@ -66,7 +75,7 @@ public class ProcessHistoryServiceImpl implements ProcessHistoryService {
 
                 log.info("prevLots : {}", prevLots);
 
-                // add new Lot Structure
+                //TODO: add new Lot Structure
             }
 
 
