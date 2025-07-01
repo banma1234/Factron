@@ -15,6 +15,7 @@
             wo.quantity,
             wp.fective_quantity,
             s1.name AS unit,
+            wo.line_id,
             l.name AS line_name,
             wo.start_date,
             s2.name AS status,
@@ -72,7 +73,7 @@
             i.id AS prod_id,
             i.name AS prod_name,
             s1.name AS type,
-            CONCAT(#{planQty}, SYS_CONNECT_BY_PATH(b.consumption, '*')) AS quantity,
+            CONCAT(#{planQty}, SYS_CONNECT_BY_PATH(b.consumption, '*')) AS quantity, -- n*n*n...
             NVL(s.quantity, 0) AS stock_qty,
             s2.name AS unit
         FROM BOM b
@@ -87,8 +88,8 @@
         CONNECT BY PRIOR b.child_item_id = b.parent_item_id
     </select>
 
-    <!-- 작업 제품 정보 및 투입 품목 목록 조회 -->
-    <select id="getInputProdList" parameterType="com.itwillbs.factron.dto.production.RequestWorkProdDTO" resultType="com.itwillbs.factron.dto.production.ResponseWorkProdDTO">
+    <!-- 투입할 품목 목록 조회 -->
+    <select id="getPossibleInputList" parameterType="com.itwillbs.factron.dto.production.RequestWorkProdDTO" resultType="com.itwillbs.factron.dto.production.ResponseWorkProdDTO">
         SELECT
             i.id AS prod_id,
             i.name AS prod_name,
