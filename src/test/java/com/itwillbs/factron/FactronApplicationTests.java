@@ -24,7 +24,6 @@ import com.itwillbs.factron.repository.storage.StockRepository;
 import com.itwillbs.factron.repository.storage.StorageRepository;
 import com.itwillbs.factron.repository.syscode.DetailSysCodeRepository;
 import com.itwillbs.factron.repository.syscode.SysCodeRepository;
-import com.itwillbs.factron.service.lot.LotService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -89,9 +88,6 @@ class FactronApplicationTests {
 	private WorkerRepository workerRepository;
 	@Autowired
 	private WorkPerformanceRepository workPerformanceRepository;
-
-	@Autowired
-	private LotService lotService;
 
 	@Test
 	@Transactional
@@ -870,7 +866,7 @@ class FactronApplicationTests {
 					.build());
 
 			lotRepository.save(Lot.builder()
-					.id("LOT-S-" + System.currentTimeMillis())
+					.id("20230711-ISP-0001")
 					.item(item1)
 					.material(null)
 					.quantity(10L)
@@ -893,7 +889,7 @@ class FactronApplicationTests {
 					.build());
 
 			lotRepository.save(Lot.builder()
-					.id("LOT-P-" + System.currentTimeMillis())
+					.id("20240901-ISP-0001")
 					.item(item2)
 					.material(null)
 					.quantity(5L)
@@ -916,7 +912,7 @@ class FactronApplicationTests {
 					.build());
 
 			lotRepository.save(Lot.builder()
-					.id("LOT-M-" + System.currentTimeMillis())
+					.id("20250630-INB-0001")
 					.item(null)
 					.material(material1)
 					.quantity(100L)
@@ -939,7 +935,7 @@ class FactronApplicationTests {
 					.build());
 
 			lotRepository.save(Lot.builder()
-					.id("LOT-M-" + System.currentTimeMillis())
+					.id("20250630-INB-0002")
 					.item(null)
 					.material(material2)
 					.quantity(20L)
@@ -962,7 +958,7 @@ class FactronApplicationTests {
 					.build());
 
 			lotRepository.save(Lot.builder()
-					.id("LOT-M-" + System.currentTimeMillis())
+					.id("20250630-INB-0003")
 					.item(null)
 					.material(material3)
 					.quantity(100L)
@@ -985,7 +981,7 @@ class FactronApplicationTests {
 					.build());
 
 			lotRepository.save(Lot.builder()
-					.id("LOT-M-" + System.currentTimeMillis())
+					.id("20250630-INB-0004")
 					.item(null)
 					.material(material2)
 					.quantity(20L)
@@ -1100,6 +1096,40 @@ class FactronApplicationTests {
 					.build();
 
 			qualityInspectionHistoryRepository.save(history);
+		}
+	}
+
+	@Test
+	@Transactional
+	@Commit
+	void insertWorkPerformanceData() {
+		// 1. 담당 사원 조회
+		Employee employee = employeeRepository.findById(25060001L).orElse(null);
+
+		// 2. 현재 날짜
+		LocalDate today = LocalDate.now();
+
+		// 3. 모든 작업지시 조회
+		List<WorkOrder> workOrders = workOrderRepository.findAll();
+
+		// 4. WorkPerformance 저장을 위한 repository 선언 필요
+		for (WorkOrder workOrder : workOrders) {
+			// 작업지시 수량을 반으로 나누어 양품/불량품 설정
+			Long totalQuantity = workOrder.getQuantity();
+			Long fectiveQuantity = totalQuantity / 2;
+			Long defectiveQuantity = totalQuantity - fectiveQuantity;
+
+			// 작업실적 생성
+			WorkPerformance performance = WorkPerformance.builder()
+					.workOrder(workOrder)
+					.endDate(today) // 현재 날짜를 작업 종료일로 설정
+					.fectiveQuantity(fectiveQuantity) // 총 수량의 절반을 양품으로
+					.defectiveQuantity(defectiveQuantity) // 나머지를 불량품으로
+					.employee(employee) // 지정된 직원 ID
+					.build();
+
+			// 작업실적 저장 (repository 선언 필요)
+			workPerformanceRepository.save(performance);
 		}
 	}
 }
