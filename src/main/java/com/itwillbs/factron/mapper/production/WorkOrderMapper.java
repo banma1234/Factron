@@ -19,9 +19,9 @@ public interface WorkOrderMapper {
     List<ResponseWorkProdDTO> getWorkItemList(RequestWorkProdDTO requestWorkProdDTO);
 
     /*
-     * 작업 제품 정보 및 투입 품목 목록 조회
+     * 투입할 품목 목록 조회
      * */
-    List<ResponseWorkProdDTO> getInputProdList(RequestWorkProdDTO requestWorkProdDTO);
+    List<ResponseWorkProdDTO> getPossibleInputList(RequestWorkProdDTO requestWorkProdDTO);
 
     /*
      * 작업 가능한 사원 목록 조회

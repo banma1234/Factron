@@ -1,9 +1,12 @@
 package com.itwillbs.factron.service.lot;
 
+import com.itwillbs.factron.common.component.AuthorizationChecker;
 import com.itwillbs.factron.dto.lot.RequestLotUpdateDTO;
+import com.itwillbs.factron.dto.lot.ResponseLotDTO;
 import com.itwillbs.factron.dto.lotHistory.RequestLotHistoryDTO;
 import com.itwillbs.factron.entity.Lot;
 import com.itwillbs.factron.mapper.lot.LotMapper;
+import com.itwillbs.factron.repository.lot.LotRepository;
 import com.itwillbs.factron.service.lotHistory.LotHistoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +24,8 @@ public class LotServiceImpl implements LotService {
 
     private final LotMapper lotMapper;
     private final LotHistoryService lotHistoryService;
+    private final LotRepository lotRepository;
+    private final AuthorizationChecker authorizationChecker;
 
     /**
      * 같은 조건의 LOT번호 개수 반환
@@ -31,19 +36,30 @@ public class LotServiceImpl implements LotService {
     }
 
     @Override
+    public List<ResponseLotDTO> getLot() {
+
+        List<Lot> lotList = lotRepository.findAll();
+
+        return toLotDTOList(lotList);
+    }
+
+    @Override
     @Transactional
     public Void updateInboundLotQuantity (List<RequestLotUpdateDTO> materialList) {
+
+        if (!authorizationChecker.hasAnyAuthority("ATH003", "ATH007")) {
+            throw new SecurityException("권한이 없습니다.");
+        }
 
         if(materialList.isEmpty()) {
             throw new NoSuchElementException("조회할 자재 정보가 없습니다.");
         }
 
         Map<String, List<Lot>> map = new HashMap<>();
-        List<Lot> LotList = new ArrayList<>();
 
         materialList.forEach(target -> {
 
-            LotList.clear();
+            List<Lot> LotList = new ArrayList<>();
             List<Lot> allLots = lotMapper.getInboundLotById(target);
 
             Long sum = 0L;
@@ -56,7 +72,12 @@ public class LotServiceImpl implements LotService {
                 LotList.add(lot);
             }
 
-            map.put(target.getMaterial_id(), LotList);
+            if(target.getMaterial_id() == null || target.getMaterial_id().isEmpty()) {
+                map.put(target.getItem_id(), LotList);
+            } else {
+                map.put(target.getMaterial_id(), LotList);
+            }
+
         });
 
         materialList.forEach(target -> {
@@ -91,6 +112,13 @@ public class LotServiceImpl implements LotService {
         });
 
         return null;
+    }
+
+    private List<ResponseLotDTO> toLotDTOList(List<Lot> lotList) {
+
+        return lotList.stream()
+                .map(ResponseLotDTO :: fromEntity)
+                .toList();
     }
 
 }

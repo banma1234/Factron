@@ -14,28 +14,27 @@ public class RequestProcessLotDTO {
     private Material material;
     private Item item;
 
-    @NotNull(message = "수량은 필수 입력값입니다.")
-    private Long quantity;
-
     @NotBlank(message = "유형 구분은 필수 입력값입니다.")
     @Pattern(regexp = "^PCS\\d{3}$", message = "공정 LOT 입력시 올바른 공통코드 형식을 따라야 합니다.")
     private String event_type;
 
-    public RequestProcessLotDTO(Material material, Item item, Long quantity, String event_type) {
+    private String work_order_id;
+
+    public RequestProcessLotDTO(Material material, Item item, String event_type, String work_order_id) {
         this.material = material;
         this.item = item;
-        this.quantity = quantity;
         this.event_type = event_type;
+        this.work_order_id = work_order_id;
     }
 
-    public Lot toEntity(String LotId) {
+    public Lot toEntity(String LotId, Long currentUser) {
         return Lot.builder()
                 .id(LotId)
                 .item(this.item)
                 .material(this.material)
-                .quantity(this.quantity)
+                .quantity(0L)
                 .eventType(this.event_type)
-                .createdBy(20180924L)
+                .createdBy(currentUser)
                 .build();
     }
 }

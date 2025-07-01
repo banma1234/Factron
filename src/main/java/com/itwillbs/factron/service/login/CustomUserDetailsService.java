@@ -47,7 +47,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         // 권한 코드 그대로 사용 (1:1 관계이므로 매핑 불필요)
         String role = auth.getAuthCode();
-        log.info("로그인 성공 - 사원번호: {}, 권한: {}", employeeId, role);
+        log.debug("로그인 성공 - 사원번호: {}, 권한: {}", employeeId, role);
 
         return User.builder()
                 .username(employeeId)

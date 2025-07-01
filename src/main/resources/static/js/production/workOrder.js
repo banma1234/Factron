@@ -130,8 +130,8 @@ const init = () => {
 
         const rowKey = planningGrid.getFocusedCell()?.rowKey;
         const selectedPlan = rowKey !== null ? planningGrid.getRow(rowKey) : null;
+
         if (selectedPlan) {
-            console.log("선택된 생산계획:", selectedPlan);
             const popup = window.open('/workorder/save', '_blank', 'width=800,height=850');
 
             // 자식 창으로부터 'ready' 먼저 수신 후 postMessage 실행
@@ -159,6 +159,51 @@ const init = () => {
         }
 
     }, false);
+
+    // 작업지시 행 클릭 시 상세정보 open
+    workOrderGrid.on('dblclick', (e) => {
+        const rowKey = e.rowKey;
+        const rowData = workOrderGrid.getRow(rowKey);
+
+        if (rowData && rowData.id) {
+            const popup = window.open('/workorder-form', '_blank', 'width=800,height=850');
+
+            // 자식 창으로부터 'ready' 먼저 수신 후 postMessage 실행
+            const messageHandler = (event) => {
+                if (event.data === 'ready') {
+                    popup.postMessage({
+                        planId: rowData.productionId,
+                        orderId: rowData.id,
+                        itemId: rowData.itemId,
+                        itemName: rowData.itemName,
+                        quantity: rowData.quantity,
+                        unit: rowData.unit,
+                        lineId: rowData.lineId,
+                        lineName: rowData.lineName,
+                        startDate: rowData.startDate,
+                        status: rowData.status,
+                    }, "*");
+                    window.removeEventListener("message", messageHandler);
+                }
+            };
+            window.addEventListener("message", messageHandler);
+
+            //팝업 종료시 작업 리스트 새로 호출
+            window.addEventListener("message", (event) => {
+
+                const message = event.data;
+
+                if (message && message.type === "STR_REFRESH_WORKORDERS") {
+                    const rowKey = planningGrid.getFocusedCell()?.rowKey;
+                    const selectedPlan = rowKey !== null ? planningGrid.getRow(rowKey) : null;
+
+                    if (selectedPlan) {
+                        getWorkOrders(selectedPlan.id); // 안전하게 리프레시 실행
+                    }
+                }
+            });
+        }
+    });
 
     // 생산계획 목록 조회
     async function getPrdctPlans() {
