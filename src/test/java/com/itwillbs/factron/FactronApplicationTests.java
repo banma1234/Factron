@@ -14,6 +14,8 @@ import com.itwillbs.factron.repository.product.ItemRepository;
 import com.itwillbs.factron.repository.product.MaterialRepository;
 import com.itwillbs.factron.repository.production.ProductionPlanningRepository;
 import com.itwillbs.factron.repository.production.WorkOrderRepository;
+import com.itwillbs.factron.repository.production.WorkerRepository;
+import com.itwillbs.factron.repository.quality.QualityInspectionHistoryRepository;
 import com.itwillbs.factron.repository.quality.QualityInspectionRepository;
 import com.itwillbs.factron.repository.quality.QualityInspectionStandardRepository;
 import com.itwillbs.factron.repository.storage.InboundRepository;
@@ -65,6 +67,8 @@ class FactronApplicationTests {
 	private QualityInspectionRepository qualityInspectionRepository;
 	@Autowired
 	private QualityInspectionStandardRepository qualityInspectionStandardRepository;
+	@Autowired
+	private QualityInspectionHistoryRepository qualityInspectionHistoryRepository;
 
 	@Autowired
 	private StorageRepository storageRepository;
@@ -82,6 +86,8 @@ class FactronApplicationTests {
 	private ProductionPlanningRepository prdctPlanRepository;
 	@Autowired
 	private WorkOrderRepository workOrderRepository;
+	@Autowired
+	private WorkerRepository workerRepository;
 
 	@Test
 	@Transactional
@@ -210,9 +216,8 @@ class FactronApplicationTests {
 
 		Map<String, String> sts = new HashMap<>();
 		sts.put("STS001", "대기");
-		sts.put("STS002", "시작");
+		sts.put("STS002", "취소");
 		sts.put("STS003", "완료");
-		sts.put("STS004", "취소");
 		detailCodeMap.put("STS", sts);
 
 		Map<String, String> unt = new HashMap<>();
@@ -292,7 +297,7 @@ class FactronApplicationTests {
 					.gender(i % 2 == 1 ? "M" : "F")   // 홀수면 남자(M), 짝수면 여자(F)
 					.joinedDate(LocalDate.of(2025, 6, 13))
 					.quitDate(null)
-					.deptCode("DEP001")
+					.deptCode("DEP006")
 					.eduLevelCode("EDU001")
 					.employCode("HIR001")
 					.positionCode("POS001")
@@ -310,7 +315,7 @@ class FactronApplicationTests {
 
 			IntergratAuth auth = IntergratAuth.builder()
 					.isActive("Y")
-					.authCode("ATH002")
+					.authCode("ATH007")
 					.password("$2a$10$pHltqD3BTCs6/AdCrX9Zc.2/iGyylnIvtv.yvtL5nTSP7pHFzoX8G") // 5678
 					.employee(emp)
 					.build();
@@ -834,9 +839,9 @@ class FactronApplicationTests {
 					.item(item1)
 					.material(null)
 					.storage(semiProductStorage)
-					.quantity(20L)
+					.quantity(10L)
 					.inDate(now)
-					.categoryCode("S") // 반제품
+					.categoryCode("ITP002") // 반제품
 					.statusCode("완료")
 					.build());
 
@@ -844,7 +849,7 @@ class FactronApplicationTests {
 					.id("LOT-S-" + System.currentTimeMillis())
 					.item(item1)
 					.material(null)
-					.quantity(20L)
+					.quantity(10L)
 					.eventType("입고")
 					.createdAt(LocalDateTime.now())
 					.createdBy(1L)
@@ -857,9 +862,9 @@ class FactronApplicationTests {
 					.item(item2)
 					.material(null)
 					.storage(finishedProductStorage)
-					.quantity(10L)
+					.quantity(5L)
 					.inDate(now)
-					.categoryCode("P") // 완제품
+					.categoryCode("ITP003") // 완제품
 					.statusCode("완료")
 					.build());
 
@@ -867,7 +872,7 @@ class FactronApplicationTests {
 					.id("LOT-P-" + System.currentTimeMillis())
 					.item(item2)
 					.material(null)
-					.quantity(10L)
+					.quantity(5L)
 					.eventType("입고")
 					.createdAt(LocalDateTime.now())
 					.createdBy(1L)
@@ -880,9 +885,9 @@ class FactronApplicationTests {
 					.item(null)
 					.material(material1)
 					.storage(rawMaterialStorage)
-					.quantity(50L)
+					.quantity(100L)
 					.inDate(now)
-					.categoryCode("M") // 자재
+					.categoryCode("ITP001") // 자재
 					.statusCode("완료")
 					.build());
 
@@ -890,7 +895,7 @@ class FactronApplicationTests {
 					.id("LOT-M-" + System.currentTimeMillis())
 					.item(null)
 					.material(material1)
-					.quantity(50L)
+					.quantity(100L)
 					.eventType("입고")
 					.createdAt(LocalDateTime.now())
 					.createdBy(1L)
@@ -903,9 +908,9 @@ class FactronApplicationTests {
 					.item(null)
 					.material(material2)
 					.storage(rawMaterialStorage)
-					.quantity(30L)
+					.quantity(20L)
 					.inDate(now)
-					.categoryCode("M")
+					.categoryCode("ITP001") // 자재
 					.statusCode("완료")
 					.build());
 
@@ -913,7 +918,7 @@ class FactronApplicationTests {
 					.id("LOT-M-" + System.currentTimeMillis())
 					.item(null)
 					.material(material2)
-					.quantity(30L)
+					.quantity(20L)
 					.eventType("입고")
 					.createdAt(LocalDateTime.now())
 					.createdBy(1L)
@@ -924,9 +929,11 @@ class FactronApplicationTests {
 	@Test
 	@Transactional
 	@Commit
-	void insertPrdctPlanWorkOrderData() {
+	void insertPlanOrderWorkerData() {
 		// 1. 담당 사원 조회
 		Employee employee = employeeRepository.findById(25060001L).orElse(null);
+		Employee employee2 = employeeRepository.findById(25060002L).orElse(null);
+		Employee employee3 = employeeRepository.findById(25060003L).orElse(null);
 
 		// 2. 오늘 날짜 기준
 		LocalDate today = LocalDate.now();
@@ -970,9 +977,59 @@ class FactronApplicationTests {
 					.startDate(today.plusDays(1))
 					.build();
 
-			workOrderRepository.save(workOrder);
+			workOrder = workOrderRepository.save(workOrder);
+
+			// 작업자 생성
+			Worker worker1 = Worker.builder()
+					.workOrder(workOrder)
+					.employee(employee2)
+					.build();
+
+			Worker worker2 = Worker.builder()
+					.workOrder(workOrder)
+					.employee(employee3)
+					.build();
+
+			workerRepository.save(worker1);
+			workerRepository.save(worker2);
 
 			sequence++;
+		}
+	}
+
+	@Test
+	@Transactional
+	@Commit
+	void insertQualityInspectionHistoryDummyData() {
+		// 1. 검사 기준(qualityInspection) 조회
+		QualityInspection qualityInspection = qualityInspectionRepository.findAll().stream()
+				.findFirst()
+				.orElse(null);
+
+		// 2. 작업 지시(workOrder) 조회
+		WorkOrder workOrder = workOrderRepository.findAll().stream()
+				.findFirst()
+				.orElse(null);
+
+		// 3. 검사 대상 아이템(item) 조회
+		Item item = itemRepository.findAll().stream()
+				.findFirst()
+				.orElse(null);
+
+		// 4. 더미 데이터 3개 생성
+		for (int i = 0; i < 3; i++) {
+			QualityInspectionHistory history = QualityInspectionHistory.builder()
+					.qualityInspection(qualityInspection)
+					.workOrder(workOrder)
+					.item(item)
+					.lot(null)
+					.inspectionDate(null)
+					.resultValue(null)
+					.resultCode(null)
+					.statusCode("STS001")
+					.build();
+
+			qualityInspectionHistoryRepository.save(history);
 		}
 	}
 }

@@ -6,4 +6,5 @@ import lombok.Data;
 public class RequestInboundDTO {
     private String materialId;
     private Long quantity;
+    private Long storageId;
 }

@@ -15,6 +15,8 @@ public class RequestWorkOrderDTO {
     private Long empId;
     private LocalDate startDate;
     private Long quantity;
+    private List<RequestWorkProdDTO> inputProds; // 투입 품목
+    private List<Long> workers; // 작업자
 
     // 조회 조건
     private String prdctPlanId;

@@ -17,9 +17,9 @@ public class WorkOrderController {
     /*
      * 작업지시 등록 폼 페이지
      */
-    @GetMapping("/workorder-form")
+    @GetMapping("/workorder/save")
     public String workOrderForm() {
-        return "production/workOrder-form";
+        return "production/workOrder-add-form";
     }
 
 }

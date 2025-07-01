@@ -7,6 +7,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+/**
+ * (입고) LOT생성 요청 DTO
+ * */
 @Data
 public class RequestInboundLotDTO {
 
@@ -25,6 +28,9 @@ public class RequestInboundLotDTO {
         this.event_type = event_type;
     }
 
+    /**
+     * DTO => Entity 변환 메서드
+     * */
     public Lot toEntity(String LotId) {
         return Lot.builder()
                 .id(LotId)
