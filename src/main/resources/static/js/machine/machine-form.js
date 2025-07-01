@@ -140,8 +140,7 @@ const init = async () => {
                 const res = await fetch(`/api/machine`, {
                     method: "PUT",
                     headers: {
-                        "Content-Type": "application/json",
-                        "empId": user.id
+                        "Content-Type": "application/json"
                     },
                     body: JSON.stringify(data),
                 });

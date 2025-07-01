@@ -1,5 +1,6 @@
 package com.itwillbs.factron.service.machine;
 
+import com.itwillbs.factron.common.component.AuthorizationChecker;
 import com.itwillbs.factron.dto.machine.RequestAddMachineDTO;
 import com.itwillbs.factron.dto.machine.RequestMachineInfoDTO;
 import com.itwillbs.factron.dto.machine.RequestUpdateMachineDTO;
@@ -27,6 +28,8 @@ public class MachineServiceImpl implements MachineService {
     private final MachineMapper machineMapper;
     private final ProcessRepository processRepository;
 
+    private final AuthorizationChecker authorizationChecker;
+
     /**
      * 관리자 권한 체크
      *
@@ -46,11 +49,15 @@ public class MachineServiceImpl implements MachineService {
      * 설비 추가
      *
      * @param requestDto 요청 DTO
-     * @param empId      사원 ID
      */
     @Override
     @Transactional
-    public void addMachine(RequestAddMachineDTO requestDto, Long empId) {
+    public void addMachine(RequestAddMachineDTO requestDto) {
+
+        // AuthorizationChecker를 사용하여 현재 로그인한 사용자 ID 가져오기
+        Long empId = authorizationChecker.getCurrentEmployeeId();
+
+        log.info("현재 로그인한 사원 ID: {}", empId);
 
         checkAdminPermission(empId); // 관리자 권한 체크
 
@@ -81,11 +88,15 @@ public class MachineServiceImpl implements MachineService {
      * 설비 수정
      *
      * @param requestDto 요청 DTO
-     * @param empId      사원 ID
      */
     @Override
     @Transactional
-    public void updateMachine(RequestUpdateMachineDTO requestDto, Long empId) {
+    public void updateMachine(RequestUpdateMachineDTO requestDto) {
+
+        // AuthorizationChecker를 사용하여 현재 로그인한 사용자 ID 가져오기
+        Long empId = authorizationChecker.getCurrentEmployeeId();
+
+        log.info("현재 로그인한 사원 ID: {}", empId);
 
         checkAdminPermission(empId); // 관리자 권한 체크
 

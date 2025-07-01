@@ -83,7 +83,7 @@ a {
 
 .input-group{
     display: flex;
-    max-width: 250px;
+    width: auto;
     align-items: center;
 }
 
