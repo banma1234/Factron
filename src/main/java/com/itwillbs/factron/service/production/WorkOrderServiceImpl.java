@@ -40,7 +40,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     * */
     @Override
     public List<ResponseWorkOrderDTO> getWorkOrderList(RequestWorkOrderDTO requestWorkOrderDTO) {
-        log.info(requestWorkOrderDTO);
         return workOrderMapper.getWorkOrderList(requestWorkOrderDTO);
     }
 

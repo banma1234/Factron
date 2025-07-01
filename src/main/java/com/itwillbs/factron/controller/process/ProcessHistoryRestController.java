@@ -1,6 +1,7 @@
 package com.itwillbs.factron.controller.process;
 
 import com.itwillbs.factron.dto.ResponseDTO;
+import com.itwillbs.factron.dto.process.RequestProcessHistDTO;
 import com.itwillbs.factron.dto.process.ResponseProcessHistoryInfoDTO;
 import com.itwillbs.factron.service.process.ProcessHistoryService;
 import lombok.RequiredArgsConstructor;
@@ -23,5 +24,19 @@ public class ProcessHistoryRestController {
         }catch (Exception e){
             return ResponseDTO.fail(800,e.getMessage(),null);
         }
+    }
+
+//    // 공정 이력 수정?
+    @PutMapping("")
+    public ResponseDTO<Void> updateProcessHistory(@RequestBody RequestProcessHistDTO requestDTO){
+        log.info("Received updateProcessHistory DTO: {}", requestDTO.getWorkOrderId());
+        log.info("Received updateProcessHistory DTO: {}", requestDTO.getProcessList());
+        return ResponseDTO.success(null);
+//        try{
+//            processHistoryService.updateProcessHistory(requestDTO);
+//            return ResponseDTO.success(null);
+//        }catch (Exception e){
+//            return ResponseDTO.fail(800,e.getMessage(),null);
+//        }
     }
 }

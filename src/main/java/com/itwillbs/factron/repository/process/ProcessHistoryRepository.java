@@ -27,7 +27,8 @@ public interface ProcessHistoryRepository extends JpaRepository<ProcessHistory, 
                ph.statusCode,
                dsc.name,
                i.unit,
-               i.name
+               i.name,
+               wo.quantity
            )
        FROM ProcessHistory ph
        JOIN ph.workOrder wo
@@ -37,21 +38,12 @@ public interface ProcessHistoryRepository extends JpaRepository<ProcessHistory, 
        WHERE wo.id = :workOrderId
     """)
     List<ResponseProcessHistoryInfoDTO> findProcessHistoriesByWorkOrderId(@Param("workOrderId") String workOrderId);
+
+    @Query("""
+        SELECT COUNT(ph)
+        FROM ProcessHistory ph
+        WHERE ph.workOrder.id = :workOrderId
+        AND ph.statusCode = 'STS003'
+    """)
+    Integer countCompletedProcessHistoriesByWorkOrderId(@Param("workOrderId") String workOrderId);
 }
-
-/**
-     * String processHistoryId;
- *     String processId;
- *     String processName;
- *     Double inputQuantity;
- *     Double outputQuantity;
- *     String lotId;
- *     String workOrderId;
- *     LocalDateTime startTime;
- *     LocalDateTime endTime;
- *     Double costTime;
- *     String processStatusCode;
- *     String processStatusName;
- */
-
-
