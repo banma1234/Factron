@@ -41,7 +41,6 @@ public class InboundServiceImpl implements InboundService {
     private final StorageService storageService;
     private final LotCreateService lotCreateService;
 
-
     @Override
     public List<ResponseSearchInboundDTO> getInboundsList(RequestSearchInboundDTO requestSearchInboundDTO){
         return inboundMapper.getInboundsList(requestSearchInboundDTO);
@@ -72,34 +71,8 @@ public class InboundServiceImpl implements InboundService {
                 }
             }
 
-            // 3. 재고 수량 추가 또는 신규 생성
-            if (inbound.getItem() != null) {
-                Stock stock = stockRepository.findByItemAndStorage(inbound.getItem(), inbound.getStorage()).orElse(null);
-                if (stock != null) {
-                    stock.addQuantity(inbound.getQuantity());
-                } else {
-                    Stock newStock = Stock.builder()
-                            .item(inbound.getItem())
-                            .material(null)
-                            .storage(inbound.getStorage())
-                            .quantity(inbound.getQuantity())
-                            .build();
-                    stockRepository.save(newStock);
-                }
-            } else if (inbound.getMaterial() != null) {
-                Stock stock = stockRepository.findByMaterialAndStorage(inbound.getMaterial(), inbound.getStorage()).orElse(null);
-                if (stock != null) {
-                    stock.addQuantity(inbound.getQuantity());
-                } else {
-                    Stock newStock = Stock.builder()
-                            .material(inbound.getMaterial())
-                            .item(null)
-                            .storage(inbound.getStorage())
-                            .quantity(inbound.getQuantity())
-                            .build();
-                    stockRepository.save(newStock);
-                }
-            }
+            // 3. 재고 추가/생성 (공통 메서드 호출)
+            addOrCreateStock(inbound);
 
             // 4. LOT 리스트에 추가 (자재만 LOT 생성)
             if (inbound.getMaterial() != null) {
@@ -120,6 +93,41 @@ public class InboundServiceImpl implements InboundService {
                 throw e;
             }
         }
+    }
 
+    /**
+     * 재고 수량 추가 또는 신규 생성 (Item/Material 구분)
+     */
+    @Transactional
+    public void addOrCreateStock(Inbound inbound) {
+        if (inbound.getItem() != null) {
+            Stock stock = stockRepository.findByItemAndStorage(inbound.getItem(), inbound.getStorage()).orElse(null);
+            if (stock != null) {
+                stock.addQuantity(inbound.getQuantity());
+            } else {
+                Stock newStock = Stock.builder()
+                        .item(inbound.getItem())
+                        .material(null)
+                        .storage(inbound.getStorage())
+                        .quantity(inbound.getQuantity())
+                        .build();
+                stockRepository.save(newStock);
+            }
+        } else if (inbound.getMaterial() != null) {
+            Stock stock = stockRepository.findByMaterialAndStorage(inbound.getMaterial(), inbound.getStorage()).orElse(null);
+            if (stock != null) {
+                stock.addQuantity(inbound.getQuantity());
+            } else {
+                Stock newStock = Stock.builder()
+                        .material(inbound.getMaterial())
+                        .item(null)
+                        .storage(inbound.getStorage())
+                        .quantity(inbound.getQuantity())
+                        .build();
+                stockRepository.save(newStock);
+            }
+        } else {
+            log.warn("Inbound에 Item과 Material 모두 없음: inboundId={}", inbound.getId());
+        }
     }
 }

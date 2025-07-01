@@ -20,6 +20,7 @@ public class ResponseWorkOrderDTO {
     private Long quantity;
     private Long fectiveQuantity;
     private String unit;
+    private String lineId;
     private String lineName;
     private LocalDate startDate;
     private String status;
