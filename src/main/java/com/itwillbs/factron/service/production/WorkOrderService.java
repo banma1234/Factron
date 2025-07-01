@@ -9,7 +9,7 @@ public interface WorkOrderService {
 
     List<ResponseWorkProdDTO> getWorkItemList(RequestWorkProdDTO requestWorkProdDTO);
 
-    List<ResponseWorkProdDTO> getInputProdList(RequestWorkProdDTO requestWorkProdDTO);
+    List<ResponseWorkProdDTO> getPossibleInputList(RequestWorkProdDTO requestWorkProdDTO);
 
     List<ResponseWorkerDTO> getPossibleWorkerList();
 
