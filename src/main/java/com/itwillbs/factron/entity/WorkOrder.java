@@ -43,4 +43,9 @@ public class WorkOrder {
 
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate; // 작업 시작일
+
+    // 작업 상태 변경
+    public void updateStatus(String statusCode) {
+        this.statusCode = statusCode;
+    }
 }
