@@ -28,13 +28,16 @@ public interface ProcessHistoryRepository extends JpaRepository<ProcessHistory, 
                dsc.name,
                i.unit,
                i.name,
-               wo.quantity
+               wo.quantity,
+               dscs.detailCode,
+               dscs.name
            )
        FROM ProcessHistory ph
        JOIN ph.workOrder wo
        JOIN wo.item i
        JOIN ph.process p
        JOIN DetailSysCode dsc ON ph.statusCode = dsc.detailCode
+       JOIN DetailSysCode dscs ON p.typeCode = dscs.detailCode
        WHERE wo.id = :workOrderId
     """)
     List<ResponseProcessHistoryInfoDTO> findProcessHistoriesByWorkOrderId(@Param("workOrderId") String workOrderId);

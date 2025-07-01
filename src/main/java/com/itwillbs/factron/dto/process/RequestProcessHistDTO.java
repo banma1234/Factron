@@ -25,6 +25,7 @@ public class RequestProcessHistDTO {
         LocalDateTime startTime;
         @NotNull(message = "공정 시작시간과 종료시간은 필수입니다.")
         LocalDateTime endTime;
+        String processTypeCode;
 
         /**
          * 공정 소요 시간을 분 단위로 계산

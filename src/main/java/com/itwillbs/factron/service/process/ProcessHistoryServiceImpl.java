@@ -50,7 +50,7 @@ public class ProcessHistoryServiceImpl implements ProcessHistoryService {
 
             // 흐음... 갯수 적어야 할려나?
             // CreateProcessLot 했을때 로트 리턴 받아야함
-//            RequestProcessLotDTO newProc = new RequestProcessLotDTO(null, item, "공정", workOrderId);
+//            RequestProcessLotDTO newProc = new RequestProcessLotDTO(null, item, process.getProcessTypeCode, workOrderId);
 //            Lot newLot = lotCreateService.CreateProcessLot(newProc);
 
             //TODO: get new Lot

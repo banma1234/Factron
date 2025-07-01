@@ -330,6 +330,7 @@ const init = () => {
                 throw new Error(`서버 오류: ${res.status}`);
             }
             const data = await res.json();
+            // console.log(data.data)
             processHistoryGrid.resetData(data.data);
         } catch (e) {
             console.error(e);
@@ -345,6 +346,7 @@ const init = () => {
                 outputQty: row.outputQuantity,
                 startTime: new Date(row.startTime),
                 endTime: new Date(row.endTime),
+                processTypeCode: row.processTypeCode,
             }))
         }
         try {
