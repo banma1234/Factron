@@ -42,21 +42,6 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
     private final AuthorizationChecker authorizationChecker;
 
     /**
-     * 관리자 권한 체크
-     *
-     * @param empId 사원 ID
-     */
-    private void checkAdminPermission(Long empId) {
-
-        boolean hasPermission = true; // TODO: 실제 권한 체크 로직으로 대체
-
-        // 관리자 권한이 없는 경우 예외 처리
-        if (!hasPermission) {
-            throw new SecurityException("관리자 권한이 없습니다.");
-        }
-    }
-
-    /**
      * 품질 검사 이력 목록 조회
      *
      * @param requestDto 요청 DTO
@@ -81,10 +66,8 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
     @Override
     @Transactional
     public void updateQualityHistoryList(RequestUpdateQualityHistoryListDTO requestDto) {
-        // 현재 로그인한 사원 ID 가져오기
-        Long empId = authorizationChecker.getCurrentEmployeeId();
-        log.info("현재 로그인한 사원 ID: {}", empId);
-        checkAdminPermission(empId); // 관리자 권한 체크
+
+        authorizationChecker.checkAnyAuthority("ATH003", "ATH006", "ATH007");
 
         String itemId = requestDto.getItemId();
 
