@@ -1,5 +1,6 @@
 package com.itwillbs.factron.service.lotStructure;
 
+import com.itwillbs.factron.common.component.AuthorizationChecker;
 import com.itwillbs.factron.entity.Lot;
 import com.itwillbs.factron.entity.LotStructure;
 import com.itwillbs.factron.repository.lot.LotStructureRepository;
@@ -16,10 +17,15 @@ import java.util.List;
 public class LotStructureServiceImpl implements LotStructureService {
 
     private final LotStructureRepository lotStructureRepository;
+    private final AuthorizationChecker authorizationChecker;
 
     @Override
     @Transactional
     public Void linkLotStructure(Lot parent, List<Lot> child) {
+
+        if (!authorizationChecker.hasAnyAuthority("ATH003", "ATH006", "ATH007")) {
+            throw new SecurityException("권한이 없습니다.");
+        }
 
         List<LotStructure> treeList = new ArrayList<>();
 
