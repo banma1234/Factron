@@ -31,14 +31,14 @@ public class RequestQualityLotDTO {
         this.event_type = event_type;
     }
 
-    public Lot toEntity(String LotId) {
+    public Lot toEntity(String LotId, Long currentUser) {
         return Lot.builder()
                 .id(LotId)
                 .item(this.item)
                 .material(null)
                 .quantity(this.quantity)
                 .eventType(this.event_type.getPrefix())
-                .createdBy(20180924L)
+                .createdBy(currentUser)
                 .build();
     }
 }

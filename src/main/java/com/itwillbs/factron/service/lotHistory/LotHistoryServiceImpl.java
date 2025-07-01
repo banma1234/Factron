@@ -1,5 +1,6 @@
 package com.itwillbs.factron.service.lotHistory;
 
+import com.itwillbs.factron.common.component.AuthorizationChecker;
 import com.itwillbs.factron.dto.lotHistory.RequestLotHistoryDTO;
 import com.itwillbs.factron.entity.Lot;
 import com.itwillbs.factron.repository.lot.LotHistoryRepository;
@@ -17,10 +18,15 @@ public class LotHistoryServiceImpl implements LotHistoryService {
 
     private final LotHistoryRepository lotHistoryRepository;
     private final LotRepository lotRepository;
+    private final AuthorizationChecker authorizationChecker;
 
     @Override
     @Transactional
     public Void addHistory(RequestLotHistoryDTO reqLotHistoryDTO) {
+
+        if (!authorizationChecker.hasAnyAuthority("ATH003", "ATH005", "ATH006", "ATH007")) {
+            throw new SecurityException("권한이 없습니다.");
+        }
 
         Lot lot = lotRepository.findById(reqLotHistoryDTO.getLot_id())
                         .orElseThrow(() -> new NoSuchElementException("해당하는 LOT 번호가 없습니다."));

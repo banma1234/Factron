@@ -1,5 +1,6 @@
 package com.itwillbs.factron.service.lot;
 
+import com.itwillbs.factron.common.component.AuthorizationChecker;
 import com.itwillbs.factron.dto.lot.RequestInboundLotDTO;
 import com.itwillbs.factron.dto.lot.RequestProcessLotDTO;
 import com.itwillbs.factron.dto.lot.RequestQualityLotDTO;
@@ -27,6 +28,7 @@ public class LotCreateServiceImpl implements LotCreateService {
     private final LotRepository lotRepository;
     private final LotService lotService;
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.BASIC_ISO_DATE;
+    private final AuthorizationChecker authorizationChecker;
 
     /**
      * (입고) LOT 생성
@@ -36,6 +38,10 @@ public class LotCreateServiceImpl implements LotCreateService {
     @Override
     @Transactional
     public Void CreateInboundLot(List<RequestInboundLotDTO> reqInbound) {
+
+        if (!authorizationChecker.hasAnyAuthority("ATH003", "ATH005")) {
+            throw new SecurityException("권한이 없습니다.");
+        }
 
         if (reqInbound.isEmpty()) {
             throw new NoSuchElementException("LOT 생성에 필요한 데이터가 없습니다.");
@@ -47,6 +53,7 @@ public class LotCreateServiceImpl implements LotCreateService {
 
         String TODAY = (String) LotIdElement.get("today");
         long count = (Long) LotIdElement.get("sequence");
+        Long currentUser = authorizationChecker.getCurrentEmployeeId();
 
         List<Lot> lotList = new ArrayList<>();
 
@@ -55,7 +62,7 @@ public class LotCreateServiceImpl implements LotCreateService {
             // LOT_ID 생성
             String lotId = generateLotId(TODAY, EVENT_TYPE, count + i);
             // LOT 생성
-            lotList.add(reqInbound.get(i).toEntity(lotId));
+            lotList.add(reqInbound.get(i).toEntity(lotId, currentUser));
         }
 
         lotRepository.saveAll(lotList);
@@ -70,7 +77,11 @@ public class LotCreateServiceImpl implements LotCreateService {
      * */
     @Override
     @Transactional
-    public Void CreateProcessLot(RequestProcessLotDTO reqInbound) {
+    public Lot CreateProcessLot(RequestProcessLotDTO reqInbound) {
+
+        if (!authorizationChecker.hasAnyAuthority("ATH003", "ATH006", "ATH007")) {
+            throw new SecurityException("권한이 없습니다.");
+        }
 
         String EVENT_TYPE = reqInbound.getEvent_type();
         // LOT_ID 생성에 필요한 데이터
@@ -78,15 +89,14 @@ public class LotCreateServiceImpl implements LotCreateService {
 
         String TODAY = (String) LotIdElement.get("today");
         long count = (Long) LotIdElement.get("sequence");
+        Long currentUser = authorizationChecker.getCurrentEmployeeId();
 
         // LOT_ID 생성
         String lotId = generateLotId(TODAY, EVENT_TYPE, count + 1);
         // LOT 생성
-        Lot lot = reqInbound.toEntity(lotId);
+        Lot lot = reqInbound.toEntity(lotId, currentUser);
 
-        lotRepository.save(lot);
-
-        return null;
+        return lotRepository.save(lot);
     }
 
     /**
@@ -96,7 +106,11 @@ public class LotCreateServiceImpl implements LotCreateService {
      * */
     @Override
     @Transactional
-    public Void CreateQualityLot(RequestQualityLotDTO reqInbound) {
+    public Lot CreateQualityLot(RequestQualityLotDTO reqInbound) {
+
+        if (!authorizationChecker.hasAnyAuthority("ATH003", "ATH007")) {
+            throw new SecurityException("권한이 없습니다.");
+        }
 
         String EVENT_TYPE = reqInbound.getEvent_type().getPrefix();
         // LOT_ID 생성에 필요한 데이터
@@ -104,15 +118,14 @@ public class LotCreateServiceImpl implements LotCreateService {
 
         String TODAY = (String) LotIdElement.get("today");
         long count = (Long) LotIdElement.get("sequence");
+        Long currentUser = authorizationChecker.getCurrentEmployeeId();
 
         // LOT_ID 생성
         String lotId = generateLotId(TODAY, EVENT_TYPE, count + 1);
         // LOT 생성
-        Lot lot = reqInbound.toEntity(lotId);
+        Lot lot = reqInbound.toEntity(lotId, currentUser);
 
-        lotRepository.save(lot);
-
-        return null;
+        return lotRepository.save(lot);
     }
 
     /**

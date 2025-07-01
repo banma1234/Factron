@@ -31,14 +31,14 @@ public class RequestInboundLotDTO {
     /**
      * DTO => Entity 변환 메서드
      * */
-    public Lot toEntity(String LotId) {
+    public Lot toEntity(String LotId, Long currentUser) {
         return Lot.builder()
                 .id(LotId)
                 .item(null)
                 .material(this.material)
                 .quantity(this.quantity)
                 .eventType(this.event_type.getPrefix())
-                .createdBy(20180924L)
+                .createdBy(currentUser)
                 .build();
     }
 }
