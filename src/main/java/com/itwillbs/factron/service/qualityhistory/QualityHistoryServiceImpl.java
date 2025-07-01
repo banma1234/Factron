@@ -181,6 +181,9 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
             // 재고 수량 추가 또는 신규 생성 함수 호출
             inboundService.addOrCreateStock(inbound);
 
+            log.info("재고 수량 업데이트 완료 - 제품: {}, 수량: {}, 창고: {}",
+                    item.getId(), fectiveQuantity, storage.getId());
+
         } else {
 
             log.warn("불합격 품질검사 항목이 있어 입고 및 재고 수량 업데이트 처리를 진행하지 않습니다. 작업지시: {}", workOrderId);
