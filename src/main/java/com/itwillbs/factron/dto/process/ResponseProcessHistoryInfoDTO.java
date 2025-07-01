@@ -20,6 +20,7 @@ public class ResponseProcessHistoryInfoDTO {
     String processStatusName;
     String unit;
     String itemName;
+    Long quantity;
 
     public ResponseProcessHistoryInfoDTO(
             String processHistoryId,
@@ -35,7 +36,8 @@ public class ResponseProcessHistoryInfoDTO {
             String processStatusCode,
             String processStatusName,
             String unit,
-            String itemName
+            String itemName,
+            Long quantity
     ) {
         this.processHistoryId = processHistoryId;
         this.processId = processId;
@@ -51,10 +53,6 @@ public class ResponseProcessHistoryInfoDTO {
         this.processStatusName = processStatusName;
         this.unit = unit;
         this.itemName = itemName;
-
+        this.quantity = quantity;
     }
-
-    public ResponseProcessHistoryInfoDTO() {
-    }
-
 }
