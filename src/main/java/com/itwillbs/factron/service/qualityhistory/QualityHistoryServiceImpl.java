@@ -9,11 +9,9 @@ import com.itwillbs.factron.entity.*;
 import com.itwillbs.factron.mapper.qualityhistory.QualityInspectionHistoryMapper;
 import com.itwillbs.factron.repository.product.ItemRepository;
 import com.itwillbs.factron.repository.production.WorkOrderRepository;
-import com.itwillbs.factron.repository.production.WorkPerformanceRepository;
 import com.itwillbs.factron.repository.quality.QualityInspectionHistoryRepository;
 import com.itwillbs.factron.repository.quality.QualityInspectionStandardRepository;
 import com.itwillbs.factron.repository.storage.InboundRepository;
-import com.itwillbs.factron.repository.storage.StockRepository;
 import com.itwillbs.factron.repository.storage.StorageRepository;
 import com.itwillbs.factron.service.inbound.InboundServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +36,6 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
     private final StorageRepository storageRepository;
     private final InboundRepository inboundRepository;
     private final WorkOrderRepository workOrderRepository;
-    private final StockRepository stockRepository;
 
     private final InboundServiceImpl inboundService;
 

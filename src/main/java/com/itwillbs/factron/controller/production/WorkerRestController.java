@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/worker")
+@RequestMapping("/api/workDtl")
 public class WorkerRestController {
 
     private final WorkerService workerService;

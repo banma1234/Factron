@@ -22,6 +22,9 @@ const init = () => {
         const data = event.data;
         if (data?.source === 'react-devtools-content-script') return;
 
+        // 값 세팅
+        form.querySelector("input[name='planId']").value = data.planId || "";
+
         // 해당 생산계획의 미작업 제품 목록 세팅
         getWorkItemList(data.itemId, data.planId, data.quantity).then(res => {
             const selectTag = document.querySelector(`select[name='orderItem']`);
@@ -31,6 +34,7 @@ const init = () => {
                 // 완제품 생산수량에 따른 작업량 계산
                 let quantity = 1;
                 prod.quantity.split('*').map(qty => {
+                    // BOM depth에 따라 계산 횟수 변동됨
                     quantity = quantity*qty;
                 });
                 prod.quantity = quantity;
@@ -47,12 +51,12 @@ const init = () => {
                 const selectedProd = products.find(prod => prod.prodId === e.target.value);
 
                 if (selectedProd) {
-                    getInputProdList(selectedProd.prodId).then(res => {
+                    getPossibleInputList(selectedProd.prodId).then(res => {
                         // 원본 소요량 baseQuantity로 저장
                         const baseQtyData = res.data.map(row => ({
                             ...row,
                             baseQuantity: row.quantity,
-                            quantity: row.quantity * selectedProd.quantity // 소요량 * 작업수량
+                            quantity: row.quantity * selectedProd.quantity // 실제 작업량
                         }));
 
                         form.querySelector("input[name='quantity']").value = selectedProd.quantity;
@@ -69,9 +73,6 @@ const init = () => {
                 }
             });
         });
-
-        // 값 세팅
-        form.querySelector("input[name='planId']").value = data.planId || "";
     });
 
     // 투입 품목 grid
@@ -150,7 +151,7 @@ const init = () => {
 
         const currentData = productGrid.getData();
         currentData.forEach((row, index) => {
-            productGrid.setValue(index, 'quantity', row.baseQuantity * newQty);
+            productGrid.setValue(index, 'quantity', row.baseQuantity * newQty); // 원본 소요량 * 작업량
         });
     });
 
@@ -295,8 +296,8 @@ const init = () => {
         }
     }
 
-    // 작업 제품 정보 및 투입 품목 목록 조회
-    async function getInputProdList(parentItemId) {
+    // 투입할 품목 목록 조회
+    async function getPossibleInputList(parentItemId) {
 
         try {
             const res = await fetch(`/api/workorder/inputs?parentItemId=${parentItemId}`, {
