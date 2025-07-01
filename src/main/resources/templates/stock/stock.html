@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/base.html}">
+<head>
+  <title>Factron</title>
+</head>
+<body>
+<div layout:fragment="content">
+  <section>
+    <div class="header-row">
+      <h4 class="page__name">재고 목록</h4>
+    </div>
+    <form class="search__form mb-2">
+      <div class="select__container">
+
+<!--        <select class="form-select" name="storage">-->
+<!--          <option value="">창고</option>-->
+<!--        </select>-->
+        <select class="form-select" name="productType">
+          <option value="">제품 종류</option>
+        </select>
+
+      </div>
+      <div class="input-group">
+        <input class="form-control" type="text" name="srhInput" placeholder="제품 이름 또는 번호"><br/>
+        <button class="btn btn-outline-secondary" name="productSrhBtn" type="button">검색</button>
+      </div>
+    </form>
+
+    <!-- list grid -->
+    <article>
+      <div id="stock_grid">
+
+      </div>
+    </article>
+  </section>
+</div>
+
+<th:block layout:fragment="javascript">
+  <!-- js import -->
+  <script th:src="@{/js/stock/stock.js}"></script>
+</th:block>
+</body>
+</html>

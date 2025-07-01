@@ -34,7 +34,7 @@ const initTree = (data) => {
             form.querySelector("input[name='childProdName']").value = raw.name || '';
             form.querySelector("input[name='prodType']").value = raw.type || '';
             form.querySelector("input[name='consumption']").value = formatNumber(raw.consumption) || '-';
-            form.querySelector("span.unitName").textContent = raw.unit || '';
+            form.querySelector("input[name='unitName']").value = raw.unit || '';
             form.querySelector("input[name='parentProdId']").value = raw.parentId || '';
             form.querySelector("input[name='parentProdName']").value = raw.parentName || '';
         }
@@ -129,12 +129,12 @@ function toggleEditButtons(mode) {
     if (mode) {
         // 수정 모드
         if (mode === 'add') {
-            form.querySelectorAll("input[name='childProdId'], input[name='childProdName'], input[name='prodType'], input[name='consumption']").forEach(input => {
+            form.querySelectorAll("input[name='childProdId'], input[name='childProdName'], input[name='prodType'], input[name='consumption'], input[name='unitName']").forEach(input => {
                 input.disabled = false;
             });
 
-            editGroup.classList.add("d-none");
-            confirmGroup.classList.remove("d-none");
+            editGroup?.classList.add("d-none");
+            confirmGroup?.classList.remove("d-none");
         }
 
         if (mode === 'edit') {
@@ -142,15 +142,15 @@ function toggleEditButtons(mode) {
             consumption.disabled = false;
             consumption.value = unformatNumber(consumption.value);
 
-            editGroup.classList.add("d-none");
-            confirmGroup.classList.remove("d-none");
+            editGroup?.classList.add("d-none");
+            confirmGroup?.classList.remove("d-none");
         }
 
         editMode = mode; // 'add', 'edit', 'delete' 중 하나
 
     } else {
         // 읽기 모드
-        form.querySelectorAll("input[name='childProdId'], input[name='childProdName'], input[name='prodType'], input[name='consumption']").forEach(input => {
+        form.querySelectorAll("input[name='childProdId'], input[name='childProdName'], input[name='prodType'], input[name='consumption'], input[name='unitName']").forEach(input => {
             input.disabled = true;
         });
 
@@ -161,10 +161,10 @@ function toggleEditButtons(mode) {
         form.querySelector("input[name='childProdName']").value = '';
         form.querySelector("input[name='prodType']").value = '';
         form.querySelector("input[name='consumption']").value = '';
-        form.querySelector("span.unitName").textContent = '';
+        form.querySelector("input[name='unitName']").value = '';
 
-        editGroup.classList.remove("d-none");
-        confirmGroup.classList.add("d-none");
+        editGroup?.classList.remove("d-none");
+        confirmGroup?.classList.add("d-none");
         editMode = false;
     }
 }
@@ -210,12 +210,12 @@ const init = () => {
     });
 
     // 추가 버튼
-    document.querySelector(".registBOM").addEventListener("click", function(e) {
+    document.querySelector(".registBOM")?.addEventListener("click", function(e) {
         e.preventDefault();
 
         const selectedId = bomTree.getSelectedNodeId();
         if (!selectedId) {
-            alert("상위 품목을 먼저 선택하세요.");
+            alert("상위 품목을 먼저 선택해주세요.");
             return;
         }
 
@@ -237,25 +237,25 @@ const init = () => {
             document.querySelector("input[name='childProdName']").value = '';
             document.querySelector("input[name='prodType']").value = '';
             document.querySelector("input[name='consumption']").value = '';
-            document.querySelector("span.unitName").textContent = '';
+            document.querySelector("input[name='unitName']").value = '';
         }
 
         // 하드코딩
         form.querySelector("input[name='childProdId']").value = 'M0000007';
         form.querySelector("input[name='childProdName']").value = '스티커 라벨(하드코딩)';
         form.querySelector("input[name='prodType']").value = '원자재';
-        form.querySelector("span.unitName").textContent = '개';
+        form.querySelector("input[name='unitName']").value = '개';
 
         toggleEditButtons("add");
     }, false);
 
     // 수정 버튼
-    document.querySelector(".updateBOM").addEventListener("click", function(e) {
+    document.querySelector(".updateBOM")?.addEventListener("click", function(e) {
         e.preventDefault();
 
         const selectedId = bomTree.getSelectedNodeId();
         if (!selectedId) {
-            alert("수정할 BOM을 먼저 선택하세요.");
+            alert("수정할 BOM을 먼저 선택해주세요.");
             return;
         }
 
@@ -272,12 +272,12 @@ const init = () => {
     });
 
     // 삭제 버튼
-    document.querySelector(".deleteBOM").addEventListener("click", function(e) {
+    document.querySelector(".deleteBOM")?.addEventListener("click", function(e) {
         e.preventDefault();
 
         const selectedId = bomTree.getSelectedNodeId();
         if (!selectedId) {
-            alert("삭제할 BOM을 먼저 선택하세요.");
+            alert("삭제할 BOM을 먼저 선택해주세요.");
             return;
         }
 

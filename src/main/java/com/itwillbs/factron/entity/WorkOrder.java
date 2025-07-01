@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @Getter
 @Builder
@@ -29,7 +31,7 @@ public class WorkOrder {
     private Long quantity; // 수량
 
     @Column(name = "status_code", length = 6, nullable = false)
-    private String statusCode; // 상태 코드 (예: 등록, 대기, 시작, 작업 완료)
+    private String statusCode; // 상태 코드
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id", referencedColumnName = "id", nullable = false)
@@ -38,4 +40,12 @@ public class WorkOrder {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false)
     private Employee employee; // 작업 지시 등록자 (사원 ID)
+
+    @Column(name = "start_date", nullable = false)
+    private LocalDate startDate; // 작업 시작일
+
+    // 작업 상태 변경
+    public void updateStatus(String statusCode) {
+        this.statusCode = statusCode;
+    }
 }

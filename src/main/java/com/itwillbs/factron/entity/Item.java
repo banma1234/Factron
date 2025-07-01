@@ -1,14 +1,15 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.dto.item.ItemRequestDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "item")
@@ -21,11 +22,18 @@ public class Item extends BaseEntity {
     private String name; // 제품 이름
 
     @Column(name = "unit", length = 50, nullable = false)
-    private String unit; // 단위 (예: EA, kg, L 등)
+    private String unit; // 단위 코드
 
     @Column(name = "price", nullable = false)
     private Long price; // 가격
 
     @Column(name = "type_code", length = 6, nullable = false)
-    private String typeCode; // 제품 유형 코드 (예: 전자제품, 가전제품 등)
+    private String typeCode; // 제품 유형 코드
+
+    public void updateItem(ItemRequestDTO dto) {
+        this.name = dto.getName();
+        this.unit = dto.getUnit();
+        this.price = dto.getPrice();
+        this.typeCode = dto.getTypeCode();
+    }
 }

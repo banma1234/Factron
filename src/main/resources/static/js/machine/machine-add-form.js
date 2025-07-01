@@ -4,14 +4,20 @@ const validators = {
     isValidManufacturer: val => val !== null && val.trim() !== '',
     isValidProcessId: val => val !== null && val !== '',
     isValidBuyDate: val => {
-        if (val === null || val.trim() === '') return false;
+        // null 체크뿐만 아니라 undefined 체크도 추가
+        if (!val) return false;
 
-        // 입력된 날짜가 오늘보다 미래인지 확인
-        const inputDate = new Date(val);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // 시간 부분 초기화하여 날짜만 비교
+        // 빈 문자열 체크
+        if (typeof val === 'string' && val.trim() === '') return false;
 
-        return inputDate <= today;
+        try {
+            // 입력된 날짜가 유효한 날짜인지 확인
+            const inputDate = new Date(val);
+            return !isNaN(inputDate.getTime());  // 유효한 날짜면 true 반환
+        } catch (e) {
+            console.error("날짜 검증 오류:", e);
+            return false;
+        }
     }
 };
 
@@ -19,10 +25,24 @@ const init = () => {
     // 구입 일자 기본값 설정 (오늘 날짜)
     const buyDateInput = document.querySelector("input[name='buyDate']");
     if (buyDateInput) {
-        buyDateInput.value = getKoreaToday(); // 전역 함수 사용
+        // 오늘 날짜를 YYYY-MM-DD 형식으로 설정
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const formattedDate = `${year}-${month}-${day}`;
+
+        buyDateInput.value = formattedDate;
+        console.log("설정된 초기 날짜:", formattedDate);
 
         // 날짜 입력 최대값을 오늘로 제한
-        buyDateInput.setAttribute('max', getKoreaToday());
+        buyDateInput.setAttribute('max', formattedDate);
+
+        // 날짜 입력 디버깅을 위한 이벤트 리스너
+        buyDateInput.addEventListener("change", (e) => {
+            console.log("날짜 변경됨:", e.target.value);
+            console.log("검증 결과:", validators.isValidBuyDate(e.target.value));
+        });
     }
 
     setupEventListeners();
@@ -120,8 +140,7 @@ async function saveData() {
         const res = await fetch(`/api/machine`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
-                empId: user.id // 사용자 ID를 헤더에 포함
+                "Content-Type": "application/json"
             },
             body: JSON.stringify(data),
         });

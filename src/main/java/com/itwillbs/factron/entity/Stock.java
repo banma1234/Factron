@@ -18,11 +18,11 @@ public class Stock {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id; // 재고 ID
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id", referencedColumnName = "id")
     private Item item; // 재고 제품 정보
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "material_id", referencedColumnName = "id")
     private Material material; // 재고 자재 정보
 
@@ -32,4 +32,23 @@ public class Stock {
 
     @Column(name = "quantity", nullable = false)
     private Long quantity; // 재고 수량
+
+    //재고 입고
+    public void addQuantity(Long amount) {
+        if (amount == null || amount <= 0) {
+            throw new IllegalArgumentException("추가할 수량은 0보다 커야 합니다.");
+        }
+        this.quantity += amount;
+    }
+    //채고 출고
+    public void subtractQuantity(Long amount) {
+        if (amount == null || amount <= 0) {
+            throw new IllegalArgumentException("차감할 수량은 0보다 커야 합니다.");
+        }
+        if (this.quantity < amount) {
+            throw new IllegalStateException("재고 수량이 부족합니다.");
+        }
+        this.quantity -= amount;
+    }
+
 }

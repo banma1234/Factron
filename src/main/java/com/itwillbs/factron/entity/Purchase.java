@@ -40,4 +40,8 @@ public class Purchase {
     @JoinColumn(name = "approval_id", referencedColumnName = "id", nullable = true)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     private Approval approval; // 결재 정보 (발주 결재 정보)
+
+    public void updateStatus(String statusCode) {
+        this.statusCode = statusCode;
+    }
 }

@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OutboundRepository extends JpaRepository<Outbound, Long> {
+    boolean existsByContractIdAndStatusCodeNot(Long ContractId, String statusCode);
 }
