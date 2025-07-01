@@ -11,4 +11,6 @@ import java.util.List;
 public interface PurchaseMapper {
     List<ResponseSearchPurchaseDTO> getPurchaseList(RequestSearchPurchaseDTO requestSearchPurchaseDTO);
     List<ResponsePurchaseItemDTO> getPurchaseItemsByPurchaseId(Long purchaseId);
+
+    ResponseSearchPurchaseDTO getPurchaseDetailByPurchaseId(Long purchaseId);
 }
