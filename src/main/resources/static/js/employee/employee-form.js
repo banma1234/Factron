@@ -8,8 +8,6 @@ function toUpperCase(str) {
     return str.toUpperCase();
 }
 
-const test = true;
-
 // 공통코드 목록 조회
 const getSysCodeList = async (mainCode) => {
     try {
@@ -126,6 +124,8 @@ const init = async () => {
     const alertModal = new bootstrap.Modal(document.getElementsByClassName("alertModal")[0]);
     const alertBtn = document.getElementsByClassName("alertBtn")[0];
     let isEditMode = false; // 수정모드
+    const hasAccess = user.authCode === 'ATH002' || user.authCode === 'ATH003';
+    let isEditable = hasAccess;
 
     try {
         // 공통코드 세팅
@@ -157,6 +157,8 @@ const init = async () => {
             form.querySelector("select[name='empIsActive']").value = toUpperCase(data.empIsActive) || "";
             form.querySelector("select[name='employCode']").value = toUpperCase(data.employCode) || "";
             form.querySelector("select[name='deptCode']").value = toUpperCase(data.deptCode) || "";
+
+            isEditable = isEditable || (user.id == data.empId);
         });
 
         // 주소 외부 API 연결
@@ -165,12 +167,15 @@ const init = async () => {
         });
 
         btnModify.addEventListener("click", () => {
+            if(!isEditable){
+                alert("수정 권한이 없습니다!");
+                return;
+            }
             if (!isEditMode) {
                 // 수정모드 아닌 경우 수정 모드로 변경
                 toggleFormDisabled();
                 btnModify.textContent = "저장";
                 isEditMode = true;
-
             } else {
                 // 수정모드인 경우
                 const [name, birth, rrnBack, email, address, phone] = getNormAccess();
@@ -183,7 +188,7 @@ const init = async () => {
                 if(!validators.isValidEmail(email.value)) return alert("유효한 이메일 형식이 아닙니다.");
                 if(!validators.isValidPhone(phone.value)) return alert("전화번호 형식이 올바르지 않습니다.");
                 // 인사 권한체크
-                if(test){
+                if(hasAccess){
                     //validation
                     if(!validators.isValidGender(gender.value)) return alert("성별을 선택해주세요.");
                     if(!validators.isValidCommonCode(eduLevel.value)) return alert("최종학력을 선택해주세요.")
@@ -202,7 +207,7 @@ const init = async () => {
         // 폼 disable 변경
         const toggleFormDisabled = () => {
             setFormAccess(getNormAccess());
-            if(test){
+            if(hasAccess){
                 setFormAccess(getPernAccess());
             }
         };

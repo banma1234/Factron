@@ -181,6 +181,7 @@ const init = () => {
                         lineId: rowData.lineId,
                         lineName: rowData.lineName,
                         startDate: rowData.startDate,
+                        status: rowData.status,
                     }, "*");
                     window.removeEventListener("message", messageHandler);
                 }
@@ -193,7 +194,12 @@ const init = () => {
                 const message = event.data;
 
                 if (message && message.type === "STR_REFRESH_WORKORDERS") {
-                    getWorkOrders(selectedPlan.id) // 안전하게 리프레시 실행
+                    const rowKey = planningGrid.getFocusedCell()?.rowKey;
+                    const selectedPlan = rowKey !== null ? planningGrid.getRow(rowKey) : null;
+
+                    if (selectedPlan) {
+                        getWorkOrders(selectedPlan.id); // 안전하게 리프레시 실행
+                    }
                 }
             });
         }

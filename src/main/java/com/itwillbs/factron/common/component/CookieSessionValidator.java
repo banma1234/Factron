@@ -85,7 +85,7 @@ public class CookieSessionValidator {
 
                     // JSON을 Map으로 변환
                     Map<String, String> userInfo = objectMapper.readValue(decodedValue, new TypeReference<Map<String, String>>() {});
-                    log.info("사용자 정보 로드 성공: {}", userInfo.get("employeeName"));
+                    log.debug("사용자 정보 로드 성공: {}", userInfo.get("employeeName"));
                     return userInfo;
                 }
             }
@@ -123,8 +123,6 @@ public class CookieSessionValidator {
                 return true;
             }
         }
-
-        log.warn("권한 확인 실패: {} - {}", userInfo.get("employeeName"), authority);
         return false;
     }
     

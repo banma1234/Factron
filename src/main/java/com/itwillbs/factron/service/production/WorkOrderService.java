@@ -14,4 +14,8 @@ public interface WorkOrderService {
     List<ResponseWorkerDTO> getPossibleWorkerList();
 
     Void registWorkOrder(RequestWorkOrderDTO requestWorkOrderDTO);
+
+    ResponseWorkDetailDTO getWorkOrderDetail(String orderId);
+
+    Void startWorkOrder(RequestWorkOrderDTO requestWorkOrderDTO);
 }
