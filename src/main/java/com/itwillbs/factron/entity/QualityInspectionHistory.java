@@ -47,4 +47,18 @@ public class QualityInspectionHistory {
 
     @Column(name = "status_code", length = 6, nullable = false)
     private String statusCode; // 상태 코드 (예: 대기, 완료)
+
+    // 품질 검사 이력 업데이트 메소드
+    public void updateInspectionHistory(
+            Lot lot,
+            LocalDate inspectionDate,
+            Double resultValue,
+            String resultCode,
+            String statusCode) {
+        this.lot = lot;
+        this.inspectionDate = inspectionDate;
+        this.resultValue = resultValue;
+        this.resultCode = resultCode;
+        this.statusCode = statusCode;
+    }
 }

@@ -39,13 +39,11 @@ public class LotServiceImpl implements LotService {
         }
 
         Map<String, List<Lot>> map = new HashMap<>();
-        List<Lot> LotList = new ArrayList<>();
 
         materialList.forEach(target -> {
 
-            LotList.clear();
+            List<Lot> LotList = new ArrayList<>();
             List<Lot> allLots = lotMapper.getInboundLotById(target);
-
 
             Long sum = 0L;
             for (Lot lot : allLots) {
@@ -53,12 +51,16 @@ public class LotServiceImpl implements LotService {
                     break;
                 }
 
-
                 sum += lot.getQuantity();
                 LotList.add(lot);
             }
 
-            map.put(target.getMaterial_id(), LotList);
+            if(target.getMaterial_id() == null || target.getMaterial_id().isEmpty()) {
+                map.put(target.getItem_id(), LotList);
+            } else {
+                map.put(target.getMaterial_id(), LotList);
+            }
+
         });
 
         materialList.forEach(target -> {

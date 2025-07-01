@@ -21,11 +21,14 @@ public class RequestProcessLotDTO {
     @Pattern(regexp = "^PCS\\d{3}$", message = "공정 LOT 입력시 올바른 공통코드 형식을 따라야 합니다.")
     private String event_type;
 
-    public RequestProcessLotDTO(Material material, Item item, Long quantity, String event_type) {
+    private String work_order_id;
+
+    public RequestProcessLotDTO(Material material, Item item, Long quantity, String event_type, String work_order_id) {
         this.material = material;
         this.item = item;
         this.quantity = quantity;
         this.event_type = event_type;
+        this.work_order_id = work_order_id;
     }
 
     public Lot toEntity(String LotId) {

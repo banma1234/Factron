@@ -36,6 +36,37 @@ const init = () => {
         getData();
     });
 
+    // 발주 등록 버튼 클릭 시
+    document.querySelector('.registPurchase').addEventListener('click', function () {
+        const popup = window.open('/purchase-form?mode=CREATE', '_blank', 'width=800,height=1000');
+        if (!popup) {
+            alert('팝업이 차단되었습니다. 팝업 차단 해제 후 다시 시도하세요.');
+        }
+    });
+
+// 그리드 더블 클릭 시
+    purchaseGrid.on('dblclick', (e) => {
+        const rowKey = e.rowKey;
+        const rowData = purchaseGrid.getRow(rowKey);
+
+        if (rowData && rowData.purchaseId) {
+            const popup = window.open('/purchase-form?mode=VIEW', '_blank', 'width=800,height=1000');
+            if (!popup) {
+                alert('팝업이 차단되었습니다. 팝업 차단 해제 후 다시 시도하세요.');
+                return;
+            }
+
+            const messageHandler = (event) => {
+                if (event.data === 'ready') {
+                    popup.postMessage(rowData, "*");
+                    window.removeEventListener("message", messageHandler);
+                }
+            };
+            window.addEventListener("message", messageHandler);
+        }
+    });
+
+
     window.getData = async function () {
         const startDate = document.querySelector("input[name='startDate']").value;
         const endDate = document.querySelector("input[name='endDate']").value;

@@ -14,6 +14,7 @@ import com.itwillbs.factron.repository.product.ItemRepository;
 import com.itwillbs.factron.repository.product.MaterialRepository;
 import com.itwillbs.factron.repository.production.ProductionPlanningRepository;
 import com.itwillbs.factron.repository.production.WorkOrderRepository;
+import com.itwillbs.factron.repository.production.WorkPerformanceRepository;
 import com.itwillbs.factron.repository.production.WorkerRepository;
 import com.itwillbs.factron.repository.quality.QualityInspectionHistoryRepository;
 import com.itwillbs.factron.repository.quality.QualityInspectionRepository;
@@ -23,6 +24,7 @@ import com.itwillbs.factron.repository.storage.StockRepository;
 import com.itwillbs.factron.repository.storage.StorageRepository;
 import com.itwillbs.factron.repository.syscode.DetailSysCodeRepository;
 import com.itwillbs.factron.repository.syscode.SysCodeRepository;
+import com.itwillbs.factron.service.lot.LotService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,10 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @SpringBootTest
 class FactronApplicationTests {
@@ -88,6 +87,11 @@ class FactronApplicationTests {
 	private WorkOrderRepository workOrderRepository;
 	@Autowired
 	private WorkerRepository workerRepository;
+	@Autowired
+	private WorkPerformanceRepository workPerformanceRepository;
+
+	@Autowired
+	private LotService lotService;
 
 	@Test
 	@Transactional
@@ -794,6 +798,8 @@ class FactronApplicationTests {
 		Item item2 = itemRepository.findById("P0000003").orElse(null); // 완제품 C
 		Material material1 = materialRepository.findById("M0000001").orElse(null); // 강철판
 		Material material2 = materialRepository.findById("M0000003").orElse(null); // 윤활유
+		Material material3 = materialRepository.findById("M0000002").orElse(null); // 용접봉
+		Material material4 = materialRepository.findById("M0000004").orElse(null); // 완제품 포장재
 
 		LocalDate now = LocalDate.now();
 
@@ -833,6 +839,24 @@ class FactronApplicationTests {
 					.build());
 		}
 
+		if (material3 != null && rawMaterialStorage != null) {
+			stockRepository.save(Stock.builder()
+					.item(null)
+					.material(material3)
+					.storage(rawMaterialStorage)
+					.quantity(100L)
+					.build());
+		}
+
+		if (material4 != null && rawMaterialStorage != null) {
+			stockRepository.save(Stock.builder()
+					.item(null)
+					.material(material4)
+					.storage(rawMaterialStorage)
+					.quantity(20L)
+					.build());
+		}
+
 		// 반제품 입고 + 로트
 		if (item1 != null && semiProductStorage != null) {
 			inboundRepository.save(Inbound.builder()
@@ -842,7 +866,7 @@ class FactronApplicationTests {
 					.quantity(10L)
 					.inDate(now)
 					.categoryCode("ITP002") // 반제품
-					.statusCode("완료")
+					.statusCode("STS003")
 					.build());
 
 			lotRepository.save(Lot.builder()
@@ -850,7 +874,7 @@ class FactronApplicationTests {
 					.item(item1)
 					.material(null)
 					.quantity(10L)
-					.eventType("입고")
+					.eventType("ISP")
 					.createdAt(LocalDateTime.now())
 					.createdBy(1L)
 					.build());
@@ -865,7 +889,7 @@ class FactronApplicationTests {
 					.quantity(5L)
 					.inDate(now)
 					.categoryCode("ITP003") // 완제품
-					.statusCode("완료")
+					.statusCode("STS003")
 					.build());
 
 			lotRepository.save(Lot.builder()
@@ -873,7 +897,7 @@ class FactronApplicationTests {
 					.item(item2)
 					.material(null)
 					.quantity(5L)
-					.eventType("입고")
+					.eventType("ISP")
 					.createdAt(LocalDateTime.now())
 					.createdBy(1L)
 					.build());
@@ -888,7 +912,7 @@ class FactronApplicationTests {
 					.quantity(100L)
 					.inDate(now)
 					.categoryCode("ITP001") // 자재
-					.statusCode("완료")
+					.statusCode("STS003")
 					.build());
 
 			lotRepository.save(Lot.builder()
@@ -896,7 +920,7 @@ class FactronApplicationTests {
 					.item(null)
 					.material(material1)
 					.quantity(100L)
-					.eventType("입고")
+					.eventType("INB")
 					.createdAt(LocalDateTime.now())
 					.createdBy(1L)
 					.build());
@@ -911,7 +935,7 @@ class FactronApplicationTests {
 					.quantity(20L)
 					.inDate(now)
 					.categoryCode("ITP001") // 자재
-					.statusCode("완료")
+					.statusCode("STS003")
 					.build());
 
 			lotRepository.save(Lot.builder()
@@ -919,7 +943,53 @@ class FactronApplicationTests {
 					.item(null)
 					.material(material2)
 					.quantity(20L)
-					.eventType("입고")
+					.eventType("INB")
+					.createdAt(LocalDateTime.now())
+					.createdBy(1L)
+					.build());
+		}
+
+		// 자재3 입고 + 로트
+		if (material3 != null && rawMaterialStorage != null) {
+			inboundRepository.save(Inbound.builder()
+					.item(null)
+					.material(material3)
+					.storage(rawMaterialStorage)
+					.quantity(100L)
+					.inDate(now)
+					.categoryCode("ITP001") // 자재
+					.statusCode("STS003")
+					.build());
+
+			lotRepository.save(Lot.builder()
+					.id("LOT-M-" + System.currentTimeMillis())
+					.item(null)
+					.material(material3)
+					.quantity(100L)
+					.eventType("INB")
+					.createdAt(LocalDateTime.now())
+					.createdBy(1L)
+					.build());
+		}
+
+		// 자재4 입고 + 로트
+		if (material4 != null && rawMaterialStorage != null) {
+			inboundRepository.save(Inbound.builder()
+					.item(null)
+					.material(material4)
+					.storage(rawMaterialStorage)
+					.quantity(20L)
+					.inDate(now)
+					.categoryCode("ITP001") // 자재
+					.statusCode("STS003")
+					.build());
+
+			lotRepository.save(Lot.builder()
+					.id("LOT-M-" + System.currentTimeMillis())
+					.item(null)
+					.material(material2)
+					.quantity(20L)
+					.eventType("INB")
 					.createdAt(LocalDateTime.now())
 					.createdBy(1L)
 					.build());

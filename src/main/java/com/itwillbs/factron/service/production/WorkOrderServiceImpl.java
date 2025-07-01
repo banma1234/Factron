@@ -1,5 +1,6 @@
 package com.itwillbs.factron.service.production;
 
+import com.itwillbs.factron.dto.lot.RequestLotUpdateDTO;
 import com.itwillbs.factron.dto.production.*;
 import com.itwillbs.factron.entity.*;
 import com.itwillbs.factron.mapper.production.WorkOrderMapper;
@@ -59,11 +60,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     }
 
     /*
-     * 작업 제품 정보 및 투입 품목 목록 조회
+     * 투입할 품목 목록 조회
      * */
     @Override
-    public List<ResponseWorkProdDTO> getInputProdList(RequestWorkProdDTO requestWorkProdDTO) {
-        return workOrderMapper.getInputProdList(requestWorkProdDTO);
+    public List<ResponseWorkProdDTO> getPossibleInputList(RequestWorkProdDTO requestWorkProdDTO) {
+        return workOrderMapper.getPossibleInputList(requestWorkProdDTO);
     }
 
     /*
@@ -89,58 +90,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         Employee employee = empRepository.findById(requestWorkOrderDTO.getEmpId())
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 사원입니다."));
 
-        for(RequestWorkProdDTO product : requestWorkOrderDTO.getInputProds()) {
-            Stock stock;
-
-            if(product.getProdId().startsWith("M")) {
-                // 원자재
-                Material material = materialRepository.findById(product.getProdId())
-                        .orElseThrow(() -> new NoSuchElementException("존재하지 않는 품목입니다."));
-                Storage storage = storageRepository.findByTypeCode("ITP001")
-                        .orElseThrow(() -> new NoSuchElementException("존재하지 않는 창고입니다."));
-                stock = stockRepository.findByMaterialAndStorage(material, storage)
-                        .orElseThrow(() -> new NoSuchElementException("투입 품목의 재고가 없습니다."));
-
-                // 원자재 출고
-                outboundRepository.save(Outbound.builder()
-                        .material(material)
-                        .storage(storage)
-                        .quantity(product.getQuantity())
-                        .outDate(LocalDate.now())
-                        .categoryCode("ITP001")
-                        .statusCode("STS001") // 대기
-                        .build());
-
-            } else {
-                // 반제품
-                Item semiItem = itemRepository.findById(product.getProdId())
-                        .orElseThrow(() -> new NoSuchElementException("존재하지 않는 품목입니다."));
-                Storage storage = storageRepository.findByTypeCode("ITP002")
-                        .orElseThrow(() -> new NoSuchElementException("존재하지 않는 창고입니다."));
-                stock = stockRepository.findByItemAndStorage(semiItem, storage)
-                        .orElseThrow(() -> new NoSuchElementException("투입 품목의 재고가 없습니다."));
-
-                // 반제품 출고
-                outboundRepository.save(Outbound.builder()
-                        .item(semiItem)
-                        .storage(storage)
-                        .quantity(product.getQuantity())
-                        .outDate(LocalDate.now())
-                        .categoryCode("ITP002")
-                        .statusCode("STS001") // 대기
-                        .build());
-            }
-
-            if(stock.getQuantity() < product.getQuantity()) {
-                throw new IllegalArgumentException("투입 품목의 재고가 부족합니다.");
-            }
-            // 재고 감소
-            stock.subtractQuantity(product.getQuantity());
-        }
-
-        // LOT 수량 감소 및 LOT_HISTORY 추가
-        // TODO: 미완성
-
         // 작업지시 등록
         WorkOrder workOrder = workOrderRepository.save(WorkOrder.builder()
                 .id(generateWorkOrderId())
@@ -165,6 +114,66 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         }
 
         workerRepository.saveAll(workers);
+
+        // LOT 관련 전송 데이터
+        List<RequestLotUpdateDTO> updateLotList = new ArrayList<>();
+
+        for(RequestWorkProdDTO product : requestWorkOrderDTO.getInputProds()) {
+            Stock stock;
+
+            if(product.getProdId().startsWith("M")) {
+                // 원자재
+                Material material = materialRepository.findById(product.getProdId())
+                        .orElseThrow(() -> new NoSuchElementException("존재하지 않는 품목입니다."));
+                Storage storage = storageRepository.findByTypeCode("ITP001")
+                        .orElseThrow(() -> new NoSuchElementException("존재하지 않는 창고입니다."));
+                stock = stockRepository.findByMaterialAndStorage(material, storage)
+                        .orElseThrow(() -> new NoSuchElementException("투입 품목의 재고가 없습니다."));
+
+                // 원자재 출고
+                outboundRepository.save(Outbound.builder()
+                        .material(material)
+                        .storage(storage)
+                        .quantity(product.getQuantity())
+                        .outDate(LocalDate.now())
+                        .categoryCode("ITP001")
+                        .statusCode("STS001") // 대기
+                        .build());
+
+                updateLotList.add(new RequestLotUpdateDTO(material.getId(), null, product.getQuantity(), workOrder));
+
+            } else {
+                // 반제품
+                Item semiItem = itemRepository.findById(product.getProdId())
+                        .orElseThrow(() -> new NoSuchElementException("존재하지 않는 품목입니다."));
+                Storage storage = storageRepository.findByTypeCode("ITP002")
+                        .orElseThrow(() -> new NoSuchElementException("존재하지 않는 창고입니다."));
+                stock = stockRepository.findByItemAndStorage(semiItem, storage)
+                        .orElseThrow(() -> new NoSuchElementException("투입 품목의 재고가 없습니다."));
+
+                // 반제품 출고
+                outboundRepository.save(Outbound.builder()
+                        .item(semiItem)
+                        .storage(storage)
+                        .quantity(product.getQuantity())
+                        .outDate(LocalDate.now())
+                        .categoryCode("ITP002")
+                        .statusCode("STS001") // 대기
+                        .build());
+
+                updateLotList.add(new RequestLotUpdateDTO(null, semiItem.getId(), product.getQuantity(), workOrder));
+            }
+
+            if(stock.getQuantity() < product.getQuantity()) {
+                throw new IllegalArgumentException("투입 품목의 재고가 부족합니다.");
+            }
+            // 재고 감소
+            stock.subtractQuantity(product.getQuantity());
+        }
+
+        // LOT 수량 감소 및 LOT_HISTORY 추가
+        lotService.updateInboundLotQuantity(updateLotList);
+
         return null;
     }
 
