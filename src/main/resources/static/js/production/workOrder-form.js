@@ -5,12 +5,16 @@ const init = () => {
     const confirmEditBtn = document.getElementsByClassName("confirmEditBtn")[0];
     const alertModal = new bootstrap.Modal(document.getElementsByClassName("alertModal")[0]);
     const alertBtn = document.getElementsByClassName("alertBtn")[0];
-    let data = {}; // 저장 데이터
+    const btnGroup = document.querySelector(".btnGroup");
 
     // 부모창에서 데이터 받아오기
     window.addEventListener('message', function (event) {
         const data = event.data;
         if (data?.source === 'react-devtools-content-script') return;
+
+        if (data.status === '대기' && (user.authCode === 'ATH007' || user.authCode === 'ATH003')) {
+            btnGroup.classList.remove("d-none");
+        }
 
         // 값 세팅
         form.querySelector("input[name='planId']").value = data.planId || "";
@@ -24,7 +28,12 @@ const init = () => {
 
         // 해당 작업지시의 투입 품목과 작업자 로드
         getWorkDetailData(data.orderId).then(res => {
-
+            if(res.status === 200) {
+                productGrid.resetData(res.data.inputProds ?? []);
+                workerGrid.resetData(res.data.workers ?? []);
+            } else {
+                alert(res.message);
+            }
         });
     });
 
@@ -89,14 +98,9 @@ const init = () => {
 
     // 시작 버튼
     startBtn.addEventListener("click", () => {
-
-        // fetch data
-        data = {
-            orderId: form.querySelector("input[name='orderId']").value,
-            lineId: form.querySelector("input[name='lineId']").value,
-        };
-
-        confirmModal.show();
+        if (form.querySelector("input[name='orderId']").value) {
+            confirmModal.show();
+        }
     });
 
     // 취소 버튼
@@ -108,7 +112,7 @@ const init = () => {
     confirmEditBtn.addEventListener("click", () => {
         startWork().then(res => {
             confirmModal.hide();
-            document.querySelector(".alertModal .modal-body").textContent = res.message;
+            document.querySelector(".alertModal .modal-body").innerHTML = res.message;
             alertModal.show();
         });
     });
@@ -133,7 +137,10 @@ const init = () => {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(data),
+                body: JSON.stringify({
+                        workOrderId: form.querySelector("input[name='orderId']").value,
+                        lineId: form.querySelector("input[name='lineId']").value,
+                    }),
             });
             return res.json();
 
@@ -145,7 +152,7 @@ const init = () => {
     // 투입된 품목 및 작업자 목록 조회
     async function getWorkDetailData(orderId) {
         try {
-            const res = await fetch(`/api/workDtl?orderId=${orderId}`, {
+            const res = await fetch(`/api/workorder/dtl?orderId=${orderId}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json"

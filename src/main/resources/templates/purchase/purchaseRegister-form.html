@@ -27,26 +27,34 @@
         </div>
 
         <!-- 자재 검색 + 버튼 -->
-        <div class="input-group mb-3">
-            <input type="text" name="materialSearch" class="form-control" placeholder="자재명 검색" autocomplete="off" />
-            <button class="btn btn-outline-secondary materialSearchBtn" type="button">검색</button>
+        <div class="d-flex justify-content-end mb-3">
+            <div class="input-group" style="width: 300px;">
+                <input type="text" name="materialSearch" class="form-control" placeholder="자재명 검색" autocomplete="off" />
+                <button class="btn btn-outline-secondary materialSearchBtn" type="button">검색</button>
+            </div>
         </div>
 
+
+
         <!-- 자재 그리드 -->
-        <article>
+        <article class="mb-5"> <!-- mb-4 → mb-5 : 충분한 아래 여백 -->
             <div id="materialGrid" style="height: 300px; border: 1px solid #ddd;"></div>
         </article>
 
         <!-- 발주 자재 목록 -->
-        <div class="mb-3">
-            <label class="form-label">발주 자재 목록</label>
+        <div class="mb-4">
+            <label class="form-label mt-2" style="position: relative; z-index: 2;">발주 자재 목록</label>
             <div class="purchase-items d-flex flex-column gap-1 border rounded p-2 bg-light"
-                 style="max-height: 180px; overflow-y: auto;"></div>
-            <div class="bg-white p-2 rounded border d-flex justify-content-between mt-2">
+                 style="min-height: 200px; max-height: 200px; overflow-y: auto; position: relative; z-index: 1;">
+            </div>
+            <div class="bg-white p-2 rounded border d-flex justify-content-between mt-2"
+                 style="position: relative; z-index: 1;">
                 <span><strong>총금액</strong></span>
                 <span name="totalAmount" class="fw-bold text-end">₩0</span>
             </div>
         </div>
+
+
 
         <!-- 등록/취소 버튼 -->
         <div class="d-flex justify-content-end mt-4 gap-2">
@@ -83,7 +91,7 @@
 
 <th:block layout:fragment="javascript">
     <script src="https://uicdn.toast.com/tui-grid/latest/tui-grid.min.js"></script>
-    <script th:src="@{/js/purchase/purchase-form.js}"></script>
+    <script th:src="@{/js/purchase/purchaseRegister-form.js}"></script>
 </th:block>
 </body>
 </html>

@@ -3,9 +3,13 @@ package com.itwillbs.factron.service.production;
 import com.itwillbs.factron.dto.lot.RequestLotUpdateDTO;
 import com.itwillbs.factron.dto.production.*;
 import com.itwillbs.factron.entity.*;
+import com.itwillbs.factron.entity.Process;
 import com.itwillbs.factron.mapper.production.WorkOrderMapper;
+import com.itwillbs.factron.mapper.production.WorkDetailMapper;
 import com.itwillbs.factron.repository.employee.EmployeeRepository;
 import com.itwillbs.factron.repository.process.LineRepository;
+import com.itwillbs.factron.repository.process.ProcessHistoryRepository;
+import com.itwillbs.factron.repository.process.ProcessRepository;
 import com.itwillbs.factron.repository.product.ItemRepository;
 import com.itwillbs.factron.repository.product.MaterialRepository;
 import com.itwillbs.factron.repository.production.ProductionPlanningRepository;
@@ -24,6 +28,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +47,9 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     private final StorageRepository storageRepository;
     private final WorkerRepository workerRepository;
     private final LotService lotService;
+    private final WorkDetailMapper workDetailMapper;
+    private final ProcessRepository processRepository;
+    private final ProcessHistoryRepository historyRepository;
 
     /*
     * 작업지시 목록 조회
@@ -103,15 +111,17 @@ public class WorkOrderServiceImpl implements WorkOrderService {
                 .build());
 
         // 작업자 등록
-        List<Worker> workers = new ArrayList<>();
-
-        for(Long empId : requestWorkOrderDTO.getWorkers()) {
-            Employee worker = empRepository.findById(empId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 사원입니다."));
-            workers.add(Worker.builder()
-                    .workOrder(workOrder)
-                    .employee(worker)
-                    .build());
+        List<Employee> empList = empRepository.findAllById(requestWorkOrderDTO.getWorkers());
+        if(empList.size() != requestWorkOrderDTO.getWorkers().size()) {
+            throw new NoSuchElementException("존재하지 않는 사원입니다.");
         }
+
+        List<Worker> workers = empList.stream()
+                .map(emp -> Worker.builder()
+                        .workOrder(workOrder)
+                        .employee(emp)
+                        .build())
+                .collect(Collectors.toList());
 
         workerRepository.saveAll(workers);
 
@@ -172,8 +182,52 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         }
 
         // LOT 수량 감소 및 LOT_HISTORY 추가
-        lotService.updateInboundLotQuantity(updateLotList);
+        lotService.updateLotQuantity(updateLotList);
 
+        return null;
+    }
+
+    /*
+     * 투입된 품목 및 작업자 목록 조회
+     * */
+    @Override
+    public ResponseWorkDetailDTO getWorkOrderDetail(String orderId) {
+        return ResponseWorkDetailDTO.builder()
+                .inputProds(workDetailMapper.getWorkProdList(orderId))
+                .workers(workDetailMapper.getWorkerList(orderId))
+                .build();
+    }
+
+    /*
+     * 작업지시 시작
+     * */
+    @Transactional
+    @Override
+    public Void startWorkOrder(RequestWorkOrderDTO requestWorkOrderDTO) {
+        // 라인 가동으로 변경
+        Line line = lineRepository.findById(requestWorkOrderDTO.getLineId())
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 라인입니다."));
+        if(line.getStatusCode().equals("LIS002")) {
+            throw new IllegalArgumentException("가동중인 라인은 사용할 수 없습니다.");
+        }
+        line.updateStatusCode("LIS002"); // 가동
+
+        // 작지 상태 변경
+        WorkOrder workOrder = workOrderRepository.findById(requestWorkOrderDTO.getWorkOrderId())
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 작업지시입니다."));
+        workOrder.updateStatus("WKS002"); // 생산중
+
+        // 공정이력 대기 상태로 등록
+        List<Process> processList = processRepository.findByLineId(requestWorkOrderDTO.getLineId());
+        List<ProcessHistory> historyList = processList.stream()
+                .map(process -> ProcessHistory.builder()
+                        .process(process)
+                        .workOrder(workOrder)
+                        .statusCode("STS001") // 대기
+                        .build())
+                .collect(Collectors.toList());
+
+        historyRepository.saveAll(historyList);
         return null;
     }
 
