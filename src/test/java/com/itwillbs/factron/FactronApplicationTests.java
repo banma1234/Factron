@@ -14,6 +14,7 @@ import com.itwillbs.factron.repository.product.ItemRepository;
 import com.itwillbs.factron.repository.product.MaterialRepository;
 import com.itwillbs.factron.repository.production.ProductionPlanningRepository;
 import com.itwillbs.factron.repository.production.WorkOrderRepository;
+import com.itwillbs.factron.repository.production.WorkPerformanceRepository;
 import com.itwillbs.factron.repository.production.WorkerRepository;
 import com.itwillbs.factron.repository.quality.QualityInspectionHistoryRepository;
 import com.itwillbs.factron.repository.quality.QualityInspectionRepository;
@@ -89,6 +90,8 @@ class FactronApplicationTests {
 	private WorkOrderRepository workOrderRepository;
 	@Autowired
 	private WorkerRepository workerRepository;
+	@Autowired
+	private WorkPerformanceRepository workPerformanceRepository;
 
 	@Autowired
 	private LotService lotService;
@@ -896,7 +899,7 @@ class FactronApplicationTests {
 					.build());
 
 			lotRepository.save(Lot.builder()
-					.id("20101010-INB-0001")
+					.id("LOT-M-" + System.currentTimeMillis())
 					.item(null)
 					.material(material1)
 					.quantity(100L)
@@ -919,7 +922,7 @@ class FactronApplicationTests {
 					.build());
 
 			lotRepository.save(Lot.builder()
-					.id("20101010-INB-0002")
+					.id("LOT-M-" + System.currentTimeMillis())
 					.item(null)
 					.material(material2)
 					.quantity(20L)
@@ -1035,16 +1038,5 @@ class FactronApplicationTests {
 
 			qualityInspectionHistoryRepository.save(history);
 		}
-	}
-
-	@Test
-	@Transactional
-	@Commit
-	void doTest() {
-
-		WorkOrder workOrder = workOrderRepository.findById("WO20250630-001")
-						.orElseThrow(() -> new RuntimeException("wow"));
-
-
 	}
 }
