@@ -39,7 +39,7 @@ public class ContractRestController {
         }
     }
 
-    @GetMapping("/{purchaseId}")
+    @GetMapping("/{contractId}")
     public ResponseDTO<ResponseSearchContractDTO> getContractDetails(@PathVariable Long contractId) {
         try {
             ResponseSearchContractDTO dto = contractService.getContractDetailByContractId(contractId);

@@ -15,7 +15,10 @@
         <h4 class="page__name">출고 목록</h4>
         <form class="search__form mb-2">
             <div class="select__container">
-                <!-- 필요 시 필터나 select 박스 추가 가능 -->
+                <!-- 날짜 필터 추가 -->
+                <input class="form-control" type="date" name="startDate">
+                ~
+                <input class="form-control" type="date" name="endDate">
             </div>
 
             <div class="input-group">
@@ -23,6 +26,7 @@
                 <button class="btn btn-outline-secondary srhBtn" type="button">검색</button>
             </div>
         </form>
+
         <article>
             <div id="outboundGrid"></div>
             <div style="display: flex; justify-content: flex-end; margin-top: 12px;">
