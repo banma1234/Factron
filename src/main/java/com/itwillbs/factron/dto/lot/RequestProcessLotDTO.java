@@ -15,7 +15,7 @@ public class RequestProcessLotDTO {
     private Item item;
 
     @NotBlank(message = "유형 구분은 필수 입력값입니다.")
-    @Pattern(regexp = "^PCS\\d{3}$", message = "공정 LOT 입력시 올바른 공통코드 형식을 따라야 합니다.")
+    @Pattern(regexp = "^PTP\\d{3}$", message = "공정 LOT 입력시 올바른 공통코드 형식을 따라야 합니다.")
     private String event_type;
 
     private String work_order_id;

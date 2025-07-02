@@ -16,13 +16,24 @@ const init = () => {
             { header: '사번', name: 'requesterId', align: 'center' },
             { header: '발행일자', name: 'requestedAt', align: 'center' },
             { header: '결재 날짜', name: 'confirmedAt', align: 'center' },
-            { header: '상태', name: 'approvalStatusName', align: 'center' },
             { header: '상태코드', name: 'approvalStatusCode', hidden: true },
             { header: '승인 권자', name: 'approverName', align: 'center' },
+            {
+                header: '상태', name: 'approvalStatusName', align: 'center',
+                formatter: ({ row }) => {
+                    switch (row.approvalStatusCode) {
+                        case 'APV001': return `<span style="color:green;">${row.approvalStatusName}</span>`;
+                        case 'APV002': return `<span style="color:blue;">${row.approvalStatusName}</span>`;
+                        case 'APV003': return `<span style="color:red;">${row.approvalStatusName}</span>`;
+                        default: return row.approvalStatusName || '';
+                    }
+                }
+            },
             { header: '승인 권자 사번', name: 'approverId', hidden: true },
             { header: '반려 사유', name: 'rejectionReason', hidden: true }
         ]
     );
+
 
     const today = getKoreaToday();
     const pastDate = new Date(today);

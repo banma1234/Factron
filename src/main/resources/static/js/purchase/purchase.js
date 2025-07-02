@@ -6,19 +6,40 @@ const init = () => {
         document.getElementById('purchaseGrid'),
         400,
         [
-            { header: '결재번호', name: 'approvalId', hidden:true },
+            { header: '결재번호', name: 'approvalId', hidden: true },
             { header: '발주ID', name: 'purchaseId', align: 'center' },
             { header: '발주자 사번', name: 'employeeId', align: 'center' },
             { header: '발주자 이름', name: 'employeeName', align: 'center' },
-            { header: '거래처ID', name: 'clientId', hidden:true },
+            { header: '거래처ID', name: 'clientId', hidden: true },
             { header: '거래처명', name: 'clientName', align: 'center' },
-            { header: '상태코드', name: 'statusCode', hidden:true },
+            { header: '상태코드', name: 'statusCode', hidden: true },
             { header: '자재 요약', name: 'itemSummary', align: 'center' },
             { header: '총금액', name: 'totalAmount', align: 'center', formatter: ({ value }) => value.toLocaleString() + '원' },
             { header: '등록일', name: 'createdAt', align: 'center' },
-            { header: '상태명', name: 'statusName', align: 'center' },
+            {
+                header: '상태명', name: 'statusName', align: 'center',
+                formatter: ({ row }) => {
+                    const code = row.statusCode;
+                    if (code === 'STP001' || code === 'STP002') {
+                        return `<span style="color:green;">${row.statusName}</span>`;
+                    }
+                    if (code === 'STP004') {
+                        return `<span style="color:blue;">${row.statusName}</span>`;
+                    }
+                    if (code === 'STP003' || code === 'STP005') {
+                        return `<span style="color:red;">${row.statusName}</span>`;
+                    }
+                    return row.statusName || '';
+                }
+            }
         ]
     );
+
+    // 권한 체크: user.authCode가 'ATH004'면 버튼 표시
+    if (user.authCode === 'ATH004') {
+        const btn = document.querySelector('.registPurchase');
+        if (btn) btn.style.display = '';
+    }
 
     const today = getKoreaToday();
     const pastDate = new Date(today);
@@ -26,27 +47,24 @@ const init = () => {
     document.querySelector('input[name="startDate"]').value = pastDate.toISOString().split('T')[0];
     document.querySelector('input[name="endDate"]').value = today;
 
-    document.querySelector(".srhBtn").addEventListener("click", function (e) {
+    document.querySelector(".srhBtn").addEventListener("click", e => {
         e.preventDefault();
         getData();
     });
 
-    document.querySelector('.search__form').addEventListener('submit', function (e) {
+    document.querySelector('.search__form').addEventListener('submit', e => {
         e.preventDefault();
         getData();
     });
 
-    // 발주 등록 버튼 클릭 시
-    document.querySelector('.registPurchase').addEventListener('click', function () {
+    document.querySelector('.registPurchase').addEventListener('click', () => {
         const popup = window.open('/purchaseRegister-form', '_blank', 'width=800,height=1000');
         if (!popup) {
             alert('팝업이 차단되었습니다. 팝업 차단 해제 후 다시 시도하세요.');
             return;
         }
-
-        const messageHandler = (event) => {
+        const messageHandler = event => {
             if (event.data === 'ready') {
-                // 초기화 필요 시 메시지 전달 가능
                 popup.postMessage({ type: 'init' }, "*");
                 window.removeEventListener("message", messageHandler);
             }
@@ -54,7 +72,7 @@ const init = () => {
         window.addEventListener("message", messageHandler);
     });
 
-    purchaseGrid.on('dblclick', (e) => {
+    purchaseGrid.on('dblclick', e => {
         const rowKey = e.rowKey;
         const rowData = purchaseGrid.getRow(rowKey);
 
@@ -64,10 +82,9 @@ const init = () => {
                 alert('팝업이 차단되었습니다. 팝업 차단 해제 후 다시 시도하세요.');
                 return;
             }
-
-            const messageHandler = (event) => {
+            const messageHandler = event => {
                 if (event.data === 'ready') {
-                    popup.postMessage(rowData, "*");  // 여기서 rowData 보내기
+                    popup.postMessage(rowData, "*");
                     window.removeEventListener("message", messageHandler);
                 }
             };
@@ -75,8 +92,7 @@ const init = () => {
         }
     });
 
-
-    window.getData = async function () {
+    window.getData = async () => {
         const startDate = document.querySelector("input[name='startDate']").value;
         const endDate = document.querySelector("input[name='endDate']").value;
         const approvalStatusCode = document.querySelector("select[name='STP']").value;

@@ -20,6 +20,7 @@ import com.itwillbs.factron.repository.storage.StockRepository;
 import com.itwillbs.factron.repository.storage.StorageRepository;
 import com.itwillbs.factron.service.lot.LotService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Log4j2
 public class WorkOrderServiceImpl implements WorkOrderService {
 
     private final WorkOrderMapper workOrderMapper;
@@ -219,6 +221,10 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
         // 공정이력 대기 상태로 등록
         List<Process> processList = processRepository.findByLineId(requestWorkOrderDTO.getLineId());
+        if(processList.isEmpty()) {
+            throw new IllegalArgumentException("해당 라인에 등록된 공정이 없습니다.");
+        }
+
         List<ProcessHistory> historyList = processList.stream()
                 .map(process -> ProcessHistory.builder()
                         .process(process)
