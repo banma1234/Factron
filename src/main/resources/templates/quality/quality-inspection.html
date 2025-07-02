@@ -24,6 +24,7 @@
         <div class="select__container" sec:authorize="hasAnyAuthority('ATH007', 'ATH003', 'ATH006')">
           <button class="btn btn-primary" name="addInspRow" type="button">추가</button>
           <button class="btn btn-outline-primary" name="updateInsp" type="button">저장</button>
+          <button class="btn btn-danger" name="deleteInspRow" type="button">삭제</button>
         </div>
       </form>
       <!-- list grid -->
@@ -47,7 +48,7 @@
         <div class="select__container" sec:authorize="hasAnyAuthority('ATH007', 'ATH003', 'ATH006')">
           <button class="btn btn-primary" name="addInspStdRow" type="button">추가</button>
           <button class="btn btn-outline-primary" name="updateInspStd" type="button">저장</button>
-          <button class="btn btn-outline-primary" name="deleteInspStd" type="button">삭제</button>
+          <button class="btn btn-danger" name="deleteInspStd" type="button">삭제</button>
         </div>
       </form>
       <!-- list grid -->

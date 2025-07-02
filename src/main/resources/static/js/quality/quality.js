@@ -220,6 +220,14 @@ const init = () => {
         });
     }
 
+    const deleteInspBtn =  document.querySelector('button[name="deleteInspRow"]');
+    if(deleteInspBtn){
+        deleteInspBtn.addEventListener('click', function(e){
+            e.preventDefault();
+            deleteInsp();
+        })
+    }
+
     // 품질검사 기준 삭제 버튼 이벤트
     const deleteInspStd =  document.querySelector('button[name="deleteInspStd"]');
     if(deleteInspStd){
@@ -227,6 +235,19 @@ const init = () => {
             e.preventDefault();
             deleteStdData();
         });
+    }
+
+    function deleteInsp() {
+        const focusedCell = inspGrid.getFocusedCell();
+
+        const row = inspGrid.getRow(focusedCell.rowKey);
+
+        if(row.inspectionId !== null){
+            alert("존재하는 품질검사는 삭제할 수 없습니다.");
+            return;
+        }
+
+        inspGrid.removeRow(focusedCell.rowKey);
     }
 
     // 품질검사 새 행 추가 함수
