@@ -980,7 +980,7 @@ class FactronApplicationTests {
 			lotRepository.save(Lot.builder()
 					.id("20250630-INB-0004")
 					.item(null)
-					.material(material2)
+					.material(material4)
 					.quantity(20L)
 					.eventType("INB")
 					.createdAt(LocalDateTime.now())

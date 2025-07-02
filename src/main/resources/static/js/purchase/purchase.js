@@ -14,7 +14,7 @@ const init = () => {
             { header: '거래처명', name: 'clientName', align: 'center' },
             { header: '상태코드', name: 'statusCode', hidden:true },
             { header: '자재 요약', name: 'itemSummary', align: 'center' },
-            { header: '총금액', name: 'totalAmount', align: 'right', formatter: ({ value }) => value.toLocaleString() + '원' },
+            { header: '총금액', name: 'totalAmount', align: 'center', formatter: ({ value }) => value.toLocaleString() + '원' },
             { header: '등록일', name: 'createdAt', align: 'center' },
             { header: '상태명', name: 'statusName', align: 'center' },
         ]
@@ -38,19 +38,28 @@ const init = () => {
 
     // 발주 등록 버튼 클릭 시
     document.querySelector('.registPurchase').addEventListener('click', function () {
-        const popup = window.open('/purchase-form?mode=CREATE', '_blank', 'width=800,height=1000');
+        const popup = window.open('/purchaseRegister-form', '_blank', 'width=800,height=1000');
         if (!popup) {
             alert('팝업이 차단되었습니다. 팝업 차단 해제 후 다시 시도하세요.');
+            return;
         }
+
+        const messageHandler = (event) => {
+            if (event.data === 'ready') {
+                // 초기화 필요 시 메시지 전달 가능
+                popup.postMessage({ type: 'init' }, "*");
+                window.removeEventListener("message", messageHandler);
+            }
+        };
+        window.addEventListener("message", messageHandler);
     });
 
-// 그리드 더블 클릭 시
     purchaseGrid.on('dblclick', (e) => {
         const rowKey = e.rowKey;
         const rowData = purchaseGrid.getRow(rowKey);
 
         if (rowData && rowData.purchaseId) {
-            const popup = window.open('/purchase-form?mode=VIEW', '_blank', 'width=800,height=1000');
+            const popup = window.open('/purchaseDetail-form', '_blank', 'width=800,height=1000');
             if (!popup) {
                 alert('팝업이 차단되었습니다. 팝업 차단 해제 후 다시 시도하세요.');
                 return;
@@ -58,7 +67,7 @@ const init = () => {
 
             const messageHandler = (event) => {
                 if (event.data === 'ready') {
-                    popup.postMessage(rowData, "*");
+                    popup.postMessage(rowData, "*");  // 여기서 rowData 보내기
                     window.removeEventListener("message", messageHandler);
                 }
             };
@@ -92,7 +101,7 @@ const init = () => {
         }
     };
 
-    setSelectBox("STP", "STP"); // 결재 상태 코드 셋업
+    setSelectBox("STP", "STP");
     getData();
 };
 

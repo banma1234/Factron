@@ -39,7 +39,7 @@ public class SysMainRestController {
             return ResponseDTO.fail(
                     800,
                     "조회할 수 없습니다.",
-                    sysMainService.getMainSysCode(mainCode)
+                    null
             );
         }
     }
@@ -59,7 +59,7 @@ public class SysMainRestController {
             return ResponseDTO.fail(
                     800,
                     "잘못된 입력입니다.",
-                    sysMainService.saveSysMain(requestSysMainDTO)
+                    null
             );
         }
     }
@@ -79,7 +79,7 @@ public class SysMainRestController {
             return ResponseDTO.fail(
                     800,
                     "잘못된 입력입니다.",
-                    sysMainService.updateSysMain(requestSysMainDTO)
+                    null
             );
         }
     }

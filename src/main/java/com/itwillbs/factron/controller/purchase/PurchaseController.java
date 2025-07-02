@@ -9,8 +9,12 @@ public class PurchaseController {
     public String purchase() {
         return "purchase/purchase";
     }
-    @GetMapping("/purchase-form")
-    public String purchaseForm() {
-        return "purchase/purchase-form";
+    @GetMapping("/purchaseRegister-form")
+    public String purchaseRegistorForm() {
+        return "purchase/purchaseRegister-form";
+    }
+    @GetMapping("/purchaseDetail-form")
+    public String purchaseDetailForm() {
+        return "purchase/purchaseDetail-form";
     }
 }

@@ -40,7 +40,7 @@ public class SysDetailRestController {
             return ResponseDTO.fail(
                     800,
                     "존재하지 않는 메인코드입니다.",
-                    sysDetailService.getDetailByParams(mainCode, name)
+                    null
             );
         }
     }
@@ -59,7 +59,7 @@ public class SysDetailRestController {
             return ResponseDTO.fail(
                     800,
                     "존재하지 않는 메인코드입니다.",
-                    sysDetailService.saveSysDetail(requestSysDetailDTO)
+                    null
             );
         }
     }
@@ -78,7 +78,7 @@ public class SysDetailRestController {
             return ResponseDTO.fail(
                     800,
                     "잘못된 입력입니다.",
-                    sysDetailService.updateSysDetail(requestSysDetailDTO)
+                    null
             );
         }
     }
