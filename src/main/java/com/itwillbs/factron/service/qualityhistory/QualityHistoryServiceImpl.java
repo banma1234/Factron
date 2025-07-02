@@ -1,11 +1,13 @@
 package com.itwillbs.factron.service.qualityhistory;
 
 import com.itwillbs.factron.common.component.AuthorizationChecker;
+import com.itwillbs.factron.dto.lot.RequestQualityLotDTO;
 import com.itwillbs.factron.dto.qualityhistory.RequestQualityHistoryInfoDTO;
 import com.itwillbs.factron.dto.qualityhistory.RequestUpdateQualityHistoryDTO;
 import com.itwillbs.factron.dto.qualityhistory.RequestUpdateQualityHistoryListDTO;
 import com.itwillbs.factron.dto.qualityhistory.ResponseQualityHistoryInfoDTO;
 import com.itwillbs.factron.entity.*;
+import com.itwillbs.factron.entity.enums.LotType;
 import com.itwillbs.factron.mapper.qualityhistory.QualityInspectionHistoryMapper;
 import com.itwillbs.factron.repository.product.ItemRepository;
 import com.itwillbs.factron.repository.production.WorkOrderRepository;
@@ -14,12 +16,15 @@ import com.itwillbs.factron.repository.quality.QualityInspectionStandardReposito
 import com.itwillbs.factron.repository.storage.InboundRepository;
 import com.itwillbs.factron.repository.storage.StorageRepository;
 import com.itwillbs.factron.service.inbound.InboundServiceImpl;
+import com.itwillbs.factron.service.lot.LotCreateServiceImpl;
+import com.itwillbs.factron.service.lotStructure.LotStructureServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -38,6 +43,8 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
     private final WorkOrderRepository workOrderRepository;
 
     private final InboundServiceImpl inboundService;
+    private final LotCreateServiceImpl lotCreateService;
+    private final LotStructureServiceImpl lotStructureService;
 
     private final AuthorizationChecker authorizationChecker;
 
@@ -49,6 +56,7 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
      */
     @Override
     public List<ResponseQualityHistoryInfoDTO> getQualityHistoryList(RequestQualityHistoryInfoDTO requestDto) {
+
         log.info("작업지시 ID에 따른 품질 검사 이력 조회: {}", requestDto.getWorkOrderId());
 
         List<ResponseQualityHistoryInfoDTO> historyList = qualityHistoryMapper.findQualityHistoryByWorkOrderId(requestDto.getWorkOrderId());
@@ -69,14 +77,38 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
 
         authorizationChecker.checkAnyAuthority("ATH003", "ATH006", "ATH007");
 
+        // 작업 지시 조회
+        String workOrderId = requestDto.getWorkOrderId();
+
+        // 제품 ID 조회
         String itemId = requestDto.getItemId();
+
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new IllegalArgumentException("제품을 찾을 수 없습니다: " + itemId));
+
+        // 양품 수량 조회
+        Long fectiveQuantity = requestDto.getFectiveQuantity();
+
+        // LOT 생성 요청 DTO 생성
+        RequestQualityLotDTO requestQualityLotDTO = RequestQualityLotDTO.builder()
+                .event_type(LotType.QUALITY)
+                .quantity(fectiveQuantity)
+                .item(item)
+                .build();
+
+        // LOT 생성
+        Lot qualityhistoryLot = lotCreateService.CreateQualityLot(requestQualityLotDTO);
+
+        log.info("품질 검사 LOT 생성 완료 - LOT ID: {}", qualityhistoryLot.getId());
+
+        // LOT Structure 생성
+        List<Lot> childLotList = new ArrayList<>();
+
+        // 생성한 품질 검사 LOT을 자식 LOT 목록에 추가
+        childLotList.add(qualityhistoryLot);
 
         // 작업 지시 내 모든 품질 검사 이력에 대해 합격 여부를 확인
         boolean allPassedInspection = true;
-
-        // TODO: 품질 검사 LOT 생성 함수 호출
-        // (파라미터 : LotType.QUALITY, 양품 갯수, 제품 ID, 작업 지시 ID)
-        // Lot lot = 품질 검사 LOT 생성 함수(LotType.QUALITY, 양품 갯수, 제품 ID, 작업 지시 ID)
 
         // 품질 검사 이력 목록 순회
         for (RequestUpdateQualityHistoryDTO historyDTO : requestDto.getQualityHistoryList()) {
@@ -114,16 +146,13 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
 
             // 품질검사 이력 업데이트
             history.updateInspectionHistory(
-                    null, // lot
+                    qualityhistoryLot, // 품질 검사 LOT
                     LocalDate.now(), // 검사 날짜
                     resultValue, // 검사 결과 값
                     resultCode, // 검사 결과 코드
-                    "STS003" // 상태 코드
+                    "STS003" // 상태 코드 (완료)
             );
         }
-
-        // 작업 지시 조회
-        String workOrderId = requestDto.getWorkOrderId();
 
         // 작업 지시 작업 상태 업데이트
         WorkOrder workOrder = workOrderRepository.findById(workOrderId)
@@ -134,13 +163,7 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
         // 모든 품질검사 항목이 합격일 때만 입고 처리
         if (allPassedInspection) {
 
-            // 양품 수량 조회
-            Long fectiveQuantity = requestDto.getFectiveQuantity();
-
-            // 제품 및 창고 정보 조회
-            Item item = itemRepository.findById(itemId)
-                    .orElseThrow(() -> new IllegalArgumentException("제품을 찾을 수 없습니다: " + itemId));
-
+            // 창고 정보 조회
             Storage storage = storageRepository.findByTypeCode(item.getTypeCode())
                     .orElseThrow(() -> new IllegalArgumentException("해당 제품 유형에 맞는 창고를 찾을 수 없습니다: " + item.getTypeCode()));
 
