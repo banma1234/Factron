@@ -15,7 +15,6 @@ import com.itwillbs.factron.repository.product.MaterialRepository;
 import com.itwillbs.factron.repository.production.ProductionPlanningRepository;
 import com.itwillbs.factron.repository.production.WorkOrderRepository;
 import com.itwillbs.factron.repository.production.WorkPerformanceRepository;
-import com.itwillbs.factron.repository.production.WorkerRepository;
 import com.itwillbs.factron.repository.quality.QualityInspectionHistoryRepository;
 import com.itwillbs.factron.repository.quality.QualityInspectionRepository;
 import com.itwillbs.factron.repository.quality.QualityInspectionStandardRepository;
@@ -84,8 +83,6 @@ class FactronApplicationTests {
 	private ProductionPlanningRepository prdctPlanRepository;
 	@Autowired
 	private WorkOrderRepository workOrderRepository;
-	@Autowired
-	private WorkerRepository workerRepository;
 	@Autowired
 	private WorkPerformanceRepository workPerformanceRepository;
 
@@ -554,7 +551,7 @@ class FactronApplicationTests {
 		// 1. 라인 생성
 		Line line1 = Line.builder()
 				.name("1번 금형 라인")
-				.statusCode("LIS002") // 가동
+				.statusCode("LIS001") // 정지
 				.description("금형 가공 전용 라인")
 				.createdAt(LocalDateTime.now())
 				.createdBy(1L)
@@ -785,9 +782,9 @@ class FactronApplicationTests {
 	@Commit
 	void insertStockInboundLotData() {
 		// 저장소 조회
-		Storage rawMaterialStorage = storageRepository.findByName("원자재 창고").orElse(null).getFirst();
-		Storage semiProductStorage = storageRepository.findByName("반제품 창고").orElse(null).getFirst();
-		Storage finishedProductStorage = storageRepository.findByName("완제품 창고").orElse(null).getFirst();
+		Storage rawMaterialStorage = storageRepository.findByTypeCode("ITP001").orElse(null);
+		Storage semiProductStorage = storageRepository.findByTypeCode("ITP002").orElse(null);
+		Storage finishedProductStorage = storageRepository.findByTypeCode("ITP003").orElse(null);
 
 		// 제품 및 자재 조회
 		Item item1 = itemRepository.findById("P0000001").orElse(null); // 금형 A
@@ -983,7 +980,7 @@ class FactronApplicationTests {
 			lotRepository.save(Lot.builder()
 					.id("20250630-INB-0004")
 					.item(null)
-					.material(material2)
+					.material(material4)
 					.quantity(20L)
 					.eventType("INB")
 					.createdAt(LocalDateTime.now())
@@ -995,11 +992,9 @@ class FactronApplicationTests {
 	@Test
 	@Transactional
 	@Commit
-	void insertPlanOrderWorkerData() {
+	void insertPrdctPlanData() {
 		// 1. 담당 사원 조회
 		Employee employee = employeeRepository.findById(25060001L).orElse(null);
-		Employee employee2 = employeeRepository.findById(25060002L).orElse(null);
-		Employee employee3 = employeeRepository.findById(25060003L).orElse(null);
 
 		// 2. 오늘 날짜 기준
 		LocalDate today = LocalDate.now();
@@ -1010,14 +1005,10 @@ class FactronApplicationTests {
 				.filter(item -> "ITP003".equals(item.getTypeCode()))
 				.toList();
 
-		// 4. 라인 1개 가져오기
-		Line line = lineRepository.findAll().stream().findFirst().orElse(null);
-
 		int sequence = 1;
 		for (Item item : finishedItems) {
 			// ID 생성
 			String planId = String.format("PP%s-%03d", dateStr, sequence); // ex: PP20250625-001
-			String workOrderId = String.format("WO%s-%03d", dateStr, sequence); // ex: WO20250625-001
 
 			// 생산계획 생성
 			ProductionPlanning planning = ProductionPlanning.builder()
@@ -1026,38 +1017,10 @@ class FactronApplicationTests {
 					.employee(employee)
 					.startDate(today)
 					.endDate(today.plusDays(5 + sequence))
-					.quantity(100L * sequence)
+					.quantity(2L * sequence)
 					.build();
 
-			planning = prdctPlanRepository.save(planning);
-
-			// 작업지시 생성
-			WorkOrder workOrder = WorkOrder.builder()
-					.id(workOrderId)
-					.productionPlanning(planning)
-					.item(item)
-					.quantity(100L * sequence)
-					.statusCode("WKS001") // 등록
-					.line(line)
-					.employee(employee)
-					.startDate(today.plusDays(1))
-					.build();
-
-			workOrder = workOrderRepository.save(workOrder);
-
-			// 작업자 생성
-			Worker worker1 = Worker.builder()
-					.workOrder(workOrder)
-					.employee(employee2)
-					.build();
-
-			Worker worker2 = Worker.builder()
-					.workOrder(workOrder)
-					.employee(employee3)
-					.build();
-
-			workerRepository.save(worker1);
-			workerRepository.save(worker2);
+			prdctPlanRepository.save(planning);
 
 			sequence++;
 		}

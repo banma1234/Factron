@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/base.html}">
+<head>
+  <title>Factron</title>
+</head>
+<body>
+<div layout:fragment="content">
+  <section>
+    <h4 class="page__name">공정이력 관리</h4>
+    <form class="search__form">
+      <h5 class="page__name">작업지시 목록</h5>
+      <div class="select__container"></div>
+      <div class="input-group">
+        <input class="form-control" type="text" name="srhId" placeholder="작업지시 번호">
+        <input class="form-control ms-1" type="text" name="srhItemIdOrName" placeholder="품목코드 또는 품목명">
+        <button class="btn btn-outline-secondary" name="workOrderBtn" type="submit">검색</button>
+      </div>
+    </form>
+
+    <!-- prdctPlan list grid -->
+    <article>
+      <div id="workOrderGrid">
+
+      </div>
+    </article>
+
+    <div class="mt-4">
+      <div class="header-row">
+        <h5 class="page__name">작업지시별 공정 목록</h5>
+        <button class="btn btn-primary" name="updProcHist" type="button">이력 저장</button>
+      </div>
+    </div>
+
+    <!-- workOrder list grid -->
+    <article>
+      <div id="processHistoryGrid">
+      </div>
+    </article>
+  </section>
+</div>
+
+<th:block layout:fragment="javascript">
+  <!-- js import -->
+  <script th:src="@{/js/process/processHistory.js}"></script>
+</th:block>
+</body>
+</html>

@@ -81,12 +81,24 @@ public class WorkOrderRestController {
     }
 
     /*
+     * 투입된 품목 및 작업자 목록 조회
+     * */
+    @GetMapping("/dtl")
+    public ResponseDTO<ResponseWorkDetailDTO> getWorkOrderDetail(String orderId) {
+        try {
+            return ResponseDTO.success(workOrderService.getWorkOrderDetail(orderId));
+        } catch (Exception e) {
+            return ResponseDTO.fail(800, "작업 상세정보 조회에 실패했습니다.", workOrderService.getWorkOrderDetail(orderId));
+        }
+    }
+
+    /*
      * 작업지시 시작
      * */
     @PutMapping()
     public ResponseDTO<Void> startWorkOrder(@RequestBody RequestWorkOrderDTO requestWorkOrderDTO) {
         try {
-            return ResponseDTO.success("작업이 시작되었습니다!<br/>공정을 완료해주세요.", workOrderService.registWorkOrder(requestWorkOrderDTO));
+            return ResponseDTO.success("작업이 시작되었습니다!<br/>공정을 완료해주세요.", workOrderService.startWorkOrder(requestWorkOrderDTO));
         } catch (NoSuchElementException nse) {
             return ResponseDTO.fail(800, nse.getMessage(), null);
         } catch (IllegalArgumentException iae) {
