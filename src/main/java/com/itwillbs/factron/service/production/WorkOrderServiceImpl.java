@@ -182,7 +182,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         }
 
         // LOT 수량 감소 및 LOT_HISTORY 추가
-        lotService.updateInboundLotQuantity(updateLotList);
+        lotService.updateLotQuantity(updateLotList);
 
         return null;
     }

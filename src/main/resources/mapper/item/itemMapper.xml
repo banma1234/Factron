@@ -26,8 +26,13 @@
             <if test="itemEndDate != null and itemEndDate != ''">
                 AND created_at &lt; TO_DATE(#{itemEndDate}, 'YYYY-MM-DD') + 1
             </if>
+            <!-- 여기 추가 -->
+            <if test="typeCode != null and typeCode != ''">
+                AND type_code = #{typeCode}
+            </if>
         </where>
         ORDER BY created_at DESC
     </select>
+
 
 </mapper>

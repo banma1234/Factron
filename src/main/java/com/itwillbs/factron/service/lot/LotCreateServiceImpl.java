@@ -108,7 +108,7 @@ public class LotCreateServiceImpl implements LotCreateService {
     @Transactional
     public Lot CreateQualityLot(RequestQualityLotDTO reqInbound) {
 
-        if (!authorizationChecker.hasAnyAuthority("ATH003", "ATH007")) {
+        if (!authorizationChecker.hasAnyAuthority("ATH003", "ATH006", "ATH007")) {
             throw new SecurityException("권한이 없습니다.");
         }
 

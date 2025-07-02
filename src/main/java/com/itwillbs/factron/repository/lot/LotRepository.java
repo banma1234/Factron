@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface LotRepository extends JpaRepository<Lot, String> {
@@ -15,4 +16,6 @@ public interface LotRepository extends JpaRepository<Lot, String> {
 
     // Material 기준 LOT FIFO 조회
     List<Lot> findByMaterialAndQuantityGreaterThanOrderByCreatedAtAsc(Material material, Long quantity);
+
+    Optional<List<Lot>> findByIdContaining(String lotId);
 }
