@@ -20,6 +20,7 @@ import com.itwillbs.factron.repository.storage.StockRepository;
 import com.itwillbs.factron.repository.storage.StorageRepository;
 import com.itwillbs.factron.service.lot.LotService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Log4j2
 public class WorkOrderServiceImpl implements WorkOrderService {
 
     private final WorkOrderMapper workOrderMapper;

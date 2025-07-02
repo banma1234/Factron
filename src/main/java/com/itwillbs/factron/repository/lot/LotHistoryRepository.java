@@ -9,6 +9,9 @@ import java.util.Optional;
 
 @Repository
 public interface LotHistoryRepository extends JpaRepository<LotHistory, Long> {
-
     Optional<List<LotHistory>> findByWorkOrderIdOrderByCreatedAtDesc(String workOrderId);
+
+    List<LotHistory> findByWorkOrderId(String workOrderId);
+
+    Optional<LotHistory> findFirstByWorkOrderIdOrderByCreatedAtDesc(String workOrderId);
 }
