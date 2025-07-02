@@ -170,3 +170,6 @@ $RECYCLE.BIN/
 
 *.yml
 *.properties
+
+### Mac File Format
+.DS_Store
