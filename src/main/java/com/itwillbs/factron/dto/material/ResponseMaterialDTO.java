@@ -3,7 +3,7 @@ package com.itwillbs.factron.dto.material;
 import lombok.Data;
 
 @Data
-public class MaterialResponseDTO {
+public class ResponseMaterialDTO {
     private String materialId;
     private String name;
     private String unit;
