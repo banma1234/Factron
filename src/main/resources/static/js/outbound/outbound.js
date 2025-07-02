@@ -2,6 +2,10 @@ let rawOutboundData = [];
 let outboundGrid;
 
 const init = () => {
+    const isAuthorized = user.authCode === 'ATH005';
+
+    const gridOptions = isAuthorized ? ['checkbox'] : [];
+
     outboundGrid = initGrid(
         document.getElementById('outboundGrid'),
         400,
@@ -24,13 +28,23 @@ const init = () => {
                 }
             }
         ],
-        ['checkbox']
+        gridOptions
     );
 
+    if (!isAuthorized) {
+        const btn = document.getElementById("btnCompleteOutbound");
+        if (btn) btn.style.display = 'none';
+    }
+
     async function getData() {
-        const srhItemOrMaterialName = document.querySelector("input[name='srhName']").value;
+        const srhItemOrItemName = document.querySelector("input[name='srhName']").value;
+        const startDate = document.querySelector("input[name='startDate']").value;
+        const endDate = document.querySelector("input[name='endDate']").value;
+
         const params = new URLSearchParams({
-            srhItemOrMaterialName: srhItemOrMaterialName
+            srhItemOrItemName,
+            startDate,
+            endDate
         });
 
         try {
@@ -55,43 +69,53 @@ const init = () => {
         getData();
     });
 
-    document.getElementById("btnCompleteOutbound").addEventListener("click", async function () {
-        console.log("출고 완료 버튼 클릭됨");
-        const checkedRows = outboundGrid.getCheckedRows();
-        console.log("체크된 행 수:", checkedRows.length);
-        if (checkedRows.length === 0) {
-            alert("처리할 출고 데이터를 선택하세요.");
-            return;
-        }
-
-        const hasCompleted = checkedRows.some(row => row.statusCode === 'STS003');
-        if (hasCompleted) {
-            alert("이미 출고 완료된 데이터가 포함되어 있습니다. 다시 확인해주세요.");
-            return;
-        }
-
-        const outboundIds = checkedRows.map(row => row.outboundId);
-
-        try {
-            const res = await fetch('/api/outbound', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ outboundIds: outboundIds })
-            });
-
-            if (!res.ok) {
-                const errorData = await res.json();
-                alert(`출고 처리 실패: ${errorData.message || res.statusText}`);
+    // 출고 완료 버튼 이벤트 (권한 있을 때만)
+    if (isAuthorized) {
+        document.getElementById("btnCompleteOutbound").addEventListener("click", async function () {
+            const checkedRows = outboundGrid.getCheckedRows();
+            if (checkedRows.length === 0) {
+                alert("처리할 출고 데이터를 선택하세요.");
                 return;
             }
 
-            alert("출고 처리가 완료되었습니다.");
-            getData();
-        } catch (e) {
-            console.error("출고 처리 오류:", e);
-            alert("출고 처리 중 오류가 발생했습니다.");
-        }
-    });
+            const hasCompleted = checkedRows.some(row => row.statusCode === 'STS003');
+            if (hasCompleted) {
+                alert("이미 출고 완료된 데이터가 포함되어 있습니다. 다시 확인해주세요.");
+                return;
+            }
+
+            const outboundIds = checkedRows.map(row => row.outboundId);
+
+            try {
+                const res = await fetch('/api/outbound', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ outboundIds })
+                });
+
+                if (!res.ok) {
+                    const errorData = await res.json();
+                    alert(`출고 처리 실패: ${errorData.message || res.statusText}`);
+                    return;
+                }
+
+                alert("출고 처리가 완료되었습니다.");
+                getData();
+            } catch (e) {
+                console.error("출고 처리 오류:", e);
+                alert("출고 처리 중 오류가 발생했습니다.");
+            }
+        });
+    }
+
+    // 초기 날짜 세팅 (예: 오늘, 30일 전)
+    const today = new Date().toISOString().split('T')[0];
+    const pastDate = new Date();
+    pastDate.setDate(pastDate.getDate() - 30);
+    const pastDateStr = pastDate.toISOString().split('T')[0];
+
+    document.querySelector("input[name='startDate']").value = pastDateStr;
+    document.querySelector("input[name='endDate']").value = today;
 
     getData();
 };

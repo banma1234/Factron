@@ -17,9 +17,30 @@ const init = () => {
             { header: '총금액', name: 'totalAmount', align: 'center', formatter: ({ value }) => value.toLocaleString() + '원' },
             { header: '납기일', name: 'deadline', align: 'center' },
             { header: '등록일', name: 'createdAt', align: 'center' },
-            { header: '상태명', name: 'statusName', align: 'center' },
+            {
+                header: '상태명', name: 'statusName', align: 'center',
+                formatter: ({ row }) => {
+                    const code = row.statusCode;
+                    if (code === 'STP001' || code === 'STP002') {
+                        return `<span style="color:green;">${row.statusName}</span>`;
+                    }
+                    if (code === 'STP004') {
+                        return `<span style="color:blue;">${row.statusName}</span>`;
+                    }
+                    if (code === 'STP003' || code === 'STP005') {
+                        return `<span style="color:red;">${row.statusName}</span>`;
+                    }
+                    return row.statusName || '';
+                }
+            }
         ]
     );
+
+    // 🔑 권한 체크: ATH004면 버튼 표시
+    if (user.authCode === 'ATH004') {
+        const btn = document.querySelector('.registContract');
+        if (btn) btn.style.display = '';
+    }
 
     const today = getKoreaToday();
     const pastDate = new Date(today);
