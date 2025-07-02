@@ -140,7 +140,7 @@ const init = () => {
         const approvalResultSection = document.querySelector(".approval-result-section");
 
         const isPending = data.approvalStatusCode === "APV001";
-        const isAuthorized = user.authCode === "ATH004";
+        const isAuthorized = user.authCode === "ATH005";
 
         approveBtn.style.display = (isPending && isAuthorized) ? "inline-block" : "none";
         rejectBtn.style.display = (isPending && isAuthorized) ? "inline-block" : "none";
