@@ -12,4 +12,6 @@ public interface ContractMapper {
     List<ResponseSearchContractDTO> getContractsList(RequestSearchContractDTO requestSearchContractDTO);
     // ✅ 수주 ID로 품목 목록 조회
     List<ResponseContractItemDTO> getContractItemsByContractId(Long contractId);
+
+    ResponseSearchContractDTO getContractDetailByContractId(Long contractId);
 }

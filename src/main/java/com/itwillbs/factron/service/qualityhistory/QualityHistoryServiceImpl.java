@@ -87,32 +87,39 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
         Item item = itemRepository.findById(requestDto.getItemId())
                 .orElseThrow(() -> new IllegalArgumentException("제품을 찾을 수 없습니다: " + requestDto.getItemId()));
 
-        // 2. 품질검사용 LOT 생성
-        Lot qualityLot = createQualityLot(requestDto, item);
+        // 2. 품질검사 결과 처리 및 합격 여부 확인
+        boolean allPassed = processQualityInspectionResults(requestDto, item);
 
-        // 3. LOT 구조 연결 (부모-자식 관계 설정)
-        LotHistory lotHistory = lotHistoryRepository.findTopByWorkOrderIdOrderByCreatedAtDesc(requestDto.getWorkOrderId())
-                .orElseThrow(() -> new IllegalArgumentException("마지막 공정 LOT을 찾을 수 없습니다."));
-
-        Lot parentLot = lotHistory.getLot();
-
-        lotStructureService.linkLotStructure(parentLot, List.of(qualityLot));
-
-        // 4. 품질검사 결과 처리 및 합격 여부 확인
-        boolean allPassed = processQualityInspectionResults(requestDto, item, qualityLot);
-
-        // 5. 작업지시 상태 업데이트
+        // 3. 작업지시 상태 업데이트
         WorkOrder workOrder = workOrderRepository.findById(requestDto.getWorkOrderId())
                 .orElseThrow(() -> new IllegalArgumentException("작업 지시를 찾을 수 없습니다: " + requestDto.getWorkOrderId()));
 
         workOrder.updateStatus("WKS004");
 
-        // 6. 모든 검사 합격 시 입고 처리, 불합격 시 경고 로그
+        Lot qualityLot = null;
+
+        // 4. 모든 검사 합격 시에만 LOT 생성 및 후속 처리
         if (allPassed) {
+            // 품질검사용 LOT 생성
+            qualityLot = createQualityLot(requestDto, item);
+
+            // LOT 구조 연결 (부모-자식 관계 설정)
+            LotHistory lotHistory = lotHistoryRepository.findTopByWorkOrderIdOrderByCreatedAtDesc(requestDto.getWorkOrderId())
+                    .orElseThrow(() -> new IllegalArgumentException("마지막 공정 LOT을 찾을 수 없습니다."));
+
+            Lot processLot = lotHistory.getLot();
+            lotStructureService.linkLotStructure(qualityLot, List.of(processLot));
+
+            // 입고 처리
             processInboundAndStock(item, requestDto.getFectiveQuantity(), requestDto.getWorkOrderId());
+
+            log.info("모든 품질검사 합격 - LOT 생성 및 입고 처리 완료. 작업지시: {}", requestDto.getWorkOrderId());
         } else {
-            log.warn("불합격 품질검사 항목이 있어 입고 처리를 진행하지 않습니다. 작업지시: {}", requestDto.getWorkOrderId());
+            log.warn("불합격 품질검사 항목이 있어 LOT 생성 및 입고 처리를 진행하지 않습니다. 작업지시: {}", requestDto.getWorkOrderId());
         }
+
+        // 5. 품질검사 이력 업데이트 (한 번만 실행)
+        updateQualityInspectionHistories(requestDto, item, qualityLot);
     }
 
     /**
@@ -136,14 +143,13 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
     }
 
     /**
-     * 모든 품질검사 결과 처리 및 전체 합격 여부 반환
+     * 품질검사 결과 처리 및 전체 합격 여부 반환
      *
      * @param requestDto 요청 DTO
      * @param item 제품 엔티티
-     * @param qualityLot 품질검사 LOT
      * @return 모든 검사 항목 합격 여부
      */
-    private boolean processQualityInspectionResults(RequestUpdateQualityHistoryListDTO requestDto, Item item, Lot qualityLot) {
+    private boolean processQualityInspectionResults(RequestUpdateQualityHistoryListDTO requestDto, Item item) {
 
         return requestDto.getQualityHistoryList().stream()
                 .allMatch(historyDto -> {
@@ -155,7 +161,6 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
                     // 검사 결과값 및 합격 여부 판정
                     Double resultValue = historyDto.getResultValue();
                     boolean isPassed = resultValue >= standard.getLowerLimit() && resultValue <= standard.getUpperLimit();
-                    String resultCode = isPassed ? "QIR001" : "QIR002";
 
                     // 검사 결과 로그 기록
                     String status = isPassed ? "합격" : "불합격";
@@ -163,15 +168,36 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
                             status, historyDto.getQualityHistoryId(), resultValue,
                             standard.getLowerLimit(), standard.getUpperLimit());
 
-                    // 품질검사 이력 엔티티 업데이트
-                    QualityInspectionHistory history = qualityHistoryRepository.findById(historyDto.getQualityHistoryId())
-                            .orElseThrow(() -> new IllegalArgumentException("품질검사 이력을 찾을 수 없습니다."));
-
-                    // 검사 결과 상태를 완료 (STS003)로 업데이트
-                    history.updateInspectionHistory(qualityLot, LocalDate.now(), resultValue, resultCode, "STS003");
-
                     return isPassed;
                 });
+    }
+
+    /**
+     * 품질검사 이력 업데이트 (합격/불합격에 따라 처리)
+     *
+     * @param requestDto 요청 DTO
+     * @param item 제품 엔티티
+     * @param qualityLot 품질검사 LOT (모든 검사 합격 시에만 값이 있음)
+     */
+    private void updateQualityInspectionHistories(RequestUpdateQualityHistoryListDTO requestDto, Item item, Lot qualityLot) {
+        requestDto.getQualityHistoryList().forEach(historyDto -> {
+            // 품질검사 기준 조회
+            QualityInspectionStandard standard = qualityInspectionStandardRepository
+                    .findByQualityInspectionIdAndItemId(historyDto.getQualityInspectionId(), item.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("품질검사 기준을 찾을 수 없습니다."));
+
+            // 검사 결과값 및 합격 여부 판정
+            Double resultValue = historyDto.getResultValue();
+            boolean isPassed = resultValue >= standard.getLowerLimit() && resultValue <= standard.getUpperLimit();
+            String resultCode = isPassed ? "QIR001" : "QIR002";
+
+            // 품질검사 이력 엔티티 업데이트
+            QualityInspectionHistory history = qualityHistoryRepository.findById(historyDto.getQualityHistoryId())
+                    .orElseThrow(() -> new IllegalArgumentException("품질검사 이력을 찾을 수 없습니다."));
+
+            // 모든 검사가 합격한 경우에만 qualityLot을 연결, 아니면 null
+            history.updateInspectionHistory(qualityLot, LocalDate.now(), resultValue, resultCode, "STS003");
+        });
     }
 
     /**

@@ -52,7 +52,7 @@ public class PurchaseRestController {
 
     // 발주 등록 (저장)
     @PostMapping("")
-    public ResponseDTO<?> registerPurchase(@RequestBody RequestRegisterPurchaseDTO requestDto) {
+    public ResponseDTO<Void> registerPurchase(@RequestBody RequestRegisterPurchaseDTO requestDto) {
         try {
             purchaseServcie.registerPurchase(requestDto);
             return ResponseDTO.success("등록이 완료되었습니다.",null);
@@ -63,7 +63,7 @@ public class PurchaseRestController {
 
     // 발주 취소
     @PutMapping("/cancel")
-    public ResponseDTO<?> cancelPurchase(@RequestParam Long approvalId) {
+    public ResponseDTO<Void> cancelPurchase(@RequestParam Long approvalId) {
         try {
             purchaseServcie.cancelPurchase(approvalId);
             return ResponseDTO.success("발주가 취소되었습니다.", null);
