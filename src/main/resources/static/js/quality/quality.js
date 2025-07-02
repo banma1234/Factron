@@ -167,46 +167,67 @@ const init = () => {
     getQualityStandards();
 
     // 품질검사 검색 버튼 이벤트
-    document.querySelector('button[name="inspSrhBtn"]').addEventListener('click', function(e) {
-        e.preventDefault();
-        getInspections();
-    });
+    const inspSrhBtn =  document.querySelector('button[name="inspSrhBtn"]');
+    if(inspSrhBtn){
+        inspSrhBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            getInspections();
+        });
 
-    // 품질검사 기준 검색 버튼 이벤트
-    document.querySelector('button[name="stdSrhBtn"]').addEventListener('click', function(e) {
-        e.preventDefault();
-        getQualityStandards();
-    });
+    }
+
+    const stdSrhBtn =  document.querySelector('button[name="stdSrhBtn"]');
+    if(stdSrhBtn){
+        stdSrhBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            getQualityStandards();
+        });
+    }
 
     // 품질검사 추가 버튼 이벤트
-    document.querySelector('button[name="addInspRow"]').addEventListener('click', function(e) {
-        e.preventDefault();
-        addNewInspRow();
-    });
+    const addInspRow =  document.querySelector('button[name="addInspRow"]');
+    if(addInspRow){
+        addInspRow.addEventListener('click', function(e) {
+            e.preventDefault();
+            addNewInspRow();
+        });
+    }
 
     // 품질검사 수정 버튼 이벤트
-    document.querySelector('button[name="updateInsp"]').addEventListener('click', function(e) {
-        e.preventDefault();
-        saveInspData();
-    });
+    const updateInsp =  document.querySelector('button[name="updateInsp"]');
+    if(updateInsp){
+        updateInsp.addEventListener('click', function(e) {
+            e.preventDefault();
+            saveInspData();
+        });
+    }
 
     // 품질검사 기준 추가 버튼 이벤트
-    document.querySelector('button[name="addInspStdRow"]').addEventListener('click', function(e) {
-        e.preventDefault();
-        addNewStdRow();
-    });
+    const addInspStdRow =  document.querySelector('button[name="addInspStdRow"]');
+    if(addInspStdRow){
+        addInspStdRow.addEventListener('click', function(e) {
+            e.preventDefault();
+            addNewStdRow();
+        });
+    }
 
     // 품질검사 기준 수정 버튼 이벤트
-    document.querySelector('button[name="updateInspStd"]').addEventListener('click', function(e) {
-        e.preventDefault();
-        saveStdData();
-    });
+    const updateInspStd =  document.querySelector('button[name="updateInspStd"]');
+    if(updateInspStd){
+        updateInspStd.addEventListener('click', function(e) {
+            e.preventDefault();
+            saveStdData();
+        });
+    }
 
     // 품질검사 기준 삭제 버튼 이벤트
-    document.querySelector('button[name="deleteInspStd"]').addEventListener('click', function(e) {
-        e.preventDefault();
-        deleteStdData();
-    });
+    const deleteInspStd =  document.querySelector('button[name="deleteInspStd"]');
+    if(deleteInspStd){
+        deleteInspStd.addEventListener('click', function(e) {
+            e.preventDefault();
+            deleteStdData();
+        });
+    }
 
     // 품질검사 새 행 추가 함수
     function addNewInspRow() {

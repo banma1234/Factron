@@ -41,14 +41,14 @@ public class WorkOrderRestController {
     }
 
     /*
-     * 작업 제품 정보 및 투입 품목 목록 조회
+     * 투입할 품목 목록 조회
      * */
     @GetMapping("/inputs")
-    public ResponseDTO<List<ResponseWorkProdDTO>> getInputProdList(RequestWorkProdDTO requestWorkProdDTO) {
+    public ResponseDTO<List<ResponseWorkProdDTO>> getPossibleInputList(RequestWorkProdDTO requestWorkProdDTO) {
         try {
-            return ResponseDTO.success(workOrderService.getInputProdList(requestWorkProdDTO));
+            return ResponseDTO.success(workOrderService.getPossibleInputList(requestWorkProdDTO));
         } catch (Exception e) {
-            return ResponseDTO.fail(800, "투입 품목 목록 조회에 실패했습니다.", workOrderService.getInputProdList(requestWorkProdDTO));
+            return ResponseDTO.fail(800, "투입 품목 목록 조회에 실패했습니다.", workOrderService.getPossibleInputList(requestWorkProdDTO));
         }
     }
 
@@ -77,6 +77,34 @@ public class WorkOrderRestController {
             return ResponseDTO.fail(801, iae.getMessage(), null);
         } catch (Exception e) {
             return ResponseDTO.fail(802, "작업지시 등록에 실패했습니다.", null);
+        }
+    }
+
+    /*
+     * 투입된 품목 및 작업자 목록 조회
+     * */
+    @GetMapping("/dtl")
+    public ResponseDTO<ResponseWorkDetailDTO> getWorkOrderDetail(String orderId) {
+        try {
+            return ResponseDTO.success(workOrderService.getWorkOrderDetail(orderId));
+        } catch (Exception e) {
+            return ResponseDTO.fail(800, "작업 상세정보 조회에 실패했습니다.", workOrderService.getWorkOrderDetail(orderId));
+        }
+    }
+
+    /*
+     * 작업지시 시작
+     * */
+    @PutMapping()
+    public ResponseDTO<Void> startWorkOrder(@RequestBody RequestWorkOrderDTO requestWorkOrderDTO) {
+        try {
+            return ResponseDTO.success("작업이 시작되었습니다!<br/>공정을 완료해주세요.", workOrderService.startWorkOrder(requestWorkOrderDTO));
+        } catch (NoSuchElementException nse) {
+            return ResponseDTO.fail(800, nse.getMessage(), null);
+        } catch (IllegalArgumentException iae) {
+            return ResponseDTO.fail(801, iae.getMessage(), null);
+        } catch (Exception e) {
+            return ResponseDTO.fail(802, "작업 시작에 실패했습니다.", null);
         }
     }
 }

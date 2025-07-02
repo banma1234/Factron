@@ -1,5 +1,6 @@
 package com.itwillbs.factron.dto.lot;
 
+import com.itwillbs.factron.entity.Lot;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -27,5 +28,15 @@ public class ResponseLotDTO {
         this.material_id = material_id;
         this.quantity = quantity;
         this.event_type = event_type;
+    }
+
+    public static ResponseLotDTO fromEntity(Lot entity) {
+        return ResponseLotDTO.builder()
+                .id(entity.getId())
+                .item_id(entity.getItem().getId())
+                .material_id(entity.getMaterial().getId())
+                .quantity(entity.getQuantity())
+                .event_type(entity.getEventType())
+                .build();
     }
 }
