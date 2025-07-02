@@ -88,4 +88,36 @@
         ORDER BY M.NAME
     </select>
 
+    <select id="getPurchaseDetailByPurchaseId"
+            parameterType="long"
+            resultType="com.itwillbs.factron.dto.purchase.ResponseSearchPurchaseDTO">
+
+        SELECT
+            A.ID AS approvalId,
+            P.ID AS purchaseId,
+            E.ID AS employeeId,
+            E.NAME AS employeeName,
+            CL.ID AS clientId,
+            CL.NAME AS clientName,
+            P.STATUS_CODE AS statusCode,
+            STP.NAME AS statusName,
+            P.CREATED_AT AS createdAt,
+            CASE
+                WHEN COUNT(DISTINCT PLIST.ID) = 1 THEN MIN(M.NAME)
+                ELSE MIN(M.NAME) || ' 외 ' || (COUNT(DISTINCT PLIST.ID) - 1) || '건'
+                END AS itemSummary,
+            SUM(PLIST.QUANTITY * PLIST.PRICE) AS totalAmount
+        FROM PURCHASE P
+                 JOIN EMPLOYEE E ON P.EMPLOYEE_ID = E.ID
+                 JOIN CLIENT CL ON P.CLIENT_ID = CL.ID
+                 LEFT JOIN APPROVAL A ON P.APPROVAL_ID = A.ID
+                 LEFT JOIN PURCHASE_LIST PLIST ON P.ID = PLIST.PURCHASE_ID
+                 LEFT JOIN MATERIAL M ON PLIST.MATERIAL_ID = M.ID
+                 LEFT JOIN DETAIL_SYS_CODE STP ON P.STATUS_CODE = STP.DETAIL_CODE
+        WHERE P.ID = #{purchaseId}
+        GROUP BY
+            A.ID, P.ID, E.ID, E.NAME, CL.ID, CL.NAME,
+            P.STATUS_CODE, STP.NAME, P.CREATED_AT
+    </select>
+
 </mapper>

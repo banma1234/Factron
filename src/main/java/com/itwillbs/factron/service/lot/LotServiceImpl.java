@@ -5,6 +5,7 @@ import com.itwillbs.factron.dto.lot.RequestLotUpdateDTO;
 import com.itwillbs.factron.dto.lot.ResponseLotDTO;
 import com.itwillbs.factron.dto.lotHistory.RequestLotHistoryDTO;
 import com.itwillbs.factron.entity.Lot;
+import com.itwillbs.factron.entity.WorkOrder;
 import com.itwillbs.factron.mapper.lot.LotMapper;
 import com.itwillbs.factron.repository.lot.LotRepository;
 import com.itwillbs.factron.service.lotHistory.LotHistoryService;
@@ -36,16 +37,24 @@ public class LotServiceImpl implements LotService {
     }
 
     @Override
-    public List<ResponseLotDTO> getLot() {
+    public List<ResponseLotDTO> getLotById(String lotId) {
 
-        List<Lot> lotList = lotRepository.findAll();
+        List<Lot> lotList;
+
+        if(lotId == null || lotId.isEmpty()) {
+            lotList = lotRepository.findAll();
+        } else {
+            lotList = lotRepository
+                    .findByIdContaining(lotId)
+                    .orElseThrow(() -> new NoSuchElementException("해당하는 Lot 번호가 없습니다."));
+        }
 
         return toLotDTOList(lotList);
     }
 
     @Override
     @Transactional
-    public Void updateInboundLotQuantity (List<RequestLotUpdateDTO> materialList) {
+    public Void updateLotQuantity (List<RequestLotUpdateDTO> materialList) {
 
         if (!authorizationChecker.hasAnyAuthority("ATH003", "ATH007")) {
             throw new SecurityException("권한이 없습니다.");
@@ -72,6 +81,10 @@ public class LotServiceImpl implements LotService {
                 LotList.add(lot);
             }
 
+            if(sum < target.getQuantity()) {
+                throw new IllegalArgumentException("재고보다 많은 품목을 출고할 수 없습니다.");
+            }
+
             if(target.getMaterial_id() == null || target.getMaterial_id().isEmpty()) {
                 map.put(target.getItem_id(), LotList);
             } else {
@@ -81,37 +94,47 @@ public class LotServiceImpl implements LotService {
         });
 
         materialList.forEach(target -> {
-
             Long targetQuantity = target.getQuantity();
 
-            for( Lot lot : map.get(target.getMaterial_id())) {
-                Long originalQuantity = lot.getQuantity();
+            String key = (target.getMaterial_id() == null || target.getMaterial_id().isEmpty())
+                    ? target.getItem_id()
+                    : target.getMaterial_id();
 
-                if(originalQuantity == 0) {
-                    continue;
-                }
+            List<Lot> lots = map.getOrDefault(key, Collections.emptyList());
 
-                Long updatedQuantity = lot.getQuantity() - targetQuantity;
-                lot.updateQuantity(Math.max(0, updatedQuantity));
-
-                lotMapper.updateLotQuantity(lot);
-                lotHistoryService.addHistory(RequestLotHistoryDTO.builder()
-                        .lot_id(lot.getId())
-                        .quantity(Math.min(originalQuantity, targetQuantity))
-                        .work_order(target.getWork_order_id())
-                        .created_at(LocalDateTime.now())
-                        .build()
-                );
-
-                targetQuantity -= originalQuantity;
-
-                if (targetQuantity <= 0) {
-                    break;
-                }
-            }
+            updateLotsAndRecordHistory(lots, targetQuantity, target.getWork_order_id());
         });
 
         return null;
+    }
+
+    private void updateLotsAndRecordHistory(List<Lot> lots, Long targetQuantity, WorkOrder workOrderId) {
+
+        for (Lot lot : lots) {
+            Long originalQuantity = lot.getQuantity();
+
+            if (originalQuantity == 0) {
+                continue;
+            }
+
+            Long updatedQuantity = originalQuantity - targetQuantity;
+            lot.updateQuantity(Math.max(0, updatedQuantity));
+
+            lotMapper.updateLotQuantity(lot);
+            lotHistoryService.addHistory(RequestLotHistoryDTO.builder()
+                    .lot_id(lot.getId())
+                    .quantity(Math.min(originalQuantity, targetQuantity))
+                    .work_order(workOrderId)
+                    .created_at(LocalDateTime.now())
+                    .build()
+            );
+
+            targetQuantity -= originalQuantity;
+
+            if (targetQuantity <= 0) {
+                break;
+            }
+        }
     }
 
     private List<ResponseLotDTO> toLotDTOList(List<Lot> lotList) {

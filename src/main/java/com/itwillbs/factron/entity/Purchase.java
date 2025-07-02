@@ -44,4 +44,9 @@ public class Purchase {
     public void updateStatus(String statusCode) {
         this.statusCode = statusCode;
     }
+
+    // 결재 정보 변경용 (예: 결재 취소 시 null로 설정)
+    public void setApproval(Approval approval) {
+        this.approval = approval;
+    }
 }

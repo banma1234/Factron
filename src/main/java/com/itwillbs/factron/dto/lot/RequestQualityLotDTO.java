@@ -11,9 +11,6 @@ import lombok.Data;
 @Data
 public class RequestQualityLotDTO {
 
-    @NotBlank(message = "LOT id는 필수 입력값입니다.")
-    private String id;
-
     @NotNull(message = "품목은 필수 입력값입니다.")
     private Item item;
 
@@ -24,8 +21,7 @@ public class RequestQualityLotDTO {
     private LotType event_type;
 
     @Builder
-    public RequestQualityLotDTO(String id, Item item, Long quantity, LotType event_type) {
-        this.id = id;
+    public RequestQualityLotDTO(Item item, Long quantity, LotType event_type) {
         this.item = item;
         this.quantity = quantity;
         this.event_type = event_type;
