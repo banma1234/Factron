@@ -39,6 +39,8 @@
             cl.material_id,
             cl.quantity,
             cl.event_type,
+            cl.created_by,
+            cl.created_at,
             ls.parent_lot_id AS parent_id
         FROM lot_structure ls
                  JOIN lot cl ON cl.id = ls.child_lot_id
@@ -51,6 +53,8 @@
             l.material_id,
             l.quantity,
             l.event_type,
+            l.created_by,
+            l.created_at,
             NULL AS parent_id
         FROM lot l
         WHERE l.id = #{lotId}

@@ -2,6 +2,8 @@ package com.itwillbs.factron.dto.lot;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class LotTreeDTO {
 
@@ -11,4 +13,6 @@ public class LotTreeDTO {
     private Long quantity;
     private String eventType;
     private String parentId;
+    private Long createdBy;
+    private LocalDateTime createdAt;
 }

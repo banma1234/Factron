@@ -47,7 +47,7 @@ public class LotServiceImpl implements LotService {
         List<Lot> lotList;
 
         if(lotId == null || lotId.isEmpty()) {
-            lotList = lotRepository.findByEventType("ISP")
+            lotList = lotRepository.findByEventTypeOrderByCreatedAtDesc("ISP")
                     .orElseThrow(() -> new NoSuchElementException("해당하는 Lot 번호가 없습니다."));
         } else {
             lotList = lotRepository

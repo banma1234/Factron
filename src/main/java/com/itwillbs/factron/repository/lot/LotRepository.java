@@ -19,5 +19,5 @@ public interface LotRepository extends JpaRepository<Lot, String> {
 
     Optional<List<Lot>> findByIdContaining(String lotId);
 
-    Optional<List<Lot>> findByEventType(String isp);
+    Optional<List<Lot>> findByEventTypeOrderByCreatedAtDesc(String isp);
 }

@@ -2,7 +2,6 @@ package com.itwillbs.factron.mapper.lot;
 
 import com.itwillbs.factron.dto.lot.LotTreeDTO;
 import com.itwillbs.factron.dto.lot.RequestLotUpdateDTO;
-import com.itwillbs.factron.dto.lot.ResponseLotDTO;
 import com.itwillbs.factron.entity.Lot;
 import org.apache.ibatis.annotations.Mapper;
 
