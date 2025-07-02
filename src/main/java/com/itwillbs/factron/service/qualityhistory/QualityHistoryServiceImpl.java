@@ -9,6 +9,7 @@ import com.itwillbs.factron.dto.qualityhistory.ResponseQualityHistoryInfoDTO;
 import com.itwillbs.factron.entity.*;
 import com.itwillbs.factron.entity.enums.LotType;
 import com.itwillbs.factron.mapper.qualityhistory.QualityInspectionHistoryMapper;
+import com.itwillbs.factron.repository.lot.LotHistoryRepository;
 import com.itwillbs.factron.repository.product.ItemRepository;
 import com.itwillbs.factron.repository.production.WorkOrderRepository;
 import com.itwillbs.factron.repository.quality.QualityInspectionHistoryRepository;
@@ -41,6 +42,7 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
     private final StorageRepository storageRepository;
     private final InboundRepository inboundRepository;
     private final WorkOrderRepository workOrderRepository;
+    private final LotHistoryRepository lotHistoryRepository;
 
     private final InboundServiceImpl inboundService;
     private final LotCreateServiceImpl lotCreateService;
@@ -106,6 +108,13 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
 
         // 생성한 품질 검사 LOT을 자식 LOT 목록에 추가
         childLotList.add(qualityhistoryLot);
+
+        // 상위 LOT(마지막 공정 LOT) 조회
+        Lot parentLot = lotHistoryRepository.findTopByWorkOrderIdOrderByCreatedDateDesc(workOrderId)
+                .orElseThrow(() -> new IllegalArgumentException("마지막 공정 LOT을 찾을 수 없습니다."));
+
+        // LOT 구조 연결
+        lotStructureService.linkLotStructure(parentLot, childLotList);
 
         // 작업 지시 내 모든 품질 검사 이력에 대해 합격 여부를 확인
         boolean allPassedInspection = true;
