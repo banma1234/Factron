@@ -219,6 +219,10 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
         // 공정이력 대기 상태로 등록
         List<Process> processList = processRepository.findByLineId(requestWorkOrderDTO.getLineId());
+        if(processList.isEmpty()) {
+            throw new IllegalArgumentException("해당 라인에 등록된 공정이 없습니다.");
+        }
+
         List<ProcessHistory> historyList = processList.stream()
                 .map(process -> ProcessHistory.builder()
                         .process(process)
