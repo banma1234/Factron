@@ -1,8 +1,10 @@
 package com.itwillbs.factron.service.lot;
 
 import com.itwillbs.factron.common.component.AuthorizationChecker;
+import com.itwillbs.factron.dto.lot.LotTreeDTO;
 import com.itwillbs.factron.dto.lot.RequestLotUpdateDTO;
 import com.itwillbs.factron.dto.lot.ResponseLotDTO;
+import com.itwillbs.factron.dto.lot.ResponseLotTreeDTO;
 import com.itwillbs.factron.dto.lotHistory.RequestLotHistoryDTO;
 import com.itwillbs.factron.entity.Lot;
 import com.itwillbs.factron.entity.WorkOrder;
@@ -36,13 +38,17 @@ public class LotServiceImpl implements LotService {
         return lotMapper.getLotSequence(map);
     }
 
+    /**
+     * LOT 이름으로 검색
+     * */
     @Override
     public List<ResponseLotDTO> getLotById(String lotId) {
 
         List<Lot> lotList;
 
         if(lotId == null || lotId.isEmpty()) {
-            lotList = lotRepository.findAll();
+            lotList = lotRepository.findByEventType("ISP")
+                    .orElseThrow(() -> new NoSuchElementException("해당하는 Lot 번호가 없습니다."));
         } else {
             lotList = lotRepository
                     .findByIdContaining(lotId)
@@ -50,6 +56,16 @@ public class LotServiceImpl implements LotService {
         }
 
         return toLotDTOList(lotList);
+    }
+
+    @Override
+    public ResponseLotTreeDTO getLotTreeById(String lotId) {
+
+        log.info(">>>>>>>>>>>> lotId : {}", lotId);
+        List<LotTreeDTO> lotList  = lotMapper.getDetailLotTreeById(lotId);
+        log.info(">>>>>>>>>>>> lotList : {}\n", lotList);
+
+        return convertLotToTree(lotList, lotId);
     }
 
     @Override
@@ -142,6 +158,32 @@ public class LotServiceImpl implements LotService {
         return lotList.stream()
                 .map(ResponseLotDTO :: fromEntity)
                 .toList();
+    }
+
+    private ResponseLotTreeDTO convertLotToTree(List<LotTreeDTO> dtoList, String rootId) {
+        Map<String, ResponseLotTreeDTO> nodeMap  = new HashMap<>();
+
+        for (LotTreeDTO node : dtoList) {
+            log.info(">>>>>>>>>>>> node: {}", node);
+            ResponseLotTreeDTO DTO = ResponseLotTreeDTO.convertLotToResponse(node);
+            nodeMap .put(DTO.getId(), DTO);
+        }
+
+        for (LotTreeDTO node : dtoList) {
+            String parentId = node.getParentId();
+            log.info(">>>>>>>>>>>> parentId: {}", parentId);
+
+            if (parentId != null && nodeMap.containsKey(parentId)) {
+                log.info(">>>>>>>>>>>> node.getId(): {}", node.getId());
+
+                ResponseLotTreeDTO parent = nodeMap.get(parentId);
+                ResponseLotTreeDTO child = nodeMap.get(node.getId());
+
+                parent.getChildren().add(child);
+            }
+        }
+
+        return nodeMap.get(rootId);
     }
 
 }

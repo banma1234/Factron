@@ -32,6 +32,31 @@
         ORDER BY created_at ASC
     </select>
 
+    <select id="getDetailLotTreeById" resultType="com.itwillbs.factron.dto.lot.LotTreeDTO" parameterType="string">
+        SELECT
+            cl.id,
+            cl.item_id,
+            cl.material_id,
+            cl.quantity,
+            cl.event_type,
+            ls.parent_lot_id AS parent_id
+        FROM lot_structure ls
+                 JOIN lot cl ON cl.id = ls.child_lot_id
+            START WITH ls.parent_lot_id = #{lotId}
+        CONNECT BY PRIOR cl.id = ls.parent_lot_id
+        UNION ALL
+        SELECT
+            l.id,
+            l.item_id,
+            l.material_id,
+            l.quantity,
+            l.event_type,
+            NULL AS parent_id
+        FROM lot l
+        WHERE l.id = #{lotId}
+    </select>
+
+
     <!-- LOT quantity 업데이트 -->
     <update id="updateLotQuantity" parameterType="com.itwillbs.factron.entity.Lot">
         UPDATE LOT

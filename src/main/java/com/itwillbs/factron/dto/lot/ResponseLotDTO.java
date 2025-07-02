@@ -33,8 +33,8 @@ public class ResponseLotDTO {
     public static ResponseLotDTO fromEntity(Lot entity) {
         return ResponseLotDTO.builder()
                 .id(entity.getId())
-                .item_id(entity.getItem().getId())
-                .material_id(entity.getMaterial().getId())
+                .item_id(entity.getItem() != null ? entity.getItem().getId() : null)
+                .material_id(entity.getMaterial() != null ? entity.getMaterial().getId() : null)
                 .quantity(entity.getQuantity())
                 .event_type(entity.getEventType())
                 .build();
