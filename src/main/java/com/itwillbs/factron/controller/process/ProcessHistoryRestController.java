@@ -29,14 +29,12 @@ public class ProcessHistoryRestController {
 //    // 공정 이력 수정?
     @PutMapping("")
     public ResponseDTO<Void> updateProcessHistory(@RequestBody RequestProcessHistDTO requestDTO){
-        log.info("Received updateProcessHistory DTO: {}", requestDTO.getWorkOrderId());
-        log.info("Received updateProcessHistory DTO: {}", requestDTO.getProcessList());
-        return ResponseDTO.success(null);
-//        try{
-//            processHistoryService.updateProcessHistory(requestDTO);
-//            return ResponseDTO.success(null);
-//        }catch (Exception e){
-//            return ResponseDTO.fail(800,e.getMessage(),null);
-//        }
+        log.info("Received updateProcessHistory DTO: {}", requestDTO);
+        try{
+            processHistoryService.updateProcessHistory(requestDTO);
+            return ResponseDTO.success(null);
+        }catch (Exception e){
+            return ResponseDTO.fail(800,e.getMessage(),null);
+        }
     }
 }
