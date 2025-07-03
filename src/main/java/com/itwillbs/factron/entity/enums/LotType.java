@@ -2,6 +2,8 @@ package com.itwillbs.factron.entity.enums;
 
 import lombok.Getter;
 
+import java.util.Arrays;
+
 @Getter
 public enum LotType {
     INBOUND("INB", "입고"),
@@ -13,5 +15,13 @@ public enum LotType {
     LotType(String prefix, String description) {
         this.prefix = prefix;
         this.description = description;
+    }
+
+    public static String getDescriptionByPrefix(String prefix) {
+        return Arrays.stream(LotType.values())
+                .filter(type -> type.getPrefix().equals(prefix))
+                .findFirst()
+                .map(LotType::getDescription)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid prefix: " + prefix));
     }
 }

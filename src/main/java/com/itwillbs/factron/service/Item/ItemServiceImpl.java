@@ -74,4 +74,13 @@ public class ItemServiceImpl implements ItemService {
 
         return null;
     }
+
+    @Override
+    public String getItemByCode(String code) {
+
+        Item item = itemRepository.findById(code)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 품목이 없습니다."));
+
+        return item.getName();
+    }
 }
