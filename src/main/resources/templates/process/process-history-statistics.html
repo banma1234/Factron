@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/base.html}">
+<head>
+    <link rel="stylesheet" href="https://uicdn.toast.com/chart/latest/toastui-chart.min.css" />
+    <script src="https://uicdn.toast.com/chart/latest/toastui-chart.min.js"></script>
+    <title>Factron</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section>
+        <h4 class="page__name">공정결과</h4>
+        <form class="search__form">
+            <h5 class="page__name">작업지시 목록</h5>
+            <div class="select__container"></div>
+            <div class="input-group">
+                <input class="form-control ms-1" type="text" name="processNameOrId" placeholder="품목코드 또는 품목명">
+                <button class="btn btn-outline-secondary" name="processSrhBtn" type="submit">검색</button>
+            </div>
+        </form>
+
+        <!-- statistics chart-->
+        <article>
+            <div id="processHistoryGrid">
+            </div>
+        </article>
+
+
+
+    </section>
+</div>
+
+<th:block layout:fragment="javascript">
+    <!-- js import -->
+    <script th:src="@{/js/process/processHistoryStatistics.js}"></script>
+</th:block>
+</body>
+</html>
