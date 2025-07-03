@@ -2,7 +2,7 @@ let rawOutboundData = [];
 let outboundGrid;
 
 const init = () => {
-    const isAuthorized = user.authCode === 'ATH005';
+    const isAuthorized = user.authCode === 'ATH006';
 
     const gridOptions = isAuthorized ? ['checkbox'] : [];
 

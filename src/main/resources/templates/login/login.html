@@ -23,7 +23,7 @@
     <!-- 로그인 카드 -->
     <div class="login__container">
         <form class="login__form" th:action="@{/login}" method="post">
-            <img class="login__logo" th:src="@{/logo_title.svg}" />
+            <img class="login__logo" th:src="@{/images/logo_title.svg}" />
             
             <!-- 에러 메시지 표시 -->
             <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
@@ -50,7 +50,7 @@
         </form>
     </div>
     <!-- 배경 이미지 -->
-    <img class="login__background" th:src="@{/login_background.webp}" alt="login background" />
+    <img class="login__background" th:src="@{/images/login_background.webp}" alt="login background" />
 </main>
 </body>
 </html>

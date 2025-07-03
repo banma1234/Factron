@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 
-public class ItemResponseDTO {
+public class ResponseItemDTO {
     private String itemId;
     private String name;
     private String unit;
