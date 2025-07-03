@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/item")
 public class ItemController {
 
+    /*
+     * ITEM 목록 페이지
+     */
     @GetMapping("")
     public String itemGrid() {
         return "item/item";

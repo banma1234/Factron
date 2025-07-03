@@ -47,4 +47,8 @@ public class Contract {
     public void updateStatus(String statusCode) {
         this.statusCode = statusCode;
     }
+
+    public void setApproval(Approval approval) {
+        this.approval = approval;
+    }
 }

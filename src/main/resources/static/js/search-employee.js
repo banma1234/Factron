@@ -1,34 +1,10 @@
-// grid 초기화
-const initEmpGrid = () => {
-    const Grid = tui.Grid;
-
-    // 테마
-    Grid.applyTheme('default',  {
-        cell: {
-            normal: {
-                border: 'gray'
-            },
-            header: {
-                background: 'gray',
-                text: 'white',
-                border: 'gray'
-            },
-            rowHeaders: {
-                header: {
-                    background: 'gray',
-                    text: 'white'
-                }
-            }
-        }
-    });
-
-    // 세팅
-    return new Grid({
-        el: document.getElementById('srhEmpGrid'),
-        scrollX: false,
-        scrollY: true,
-        bodyHeight: 80,
-        columns: [
+const initEmp = () => {
+    const srhEmpForm = document.querySelector(".srhEmpForm");
+    // grid 초기화
+    const srhEmpGrid = initGrid(
+        document.getElementById('srhEmpGrid'),
+        80,
+        [
             {
                 header: '사원번호',
                 name: 'empId',
@@ -55,12 +31,7 @@ const initEmpGrid = () => {
                 align: 'center'
             },
         ]
-    });
-}
-
-const initEmp = () => {
-    const srhEmpGrid = initEmpGrid();
-    const srhEmpForm = document.querySelector(".srhEmpForm");
+    );
 
     // 검색
     srhEmpForm.querySelector(".srhEmpBtn").addEventListener("click", function(e) {
@@ -122,6 +93,11 @@ const initEmp = () => {
     // 공통코드 세팅
     setSelectBox("DEP", "srhDepCode");
     setSelectBox("POS", "srhPosCode");
+
+    // 페이지 진입 시 바로 리스트 호출
+    getData().then(res => {
+        srhEmpGrid.resetData(res.data);
+    });
 }
 
 document.addEventListener("DOMContentLoaded", () => {

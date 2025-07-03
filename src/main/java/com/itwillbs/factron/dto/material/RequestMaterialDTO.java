@@ -4,7 +4,7 @@ package com.itwillbs.factron.dto.material;
 import lombok.Data;
 
 @Data
-public class MaterialRequestDTO {
+public class RequestMaterialDTO {
     //추가 수정
     private String materialId;
     private String name;

@@ -128,5 +128,75 @@
 
         ORDER BY APP.ID DESC
     </select>
+    <select id="getSalesApprovalById" parameterType="long" resultType="com.itwillbs.factron.dto.approval.ResponseSearchSalesApprovalDTO">
+        SELECT
+            APP.ID AS approvalId,
+            APP.APPROVAL_TYPE_CODE AS apprTypeCode,
+            TYPE_CODE.NAME AS apprTypeName,
+
+            REQ_EMP.ID AS requesterId,
+            REQ_EMP.NAME AS requesterName,
+
+            -- 수발주 품목: 품목명 또는 "xxx외 N건"
+            NVL(
+                    CASE
+                        WHEN APP.APPROVAL_TYPE_CODE = 'SLS001' THEN
+                            (
+                                SELECT
+                                    CASE
+                                        WHEN COUNT(*) = 1 THEN MIN(I.NAME)
+                                        ELSE MIN(I.NAME) || '외 ' || (COUNT(*) - 1) || '건'
+                                        END
+                                FROM CONTRACT C
+                                         JOIN CONTRACT_LIST CL ON C.ID = CL.CONTRACT_ID
+                                         JOIN ITEM I ON CL.ITEM_ID = I.ID
+                                WHERE C.APPROVAL_ID = APP.ID
+                            )
+                        WHEN APP.APPROVAL_TYPE_CODE = 'SLS002' THEN
+                            (
+                                SELECT
+                                    CASE
+                                        WHEN COUNT(*) = 1 THEN MIN(M.NAME)
+                                        ELSE MIN(M.NAME) || '외 ' || (COUNT(*) - 1) || '건'
+                                        END
+                                FROM PURCHASE P
+                                         JOIN PURCHASE_LIST PL ON P.ID = PL.PURCHASE_ID
+                                         JOIN MATERIAL M ON PL.MATERIAL_ID = M.ID
+                                WHERE P.APPROVAL_ID = APP.ID
+                            )
+                        END,
+                    '-'
+            ) AS itemSummary,
+
+            -- 거래처명 (수주/발주)
+            NVL(
+                    CASE
+                        WHEN APP.APPROVAL_TYPE_CODE = 'SLS001' THEN
+                            (SELECT CLT.NAME FROM CONTRACT C JOIN CLIENT CLT ON C.CLIENT_ID = CLT.ID WHERE C.APPROVAL_ID = APP.ID)
+                        WHEN APP.APPROVAL_TYPE_CODE = 'SLS002' THEN
+                            (SELECT CLT.NAME FROM PURCHASE P JOIN CLIENT CLT ON P.CLIENT_ID = CLT.ID WHERE P.APPROVAL_ID = APP.ID)
+                        END,
+                    '-'
+            ) AS clientName,
+
+            APP.REQUESTED_AT AS requestedAt,
+            APP.CONFIRMED_AT AS confirmedAt,
+
+            APRV_EMP.NAME AS approverName,
+            APP.APPROVER_ID AS approverId,
+
+            APP.APPROVAL_STATUS_CODE AS approvalStatusCode,
+            STATUS_CODE.NAME AS approvalStatusName,
+
+            APP.REJECT_REASON AS rejectionReason
+
+        FROM APPROVAL APP
+                 LEFT JOIN EMPLOYEE REQ_EMP ON REQ_EMP.ID = APP.REQUESTER_ID
+                 LEFT JOIN EMPLOYEE APRV_EMP ON APRV_EMP.ID = APP.APPROVER_ID
+                 LEFT JOIN DETAIL_SYS_CODE TYPE_CODE ON APP.APPROVAL_TYPE_CODE = TYPE_CODE.DETAIL_CODE
+                 LEFT JOIN DETAIL_SYS_CODE STATUS_CODE ON APP.APPROVAL_STATUS_CODE = STATUS_CODE.DETAIL_CODE
+
+        WHERE APP.ID = #{approvalId}
+    </select>
 
 </mapper>

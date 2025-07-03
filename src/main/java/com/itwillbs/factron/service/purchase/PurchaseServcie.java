@@ -11,7 +11,9 @@ public interface PurchaseServcie {
     List<ResponseSearchPurchaseDTO> getPurchaseList(RequestSearchPurchaseDTO requestSearchPurchaseDTO);
 
     List<ResponsePurchaseItemDTO> getPurchaseItemsByPurchaseId(Long purchaseId);
+
     ResponseSearchPurchaseDTO getPurchaseDetailByPurchaseId(Long purchaseId);
+
     void registerPurchase(RequestRegisterPurchaseDTO dto);
 
     void cancelPurchase(Long approvalId);

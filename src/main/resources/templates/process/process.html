@@ -12,7 +12,7 @@
     <section>
         <div class="header-row">
             <h4 class="page__name">공정 목록</h4>
-            <button class="btn btn-primary modBtn" name="addNewProcess" type="button" sec:authorize="hasAnyAuthority('ATH007')">공정 추가</button>
+            <button class="btn btn-primary modBtn" name="addNewProcess" type="button" sec:authorize="hasAnyAuthority('ATH003', 'ATH007')">공정 추가</button>
         </div>
         <form class="search__form mb-2">
             <div class="select__container">

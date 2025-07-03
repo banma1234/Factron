@@ -45,6 +45,12 @@ public class SalesApprovalServiceImpl implements SalesApprovalService {
     }
 
     @Override
+    public ResponseSearchSalesApprovalDTO getSalesApprovalById(Long approvalId) {
+        return salesApprovalMapper.getSalesApprovalById(approvalId);
+    }
+
+
+    @Override
     @Transactional
     public void updateSalesApproval(RequestSalesApprovalDTO dto) {
         Approval approval = approvalRepository.findById(dto.getApprovalId())

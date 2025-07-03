@@ -1,12 +1,13 @@
 package com.itwillbs.factron.service.material;
 
-import com.itwillbs.factron.dto.material.MaterialRequestDTO;
-import com.itwillbs.factron.dto.material.MaterialResponseDTO;
+import com.itwillbs.factron.dto.material.RequestMaterialDTO;
+import com.itwillbs.factron.dto.material.ResponseMaterialDTO;
 
 import java.util.List;
 
 public interface MaterialService {
-    List<MaterialResponseDTO> getMaterialList(MaterialRequestDTO dto);
-    Void addMaterial(MaterialRequestDTO dto);
-    Void updateMaterial(MaterialRequestDTO dto);
+    List<ResponseMaterialDTO> getMaterialList(RequestMaterialDTO dto);
+    Void addMaterial(RequestMaterialDTO dto);
+    Void updateMaterial(RequestMaterialDTO dto);
+    String getMaterialByCode(String code);
 }

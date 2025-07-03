@@ -97,7 +97,7 @@ const init = () => {
     function setUIState() {
         const cancelBtn = document.querySelector(".cancelApprovalBtn");
 
-        const isPending = window.statusCode === "STP001";
+        const isPending = window.statusCode === "STP002";
         const isAuthorized = user.authCode === "ATH004";
 
         cancelBtn.style.display = (isPending && isAuthorized) ? "inline-block" : "none";

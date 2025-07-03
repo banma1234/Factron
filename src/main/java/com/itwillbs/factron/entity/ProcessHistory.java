@@ -52,6 +52,10 @@ public class ProcessHistory {
         this.statusCode = statusCode;
     }
 
+    public void updateInputQuantity(Long inputQuantity) {
+        this.inputQuantity = inputQuantity;
+    }
+
     public void updateOutputQuantity(Long outputQuantity) {
         this.outputQuantity = outputQuantity;
     }

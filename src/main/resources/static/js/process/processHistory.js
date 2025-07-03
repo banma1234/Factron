@@ -39,65 +39,77 @@ const nullCheck = (data) => {
 
 // 공정간 작업시간 비교
 const checkTimeLine = (data) => {
-    data.forEach((row,i) => {
+    return !data.some((row, i) => {
         const currStartTime = data[i].startTime;
         const currEndTime = data[i].endTime;
 
-        if(compareDate(currEndTime, currStartTime) !== 1) {
-            return false;
+        // 현재 공정의 시작 시간과 작업지시 시작날짜 비교
+        if (compareDate(currStartTime, row.workOrderStartDate) < 0){
+            return true;
         }
 
-        if(i > 0){
+        // 현재 공정의 종료시간이 시작시간보다 늦지 않으면 true (에러)
+        if (compareDate(currEndTime, currStartTime) !== 1) {
+            return true;
+        }
+
+        // 이전 공정이 있고, 현재 공정의 시작시간이 이전 공정의 종료시간보다 늦지 않으면 true (에러)
+        if (i > 0) {
             const prevEndTime = data[i - 1].endTime;
-            if(compareDate(currStartTime, prevEndTime) !== 1){
-                return false;
+            if (compareDate(currStartTime, prevEndTime) !== 1) {
+                return true;
             }
         }
-    })
-    return true;
+        
+        return false;
+    });
 }
 
 // 이전 공정과 산출물 비교
 const checkQty = (data) => {
-    data.forEach((item,i) => {
-        if(i > 0){
+    return !data.some((item, i) => {
+        if (i > 0) {
             const currQty = data[i].outputQuantity;
             const prevQty = data[i - 1].outputQuantity;
 
-            if(isNaN(currQty)){
-                return false;
+            if (isNaN(currQty)) {
+                return true; // 에러 상황
             }
 
-            if(isNaN(prevQty)){
-                return false;
+            if (isNaN(prevQty)) {
+                return true; // 에러 상황
             }
 
             if (Number(currQty) > Number(prevQty)) {
-                return false;
+                return true; // 에러 상황
             }
         }
-    })
-    return true;
+        return false;
+    });
 }
 
 // 생산 계획 수량과 산출물 비교
 const checkPlanQty = (data) => {
-    data.forEach(item => {
+    return !data.some(item => {
         const planQty = item.quantity;
         const outQty = item.outputQuantity;
-        if(isNaN(planQty)){
-            alert("수량에는 숫자만 입력 가능합니다.")
-            return false;
+        
+        if (isNaN(planQty)) {
+            alert("수량에는 숫자만 입력 가능합니다.");
+            return true; // 에러 상황
         }
 
-        if(isNaN(outQty)){
-            alert("수량에는 숫자만 입력 가능합니다.")
-            return false;
+        if (isNaN(outQty)) {
+            alert("수량에는 숫자만 입력 가능합니다.");
+            return true; // 에러 상황
         }
 
-        if(planQty < outQty) return false;
-    })
-    return true;
+        if (Number(planQty) < Number(outQty)) {
+            return true; // 에러 상황
+        }
+        
+        return false;
+    });
 }
 
 const init = () => {
@@ -227,12 +239,6 @@ const init = () => {
                 name: 'itemName',
                 align: 'center'
             },
-            // {
-            //     header: '투입 수량',
-            //     name: 'inputQuantity',
-            //     align: 'center',
-            //     editor: 'text'
-            // },
             {
                 header: '산출 수량',
                 name: 'outputQuantity',
@@ -241,7 +247,7 @@ const init = () => {
             },
             {
                 header: '단위',
-                name: 'unit',
+                name: 'unitName',
                 align: 'center'
             },
             {
@@ -284,7 +290,10 @@ const init = () => {
     );
 
     workOrderGrid.on('click', (e) => {
-        getProcessHistory(workOrderGrid.getRow(e.rowKey).id);
+        const rowKey = e.rowKey;
+        const rowData = workOrderGrid.getRow(rowKey);
+
+        if(rowData && rowData.id) getProcessHistory(rowData.id);
     })
 
     // 생산계획별 작업 목록 조회
@@ -330,7 +339,6 @@ const init = () => {
                 throw new Error(`서버 오류: ${res.status}`);
             }
             const data = await res.json();
-            // console.log(data.data)
             processHistoryGrid.resetData(data.data);
         } catch (e) {
             console.error(e);
@@ -363,7 +371,6 @@ const init = () => {
             }
 
             const data = await res.json();
-            console.log(data.data)
             getProcessHistory(workOrderId);
         } catch (e) {
             console.error(e);
