@@ -21,4 +21,9 @@ public class TestController {
     public String testForm() {
         return "test-form";
     }
+
+    @GetMapping("/cookie-test")
+    public String cookieTestPage() {
+        return "test-cookie";
+    }
 }

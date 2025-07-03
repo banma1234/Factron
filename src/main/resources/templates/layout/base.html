@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,6 +16,14 @@
     <link rel="stylesheet" th:href="@{/css/globals.css}">
     <!-- COMMON CSS -->
     <link rel="stylesheet" th:href="@{/css/common.css}">
+
+    <!-- TOAST UI Time Picker-->
+    <link rel="stylesheet" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css">
+    <script src="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.js"></script>
+
+    <!-- TOAST UI Date Picker-->
+    <script src="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.js"></script>
+    <link rel="stylesheet" href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css" />
 
     <!-- TOAST UI -->
     <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
@@ -139,6 +148,11 @@
                     </a></li>
                 </ul>
                 <ul class="submenu nav flex-column">
+                    <li><a class="nav-link sub-link" href="/quality">
+                        <span>품질 검사 정보</span>
+                    </a></li>
+                </ul>
+                <ul class="submenu nav flex-column">
                     <li><a class="nav-link sub-link" href="/storage">
                         <span>창고 정보</span>
                     </a></li>
@@ -158,7 +172,12 @@
                 </ul>
                 <ul class="submenu nav flex-column">
                     <li><a class="nav-link sub-link" href="/workorder">
-                        <span>작업지시</span>
+                        <span>작업지시 관리</span>
+                    </a></li>
+                </ul>
+                <ul class="submenu nav flex-column">
+                    <li><a class="nav-link sub-link" href="/performance">
+                        <span>작업실적 등록</span>
                     </a></li>
                 </ul>
             </li>
@@ -170,13 +189,8 @@
                     </div>
                 </a>
                 <ul class="submenu nav flex-column">
-                    <li><a class="nav-link sub-link" href="/product/history">
-                        <span>공정이력 조회</span>
-                    </a></li>
-                </ul>
-                <ul class="submenu nav flex-column">
-                    <li><a class="nav-link sub-link" href="/performance">
-                        <span>작업실적 등록</span>
+                    <li><a class="nav-link sub-link" href="/process/history">
+                        <span>공정 이력 관리</span>
                     </a></li>
                 </ul>
                 <ul class="submenu nav flex-column">
@@ -185,8 +199,8 @@
                     </a></li>
                 </ul>
                 <ul class="submenu nav flex-column">
-                    <li><a class="nav-link sub-link" href="/quality">
-                        <span>품질 검사</span>
+                    <li><a class="nav-link sub-link" href="/quality/history">
+                        <span>품질검사 이력 관리</span>
                     </a></li>
                 </ul>
             </li>
@@ -242,12 +256,12 @@
                 </div>
             </button>
             <a class="navbar-brand" href="/commute">
-                <img class="logo__title" th:src="@{/logo_title.svg}" alt="no logo title found" />
+                <img class="logo__title" th:src="@{/images/logo_title.svg}" alt="no logo title found" />
             </a>
             <div class="d-flex ms-auto">
                 <span class="navbar-text user__name">test(20251234)</span>
                 <span class="navbar-text me-3">&nbsp;님 환영합니다!</span>
-                <button class="btn btn-primary btn-sm logout">로그아웃</button>
+                <a href="/logout" class="btn btn-primary btn-sm align-self-center p-2 logout">로그아웃</a>
             </div>
         </div>
     </nav>

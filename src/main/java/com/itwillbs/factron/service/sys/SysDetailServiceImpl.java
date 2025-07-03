@@ -1,5 +1,6 @@
 package com.itwillbs.factron.service.sys;
 
+import com.itwillbs.factron.common.component.AuthorizationChecker;
 import com.itwillbs.factron.dto.sys.RequestSysDetailDTO;
 import com.itwillbs.factron.dto.sys.ResponseSysDetailDTO;
 import com.itwillbs.factron.entity.DetailSysCode;
@@ -21,6 +22,7 @@ public class SysDetailServiceImpl implements SysDetailService {
 
     private final DetailSysCodeRepository detailSysCodeRepository;
     private final SysCodeRepository sysCodeRepository;
+    private final AuthorizationChecker authorizationChecker;
 
     /**
      * detailSysCode 목록호출
@@ -68,6 +70,10 @@ public class SysDetailServiceImpl implements SysDetailService {
     @Override
     public Void saveSysDetail(@Valid RequestSysDetailDTO requestSysDetailDTO) {
 
+        if (!authorizationChecker.hasAuthority("ATH003")) {
+            throw new SecurityException("권한이 없습니다.");
+        }
+
         String mainCode = requestSysDetailDTO.getMain_code();
         List<SysCode> parentSysCode = sysCodeRepository.findByMainCode(mainCode)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 상세코드입니다."));
@@ -89,6 +95,10 @@ public class SysDetailServiceImpl implements SysDetailService {
     @Override
     public Void updateSysDetail(@Valid RequestSysDetailDTO requestSysDetailDTO) {
 
+        if (!authorizationChecker.hasAuthority("ATH003")) {
+            throw new SecurityException("권한이 없습니다.");
+        }
+
         DetailSysCode detailSysCode = detailSysCodeRepository
                 .findByDetailCode(requestSysDetailDTO.getDetail_code())
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 상세코드입니다.."));
@@ -96,6 +106,15 @@ public class SysDetailServiceImpl implements SysDetailService {
         detailSysCode.updateSysCode(requestSysDetailDTO);
 
         return null;
+    }
+
+    @Override
+    public String getDetailBySysCode(String sysCode) {
+
+        DetailSysCode code = detailSysCodeRepository.findByDetailCode(sysCode)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 sysCode가 없습니다."));
+
+        return code.getName();
     }
 
     /**

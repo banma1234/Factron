@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base.html}">>
+<head>
+    <meta charset="UTF-8">
+    <title>Factron</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h4 class="page__name">창고 관리</h4>
+    <article>
+        <div id="grid_storage"></div>
+    </article>
+</div>
+<th:block layout:fragment="javascript">
+    <!-- js import -->
+    <script th:src="@{/js/storage/storage.js}"></script>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,27 @@
+.lot-node {
+    background-color: #f4f8ff;
+    border-radius: 6px;
+    border: 1px solid #bbb;
+    padding: 1rem 1.5rem;
+    min-width: 120px;
+    text-align: left;
+}
+.lot-node p {
+    margin: 0;
+}
+
+.lot__container {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+.node-name {
+    color: #000;
+}
+
+.grid__container {
+    width: 50%;
+}

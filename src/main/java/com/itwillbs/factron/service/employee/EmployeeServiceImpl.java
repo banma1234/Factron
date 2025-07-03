@@ -1,6 +1,8 @@
 package com.itwillbs.factron.service.employee;
 
 import com.itwillbs.factron.common.component.AESUtil;
+import com.itwillbs.factron.common.component.AuthorizationChecker;
+import com.itwillbs.factron.common.component.PasswordService;
 import com.itwillbs.factron.dto.employee.RequestEmployeeNewDTO;
 import com.itwillbs.factron.dto.employee.RequestEmployeeSrhDTO;
 import com.itwillbs.factron.dto.employee.ResponseEmployeeSrhDTO;
@@ -27,12 +29,12 @@ import java.util.stream.Collectors;
 @Log4j2
 @Transactional(readOnly = true)
 public class EmployeeServiceImpl implements EmployeeService {
-    private static final boolean HAS_ADMIN_PERMISSION = true; // TODO: 실제 권한 체크 로직으로 대체 필요
-
     private final EmployeeRepository employeeRepository;
     private final IntergratAuthRepository intergratAuthRepository;
     private final EmployeeMapper employeeMapper;
     private final AESUtil aesUtil;
+    private final PasswordService passwordService;
+    private final AuthorizationChecker authorizationChecker;
 
     @Override
     public List<ResponseEmployeeSrhDTO> getEmployees(RequestEmployeeSrhDTO requestEmployeeSrhDTO) {
@@ -70,8 +72,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         // 주민번호 뒷자리 암호화
         reqEmployeeDTO.setRrnBack(aesUtil.encrypt(reqEmployeeDTO.getRrnBack()));
 
+        boolean permission = authorizationChecker.hasAnyAuthority("ATH002", "ATH003");
+
         // 권한 확인
-        if(HAS_ADMIN_PERMISSION) {
+        if(permission) {
             // 재직상태 변경 확인
             if("N".equals(reqEmployeeDTO.getEmpIsActive())) {
                 IntergratAuth intergratAuth = intergratAuthRepository.findByEmployee(emp)
@@ -86,6 +90,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public void addNewEmployee(RequestEmployeeNewDTO reqEmployeeNewDTO) {
+        authorizationChecker.checkAnyAuthority("ATH002","ATH003");
         if(employeeRepository.existsByEmail(reqEmployeeNewDTO.getEmail())) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
@@ -108,7 +113,32 @@ public class EmployeeServiceImpl implements EmployeeService {
                 ()-> new EntityNotFoundException("존재하지 않는 회원번호입니다.")
         );
 
-        IntergratAuth newIntergratAuth = reqEmployeeNewDTO.toIntergratAuth(newEmp);
+        // 사원 권한 설정
+        String newAuthCode = switch (newEmp.getDeptCode()) {
+            case "DEP001" -> "ATH002";           // 인사
+            case "DEP002" -> {
+                if("POS006".equals(newEmp.getPositionCode()) || "POS007".equals(newEmp.getPositionCode()))
+                    yield "ATH003";
+                else
+                    yield "ATH001";
+            }        // 관리자
+            case "DEP003" ->  "ATH004";     //영업
+            case "DEP005" ->  "ATH005";    // 재무
+            case "DEP006" -> {
+                if("POS005".equals(newEmp.getPositionCode()))
+                    yield "ATH007";
+                else
+                    yield "ATH006";
+            }   // 생산
+            default -> "ATH001"; //일반
+        };
+
+        // 비밀번호 암호화 (전화번호를 기본 비밀번호로 사용)
+        String encodedPassword = passwordService.generateDefaultPassword(reqEmployeeNewDTO.getPhone());
+        
+        IntergratAuth newIntergratAuth = reqEmployeeNewDTO.toIntergratAuth(newEmp, newAuthCode);
+        newIntergratAuth.updatePassword(encodedPassword); // 암호화된 비밀번호 설정
+
         intergratAuthRepository.save(newIntergratAuth);
     }
 

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwillbs.factron.mapper.item.ItemMapper">
+
+    <select id="getItemList"
+            parameterType="com.itwillbs.factron.dto.item.RequestitemDTO"
+            resultType="com.itwillbs.factron.dto.item.ResponseItemDTO">
+        SELECT
+        i.id AS itemId,
+        i.name,
+        i.unit,
+        s.name AS unitName,
+        i.price,
+        i.type_code AS typeCode,
+        i.created_at AS createdAt,
+        i.created_by AS createdBy
+        FROM item i
+        JOIN DETAIL_SYS_CODE s ON i.unit = s.detail_code
+        <where>
+            <if test="itemName != null and itemName != ''">
+                (UPPER(i.name) LIKE '%' || UPPER(#{itemName}) || '%'
+                OR UPPER(i.id) LIKE '%' || UPPER(#{itemName}) || '%')
+            </if>
+            <if test="itemTypeCode != null and itemTypeCode != ''">
+                AND i.type_code = #{itemTypeCode}
+            </if>
+        </where>
+        ORDER BY i.created_at DESC
+    </select>
+
+
+</mapper>

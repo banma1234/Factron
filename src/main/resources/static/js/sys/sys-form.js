@@ -68,6 +68,8 @@ const init = () => {
      * */
     async function saveData() {
         const mainCode = form.querySelector("input[name='main_code']").value;
+        const name = form.querySelector("input[name='name']").value;
+        const is_active = form.querySelector("select[name='is_active']").value;
         let detailCode = form.querySelector("input[name='detail_code']").value;
 
         if (detailCode !== "") {
@@ -77,8 +79,8 @@ const init = () => {
         const data = {
             main_code: mainCode,
             detail_code: detailCode,
-            name: form.querySelector("input[name='name']").value,
-            is_active: form.querySelector("select[name='is_active']").value
+            name: name,
+            is_active: is_active
         };
 
         if (target === "main") {

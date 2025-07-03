@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/base.html}">>
+<head>
+  <meta charset="UTF-8">
+  <title>Factron</title>
+  <th:block layout:fragment="style">
+    <link rel="stylesheet" th:href="@{/css/product/bom.css}" />
+  </th:block>
+
+  <script src="https://uicdn.toast.com/tui-tree/latest/tui-tree.js"></script>
+  <link rel="stylesheet" href="https://uicdn.toast.com/tui-tree/latest/tui-tree.css"/>
+</head>
+<body>
+<div layout:fragment="content">
+  <h4 class="page__name">BOM 관리</h4>
+  <form class="search__form mb-2">
+    <div class="select__container">
+
+    </div>
+    <div class="input-group">
+      <input class="form-control" type="text" name="srhIdOrName" placeholder="품목코드 또는 품목명"><br/>
+      <button class="btn btn-outline-secondary srhBtn" type="button">검색</button>
+    </div>
+  </form>
+  <article class="bom-container">
+    <!-- tree -->
+    <div id="bomTree" class="tui-tree-wrap tree-scroll"></div>
+
+    <!-- form -->
+    <div class="bom-detail-form">
+      <h4 class="mb-4">상세 정보</h4>
+      <div class="saveForm mb-5">
+        <input type="hidden" class="form-control" name="id" disabled>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <span>상위 품목코드</span>
+            <input type="text" class="form-control" name="parentProdId" disabled>
+          </div>
+          <div class="col-md-6">
+            <span>상위 품목명</span>
+            <input type="text" class="form-control" name="parentProdName" disabled>
+          </div>
+        </div>
+        <div class="row mb-3 readProd">
+          <div class="col-md-6">
+            <span>품목코드</span>
+            <input type="text" class="form-control" name="childProdId" readonly disabled>
+          </div>
+          <div class="col-md-6">
+            <span>품목명</span>
+            <input type="text" class="form-control" name="childProdName" readonly disabled>
+          </div>
+        </div>
+        <div class="row mb-3 addProd d-none">
+          <div class="col-md-12">
+            <span>하위 품목</span>
+            <select name="childProd" class="form-select w-100">
+              <option value="">선택</option>
+            </select>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <span>품목 유형</span>
+            <input type="text" class="form-control" name="prodType" readonly disabled>
+          </div>
+          <div class="col-md-6">
+            <span class="d-block">소요량</span>
+            <div class="d-flex">
+              <input type="text" class="form-control text-end me-2" name="consumption" disabled>
+              <input type="text" class="form-control" name="unitName" readonly disabled>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end editBOM" sec:authorize="hasAnyAuthority('ATH007', 'ATH003')">
+        <button class="btn btn-primary registBOM">추가</button>
+        <button class="btn btn-primary ms-2 updateBOM">수정</button>
+        <button class="btn btn-danger ms-2 deleteBOM">삭제</button>
+      </div>
+      <div class="d-flex justify-content-end confirmBOM d-none">
+        <button class="btn btn-primary saveBtn">저장</button>
+      </div>
+    </div>
+
+  </article>
+
+  <!-- confirm modal -->
+  <div class="modal fade confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+          BOM 정보를 저장하시겠습니까?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary confirmEditBtn">확인</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- alert modal -->
+  <div class="modal fade alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+          저장이 완료되었습니다!
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary alertBtn">확인</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<th:block layout:fragment="javascript">
+  <!-- js import -->
+  <script th:src="@{/js/product/bom.js}"></script>
+</th:block>
+</body>
+</html>

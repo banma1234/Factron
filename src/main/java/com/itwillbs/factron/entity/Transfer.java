@@ -21,7 +21,7 @@ public class Transfer {
     private Long id; // 인사발령 ID
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_id", referencedColumnName = "id")
+    @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false)
     private Employee employee; // 인사발령 대상 직원
 
     @Column(name = "transfer_type_code", length = 6, nullable = false)

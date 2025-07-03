@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/base.html}">
+<head>
+    <title>Factron</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section>
+        <div class="header-row">
+            <h4 class="page__name">라인 목록</h4>
+            <button class="btn btn-primary modBtn" name="addNewLine" type="button" sec:authorize="hasAnyAuthority('ATH003', 'ATH007')">라인 추가</button>
+        </div>
+        <form class="search__form mb-2">
+            <div class="select__container">
+
+                <select class="form-select" name="lineStatusCode">
+                    <option value="">라인 가동 여부</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <input class="form-control" type="text" name="lineName" placeholder="라인명"><br/>
+                <button class="btn btn-outline-secondary lineSrhBtn" type="button">검색</button>
+            </div>
+        </form>
+
+        <!-- line list grid -->
+        <article>
+            <div id="line_grid">
+
+            </div>
+        </article>
+
+        <div class="mt-4">
+            <div class="header-row">
+                <h5 class="page__name">라인 상세 공정</h5>
+                <button class="btn btn-primary modBtn" name="addLineProcess" type="button" sec:authorize="hasAnyAuthority('ATH003', 'ATH007')">상세 공정 추가</button>
+                <button class="btn btn-danger modBtn" name="deleteLineProcess" type="button" sec:authorize="hasAnyAuthority('ATH003', 'ATH007')">선택 공정 삭제</button>
+            </div>
+        </div>
+
+        <!-- line process list grid -->
+        <article>
+            <div id="line_process_grid">
+            </div>
+        </article>
+    </section>
+</div>
+
+<th:block layout:fragment="javascript">
+    <!-- js import -->
+    <script th:src="@{/js/line/line.js}"></script>
+</th:block>
+</body>
+</html>

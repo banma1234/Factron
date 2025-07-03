@@ -136,12 +136,11 @@ const init = () => {
     }
 
     // 출근 API 호출 함수
-    async function commuteIn(empId) {
+    async function commuteIn() {
         const res = await fetch('/api/commute', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'empId': empId
+                'Content-Type': 'application/json'
             }
         });
         if (!res.ok) throw new Error(await res.text());
@@ -149,12 +148,11 @@ const init = () => {
     }
 
     // 퇴근 API 호출 함수
-    async function commuteOut(empId) {
+    async function commuteOut() {
         const res = await fetch('/api/commute', {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json',
-                'empId': empId
+                'Content-Type': 'application/json'
             }
         });
         if (!res.ok) throw new Error(await res.text());
@@ -165,7 +163,7 @@ const init = () => {
     const cmInBtn = document.querySelector('.cmInBtn');
     if (cmInBtn) {
         cmInBtn.addEventListener('click', () => {
-            commuteConfirmMsg.textContent = `${empName}님 출근 하시겠습니까?`;
+            commuteConfirmMsg.textContent = `${user.name}님 출근 하시겠습니까?`;
             commuteAction = 'in';
             commuteConfirmModal.show();
         });
@@ -175,7 +173,7 @@ const init = () => {
     const cmOutBtn = document.querySelector('.commuteOutBtn .cmOutBtn');
     if (cmOutBtn) {
         cmOutBtn.addEventListener('click', () => {
-            commuteConfirmMsg.textContent = `${empName}님 퇴근 하시겠습니까?`;
+            commuteConfirmMsg.textContent = `${user.name}님 퇴근 하시겠습니까?`;
             commuteAction = 'out';
             commuteConfirmModal.show();
         });
@@ -185,10 +183,10 @@ const init = () => {
     commuteConfirmBtn.addEventListener('click', async () => {
         try {
             if (commuteAction === 'in') {
-                await commuteIn(user.id);
+                await commuteIn();
                 alert('출근 처리 완료');
             } else if (commuteAction === 'out') {
-                await commuteOut(user.id);
+                await commuteOut();
                 alert('퇴근 처리 완료');
             }
             commuteConfirmModal.hide();

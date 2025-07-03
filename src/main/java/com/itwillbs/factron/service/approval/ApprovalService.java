@@ -9,7 +9,9 @@ import java.util.List;
 public interface ApprovalService {
     //결재 조회
     List<ResponseSearchApprovalDTO> getApprovalsList(RequestSearchApprovalDTO requestSearchApprovalDTO);
-
+    ResponseSearchApprovalDTO getApprovalById(Long approvalId);
     //결재(승인, 반려)
     void updateApproval(RequestApprovalDTO requestApprovalDTO);
+
+
 }
