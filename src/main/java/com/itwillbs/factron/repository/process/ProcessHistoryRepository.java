@@ -17,16 +17,17 @@ public interface ProcessHistoryRepository extends JpaRepository<ProcessHistory, 
                CAST(ph.id AS string),
                CAST(p.id AS string),
                p.name,
-               CAST(ph.inputQuantity AS double),
-               CAST(ph.outputQuantity AS double),
+               CAST(ph.inputQuantity AS Long),
+               CAST(ph.outputQuantity AS Long),
                CAST(ph.lot.id AS string),
                CAST(wo.id AS string),
+               wo.startDate,
                ph.startTime,
-               ph.startTime,
-               CAST(ph.coastTime AS double),
+               CAST(ph.coastTime AS Long),
                ph.statusCode,
                dsc.name,
                i.unit,
+               unit.name,
                i.name,
                wo.quantity,
                dscs.detailCode,
@@ -38,6 +39,7 @@ public interface ProcessHistoryRepository extends JpaRepository<ProcessHistory, 
        JOIN ph.process p
        JOIN DetailSysCode dsc ON ph.statusCode = dsc.detailCode
        JOIN DetailSysCode dscs ON p.typeCode = dscs.detailCode
+       JOIN DetailSysCode unit ON i.unit = unit.detailCode
        WHERE wo.id = :workOrderId
     """)
     List<ResponseProcessHistoryInfoDTO> findProcessHistoriesByWorkOrderId(@Param("workOrderId") String workOrderId);

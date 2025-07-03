@@ -46,6 +46,11 @@ public class LotRestController {
         }
     }
 
+    /**
+     * 검사 완료 LOT 및 LOT 트리 탐색
+     * @param lotId LOT id
+     * @return ResponseDTO 반환 DTO
+     * */
     @GetMapping("")
     public ResponseDTO<ResponseLotTreeDTO> getLotsTree(
             @RequestParam String lotId

@@ -19,10 +19,17 @@ public class LotStructureServiceImpl implements LotStructureService {
     private final LotStructureRepository lotStructureRepository;
     private final AuthorizationChecker authorizationChecker;
 
+    /**
+     * 부모 LOT, 자식 LOT LOT_STRUCTURE 상에서 연결
+     * @param parent 부모 LOT
+     * @param child 자식 LOT
+     * @return Void
+     * */
     @Override
     @Transactional
     public Void linkLotStructure(Lot parent, List<Lot> child) {
 
+        // 권한 체크 : 관리자, 생산팀, 작업반장
         if (!authorizationChecker.hasAnyAuthority("ATH003", "ATH006", "ATH007")) {
             throw new SecurityException("권한이 없습니다.");
         }
