@@ -6,11 +6,39 @@
 <head>
     <meta charset="UTF-8">
     <title>LOT 추적</title>
+    <script src="https://uicdn.toast.com/tui-tree/latest/tui-tree.js"></script>
+    <!-- Treant.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/treant-js/1.0/Treant.min.js"
+            integrity="sha512-ADpWKsaOuAegRSoUObE1si2VF6HQJyQR3Zy44l7s6YsGA6BnPIrIwN9uKJ0rsMhtDAMFqnGZhQXMJcsWSp40pA=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
+    <!-- Raphael.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.3.0/raphael.min.js"
+            integrity="sha512-tBzZQxySO5q5lqwLWfu8Q+o4VkTcRGOeQGVQ0ueJga4A1RKuzmAu5HXDOXLEjpbKyV7ow9ympVoa6wZLEzRzDg=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/treant-js/1.0/Treant.css"
+          integrity="sha512-ySoXPqkgXC7K7IS5vOdi47uEpct2yJ3MkYVVVHiM7FOmdDnBUVSmB/D1ps2Pf6jBJnBMyh1EPJLpWh2uCzOLdg=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer" />
+    <th:block layout:fragment="style">
+        <link rel="stylesheet" th:href="@{/css/lot/lot.css}">
+    </th:block>
 </head>
 <body>
 <div layout:fragment="content">
     <h4 class="page__name">LOT 추적</h4>
+    <!-- list grid -->
+    <section class="lot__container">
+        <article class="grid__container">
+            <div id="grid_lot"></div>
+        </article>
+        <article id="tree-wrapper">
+            <div id="lot-tree" style="width:800px; height: 800px"> </div>
+        </article>
+    </section>
 </div>
+
 <th:block layout:fragment="javascript">
     <!-- js import -->
     <script th:src="@{/js/lot/lot.js}"></script>
