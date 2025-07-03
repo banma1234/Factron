@@ -113,56 +113,7 @@ const checkPlanQty = (data) => {
 }
 
 const init = () => {
-    const btn= document.querySelector("button[name='workOrderBtn']")
-
-    if(btn){
-        btn.addEventListener("click", function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            getWorkOrders();
-        });
-    }
-
-    const updateBtn = document.querySelector("button[name='updProcHist']")
-
-    if(updateBtn){
-        updateBtn.addEventListener("click", function (e) {
-            const isNotNull = !nullCheck(processHistoryGrid.getColumnValues("outputQuantity") && processHistoryGrid.getColumnValues("startTime")) && !nullCheck(processHistoryGrid.getColumnValues("endTime"))
-            const rawData = processHistoryGrid.getData();
-            const data = rawData.filter((row) => row.processStatusCode === 'STS001')
-
-            if(data.length === 0){
-                return;
-            }
-
-            if(!isNotNull){
-                alert("산출 수량, 공정 시작, 공정 종료는 반드시 입력해야합니다!")
-                return;
-            }
-
-            sortByDate(data)
-
-            if(!checkTimeLine(data)){
-                alert("공정 시간이 맞지 않습니다.");
-                return;
-            }
-
-            if(!checkQty(data)){
-                alert("산출 수량이 맞지 않습니다.");
-                return;
-            }
-
-            if(!checkPlanQty(data)){
-                alert("산출 수량이 작업수량보다 많습니다.")
-                return;
-            }
-
-            updateProcessHistory(data);
-            e.preventDefault();
-            e.stopPropagation();
-        });
-    }
-
+    // 작업 지시 그리드
     const workOrderGrid = initGrid(
         document.getElementById('workOrderGrid'),
         300,
@@ -218,8 +169,7 @@ const init = () => {
         ]
     );
 
-    getWorkOrders();
-
+    // 공정 이력 그리드
     const processHistoryGrid = initGrid(
         document.getElementById('processHistoryGrid'),
         400,
@@ -289,10 +239,69 @@ const init = () => {
         ]
     );
 
+    //작업 지시 init
+    getWorkOrders();
+
+    // 작업지시 검색 버튼
+    const btn= document.querySelector("button[name='workOrderBtn']")
+
+    if(btn){
+        btn.addEventListener("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            getWorkOrders();
+        });
+    }
+
+    // 공정이력 업데이트 버튼
+    const updateBtn = document.querySelector("button[name='updProcHist']")
+
+
+    if(updateBtn){
+        updateBtn.addEventListener("click", function (e) {
+            const isNotNull = !nullCheck(processHistoryGrid.getColumnValues("outputQuantity") && processHistoryGrid.getColumnValues("startTime")) && !nullCheck(processHistoryGrid.getColumnValues("endTime"))
+            const rawData = processHistoryGrid.getData();
+            // 업데이트 목록 불러오기
+            const data = rawData.filter((row) => row.processStatusCode === 'STS001')
+
+            // 입력 null 값 체크
+            if(!isNotNull){
+                alert("산출 수량, 공정 시작, 공정 종료는 반드시 입력해야합니다!")
+                return;
+            }
+
+            // 공정 순서별 정렬
+            sortByDate(data)
+
+            // 공정 시간 체크
+            if(!checkTimeLine(data)){
+                alert("공정 시간이 맞지 않습니다.");
+                return;
+            }
+
+            // 공정별 산출값 이전 공정과 비교
+            if(!checkQty(data)){
+                alert("산출 수량이 맞지 않습니다.");
+                return;
+            }
+
+            // 작업지시 수량과 비교
+            if(!checkPlanQty(data)){
+                alert("산출 수량이 작업수량보다 많습니다.")
+                return;
+            }
+
+            //이력 내역 저장
+            updateProcessHistory(data);
+            e.preventDefault();
+            e.stopPropagation();
+        });
+    }
+
+    // 해당 공정 이력 불러오기
     workOrderGrid.on('click', (e) => {
         const rowKey = e.rowKey;
         const rowData = workOrderGrid.getRow(rowKey);
-
         if(rowData && rowData.id) getProcessHistory(rowData.id);
     })
 
@@ -327,6 +336,7 @@ const init = () => {
         }
     }
 
+    // 작업 지시별 공정이력 불러오기
     async function getProcessHistory(workOrderId) {
         try {
             const res = await fetch(`/api/process/history/${workOrderId}`, {
@@ -340,11 +350,21 @@ const init = () => {
             }
             const data = await res.json();
             processHistoryGrid.resetData(data.data);
+            const updateBtn = document.querySelector("button[name='updProcHist']");
+            if(updateBtn){
+                const rawData = processHistoryGrid.getData();
+                const data = rawData.filter((row) => row.processStatusCode === 'STS001');
+                if(data.length === 0){
+                    updateBtn.setAttribute("disabled", "true");
+                }
+            }
+
         } catch (e) {
             console.error(e);
         }
     }
 
+    // 공정 결과값 저장
     async function updateProcessHistory(data) {
         const workOrderId = data[0].workOrderId;
         const requestData = {
