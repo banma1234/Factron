@@ -13,4 +13,6 @@ public interface BOMService {
     Void updateBOM(RequestBOMDTO requestBOMDTO);
 
     Void deleteBOM(RequestBOMDTO requestBOMDTO);
+
+    List<ResponseBOMDTO> getPossibleProdList(RequestBOMDTO requestBOMDTO);
 }
