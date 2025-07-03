@@ -18,8 +18,7 @@
     </div>
     <form class="search__form mb-2">
       <div class="select__container">
-        <input class="form-control" type="date" name="startDate">
-        ~
+        <input class="form-control" type="date" name="startDate"> ~
         <input class="form-control" type="date" name="endDate"><br/>
         <select class="form-select" name="STP">
           <option value="">결재상태</option>
@@ -27,10 +26,14 @@
       </div>
 
       <div class="input-group">
-        <input class="form-control" type="text" name="srhName" placeholder="이름/사번/거래처"><br/>
+        <input class="form-control" type="text" name="clientName" placeholder="거래처명">
+      </div>
+      <div class="input-group">
+        <input class="form-control" type="text" name="srhName" placeholder="이름/사번">
         <button class="btn btn-outline-secondary srhBtn" type="button">검색</button>
       </div>
     </form>
+
     <article>
       <div id="contractGrid"></div>
     </article>

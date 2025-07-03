@@ -59,10 +59,14 @@
                 REGEXP_LIKE(#{approvalNameOrEmpId}, '^[0-9]+')
                 AND TO_CHAR(E.ID) LIKE '%' || #{approvalNameOrEmpId} || '%'
                 )
-                OR CL.NAME LIKE '%' || #{approvalNameOrEmpId} || '%'
                 )
             </if>
+
+            <if test="clientName != null and clientName != ''">
+                AND CL.NAME LIKE '%' || #{clientName} || '%'
+            </if>
         </where>
+
 
         GROUP BY
         A.ID, P.ID, E.ID, E.NAME, CL.ID, CL.NAME,

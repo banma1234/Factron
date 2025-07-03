@@ -2,7 +2,6 @@ let rawInboundData = [];
 let inboundGrid;
 
 const init = () => {
-    // 권한 체크
     const isAuthorized = user.authCode === 'ATH006';
 
     // 체크박스 옵션: 권한 있을 때만 추가
@@ -33,8 +32,10 @@ const init = () => {
         gridOptions
     );
 
+    const btn = document.querySelector(".btnCompleteInbound");
+
+    // 권한 없으면 숨김 처리
     if (!isAuthorized) {
-        const btn = document.getElementById("btnCompleteInbound");
         if (btn) btn.style.display = 'none';
     }
 
@@ -44,20 +45,16 @@ const init = () => {
     pastDate.setDate(pastDate.getDate() - 30);
     const startDateDefault = pastDate.toISOString().split('T')[0];
 
-    // 검색 폼에 날짜 필드 추가 (form 안에)
-    const selectContainer = document.querySelector('.select__container');
-    if (selectContainer) {
-        selectContainer.innerHTML = `
-            <input class="form-control" type="date" name="startDate" value="${startDateDefault}">
-            ~
-            <input class="form-control" type="date" name="endDate" value="${today}">
-        `;
-    }
+    // 날짜 필드는 form 안에 이미 있으므로 덮어쓰지 않음
+    const startDateInput = document.querySelector("input[name='startDate']");
+    const endDateInput = document.querySelector("input[name='endDate']");
+    if (startDateInput) startDateInput.value = startDateDefault;
+    if (endDateInput) endDateInput.value = today;
 
     async function getData() {
         const srhItemOrMaterialName = document.querySelector("input[name='srhName']").value;
-        const startDate = document.querySelector("input[name='startDate']").value;
-        const endDate = document.querySelector("input[name='endDate']").value;
+        const startDate = startDateInput ? startDateInput.value : '';
+        const endDate = endDateInput ? endDateInput.value : '';
 
         const params = new URLSearchParams({
             srhItemOrMaterialName,
@@ -87,39 +84,42 @@ const init = () => {
         getData();
     });
 
+    // 권한 있으면 버튼 이벤트 등록
     if (isAuthorized) {
-        document.getElementById("btnCompleteInbound").addEventListener("click", async () => {
-            const checkedRows = inboundGrid.getCheckedRows();
-            if (checkedRows.length === 0) {
-                alert("처리할 입고 데이터를 선택하세요.");
-                return;
-            }
-
-            if (checkedRows.some(row => row.statusCode === 'STS003')) {
-                alert("이미 입고 완료된 데이터가 포함되어 있습니다. 다시 확인해주세요.");
-                return;
-            }
-
-            const inboundIds = checkedRows.map(row => row.inboundId);
-
-            try {
-                const res = await fetch('/api/inbound', {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ inboundIds })
-                });
-                if (!res.ok) {
-                    const errorData = await res.json();
-                    alert(`입고 처리 실패: ${errorData.message || res.statusText}`);
+        if (btn) {
+            btn.addEventListener("click", async () => {
+                const checkedRows = inboundGrid.getCheckedRows();
+                if (checkedRows.length === 0) {
+                    alert("처리할 입고 데이터를 선택하세요.");
                     return;
                 }
-                alert("입고 처리가 완료되었습니다.");
-                getData();
-            } catch (e) {
-                console.error("입고 처리 오류:", e);
-                alert("입고 처리 중 오류가 발생했습니다.");
-            }
-        });
+
+                if (checkedRows.some(row => row.statusCode === 'STS003')) {
+                    alert("이미 입고 완료된 데이터가 포함되어 있습니다. 다시 확인해주세요.");
+                    return;
+                }
+
+                const inboundIds = checkedRows.map(row => row.inboundId);
+
+                try {
+                    const res = await fetch('/api/inbound', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ inboundIds })
+                    });
+                    if (!res.ok) {
+                        const errorData = await res.json();
+                        alert(`입고 처리 실패: ${errorData.message || res.statusText}`);
+                        return;
+                    }
+                    alert("입고 처리가 완료되었습니다.");
+                    getData();
+                } catch (e) {
+                    console.error("입고 처리 오류:", e);
+                    alert("입고 처리 중 오류가 발생했습니다.");
+                }
+            });
+        }
     }
 
     getData();

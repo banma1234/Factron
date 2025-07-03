@@ -3,7 +3,6 @@ const init = () => {
     const confirmModal = new bootstrap.Modal(document.querySelector(".confirmModal"));
     const alertModal = new bootstrap.Modal(document.querySelector(".alertModal"));
 
-    // user = null; 제거 (전역 user 사용)
     let materialGrid;
     let selectedItems = [];
 
@@ -23,19 +22,17 @@ const init = () => {
     loadClients();
     loadMaterials();
 
-    // 부모에게 준비 완료 신호만 보냄 (user는 안 받음)
+    // 부모에게 준비 완료 신호만 보냄
     if (window.opener) {
         window.opener.postMessage("ready", "*");
     }
-
-    // message 이벤트에서 user 받는 부분 삭제
 
     async function loadClients() {
         try {
             const res = await fetch('/api/client');
             const json = await res.json();
             const clients = json.data || [];
-            const select = form.querySelector("select[name='clientId']");
+            const select = form.querySelector("select.clientId");
             clients.forEach(client => {
                 const option = document.createElement('option');
                 option.value = client.id;
@@ -65,6 +62,7 @@ const init = () => {
             loadMaterials(e.target.value.trim());
         }
     });
+
     form.querySelector(".materialSearchBtn").addEventListener("click", (e) => {
         e.preventDefault();
         loadMaterials(form.querySelector("input[name='materialSearch']").value.trim());
@@ -141,11 +139,11 @@ const init = () => {
 
     function updateTotalAmount() {
         const total = selectedItems.reduce((sum, item) => sum + (item.quantity * item.price), 0);
-        document.querySelector("span[name='totalAmount']").textContent = `₩${total.toLocaleString()}`;
+        document.querySelector("span.totalAmount").textContent = `₩${total.toLocaleString()}`;
     }
 
     document.querySelector(".saveBtn").addEventListener("click", () => {
-        const clientId = form.querySelector("select[name='clientId']").value;
+        const clientId = form.querySelector("select.clientId").value;
         if (!clientId) return alert("거래처를 선택해주세요.");
         if (!selectedItems.length) return alert("발주 자재를 선택해주세요.");
         confirmModal.show();
@@ -153,9 +151,8 @@ const init = () => {
 
     document.querySelector(".confirmRegisterBtn").addEventListener("click", async () => {
         confirmModal.hide();
-        const clientId = form.querySelector("select[name='clientId']").value;
+        const clientId = form.querySelector("select.clientId").value;
 
-        // user.id 전역 변수를 그대로 사용
         const payload = {
             clientId,
             employeeId: user.id || null,
