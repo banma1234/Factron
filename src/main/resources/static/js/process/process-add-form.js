@@ -102,8 +102,6 @@ async function saveData() {
         standardTime: parseInt(standardTime)
     };
 
-    console.log("전송 데이터:", data);
-
     try {
         const res = await fetch(`/api/process`, {
             method: "POST",
@@ -122,7 +120,6 @@ async function saveData() {
 window.onload = async () => {
     try {
         await init();
-        console.log("페이지 초기화 완료");
     } catch (error) {
         console.error("초기화 오류:", error);
     }

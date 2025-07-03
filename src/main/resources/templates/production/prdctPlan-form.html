@@ -6,6 +6,7 @@
 <head>
     <title>Factron</title>
     <th:block layout:fragment="style">
+        <link rel="stylesheet" th:href="@{/css/production/production.css}" />
     </th:block>
 </head>
 <body>
@@ -15,36 +16,31 @@
     <form>
         <div class="row mb-3">
             <div class="col-md-6">
-                <span class="form-label">제품코드</span>
-                <input type="text" name="itemId" class="form-control" readonly>
+                <label class="form-label">생산 제품</label>
+                <select name="item" class="form-select w-100">
+                    <option value="">선택</option>
+                </select>
             </div>
             <div class="col-md-6">
-                <span class="form-label">제품명</span>
-                <input type="text" name="itemName" class="form-control" readonly>
-            </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <span class="form-label">생산수량</span>
-                <input type="text" name="quantity" class="form-control">
-            </div>
-            <div class="col-md-6">
-                <span class="form-label">단위</span>
-                <input type="text" name="unit" class="form-control" readonly>
+                <label class="form-label d-block">생산 수량</label>
+                <div class="d-flex">
+                    <input type="text" class="form-control text-end me-2" name="quantity">
+                    <input type="text" class="form-control" name="unitName" readonly>
+                </div>
             </div>
         </div>
         <div class="row mb-3">
             <div class="col-md-6">
-                <span class="form-label">시작 날짜</span>
+                <label class="form-label">시작 날짜</label>
                 <input type="date" name="startDate" class="form-control">
             </div>
             <div class="col-md-6">
-                <span class="form-label">종료 날짜</span>
+                <label class="form-label">종료 날짜</label>
                 <input type="date" name="endDate" class="form-control">
             </div>
         </div>
 
-        <div class="d-flex justify-content-end mt-4 gap-2">
+        <div class="d-flex justify-content-end mt-5 gap-2">
             <button type="button" class="btn btn-primary saveBtn">저장</button>
             <button type="button" class="btn btn-secondary">취소</button>
         </div>
