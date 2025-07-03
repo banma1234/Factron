@@ -1,5 +1,6 @@
 package com.itwillbs.factron.service.quality;
 
+import com.itwillbs.factron.common.component.AuthorizationChecker;
 import com.itwillbs.factron.dto.quality.*;
 import com.itwillbs.factron.entity.Item;
 import com.itwillbs.factron.entity.QualityInspection;
@@ -25,6 +26,7 @@ public class QualityInspectionServiceImpl implements QualityInspectionService {
     private final QualityInspectionStandardRepository qualityInspectionStandardRepository;
     private final ItemRepository itemRepository;
     private final QualityInspectionStandardMapper qualityInspectionStandardMapper;
+    private final AuthorizationChecker authorizationChecker;
 
     // 품질 검사 조회
     @Override
@@ -45,6 +47,7 @@ public class QualityInspectionServiceImpl implements QualityInspectionService {
     // 품질 검사 추가 (여러 개)
     @Override
     public void registQualityInspection(List<RequestQualityInspectionDTO> inspections) {
+        authorizationChecker.checkAnyAuthority("ATH003", "ATH006", "ATH007");
         for (RequestQualityInspectionDTO item : inspections) {
             QualityInspection qualityInspection = QualityInspection.builder()
                     .name(item.getInspectionName())
@@ -59,6 +62,7 @@ public class QualityInspectionServiceImpl implements QualityInspectionService {
     // 품질 검사 수정 (여러 개)
     @Override
     public void updateQualityInspection(List<RequestQualityInspectionDTO> inspections) {
+        authorizationChecker.checkAnyAuthority("ATH003", "ATH006", "ATH007");
         for (RequestQualityInspectionDTO item : inspections) {
             QualityInspection qualityInspection = qualityInspectionRepository.findById(item.getInspectionId())
                     .orElseThrow(() -> new RuntimeException("품질 검사를 찾을 수 없습니다. ID: " + item.getInspectionId()));
@@ -94,6 +98,7 @@ public class QualityInspectionServiceImpl implements QualityInspectionService {
     // 제품별 품질 검사 기준 추가 (여러 개)
     @Override
     public void registQualityInspectionStandard(List<RequestQualityStandardDTO> standards) {
+        authorizationChecker.checkAnyAuthority("ATH003", "ATH006", "ATH007");
         for (RequestQualityStandardDTO item : standards) {
             QualityInspection qualityInspection = qualityInspectionRepository.findById(item.getQualityInspectionId())
                     .orElseThrow(() -> new RuntimeException("품질 검사를 찾을 수 없습니다. ID: " + item.getQualityInspectionId()));
@@ -121,6 +126,7 @@ public class QualityInspectionServiceImpl implements QualityInspectionService {
     // 제품별 품질 검사 기준 수정 (여러 개)
     @Override
     public void updateQualityInspectionStandard(List<RequestQualityStandardDTO> standards) {
+        authorizationChecker.checkAnyAuthority("ATH003", "ATH006", "ATH007");
         for (RequestQualityStandardDTO item : standards) {
             QualityInspection qualityInspection = qualityInspectionRepository.findById(item.getQualityInspectionId())
                     .orElseThrow(() -> new RuntimeException("품질 검사를 찾을 수 없습니다. ID: " + item.getQualityInspectionId()));
@@ -145,6 +151,7 @@ public class QualityInspectionServiceImpl implements QualityInspectionService {
     // 제품별 품질 검사 기준 삭제 (여러 개)
     @Override
     public void deleteQualityInspectionStandard(List<RequestQualityStandardDeleteDTO.DeleteItem> deleteList) {
+        authorizationChecker.checkAnyAuthority("ATH003", "ATH006", "ATH007");
         for (RequestQualityStandardDeleteDTO.DeleteItem item : deleteList) {
             qualityInspectionStandardRepository.deleteById(item.getInspectionId());
         }

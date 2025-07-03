@@ -12,7 +12,10 @@
 <body>
 <div layout:fragment="content">
     <section>
-        <h4 class="page__name">발주 목록</h4>
+        <div class="header-row">
+            <h4 class="page__name">발주 목록</h4>
+            <button class="btn btn-primary registPurchase" style="display:none;">발주 등록</button>
+        </div>
         <form class="search__form mb-2">
             <div class="select__container">
                 <input class="form-control" type="date" name="startDate">

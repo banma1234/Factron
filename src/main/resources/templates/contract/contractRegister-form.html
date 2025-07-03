@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/popup-base.html}">
+<head>
+    <title>수주 등록</title>
+    <th:block layout:fragment="style">
+        <link rel="stylesheet" th:href="@{/css/approval/approval.css}" />
+        <link rel="stylesheet" href="https://uicdn.toast.com/tui-grid/latest/tui-grid.min.css" />
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <form class="search__form mb-2">
+        <h4 class="page__name mb-3">수주 등록</h4>
+
+        <!-- 거래처 선택 + 납기일 -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="clientId" class="form-label">거래처</label>
+                <select id="clientId" name="clientId" class="form-select">
+                    <option value="">-- 거래처 선택 --</option>
+                    <!-- 거래처 option들은 백엔드에서 채워짐 -->
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="deadline" class="form-label">납기일</label>
+                <input type="date" id="deadline" name="deadline" class="form-control" />
+            </div>
+        </div>
+
+        <!-- 품목 검색 + 버튼 -->
+        <div class="d-flex justify-content-end mb-3">
+            <div class="input-group" style="width: 300px;">
+                <input type="text" name="itemSearch" class="form-control" placeholder="품목명 검색" autocomplete="off" />
+                <button class="btn btn-outline-secondary itemSearchBtn" type="button">검색</button>
+            </div>
+        </div>
+
+        <!-- 품목 그리드 -->
+        <article class="mb-5">
+            <div id="itemGrid" style="height: 300px; border: 1px solid #ddd;"></div>
+        </article>
+
+        <!-- 수주 품목 목록 -->
+        <div class="mb-4">
+            <label class="form-label mt-2" style="position: relative; z-index: 2;">수주 품목 목록</label>
+            <div class="contract-items d-flex flex-column gap-1 border rounded p-2 bg-light"
+                 style="min-height: 200px; max-height: 200px; overflow-y: auto; position: relative; z-index: 1;">
+            </div>
+            <div class="bg-white p-2 rounded border d-flex justify-content-between mt-2"
+                 style="position: relative; z-index: 1;">
+                <span><strong>총금액</strong></span>
+                <span name="totalAmount" class="fw-bold text-end">₩0</span>
+            </div>
+        </div>
+
+        <!-- 등록/취소 버튼 -->
+        <div class="d-flex justify-content-end mt-4 gap-2">
+            <button type="button" class="btn btn-primary saveBtn">등록</button>
+            <button type="button" class="btn btn-secondary cancelBtn">취소</button>
+        </div>
+    </form>
+
+    <!-- 등록 확인 모달 -->
+    <div class="modal fade confirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">등록하시겠습니까?</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary confirmRegisterBtn">확인</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 등록 완료 알림 모달 -->
+    <div class="modal fade alertModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">등록이 완료되었습니다.</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary alertCloseBtn">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="javascript">
+    <script src="https://uicdn.toast.com/tui-grid/latest/tui-grid.min.js"></script>
+    <script th:src="@{/js/contract/contractRegister-form.js}"></script>
+</th:block>
+</body>
+</html>

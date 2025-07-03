@@ -14,6 +14,7 @@ import com.itwillbs.factron.repository.product.ItemRepository;
 import com.itwillbs.factron.repository.product.MaterialRepository;
 import com.itwillbs.factron.repository.production.ProductionPlanningRepository;
 import com.itwillbs.factron.repository.production.WorkOrderRepository;
+import com.itwillbs.factron.repository.production.WorkPerformanceRepository;
 import com.itwillbs.factron.repository.quality.QualityInspectionHistoryRepository;
 import com.itwillbs.factron.repository.quality.QualityInspectionRepository;
 import com.itwillbs.factron.repository.quality.QualityInspectionStandardRepository;
@@ -31,10 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @SpringBootTest
 class FactronApplicationTests {
@@ -85,6 +83,8 @@ class FactronApplicationTests {
 	private ProductionPlanningRepository prdctPlanRepository;
 	@Autowired
 	private WorkOrderRepository workOrderRepository;
+	@Autowired
+	private WorkPerformanceRepository workPerformanceRepository;
 
 	@Test
 	@Transactional
@@ -213,9 +213,8 @@ class FactronApplicationTests {
 
 		Map<String, String> sts = new HashMap<>();
 		sts.put("STS001", "대기");
-		sts.put("STS002", "시작");
+		sts.put("STS002", "취소");
 		sts.put("STS003", "완료");
-		sts.put("STS004", "취소");
 		detailCodeMap.put("STS", sts);
 
 		Map<String, String> unt = new HashMap<>();
@@ -295,7 +294,7 @@ class FactronApplicationTests {
 					.gender(i % 2 == 1 ? "M" : "F")   // 홀수면 남자(M), 짝수면 여자(F)
 					.joinedDate(LocalDate.of(2025, 6, 13))
 					.quitDate(null)
-					.deptCode("DEP001")
+					.deptCode("DEP006")
 					.eduLevelCode("EDU001")
 					.employCode("HIR001")
 					.positionCode("POS001")
@@ -313,7 +312,7 @@ class FactronApplicationTests {
 
 			IntergratAuth auth = IntergratAuth.builder()
 					.isActive("Y")
-					.authCode("ATH002")
+					.authCode("ATH007")
 					.password("$2a$10$pHltqD3BTCs6/AdCrX9Zc.2/iGyylnIvtv.yvtL5nTSP7pHFzoX8G") // 5678
 					.employee(emp)
 					.build();
@@ -552,7 +551,7 @@ class FactronApplicationTests {
 		// 1. 라인 생성
 		Line line1 = Line.builder()
 				.name("1번 금형 라인")
-				.statusCode("LIS002") // 가동
+				.statusCode("LIS001") // 정지
 				.description("금형 가공 전용 라인")
 				.createdAt(LocalDateTime.now())
 				.createdBy(1L)
@@ -783,15 +782,17 @@ class FactronApplicationTests {
 	@Commit
 	void insertStockInboundLotData() {
 		// 저장소 조회
-		Storage rawMaterialStorage = storageRepository.findByName("원자재 창고").orElse(null).getFirst();
-		Storage semiProductStorage = storageRepository.findByName("반제품 창고").orElse(null).getFirst();
-		Storage finishedProductStorage = storageRepository.findByName("완제품 창고").orElse(null).getFirst();
+		Storage rawMaterialStorage = storageRepository.findByTypeCode("ITP001").orElse(null);
+		Storage semiProductStorage = storageRepository.findByTypeCode("ITP002").orElse(null);
+		Storage finishedProductStorage = storageRepository.findByTypeCode("ITP003").orElse(null);
 
 		// 제품 및 자재 조회
 		Item item1 = itemRepository.findById("P0000001").orElse(null); // 금형 A
 		Item item2 = itemRepository.findById("P0000003").orElse(null); // 완제품 C
 		Material material1 = materialRepository.findById("M0000001").orElse(null); // 강철판
 		Material material2 = materialRepository.findById("M0000003").orElse(null); // 윤활유
+		Material material3 = materialRepository.findById("M0000002").orElse(null); // 용접봉
+		Material material4 = materialRepository.findById("M0000004").orElse(null); // 완제품 포장재
 
 		LocalDate now = LocalDate.now();
 
@@ -831,24 +832,42 @@ class FactronApplicationTests {
 					.build());
 		}
 
+		if (material3 != null && rawMaterialStorage != null) {
+			stockRepository.save(Stock.builder()
+					.item(null)
+					.material(material3)
+					.storage(rawMaterialStorage)
+					.quantity(100L)
+					.build());
+		}
+
+		if (material4 != null && rawMaterialStorage != null) {
+			stockRepository.save(Stock.builder()
+					.item(null)
+					.material(material4)
+					.storage(rawMaterialStorage)
+					.quantity(20L)
+					.build());
+		}
+
 		// 반제품 입고 + 로트
 		if (item1 != null && semiProductStorage != null) {
 			inboundRepository.save(Inbound.builder()
 					.item(item1)
 					.material(null)
 					.storage(semiProductStorage)
-					.quantity(20L)
+					.quantity(10L)
 					.inDate(now)
-					.categoryCode("S") // 반제품
-					.statusCode("완료")
+					.categoryCode("ITP002") // 반제품
+					.statusCode("STS003")
 					.build());
 
 			lotRepository.save(Lot.builder()
-					.id("LOT-S-" + System.currentTimeMillis())
+					.id("20230711-ISP-0001")
 					.item(item1)
 					.material(null)
-					.quantity(20L)
-					.eventType("입고")
+					.quantity(10L)
+					.eventType("ISP")
 					.createdAt(LocalDateTime.now())
 					.createdBy(1L)
 					.build());
@@ -860,18 +879,18 @@ class FactronApplicationTests {
 					.item(item2)
 					.material(null)
 					.storage(finishedProductStorage)
-					.quantity(10L)
+					.quantity(5L)
 					.inDate(now)
-					.categoryCode("P") // 완제품
-					.statusCode("완료")
+					.categoryCode("ITP003") // 완제품
+					.statusCode("STS003")
 					.build());
 
 			lotRepository.save(Lot.builder()
-					.id("LOT-P-" + System.currentTimeMillis())
+					.id("20240901-ISP-0001")
 					.item(item2)
 					.material(null)
-					.quantity(10L)
-					.eventType("입고")
+					.quantity(5L)
+					.eventType("ISP")
 					.createdAt(LocalDateTime.now())
 					.createdBy(1L)
 					.build());
@@ -883,18 +902,18 @@ class FactronApplicationTests {
 					.item(null)
 					.material(material1)
 					.storage(rawMaterialStorage)
-					.quantity(50L)
+					.quantity(100L)
 					.inDate(now)
-					.categoryCode("M") // 자재
-					.statusCode("완료")
+					.categoryCode("ITP001") // 자재
+					.statusCode("STS003")
 					.build());
 
 			lotRepository.save(Lot.builder()
-					.id("LOT-M-" + System.currentTimeMillis())
+					.id("20250630-INB-0001")
 					.item(null)
 					.material(material1)
-					.quantity(50L)
-					.eventType("입고")
+					.quantity(100L)
+					.eventType("INB")
 					.createdAt(LocalDateTime.now())
 					.createdBy(1L)
 					.build());
@@ -906,18 +925,64 @@ class FactronApplicationTests {
 					.item(null)
 					.material(material2)
 					.storage(rawMaterialStorage)
-					.quantity(30L)
+					.quantity(20L)
 					.inDate(now)
-					.categoryCode("M")
-					.statusCode("완료")
+					.categoryCode("ITP001") // 자재
+					.statusCode("STS003")
 					.build());
 
 			lotRepository.save(Lot.builder()
-					.id("LOT-M-" + System.currentTimeMillis())
+					.id("20250630-INB-0002")
 					.item(null)
 					.material(material2)
-					.quantity(30L)
-					.eventType("입고")
+					.quantity(20L)
+					.eventType("INB")
+					.createdAt(LocalDateTime.now())
+					.createdBy(1L)
+					.build());
+		}
+
+		// 자재3 입고 + 로트
+		if (material3 != null && rawMaterialStorage != null) {
+			inboundRepository.save(Inbound.builder()
+					.item(null)
+					.material(material3)
+					.storage(rawMaterialStorage)
+					.quantity(100L)
+					.inDate(now)
+					.categoryCode("ITP001") // 자재
+					.statusCode("STS003")
+					.build());
+
+			lotRepository.save(Lot.builder()
+					.id("20250630-INB-0003")
+					.item(null)
+					.material(material3)
+					.quantity(100L)
+					.eventType("INB")
+					.createdAt(LocalDateTime.now())
+					.createdBy(1L)
+					.build());
+		}
+
+		// 자재4 입고 + 로트
+		if (material4 != null && rawMaterialStorage != null) {
+			inboundRepository.save(Inbound.builder()
+					.item(null)
+					.material(material4)
+					.storage(rawMaterialStorage)
+					.quantity(20L)
+					.inDate(now)
+					.categoryCode("ITP001") // 자재
+					.statusCode("STS003")
+					.build());
+
+			lotRepository.save(Lot.builder()
+					.id("20250630-INB-0004")
+					.item(null)
+					.material(material4)
+					.quantity(20L)
+					.eventType("INB")
 					.createdAt(LocalDateTime.now())
 					.createdBy(1L)
 					.build());
@@ -927,7 +992,7 @@ class FactronApplicationTests {
 	@Test
 	@Transactional
 	@Commit
-	void insertPrdctPlanWorkOrderData() {
+	void insertPrdctPlanData() {
 		// 1. 담당 사원 조회
 		Employee employee = employeeRepository.findById(25060001L).orElse(null);
 
@@ -940,14 +1005,10 @@ class FactronApplicationTests {
 				.filter(item -> "ITP003".equals(item.getTypeCode()))
 				.toList();
 
-		// 4. 라인 1개 가져오기
-		Line line = lineRepository.findAll().stream().findFirst().orElse(null);
-
 		int sequence = 1;
 		for (Item item : finishedItems) {
 			// ID 생성
 			String planId = String.format("PP%s-%03d", dateStr, sequence); // ex: PP20250625-001
-			String workOrderId = String.format("WO%s-%03d", dateStr, sequence); // ex: WO20250625-001
 
 			// 생산계획 생성
 			ProductionPlanning planning = ProductionPlanning.builder()
@@ -956,24 +1017,10 @@ class FactronApplicationTests {
 					.employee(employee)
 					.startDate(today)
 					.endDate(today.plusDays(5 + sequence))
-					.quantity(100L * sequence)
+					.quantity(2L * sequence)
 					.build();
 
-			planning = prdctPlanRepository.save(planning);
-
-			// 작업지시 생성
-			WorkOrder workOrder = WorkOrder.builder()
-					.id(workOrderId)
-					.productionPlanning(planning)
-					.item(item)
-					.quantity(100L * sequence)
-					.statusCode("WKS001") // 등록
-					.line(line)
-					.employee(employee)
-					.startDate(today.plusDays(1))
-					.build();
-
-			workOrderRepository.save(workOrder);
+			prdctPlanRepository.save(planning);
 
 			sequence++;
 		}
@@ -1012,6 +1059,40 @@ class FactronApplicationTests {
 					.build();
 
 			qualityInspectionHistoryRepository.save(history);
+		}
+	}
+
+	@Test
+	@Transactional
+	@Commit
+	void insertWorkPerformanceData() {
+		// 1. 담당 사원 조회
+		Employee employee = employeeRepository.findById(25060001L).orElse(null);
+
+		// 2. 현재 날짜
+		LocalDate today = LocalDate.now();
+
+		// 3. 모든 작업지시 조회
+		List<WorkOrder> workOrders = workOrderRepository.findAll();
+
+		// 4. WorkPerformance 저장을 위한 repository 선언 필요
+		for (WorkOrder workOrder : workOrders) {
+			// 작업지시 수량을 반으로 나누어 양품/불량품 설정
+			Long totalQuantity = workOrder.getQuantity();
+			Long fectiveQuantity = totalQuantity / 2;
+			Long defectiveQuantity = totalQuantity - fectiveQuantity;
+
+			// 작업실적 생성
+			WorkPerformance performance = WorkPerformance.builder()
+					.workOrder(workOrder)
+					.endDate(today) // 현재 날짜를 작업 종료일로 설정
+					.fectiveQuantity(fectiveQuantity) // 총 수량의 절반을 양품으로
+					.defectiveQuantity(defectiveQuantity) // 나머지를 불량품으로
+					.employee(employee) // 지정된 직원 ID
+					.build();
+
+			// 작업실적 저장 (repository 선언 필요)
+			workPerformanceRepository.save(performance);
 		}
 	}
 }

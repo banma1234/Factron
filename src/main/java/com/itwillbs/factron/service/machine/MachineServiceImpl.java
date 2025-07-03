@@ -54,12 +54,8 @@ public class MachineServiceImpl implements MachineService {
     @Transactional
     public void addMachine(RequestAddMachineDTO requestDto) {
 
-        // AuthorizationChecker를 사용하여 현재 로그인한 사용자 ID 가져오기
-        Long empId = authorizationChecker.getCurrentEmployeeId();
-
-        log.info("현재 로그인한 사원 ID: {}", empId);
-
-        checkAdminPermission(empId); // 관리자 권한 체크
+        // 관리자 권한 체크
+        authorizationChecker.checkAnyAuthority("ATH003", "ATH007");
 
         // 공정 조회
         Process process = processRepository.findById(requestDto.getProcessId())
@@ -93,12 +89,8 @@ public class MachineServiceImpl implements MachineService {
     @Transactional
     public void updateMachine(RequestUpdateMachineDTO requestDto) {
 
-        // AuthorizationChecker를 사용하여 현재 로그인한 사용자 ID 가져오기
-        Long empId = authorizationChecker.getCurrentEmployeeId();
-
-        log.info("현재 로그인한 사원 ID: {}", empId);
-
-        checkAdminPermission(empId); // 관리자 권한 체크
+        // 관리자 권한 체크
+        authorizationChecker.checkAnyAuthority("ATH003", "ATH007");
 
         // Machine 조회
         Machine machine = machineRepository.findById(requestDto.getMachineId())

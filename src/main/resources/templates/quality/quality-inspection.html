@@ -2,6 +2,7 @@
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout/base.html}">>
 <head>
     <meta charset="UTF-8">
@@ -20,7 +21,7 @@
           <input class="form-control sysInput" type="text" name="inspName" placeholder="품질 검사">
           <button class="btn btn-outline-secondary" name="inspSrhBtn" type="button">검색</button>
         </div>
-        <div class="select__container">
+        <div class="select__container" sec:authorize="hasAnyAuthority('ATH007', 'ATH003', 'ATH006')">
           <button class="btn btn-primary" name="addInspRow" type="button">추가</button>
           <button class="btn btn-outline-primary" name="updateInsp" type="button">저장</button>
         </div>
@@ -43,7 +44,7 @@
           >
           <button class="btn btn-outline-secondary" name="stdSrhBtn" type="button">검색</button>
         </div>
-        <div class="select__container">
+        <div class="select__container" sec:authorize="hasAnyAuthority('ATH007', 'ATH003', 'ATH006')">
           <button class="btn btn-primary" name="addInspStdRow" type="button">추가</button>
           <button class="btn btn-outline-primary" name="updateInspStd" type="button">저장</button>
           <button class="btn btn-outline-primary" name="deleteInspStd" type="button">삭제</button>

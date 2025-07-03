@@ -17,9 +17,16 @@ public class WorkOrderController {
     /*
      * 작업지시 등록 폼 페이지
      */
+    @GetMapping("/workorder/save")
+    public String workOrderSaveForm() {
+        return "production/workOrder-add-form";
+    }
+
+    /*
+     * 작업지시 상세 폼 페이지
+     */
     @GetMapping("/workorder-form")
     public String workOrderForm() {
         return "production/workOrder-form";
     }
-
 }

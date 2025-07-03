@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itwillbs.factron.mapper.outbound.OutboundMapper">
+
+    <select id="getOutboundsList"
+            parameterType="com.itwillbs.factron.dto.outbound.RequestSearchOutboundDTO"
+            resultType="com.itwillbs.factron.dto.outbound.ResponseSearchOutboundDTO">
+
+        SELECT
+        OBD.ID AS outboundId,
+        IT.ID AS itemId,
+        IT.NAME AS itemName,
+        MT.ID AS materialId,
+        MT.NAME AS materialName,
+        ST.ID AS storageId,
+        ST.NAME AS storageName,
+        OBD.QUANTITY,
+        OBD.OUT_DATE AS outDate,
+        OBD.CATEGORY_CODE AS categoryCode,
+        CAT.NAME AS categoryName,
+        OBD.STATUS_CODE AS statusCode,
+        STS.NAME AS statusName
+
+        FROM OUTBOUND OBD
+        LEFT JOIN ITEM IT ON OBD.ITEM_ID = IT.ID
+        LEFT JOIN MATERIAL MT ON OBD.MATERIAL_ID = MT.ID
+        JOIN STORAGE ST ON OBD.STORAGE_ID = ST.ID
+        LEFT JOIN DETAIL_SYS_CODE CAT ON OBD.CATEGORY_CODE = CAT.DETAIL_CODE AND CAT.MAIN_CODE = 'ITP'
+        LEFT JOIN DETAIL_SYS_CODE STS ON OBD.STATUS_CODE = STS.DETAIL_CODE AND STS.MAIN_CODE = 'STS'
+
+        <where>
+            <if test="srhItemOrItemName != null and srhItemOrItemName != ''">
+                AND (
+                IT.NAME LIKE '%' || #{srhItemOrItemName} || '%'
+                OR MT.NAME LIKE '%' || #{srhItemOrItemName} || '%'
+                )
+            </if>
+
+            <!-- 날짜 검색 조건 추가 -->
+            <if test="startDate != null and startDate != ''">
+                AND OBD.OUT_DATE &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+            </if>
+
+            <if test="endDate != null and endDate != ''">
+                AND OBD.OUT_DATE &lt;= TO_DATE(#{endDate}, 'YYYY-MM-DD')
+            </if>
+        </where>
+
+        ORDER BY OBD.OUT_DATE DESC
+    </select>
+
+</mapper>

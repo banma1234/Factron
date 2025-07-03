@@ -70,7 +70,7 @@ public class lineServiceImpl implements lineService {
         log.info("현재 로그인한 사원 ID: {}", empId);
 
         // 관리자 권한 체크
-        checkAdminPermission(empId);
+        authorizationChecker.checkAnyAuthority("ATH003", "ATH007");
 
         // 라인 생성
         Line line = Line.builder()
@@ -97,13 +97,8 @@ public class lineServiceImpl implements lineService {
     @Transactional
     public void updateLine(RequestUpdateLineDTO requestDto) {
 
-        // AuthorizationChecker를 사용하여 현재 로그인한 사용자 ID 가져오기
-        Long empId = authorizationChecker.getCurrentEmployeeId();
-
-        log.info("현재 로그인한 사원 ID: {}", empId);
-
         // 관리자 권한 체크
-        checkAdminPermission(empId);
+        authorizationChecker.checkAnyAuthority("ATH003", "ATH007");
 
         Line line = lineRepository.findById(requestDto.getLineId())
                 .orElseThrow(() -> new EntityNotFoundException("해당 라인이 존재하지 않습니다."));
@@ -123,13 +118,8 @@ public class lineServiceImpl implements lineService {
     @Transactional
     public void connectProcessesToLine(RequestConnectProcessesToLineDTO requestDto) {
 
-        // AuthorizationChecker를 사용하여 현재 로그인한 사용자 ID 가져오기
-        Long empId = authorizationChecker.getCurrentEmployeeId();
-
-        log.info("현재 로그인한 사원 ID: {}", empId);
-
         // 관리자 권한 체크
-        checkAdminPermission(empId);
+        authorizationChecker.checkAnyAuthority("ATH003", "ATH007");
 
         // 라인 조회
         Line line = lineRepository.findById(requestDto.getLineId())
@@ -148,13 +138,8 @@ public class lineServiceImpl implements lineService {
     @Transactional
     public void disconnectProcessesFromLine(RequestDisconnectProcessesFromLineDTO requestDto) {
 
-        // AuthorizationChecker를 사용하여 현재 로그인한 사용자 ID 가져오기
-        Long empId = authorizationChecker.getCurrentEmployeeId();
-
-        log.info("현재 로그인한 사원 ID: {}", empId);
-
         // 관리자 권한 체크
-        checkAdminPermission(empId);
+        authorizationChecker.checkAnyAuthority("ATH003", "ATH007");
 
         // 공정 리스트 처리
         requestDto.getProcessIds().forEach(processId -> {

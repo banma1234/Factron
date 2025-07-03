@@ -138,7 +138,7 @@ const init = () => {
         })
     }
 
-    // 공정 수정 버튼 클릭 이벤트 수정
+    // 공정 추가 버튼 클릭 이벤트
     if(addLineProcessBtn){
         addLineProcessBtn.addEventListener("click", (e) => {
             e.preventDefault();
@@ -152,7 +152,7 @@ const init = () => {
         })
     }
 
-    // 선택 공정 삭제 버튼 클릭 이벤트 추가
+    // 선택 공정 삭제 버튼 클릭 이벤트
     if(deleteLineProcessBtn) {
         deleteLineProcessBtn.addEventListener("click", (e) => {
             e.preventDefault();
@@ -179,24 +179,21 @@ const init = () => {
         const rowData = lineGrid.getRow(rowKey);
 
         if (rowData && rowData.lineId) {
-            // 공정 목록 조회
             getLineProcesses(rowData.lineId, rowData.lineName);
 
-            // 공정 수정 버튼 활성화
-            if (addLineProcessBtn) {
-                addLineProcessBtn.disabled = false;
+            if (rowData.lineStatusName === '가동') {
+                if (addLineProcessBtn) addLineProcessBtn.disabled = true;
+                if (deleteLineProcessBtn) deleteLineProcessBtn.disabled = true;
+            } else {
+                if (addLineProcessBtn) addLineProcessBtn.disabled = false;
+                if (deleteLineProcessBtn) deleteLineProcessBtn.disabled = true;
             }
 
-            // 공정 삭제 버튼은 체크박스 선택 전이므로 여전히 비활성화 유지
-            if (deleteLineProcessBtn) {
-                deleteLineProcessBtn.disabled = true;
-            }
-
-            // 선택된 라인 정보 저장
             currentSelectedLine = {
                 lineId: rowData.lineId,
                 lineName: rowData.lineName,
-                description: rowData.description || ''  // 설명 정보도 저장
+                description: rowData.description || '',
+                lineStatusName: rowData.lineStatusName
             };
         }
     });
@@ -222,6 +219,11 @@ const init = () => {
     // 삭제 버튼 상태 업데이트 함수
     function updateDeleteButtonState() {
         if (deleteLineProcessBtn) {
+            // '가동' 상태면 무조건 비활성화
+            if (currentSelectedLine && currentSelectedLine.lineStatusName === '가동') {
+                deleteLineProcessBtn.disabled = true;
+                return;
+            }
             // 체크된 행이 하나라도 있으면 삭제 버튼 활성화
             const checkedRows = lineProcessGrid.getCheckedRows();
             deleteLineProcessBtn.disabled = checkedRows.length === 0;

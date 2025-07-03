@@ -16,16 +16,27 @@ const init = () => {
             { header: '부서', name: 'deptName', align: 'center' },
             { header: '발행일자', name: 'requestedAt', align: 'center' },
             { header: '결재 날짜', name: 'confirmedDate', align: 'center' },
-            { header: '상태', name: 'approvalStatusName', align: 'center' },
             { header: '상태코드', name: 'approvalStatusCode', hidden: true },
             { header: '상태이름', name: 'approvalStatusName', hidden: true },
             { header: '승인 권자', name: 'approverName', align: 'center' },
+            {
+                header: '상태', name: 'approvalStatusName', align: 'center',
+                formatter: ({ row }) => {
+                    switch (row.approvalStatusCode) {
+                        case 'APV001': return `<span style="color:green;">${row.approvalStatusName}</span>`;
+                        case 'APV002': return `<span style="color:blue;">${row.approvalStatusName}</span>`;
+                        case 'APV003': return `<span style="color:red;">${row.approvalStatusName}</span>`;
+                        default: return row.approvalStatusName || '';
+                    }
+                }
+            },
             { header: '승인 권자 사번', name: 'approverId', hidden: true },
             { header: '반려 사유', name: 'rejectionReason', hidden: true },
             { header: '발령자 사번', name: 'transferEmpId', hidden: true },
             { header: '발령자 이름', name: 'transferEmpName', hidden: true }
         ]
     );
+
 
     // 기본 날짜 설정
     const today = getKoreaToday();

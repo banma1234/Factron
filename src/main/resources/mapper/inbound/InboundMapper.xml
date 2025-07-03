@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itwillbs.factron.mapper.inbound.InboundMapper">
+
+    <select id="getInboundsList"
+            parameterType="com.itwillbs.factron.dto.inbound.RequestSearchInboundDTO"
+            resultType="com.itwillbs.factron.dto.inbound.ResponseSearchInboundDTO">
+
+        SELECT
+        IBD.ID AS inboundId,
+        IT.ID AS itemId,
+        IT.NAME AS itemName,
+        MT.ID AS materialId,
+        MT.NAME AS materialName,
+        ST.ID AS storageId,
+        ST.NAME AS storageName,
+        IBD.QUANTITY,
+        IBD.IN_DATE AS inDate,
+        IBD.CATEGORY_CODE AS categoryCode,
+        CAT.NAME AS categoryName,
+        IBD.STATUS_CODE AS statusCode,
+        STS.NAME AS statusName
+
+        FROM INBOUND IBD
+        LEFT JOIN ITEM IT ON IBD.ITEM_ID = IT.ID
+        LEFT JOIN MATERIAL MT ON IBD.MATERIAL_ID = MT.ID
+        JOIN STORAGE ST ON IBD.STORAGE_ID = ST.ID
+        LEFT JOIN DETAIL_SYS_CODE CAT ON IBD.CATEGORY_CODE = CAT.DETAIL_CODE AND CAT.MAIN_CODE = 'ITP'
+        LEFT JOIN DETAIL_SYS_CODE STS ON IBD.STATUS_CODE = STS.DETAIL_CODE AND STS.MAIN_CODE = 'STS'
+
+        <where>
+            <if test="srhItemOrMaterialName != null and srhItemOrMaterialName != ''">
+                AND (
+                IT.NAME LIKE '%' || #{srhItemOrMaterialName} || '%'
+                OR MT.NAME LIKE '%' || #{srhItemOrMaterialName} || '%'
+                )
+            </if>
+
+            <if test="startDate != null and startDate != ''">
+                AND IBD.IN_DATE &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+            </if>
+
+            <if test="endDate != null and endDate != ''">
+                AND IBD.IN_DATE &lt;= TO_DATE(#{endDate}, 'YYYY-MM-DD')
+            </if>
+        </where>
+
+        ORDER BY IBD.IN_DATE DESC
+    </select>
+
+</mapper>
