@@ -8,6 +8,7 @@ public class ResponseItemDTO {
     private String itemId;
     private String name;
     private String unit;
+    private String unitName;
     private Long price;
     private String typeCode;
     private String createdAt;

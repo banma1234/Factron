@@ -31,7 +31,6 @@ public class StockServiceImpl implements StockService{
     @Override
     public List<ResponseStockSrhDTO> getSingleStock(String productId) {
         List<ResponseStockSrhDTO> stock = stockRepository.findSingleStock(productId);
-        log.info("getSingleStock : {}", stock);
         return null;
     }
 }

@@ -24,11 +24,10 @@ public class StorageServiceImpl implements StorageService {
 
         if(name == null || name.isEmpty()) {
             storageList = storageRepository.findAll();
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>> : " + storageList.size());
         } else {
             storageList = storageRepository
                     .findByName(name)
-                    .orElseThrow(() -> new NoSuchElementException("해당 창고는 존재하지 않습니다"));
+                    .orElseThrow(() -> new NoSuchElementException("해당 창고는 존재하지 않습니다."));
         }
 
         return toStorageDTOList(storageList);

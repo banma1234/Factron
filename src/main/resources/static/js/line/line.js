@@ -255,9 +255,6 @@ const init = () => {
         }).then(res => res.json())
             .then(res => {
                 if(res.status === 200){
-
-                    console.log(res.data);
-
                     return lineGrid.resetData(res.data);
                 }else{
                     alert(res.message);
@@ -419,8 +416,6 @@ const init = () => {
         }).then(res => res.json())
             .then(res => {
                 if(res.status === 200){
-                    console.log(res.data);
-
                     // 데이터 리셋 후 삭제 버튼 상태도 업데이트
                     lineProcessGrid.resetData(res.data);
 
