@@ -35,6 +35,14 @@ public class BOMServiceImpl implements BOMService {
     }
 
     /*
+     * BOM 등록 가능한 품목 목록 조회
+     * */
+    @Override
+    public List<ResponseBOMDTO> getPossibleProdList(RequestBOMDTO requestBOMDTO) {
+        return bomMapper.getPossibleProdList(requestBOMDTO);
+    }
+
+    /*
      * BOM 등록
      * */
     @Transactional

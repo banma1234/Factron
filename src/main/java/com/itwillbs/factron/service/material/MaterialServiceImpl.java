@@ -1,7 +1,7 @@
 package com.itwillbs.factron.service.material;
 
-import com.itwillbs.factron.dto.material.MaterialRequestDTO;
-import com.itwillbs.factron.dto.material.MaterialResponseDTO;
+import com.itwillbs.factron.dto.material.RequestMaterialDTO;
+import com.itwillbs.factron.dto.material.ResponseMaterialDTO;
 import com.itwillbs.factron.entity.Material;
 import com.itwillbs.factron.mapper.material.MaterialMapper;
 import com.itwillbs.factron.repository.product.MaterialRepository;
@@ -22,13 +22,13 @@ public class MaterialServiceImpl implements MaterialService {
     private final MaterialRepository materialRepository;
 
     @Override
-    public List<MaterialResponseDTO> getMaterialList(MaterialRequestDTO dto) {
+    public List<ResponseMaterialDTO> getMaterialList(RequestMaterialDTO dto) {
         return materialMapper.getMaterialList(dto);
     }
 
 
     @Override
-    public Void addMaterial(MaterialRequestDTO dto) {
+    public Void addMaterial(RequestMaterialDTO dto) {
         if (materialRepository.findById(dto.getMaterialId()).isPresent()){
             throw new IllegalArgumentException("이미 등록된 ID 입니다");
         }
@@ -50,7 +50,7 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Transactional
     @Override
-    public Void updateMaterial(MaterialRequestDTO dto) {
+    public Void updateMaterial(RequestMaterialDTO dto) {
 
         Material material = materialRepository
                 .findById(dto.getMaterialId())

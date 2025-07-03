@@ -5,8 +5,8 @@
 <mapper namespace="com.itwillbs.factron.mapper.material.MaterialMapper">
 
     <select id="getMaterialList"
-            parameterType="com.itwillbs.factron.dto.material.MaterialRequestDTO"
-            resultType="com.itwillbs.factron.dto.material.MaterialResponseDTO">
+            parameterType="com.itwillbs.factron.dto.material.RequestMaterialDTO"
+            resultType="com.itwillbs.factron.dto.material.ResponseMaterialDTO">
         SELECT
             id AS materialId,
             name,
