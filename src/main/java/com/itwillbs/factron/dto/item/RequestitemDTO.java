@@ -3,7 +3,7 @@ package com.itwillbs.factron.dto.item;
 import lombok.Data;
 
 @Data
-public class ItemRequestDTO {
+public class RequestitemDTO {
 
     // 추가 및 수정용
     private String itemId;
@@ -15,6 +15,6 @@ public class ItemRequestDTO {
 
     // 조회용
     private String itemName;
-    private String itemStartDate;
-    private String itemEndDate;
+    private String itemTypeCode;
+
 }

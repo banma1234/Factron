@@ -29,21 +29,6 @@ public class ProcessServiceImpl implements ProcessService {
     private final AuthorizationChecker authorizationChecker;
 
     /**
-     * 관리자 권한 체크
-     *
-     * @param empId 사원 ID
-     */
-    private void checkAdminPermission(Long empId) {
-
-        boolean hasPermission = true; // TODO: 실제 권한 체크 로직으로 대체
-
-        // 관리자 권한이 없는 경우 예외 처리
-        if (!hasPermission) {
-            throw new SecurityException("관리자 권한이 없습니다.");
-        }
-    }
-
-    /**
      * 공정 추가
      *
      * @param requestDto 요청 DTO
@@ -57,7 +42,8 @@ public class ProcessServiceImpl implements ProcessService {
 
         log.info("현재 로그인한 사원 ID: {}", empId);
 
-        checkAdminPermission(empId); // 관리자 권한 체크
+        // 관리자 권한 체크
+        authorizationChecker.checkAnyAuthority("ATH003", "ATH007");
 
         Process process = Process.builder()
                 .name(requestDto.getProcessName())
@@ -81,12 +67,8 @@ public class ProcessServiceImpl implements ProcessService {
     @Transactional
     public void updateProcess(RequestUpdateProcessDTO requestDto) {
 
-        // AuthorizationChecker를 사용하여 현재 로그인한 사용자 ID 가져오기
-        Long empId = authorizationChecker.getCurrentEmployeeId();
-
-        log.info("현재 로그인한 사원 ID: {}", empId);
-
-        checkAdminPermission(empId); // 관리자 권한 체크
+        // 관리자 권한 체크
+        authorizationChecker.checkAnyAuthority("ATH003", "ATH007");
 
         Process process = processRepository.findById(requestDto.getProcessId())
                 .orElseThrow(() -> new EntityNotFoundException("해당 공정을 찾을 수 없습니다."));

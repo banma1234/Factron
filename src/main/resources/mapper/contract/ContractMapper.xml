@@ -5,9 +5,7 @@
 
 <mapper namespace="com.itwillbs.factron.mapper.contract.ContractMapper">
 
-    <!--
-        수주 상세 목록 (결재기준)
-    -->
+    <!-- 수주 목록 조회 -->
     <select id="getContractsList"
             parameterType="com.itwillbs.factron.dto.contract.RequestSearchContractDTO"
             resultType="com.itwillbs.factron.dto.contract.ResponseSearchContractDTO">
@@ -19,12 +17,11 @@
         E.NAME AS employeeName,
         CL.ID AS clientId,
         CL.NAME AS clientName,
-        C.DEADLINE,
+        C.DEADLINE AS deadline,
         C.STATUS_CODE AS statusCode,
         STP.NAME AS statusName,
         C.CREATED_AT AS createdAt,
 
-        -- 품목명 외 N건
         CASE
         WHEN COUNT(DISTINCT CLIST.ID) = 1 THEN MIN(IT.NAME)
         ELSE MIN(IT.NAME) || ' 외 ' || (COUNT(DISTINCT CLIST.ID) - 1) || '건'
@@ -71,9 +68,45 @@
 
         GROUP BY
         A.ID, C.ID, E.ID, E.NAME, CL.ID, CL.NAME,
-        C.DEADLINE, C.STATUS_CODE, STP.NAME, C.CREATED_AT
+        C.DEADLINE,
+        C.STATUS_CODE, STP.NAME, C.CREATED_AT
 
         ORDER BY C.CREATED_AT DESC
+    </select>
+
+    <!-- 수주 상세 조회 -->
+    <select id="getContractDetailByContractId"
+            parameterType="long"
+            resultType="com.itwillbs.factron.dto.contract.ResponseSearchContractDTO">
+
+        SELECT
+            A.ID AS approvalId,
+            C.ID AS contractId,
+            E.ID AS employeeId,
+            E.NAME AS employeeName,
+            CL.ID AS clientId,
+            C.DEADLINE AS deadline,
+            CL.NAME AS clientName,
+            C.STATUS_CODE AS statusCode,
+            STP.NAME AS statusName,
+            C.CREATED_AT AS createdAt,
+            CASE
+                WHEN COUNT(DISTINCT CLIST.ID) = 1 THEN MIN(IT.NAME)
+                ELSE MIN(IT.NAME) || ' 외 ' || (COUNT(DISTINCT CLIST.ID) - 1) || '건'
+                END AS itemSummary,
+            SUM(CLIST.QUANTITY * CLIST.PRICE) AS totalAmount
+        FROM CONTRACT C
+                 JOIN EMPLOYEE E ON C.EMPLOYEE_ID = E.ID
+                 JOIN CLIENT CL ON C.CLIENT_ID = CL.ID
+                 LEFT JOIN APPROVAL A ON C.APPROVAL_ID = A.ID
+                 LEFT JOIN CONTRACT_LIST CLIST ON C.ID = CLIST.CONTRACT_ID
+                 LEFT JOIN ITEM IT ON CLIST.ITEM_ID = IT.ID
+                 LEFT JOIN DETAIL_SYS_CODE STP ON C.STATUS_CODE = STP.DETAIL_CODE
+        WHERE C.ID = #{contractId}
+        GROUP BY
+            A.ID, C.ID, E.ID, E.NAME, CL.ID, CL.NAME,
+            C.DEADLINE,
+            C.STATUS_CODE, STP.NAME, C.CREATED_AT
     </select>
 
     <!-- 수주 품목 목록 조회 -->
@@ -92,6 +125,5 @@
         WHERE CLIST.CONTRACT_ID = #{contractId}
         ORDER BY IT.NAME
     </select>
-
 
 </mapper>

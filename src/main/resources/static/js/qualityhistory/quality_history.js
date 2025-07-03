@@ -108,7 +108,7 @@ const init = () => {
                 name: 'resultValue',
                 align: 'center',
                 // 권한에 따라 에디터 활성화 여부 설정
-                editor: window.user.authCode === 'ATH007' ? 'text' : false
+                editor: ['ATH003', 'ATH006', 'ATH007'].includes(window.user.authCode) ? 'text' : false
             },
             {
                 header: '결과값 단위',
@@ -328,8 +328,8 @@ const init = () => {
             if (result.status === 200) {
                 // 데이터 매핑 처리
                 const mappedData = result.data.map(rowData => {
-                    // 조건 수정: ATH007 권한이 없거나 작업상태가 '완료'면 결과값은 '-'
-                    const resultValue = (window.user.authCode !== 'ATH007' || workStatus === '완료')
+                    // 조건 수정: ATH003, ATH006, ATH007 권한이 없거나 작업상태가 '완료'면 결과값은 '-'
+                    const resultValue = (!['ATH003', 'ATH006', 'ATH007'].includes(window.user.authCode) || workStatus === '완료')
                         ? rowData.resultValue || '-'
                         : rowData.resultValue || '';
 
@@ -360,7 +360,7 @@ const init = () => {
 
                 if (resultValueColumnIndex >= 0) {
                     // 결과값 컬럼 속성 수정
-                    const isEditable = workStatus !== '완료' && window.user.authCode === 'ATH007';
+                    const isEditable = workStatus !== '완료' && ['ATH003', 'ATH006', 'ATH007'].includes(window.user.authCode);
                     columns[resultValueColumnIndex].editor = isEditable ? 'text' : false;
 
                     // 수정된 컬럼 설정으로 업데이트
@@ -416,7 +416,7 @@ const init = () => {
             const result = await response.json();
 
             if (result.status === 200) {
-                alert(result.message || '품질 검사 결과가 저장되었습니다.');
+                alert(result.message || '품질 검사 결과가 저장되었습니다. 입고 처리되었습니다.');
 
                 // 품질 검사 결과 저장 후 저장 버튼 비활성화
                 if (addInspectionResultBtn) addInspectionResultBtn.disabled = true;

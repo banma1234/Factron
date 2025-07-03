@@ -8,78 +8,79 @@ const init = () => {
         window.receivedData = data;
 
         if (data.approvalId) {
-            await fetchPurchaseByApprovalId(data.approvalId);
-        } else if (data.purchaseId) {
-            await fetchPurchaseByPurchaseId(data.purchaseId);
+            await fetchContractByApprovalId(data.approvalId);
+        } else if (data.contractId) {
+            await fetchContractByContractId(data.contractId);
         } else {
-            console.warn("전달된 데이터에 approvalId나 purchaseId가 없음:", data);
+            console.warn("전달된 데이터에 approvalId나 contractId가 없음:", data);
         }
     });
 
-    async function fetchPurchaseByApprovalId(approvalId) {
+    async function fetchContractByApprovalId(approvalId) {
         try {
-            const res = await fetch(`/api/purchase?srhApprovalId=${approvalId}`);
+            const res = await fetch(`/api/contract?srhApprovalId=${approvalId}`);
             const { data: list } = await res.json();
             if (!list || list.length === 0) {
                 console.warn("조회 결과가 없습니다.");
                 return;
             }
 
-            const purchase = list[0];
-            renderPurchaseDetail(purchase);
-            await fetchAndRenderItems(purchase.purchaseId);
+            const contract = list[0];
+            renderContractDetail(contract);
+            await fetchAndRenderItems(contract.contractId);
         } catch (err) {
-            console.error("발주 상세 조회 실패:", err);
-            alert("발주 상세 조회 중 문제가 발생했습니다.");
+            console.error("수주 상세 조회 실패:", err);
+            alert("수주 상세 조회 중 문제가 발생했습니다.");
         }
     }
 
-    async function fetchPurchaseByPurchaseId(purchaseId) {
+    async function fetchContractByContractId(contractId) {
         try {
-            const res = await fetch(`/api/purchase/${purchaseId}`);
-            const { data: purchase } = await res.json();
-            if (!purchase) {
+            const res = await fetch(`/api/contract/${contractId}`);
+            const { data: contract } = await res.json();
+            if (!contract) {
                 console.warn("조회 결과가 없습니다.");
                 return;
             }
 
-            renderPurchaseDetail(purchase);
-            await fetchAndRenderItems(purchase.purchaseId);
+            renderContractDetail(contract);
+            await fetchAndRenderItems(contract.contractId);
         } catch (err) {
-            console.error("단건 발주 상세 조회 실패:", err);
-            alert("발주 상세 조회 중 문제가 발생했습니다.");
+            console.error("단건 수주 상세 조회 실패:", err);
+            alert("수주 상세 조회 중 문제가 발생했습니다.");
         }
     }
 
-    function renderPurchaseDetail(purchase) {
+    function renderContractDetail(contract) {
         // 폼 채우기
-        form.querySelector("input[name='employeeId']").value = purchase.employeeId || '';
-        form.querySelector("input[name='employeeName']").value = purchase.employeeName || '';
-        form.querySelector("input[name='clientName']").value = purchase.clientName || '';
-        form.querySelector("input[name='createdAt']").value = purchase.createdAt || '';
+        form.querySelector("input[name='employeeId']").value = contract.employeeId || '';
+        form.querySelector("input[name='employeeName']").value = contract.employeeName || '';
+        form.querySelector("input[name='clientName']").value = contract.clientName || '';
+        form.querySelector("input[name='createdAt']").value = contract.createdAt || '';
+        form.querySelector("input[name='deadline']").value = contract.deadline || '';
 
         document.querySelector("span[name='totalAmount']").textContent =
-            `₩${(purchase.totalAmount ?? 0).toLocaleString()}`;
+            `₩${(contract.totalAmount ?? 0).toLocaleString()}`;
 
-        window.receivedPurchaseId = purchase.purchaseId;
-        window.statusCode = purchase.statusCode;
+        window.receivedContractId = contract.contractId;
+        window.statusCode = contract.statusCode;
 
         setUIState();
     }
 
-    async function fetchAndRenderItems(purchaseId) {
+    async function fetchAndRenderItems(contractId) {
         try {
-            const itemsRes = await fetch(`/api/purchase/${purchaseId}/items`);
+            const itemsRes = await fetch(`/api/contract/${contractId}/items`);
             const { data: items } = await itemsRes.json();
-            window.receivedPurchaseItems = items;
-            renderPurchaseItems(items);
+            window.receivedContractItems = items;
+            renderContractItems(items);
         } catch (err) {
             console.error("품목 조회 실패:", err);
         }
     }
 
-    function renderPurchaseItems(items) {
-        const container = document.querySelector(".purchase-items");
+    function renderContractItems(items) {
+        const container = document.querySelector(".contract-items");
         container.innerHTML = "";
 
         items.forEach(item => {
@@ -87,17 +88,18 @@ const init = () => {
             div.className = "bg-white p-2 rounded border d-flex justify-content-between";
             const priceText = (item.amount ?? 0).toLocaleString();
             div.innerHTML = `
-                <span>${item.materialName} × ${item.quantity}개</span>
-                <span>₩${priceText}</span>
-            `;
+            <span>${item.itemName} × ${item.quantity}개</span>
+            <span>₩${priceText}</span>
+        `;
             container.appendChild(div);
         });
     }
 
+
     function setUIState() {
         const cancelBtn = document.querySelector(".cancelApprovalBtn");
 
-        const isPending = window.statusCode === "STP002";
+        const isPending = window.statusCode === "STP001";
         const isAuthorized = user.authCode === "ATH004";
 
         cancelBtn.style.display = (isPending && isAuthorized) ? "inline-block" : "none";
@@ -109,7 +111,7 @@ const init = () => {
 
         try {
             const approvalId = window.receivedData?.approvalId;
-            const res = await fetch(`/api/purchase/cancel?approvalId=${approvalId}`, {
+            const res = await fetch(`/api/contract/cancel?approvalId=${approvalId}`, {
                 method: "PUT"
             });
             const result = await res.json();
