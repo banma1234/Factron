@@ -29,6 +29,23 @@ public class ApprovalRestController {
         }
     }
 
+    // 단일 결재 조회
+    @GetMapping("/{approvalId}")
+    public ResponseDTO<ResponseSearchApprovalDTO> getApproval(@PathVariable Long approvalId) {
+        try {
+            ResponseSearchApprovalDTO dto = approvalService.getApprovalById(approvalId);
+            if (dto != null) {
+                return ResponseDTO.success(dto);
+            } else {
+                return ResponseDTO.fail(404, "해당 결재를 찾을 수 없습니다.", null);
+            }
+        } catch (Exception e) {
+            log.error("단일 결재 조회 중 오류:", e);
+            return ResponseDTO.fail(500, "서버 오류가 발생했습니다.", null);
+        }
+    }
+
+
     // 결재(승인, 반려)
     @PutMapping("")
     public ResponseDTO<Void> updateApproval(@RequestBody RequestApprovalDTO requestApprovalDTO) {

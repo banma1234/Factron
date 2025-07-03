@@ -1,22 +1,15 @@
 const init = () => {
-    // ✅ DOM 요소 가져오기
     const form = document.querySelector("form");
     const alertModal = new bootstrap.Modal(document.querySelector(".alertModal"));
     const alertBtn = document.querySelector(".alertBtn");
     const confirmApproveBtn = document.querySelector(".confirmApproveBtn");
     const confirmRejectBtn = document.querySelector(".confirmRejectBtn");
-    // 모달 인스턴스 선언 추가
     const approveModal = new bootstrap.Modal(document.querySelector(".approveModal"));
     const rejectModal = new bootstrap.Modal(document.querySelector(".rejectModal"));
 
-    document.querySelector(".approveBtn").addEventListener("click", () => {
-        approveModal.show();
-    });
+    document.querySelector(".approveBtn").addEventListener("click", () => approveModal.show());
+    document.querySelector(".rejectBtn").addEventListener("click", () => rejectModal.show());
 
-    document.querySelector(".rejectBtn").addEventListener("click", () => {
-        rejectModal.show();
-    });
-    // ✅ 부모 창 메시지 수신
     window.addEventListener("message", (event) => {
         const data = event.data;
         if (!data || data?.source === 'react-devtools-content-script') return;
@@ -30,13 +23,13 @@ const init = () => {
             approverId,
             rejectionReason,
             confirmedDate,
-            requestedAt
+            requestedAt,
+            requesterId,
+            requesterName,
         } = data;
 
         if (approvalId) {
-            // 전역에 저장
             window.receivedData = data;
-
             setUIState(data);
             setFormData(data);
             fetchVacationByApprovalId(approvalId);
@@ -45,52 +38,47 @@ const init = () => {
         }
     });
 
-    // 승인
     confirmApproveBtn.addEventListener("click", async () => {
-        approveModal.hide(); // ✅ 모달 닫기
+        approveModal.hide();
         const result = await sendApproval("APV002");
         handleAlert(result);
     });
 
-// 반려
     confirmRejectBtn.addEventListener("click", async () => {
         const reason = document.querySelector("textarea[name='rejectReasonInput']").value.trim();
         if (!reason) {
             alert("반려 사유를 입력해주세요.");
             return;
         }
-
-        rejectModal.hide(); // ✅ 모달 닫기
-
+        rejectModal.hide();
         form.querySelector("textarea[name='rejectionReason']").value = reason;
         const result = await sendApproval("APV003");
         handleAlert(result);
     });
 
-    // ✅ 알림 모달 확인 버튼
     alertBtn.addEventListener("click", () => {
         alertModal.hide();
+        const approvalId = form.querySelector("input[name='approvalId']").value;
         if (window.opener && !window.opener.closed) {
-            window.opener.getData();
+            if (typeof window.opener.refreshSingleApproval === "function") {
+                window.opener.refreshSingleApproval(Number(approvalId));
+            } else {
+                window.opener.getData();
+            }
         }
         window.close();
     });
 
-    // ✅ 휴가 정보 조회
     async function fetchVacationByApprovalId(approvalId) {
         try {
             const params = new URLSearchParams({ srhApprovalId: approvalId });
-
             const response = await fetch(`/api/vacation?${params.toString()}`, {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
             });
-
             const result = await response.json();
-
             if (result.status === 200 && result.data?.length > 0) {
-                const vacationData = result.data[0];
-                setVacationFormData(vacationData);
+                setVacationFormData(result.data[0]);
             } else {
                 console.warn("휴가 정보가 없습니다.");
             }
@@ -99,26 +87,22 @@ const init = () => {
         }
     }
 
-    // ✅ 승인/반려 API 전송
     async function sendApproval(approvalStatusCode) {
-        const approvalId = form.querySelector("input[name='approvalId']").value;
+        const approvalId = Number(form.querySelector("input[name='approvalId']").value);
         const rejectionReason = form.querySelector("textarea[name='rejectionReason']").value;
-
         const data = {
-            approvalId: Number(approvalId),
+            approvalId,
             approverId: user.id || null,
             approvalType: window.receivedData?.apprTypeCode || null,
             approvalStatus: approvalStatusCode,
             rejectionReason: approvalStatusCode === "APV003" ? rejectionReason : null,
         };
-
         try {
             const res = await fetch("/api/approval", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
             });
-
             return await res.json();
         } catch (e) {
             console.error("API 오류:", e);
@@ -126,14 +110,11 @@ const init = () => {
         }
     }
 
-    // ✅ 알림 모달 표시
     function handleAlert(res) {
-        document.querySelector(".alertModal .modal-body").textContent =
-            res?.message || "처리가 완료되었습니다.";
+        document.querySelector(".alertModal .modal-body").textContent = res?.message || "처리가 완료되었습니다.";
         alertModal.show();
     }
 
-    // ✅ 결재 상태에 따른 UI 처리
     function setUIState(data) {
         const approveBtn = document.querySelector(".approveBtn");
         const rejectBtn = document.querySelector(".rejectBtn");
@@ -147,39 +128,39 @@ const init = () => {
         approvalResultSection.style.display = isStatusValid ? "none" : "block";
     }
 
-    // ✅ 결재 공통 폼 데이터 세팅
     function setFormData(data) {
         const setValue = (selector, value) => {
             const el = form.querySelector(selector);
-            if (el) el.value = value || '';
+            if (el) el.value = value || "";
             else console.warn(`Element not found: ${selector}`);
         };
 
         setValue("input[name='approvalId']", data.approvalId);
-        // setValue("input[name='apprTypeCode']", data.apprTypeCode);
         setValue("input[name='approverId']", data.approverId);
         setValue("input[name='approverName']", data.approverName);
-        setValue("input[name='confirmedDate']", (data.confirmedDate || '').split(' ')[0]);
+        setValue("input[name='confirmedDate']", (data.confirmedDate || "").split(" ")[0]);
         setValue("input[name='approvalStatus']", data.approvalStatusName);
-        setValue("input[name='applicationDate']", (data.requestedAt || '').split(' ')[0]);
+        setValue("input[name='applicationDate']", (data.requestedAt || "").split(" ")[0]);
+
+        // 추가: 요청자 정보
+        setValue("input[name='publisherId']", data.requesterId);
+        setValue("input[name='publisherName']", data.requesterName);
 
         const textarea = form.querySelector("textarea[name='rejectionReason']");
-        if (textarea) textarea.value = data.rejectionReason || '';
+        if (textarea) textarea.value = data.rejectionReason || "";
     }
 
-    // ✅ 휴가 폼 데이터 세팅
     function setVacationFormData(data) {
-        form.querySelector("input[name='empId']").value = data.empId || '';
-        form.querySelector("input[name='empName']").value = data.empName || '';
-        form.querySelector("input[name='deptName']").value = data.deptName || '';
-        form.querySelector("input[name='positionName']").value = data.positionName || '';
-        form.querySelector("input[name='vacationStartDate']").value = data.vacationStartDate || '';
-        form.querySelector("input[name='vacationEndDate']").value = data.vacationEndDate || '';
-        form.querySelector("input[name='remark']").value = data.remark || '';
+        form.querySelector("input[name='empId']").value = data.empId || "";
+        form.querySelector("input[name='empName']").value = data.empName || "";
+        form.querySelector("input[name='deptName']").value = data.deptName || "";
+        form.querySelector("input[name='positionName']").value = data.positionName || "";
+        form.querySelector("input[name='vacationStartDate']").value = data.vacationStartDate || "";
+        form.querySelector("input[name='vacationEndDate']").value = data.vacationEndDate || "";
+        form.querySelector("input[name='remark']").value = data.remark || "";
     }
 };
 
-// ✅ 로딩 시 초기화
 window.onload = () => {
     init();
     if (window.opener) {
