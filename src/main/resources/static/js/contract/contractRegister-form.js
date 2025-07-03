@@ -3,24 +3,24 @@ const init = () => {
     const confirmModal = new bootstrap.Modal(document.querySelector(".confirmModal"));
     const alertModal = new bootstrap.Modal(document.querySelector(".alertModal"));
 
-    let itemGrid;
+    let materialGrid;
     let selectedItems = [];
 
     form.addEventListener("submit", e => e.preventDefault());
 
-    itemGrid = initGrid(
-        document.getElementById("itemGrid"),
+    materialGrid = initGrid(
+        document.getElementById("materialGrid"),
         300,
         [
-            { header: "품목 ID", name: "itemId", align: "center" },
-            { header: "품목명", name: "name", align: "center" },
+            { header: "자재 ID", name: "materialId", align: "center" },
+            { header: "자재명", name: "name", align: "center" },
             { header: "단위", name: "unit", align: "center" },
-            { header: "가격", name: "price", align: "center" }
+            { header: "규격", name: "spec", align: "center" }
         ]
     );
 
     loadClients();
-    loadItems();
+    loadMaterials();
 
     if (window.opener) {
         window.opener.postMessage("ready", "*");
@@ -31,7 +31,7 @@ const init = () => {
             const res = await fetch('/api/client');
             const json = await res.json();
             const clients = json.data || [];
-            const select = form.querySelector("select[name='clientId']");
+            const select = form.querySelector("select.clientId");
             clients.forEach(client => {
                 const option = document.createElement('option');
                 option.value = client.id;
@@ -44,46 +44,42 @@ const init = () => {
         }
     }
 
-    async function loadItems(keyword = "") {
+    async function loadMaterials(keyword = "") {
         try {
-            const params = new URLSearchParams();
-            params.append('itemName', keyword);
-            params.append('typeCode', 'ITP003');  // ← 완제품만 조회
-
-            const res = await fetch(`/api/item?${params.toString()}`);
+            const res = await fetch(`/api/material?materialName=${encodeURIComponent(keyword)}`);
             const json = await res.json();
-            itemGrid.resetData(json.data || []);
+            materialGrid.resetData(json.data || []);
         } catch (e) {
-            console.error("품목 조회 실패", e);
-            alert("품목 목록 조회에 실패했습니다.");
+            console.error("자재 조회 실패", e);
+            alert("자재 목록 조회에 실패했습니다.");
         }
     }
 
-
-    form.querySelector("input[name='itemSearch']").addEventListener("keyup", (e) => {
+    form.querySelector("input.materialSearch").addEventListener("keyup", (e) => {
         if (e.key === "Enter") {
             e.preventDefault();
-            loadItems(e.target.value.trim());
+            loadMaterials(e.target.value.trim());
         }
     });
-    form.querySelector(".itemSearchBtn").addEventListener("click", (e) => {
+
+    form.querySelector(".materialSearchBtn").addEventListener("click", (e) => {
         e.preventDefault();
-        loadItems(form.querySelector("input[name='itemSearch']").value.trim());
+        loadMaterials(form.querySelector("input.materialSearch").value.trim());
     });
 
-    itemGrid.on("dblclick", ev => {
+    materialGrid.on("dblclick", ev => {
         if (ev.rowKey != null) {
-            const row = itemGrid.getRow(ev.rowKey);
-            addItemToContractList(row);
+            const row = materialGrid.getRow(ev.rowKey);
+            addItemToPurchaseList(row);
         }
     });
 
-    function addItemToContractList(item) {
-        if (selectedItems.find(i => i.itemId === item.itemId)) {
-            alert("이미 추가된 품목입니다.");
+    function addItemToPurchaseList(item) {
+        if (selectedItems.find(i => i.materialId === item.materialId)) {
+            alert("이미 추가된 자재입니다.");
             return;
         }
-        selectedItems.push({ ...item, quantity: 1, price: item.price }); // 여기 수정
+        selectedItems.push({ ...item, quantity: 1, price: 1000 });
         renderSelectedItems();
     }
 
@@ -142,36 +138,32 @@ const init = () => {
 
     function updateTotalAmount() {
         const total = selectedItems.reduce((sum, item) => sum + (item.quantity * item.price), 0);
-        document.querySelector("span[name='totalAmount']").textContent = `₩${total.toLocaleString()}`;
+        document.querySelector("span.totalAmount").textContent = `₩${total.toLocaleString()}`;
     }
 
     document.querySelector(".saveBtn").addEventListener("click", () => {
-        const clientId = form.querySelector("select[name='clientId']").value;
-        const deadline = form.querySelector("input[name='deadline']").value;
+        const clientId = form.querySelector("select.clientId").value;
         if (!clientId) return alert("거래처를 선택해주세요.");
-        if (!deadline) return alert("납기일을 선택해주세요.");
-        if (!selectedItems.length) return alert("수주 품목을 선택해주세요.");
+        if (!selectedItems.length) return alert("발주 자재를 선택해주세요.");
         confirmModal.show();
     });
 
     document.querySelector(".confirmRegisterBtn").addEventListener("click", async () => {
         confirmModal.hide();
-        const clientId = form.querySelector("select[name='clientId']").value;
-        const deadline = form.querySelector("input[name='deadline']").value;
+        const clientId = form.querySelector("select.clientId").value;
 
         const payload = {
             clientId,
-            deadline,
             employeeId: user.id || null,
             items: selectedItems.map(item => ({
-                itemId: item.itemId,
+                materialId: item.materialId,
                 quantity: item.quantity,
                 price: item.price
             }))
         };
 
         try {
-            const res = await fetch("/api/contract", {
+            const res = await fetch("/api/purchase", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
