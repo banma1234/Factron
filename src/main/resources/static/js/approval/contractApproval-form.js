@@ -37,9 +37,17 @@ const init = () => {
 
     alertBtn.addEventListener("click", () => {
         alertModal.hide();
-        if (window.opener && !window.opener.closed) window.opener.getData();
+        if (window.opener && !window.opener.closed) {
+            const approvalId = Number(form.querySelector("input[name='approvalId']").value);
+            if (typeof window.opener.refreshSingleApproval === 'function') {
+                window.opener.refreshSingleApproval(approvalId);
+            } else {
+                window.opener.getData();  // fallback
+            }
+        }
         window.close();
     });
+
 
     async function fetchContract(approvalId) {
         try {

@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface SalesApprovalService {
     List<ResponseSearchSalesApprovalDTO> getSalesApprovalsList(RequestSearchSalesApprovalDTO requestSearchSalesApprovalDTO);
-
+    ResponseSearchSalesApprovalDTO getSalesApprovalById(Long approvalId);
     //입고 결재 상태 업데이트
     void updateSalesApproval(RequestSalesApprovalDTO requestSalesApprovalDTO);
 }
