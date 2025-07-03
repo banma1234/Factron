@@ -421,10 +421,8 @@ const init = () => {
                 // 품질 검사 결과 저장 후 저장 버튼 비활성화
                 if (addInspectionResultBtn) addInspectionResultBtn.disabled = true;
 
-                // 현재 선택된 작업지시가 있으면 품질검사 이력 목록 새로고침
-                if (currentSelectedLine && currentSelectedLine.workOrderId) {
-                    getQualityInspectionHistories(currentSelectedLine.workOrderId, currentSelectedLine.workStatus);
-                }
+                // 작업지시 목록 새로고침
+                getWorkOrders();
 
                 // 현재 선택된 작업지시가 있으면 품질검사 이력 목록 새로고침
                 if (currentSelectedLine && currentSelectedLine.workOrderId) {
