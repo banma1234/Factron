@@ -1,8 +1,8 @@
 package com.itwillbs.factron.controller.item;
 
 import com.itwillbs.factron.dto.ResponseDTO;
-import com.itwillbs.factron.dto.item.ItemRequestDTO;
-import com.itwillbs.factron.dto.item.ItemResponseDTO;
+import com.itwillbs.factron.dto.item.RequestitemDTO;
+import com.itwillbs.factron.dto.item.ResponseItemDTO;
 import com.itwillbs.factron.service.Item.ItemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -20,8 +20,11 @@ public class ItemRestController {
 
     private final ItemService itemService;
 
+    /*
+     * ITEM 목록 조회
+     * */
     @GetMapping
-    public ResponseDTO<List<ItemResponseDTO>> getItemList(ItemRequestDTO dto) {
+    public ResponseDTO<List<ResponseItemDTO>> getItemList(RequestitemDTO dto) {
         try {
             return ResponseDTO.success(itemService.getItemList(dto));
         } catch (Exception e) {
@@ -29,10 +32,13 @@ public class ItemRestController {
         }
     }
 
+    /*
+     * ITEM 등록
+     * */
     @PostMapping
-    public ResponseDTO<Void> addItem(@RequestBody ItemRequestDTO dto) {
+    public ResponseDTO<Void> addItem(@RequestBody List<RequestitemDTO> dtoList) {
         try {
-            return ResponseDTO.success("제품 등록이 완료되었습니다!", itemService.addItem(dto));
+            return ResponseDTO.success("제품 등록이 완료되었습니다!", itemService.addItem(dtoList));
         } catch (NoSuchElementException nse) {
             return ResponseDTO.fail(800, nse.getMessage(), null);
         } catch (Exception e) {
@@ -40,10 +46,13 @@ public class ItemRestController {
         }
     }
 
+    /*
+     * ITEM 수정
+     * */
     @PutMapping
-    public ResponseDTO<Void> updateItem(@RequestBody ItemRequestDTO dto) {
+    public ResponseDTO<Void> updateItem(@RequestBody List<RequestitemDTO> dtoList) {
         try {
-            return ResponseDTO.success("제품 수정이 완료되었습니다!", itemService.updateItem(dto));
+            return ResponseDTO.success("제품 수정이 완료되었습니다!", itemService.updateItem(dtoList));
         } catch (NoSuchElementException nse) {
             return ResponseDTO.fail(800, nse.getMessage(), null);
         } catch (Exception e) {
