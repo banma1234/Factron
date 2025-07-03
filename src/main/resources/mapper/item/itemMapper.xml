@@ -8,23 +8,26 @@
             parameterType="com.itwillbs.factron.dto.item.RequestitemDTO"
             resultType="com.itwillbs.factron.dto.item.ResponseItemDTO">
         SELECT
-        id AS itemId,
-        name,
-        unit,
-        price,
-        type_code AS typeCode,
-        created_at AS createdAt,
-        created_by AS createdBy
-        FROM item
+        i.id AS itemId,
+        i.name,
+        i.unit,
+        s.name AS unitName,
+        i.price,
+        i.type_code AS typeCode,
+        i.created_at AS createdAt,
+        i.created_by AS createdBy
+        FROM item i
+        JOIN DETAIL_SYS_CODE s ON i.unit = s.detail_code
         <where>
             <if test="itemName != null and itemName != ''">
-                AND name LIKE '%' || #{itemName} || '%'
+                (UPPER(i.name) LIKE '%' || UPPER(#{itemName}) || '%'
+                OR UPPER(i.id) LIKE '%' || UPPER(#{itemName}) || '%')
             </if>
             <if test="itemTypeCode != null and itemTypeCode != ''">
-                AND type_code = #{itemTypeCode}
+                AND i.type_code = #{itemTypeCode}
             </if>
         </where>
-        ORDER BY created_at DESC
+        ORDER BY i.created_at DESC
     </select>
 
 
