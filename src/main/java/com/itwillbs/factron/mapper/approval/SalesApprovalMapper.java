@@ -11,4 +11,6 @@ import java.util.List;
 public interface SalesApprovalMapper {
     List<ResponseSearchSalesApprovalDTO> getSalesApprovalList(RequestSearchSalesApprovalDTO requestSearchSalesApprovalDTO);
     void updateSalesApproval(RequestApprovalDTO requestApprovalDTO);
+
+    ResponseSearchSalesApprovalDTO getSalesApprovalById(Long approvalId);
 }
