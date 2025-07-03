@@ -290,7 +290,10 @@ const init = () => {
     );
 
     workOrderGrid.on('click', (e) => {
-        getProcessHistory(workOrderGrid.getRow(e.rowKey).id);
+        const rowKey = e.rowKey;
+        const rowData = workOrderGrid.getRow(rowKey);
+
+        if(rowData && rowData.id) getProcessHistory(rowData.id);
     })
 
     // 생산계획별 작업 목록 조회
