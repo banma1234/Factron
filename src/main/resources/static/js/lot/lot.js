@@ -1,19 +1,16 @@
 let selectedRowData = null;
 
-const init = () => {
-    const INITIAL_CONFIG = {
-        chart: {
-            container: "#lot-tree",
-            connectors: { type: "step" },
-            node: { HTMLclass: "lot-node" },
-            animateOnInit: false
-        },
-        nodeStructure: {
-            text: { name: "Parent node" }
-        }
-    };
+// const formatDate = date => {
+//     const DATE = new Date(date);
+//
+//     const year = DATE.getFullYear();
+//     const month = String(DATE.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작
+//     const day = String(DATE.getDate()).padStart(2, '0');
+//
+//     return `${year}-${month}-${day}`;
+// }
 
-    new Treant(INITIAL_CONFIG);
+const init = () => {
 
     const lotGrid = initGrid(
         document.getElementById('grid_lot'),
@@ -43,9 +40,8 @@ const init = () => {
             text: {
                 name: `id : ${node.id}`,
                 title: `유형 : ${node.eventType}`,
-                desc: `수량: ${node.quantity}`,
-                data: `생성일: ${node.createdAt}`,
-                contact: `생성자: ${node.createdBy}`,
+                desc: `품목 : ${node.materialId ? node.materialId : node.itemId}`,
+                contact: `수량: ${node.quantity}`,
             },
             children: node.children?.map(convertTreetoTreantNode) || []
         }
