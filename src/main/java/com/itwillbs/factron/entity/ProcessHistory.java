@@ -33,9 +33,6 @@ public class ProcessHistory {
     @JoinColumn(name = "lot_id", referencedColumnName = "id")
     private Lot lot; // LOT ID
 
-    @Column(name = "start_date")
-    private LocalDate startDate; // 공정 시작 날짜
-
     @Column(name = "start_time")
     private LocalDateTime startTime; // 공정 시작 시간
 
@@ -50,4 +47,25 @@ public class ProcessHistory {
 
     @Column(name = "status_code", length = 6, nullable = false)
     private String statusCode; // 상태 코드 (예: 대기, 시작, 완료)
+
+    public void updateStatus(String statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public void updateOutputQuantity(Long outputQuantity) {
+        this.outputQuantity = outputQuantity;
+    }
+
+    public void updateCoastTime(Long coastTime) {
+        this.coastTime = coastTime;
+    }
+
+    public void updateStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void updateLot(Lot lot) {
+        this.lot = lot;
+    }
+
 }

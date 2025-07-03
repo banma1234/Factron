@@ -17,6 +17,14 @@
     <!-- COMMON CSS -->
     <link rel="stylesheet" th:href="@{/css/common.css}">
 
+    <!-- TOAST UI Time Picker-->
+    <link rel="stylesheet" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css">
+    <script src="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.js"></script>
+
+    <!-- TOAST UI Date Picker-->
+    <script src="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.js"></script>
+    <link rel="stylesheet" href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css" />
+
     <!-- TOAST UI -->
     <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
     <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
@@ -181,7 +189,7 @@
                     </div>
                 </a>
                 <ul class="submenu nav flex-column">
-                    <li><a class="nav-link sub-link" href="/product/history">
+                    <li><a class="nav-link sub-link" href="/process/history">
                         <span>공정 이력 관리</span>
                     </a></li>
                 </ul>
@@ -248,7 +256,7 @@
                 </div>
             </button>
             <a class="navbar-brand" href="/commute">
-                <img class="logo__title" th:src="@{/logo_title.svg}" alt="no logo title found" />
+                <img class="logo__title" th:src="@{/images/logo_title.svg}" alt="no logo title found" />
             </a>
             <div class="d-flex ms-auto">
                 <span class="navbar-text user__name">test(20251234)</span>

@@ -9,8 +9,12 @@ public class ContractController {
     public String contract() {
         return "contract/contract";
     }
-    @GetMapping("/contract-form")
-    public String contractForm() {
-        return "contract/contract-form";
+    @GetMapping("/contractRegister-form")
+    public String contractRegisterForm() {
+        return "contract/contractRegister-form";
+    }
+    @GetMapping("/contractDetail-form")
+    public String contractDetailForm() {
+        return "contract/contractDetail-form";
     }
 }
