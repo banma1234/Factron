@@ -39,15 +39,15 @@
                 )
             </if>
 
-            <!-- 날짜 검색 조건 추가 -->
             <if test="startDate != null and startDate != ''">
-                AND OBD.OUT_DATE &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+                AND (OBD.OUT_DATE IS NULL OR OBD.OUT_DATE &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD'))
             </if>
 
             <if test="endDate != null and endDate != ''">
-                AND OBD.OUT_DATE &lt;= TO_DATE(#{endDate}, 'YYYY-MM-DD')
+                AND (OBD.OUT_DATE IS NULL OR OBD.OUT_DATE &lt;= TO_DATE(#{endDate}, 'YYYY-MM-DD'))
             </if>
         </where>
+
 
         ORDER BY OBD.OUT_DATE DESC
     </select>
