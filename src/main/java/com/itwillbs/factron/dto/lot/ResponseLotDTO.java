@@ -1,5 +1,6 @@
 package com.itwillbs.factron.dto.lot;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.itwillbs.factron.entity.Lot;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,7 +24,11 @@ public class ResponseLotDTO {
     @NotBlank(message = "유형 구분은 필수 입력값입니다.")
     private String event_type;
 
+    @NotNull(message = "생성자는 필수 입력값입니다.")
     private Long created_by;
+
+    @NotNull(message = "생성일은 필수 입력값입니다.")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime created_at;
 
     @Builder
@@ -37,15 +42,4 @@ public class ResponseLotDTO {
         this.created_at = created_at;
     }
 
-    public static ResponseLotDTO fromEntity(Lot entity) {
-        return ResponseLotDTO.builder()
-                .id(entity.getId())
-                .item_id(entity.getItem() != null ? entity.getItem().getId() : null)
-                .material_id(entity.getMaterial() != null ? entity.getMaterial().getId() : null)
-                .quantity(entity.getQuantity())
-                .event_type(entity.getEventType())
-                .created_by(entity.getCreatedBy())
-                .created_at(entity.getCreatedAt())
-                .build();
-    }
 }

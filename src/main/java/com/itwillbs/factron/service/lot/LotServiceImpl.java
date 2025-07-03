@@ -8,9 +8,13 @@ import com.itwillbs.factron.dto.lot.ResponseLotTreeDTO;
 import com.itwillbs.factron.dto.lotHistory.RequestLotHistoryDTO;
 import com.itwillbs.factron.entity.Lot;
 import com.itwillbs.factron.entity.WorkOrder;
+import com.itwillbs.factron.entity.enums.LotType;
 import com.itwillbs.factron.mapper.lot.LotMapper;
 import com.itwillbs.factron.repository.lot.LotRepository;
+import com.itwillbs.factron.service.Item.ItemService;
 import com.itwillbs.factron.service.lotHistory.LotHistoryService;
+import com.itwillbs.factron.service.material.MaterialService;
+import com.itwillbs.factron.service.sys.SysDetailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,6 +33,9 @@ public class LotServiceImpl implements LotService {
     private final LotHistoryService lotHistoryService;
     private final LotRepository lotRepository;
     private final AuthorizationChecker authorizationChecker;
+    private final SysDetailService sysDetailService;
+    private final ItemService itemService;
+    private final MaterialService materialService;
 
     /**
      * 같은 조건의 LOT번호 개수 반환
@@ -61,9 +68,7 @@ public class LotServiceImpl implements LotService {
     @Override
     public ResponseLotTreeDTO getLotTreeById(String lotId) {
 
-        log.info(">>>>>>>>>>>> lotId : {}", lotId);
         List<LotTreeDTO> lotList  = lotMapper.getDetailLotTreeById(lotId);
-        log.info(">>>>>>>>>>>> lotList : {}\n", lotList);
 
         return convertLotToTree(lotList, lotId);
     }
@@ -156,25 +161,40 @@ public class LotServiceImpl implements LotService {
     private List<ResponseLotDTO> toLotDTOList(List<Lot> lotList) {
 
         return lotList.stream()
-                .map(ResponseLotDTO :: fromEntity)
+                .map(this::fromEntity)
                 .toList();
+    }
+
+    private ResponseLotDTO fromEntity(Lot entity) {
+        return ResponseLotDTO.builder()
+                .id(entity.getId())
+                .item_id(entity.getItem() != null
+                        ? itemService.getItemByCode(entity.getItem().getId())
+                        : null)
+                .material_id(entity.getMaterial() != null
+                        ? itemService.getItemByCode(entity.getMaterial().getId())
+                        : null)
+                .quantity(entity.getQuantity())
+                .event_type(entity.getEventType().matches("^PTP\\d{3}$")
+                        ? sysDetailService.getDetailBySysCode(entity.getEventType())
+                        : LotType.getDescriptionByPrefix(entity.getEventType()))
+                .created_by(entity.getCreatedBy())
+                .created_at(entity.getCreatedAt())
+                .build();
     }
 
     private ResponseLotTreeDTO convertLotToTree(List<LotTreeDTO> dtoList, String rootId) {
         Map<String, ResponseLotTreeDTO> nodeMap  = new HashMap<>();
 
         for (LotTreeDTO node : dtoList) {
-            log.info(">>>>>>>>>>>> node: {}", node);
-            ResponseLotTreeDTO DTO = ResponseLotTreeDTO.convertLotToResponse(node);
+            ResponseLotTreeDTO DTO = convertLotToResponse(node);
             nodeMap .put(DTO.getId(), DTO);
         }
 
         for (LotTreeDTO node : dtoList) {
             String parentId = node.getParentId();
-            log.info(">>>>>>>>>>>> parentId: {}", parentId);
 
             if (parentId != null && nodeMap.containsKey(parentId)) {
-                log.info(">>>>>>>>>>>> node.getId(): {}", node.getId());
 
                 ResponseLotTreeDTO parent = nodeMap.get(parentId);
                 ResponseLotTreeDTO child = nodeMap.get(node.getId());
@@ -184,6 +204,26 @@ public class LotServiceImpl implements LotService {
         }
 
         return nodeMap.get(rootId);
+    }
+
+    private ResponseLotTreeDTO convertLotToResponse(LotTreeDTO dto) {
+        return ResponseLotTreeDTO.builder()
+                .id(dto.getId())
+                .itemId(dto.getItemId() != null
+                        ? itemService.getItemByCode(dto.getItemId())
+                        : null)
+                .materialId(dto.getMaterialId() != null
+                        ? materialService.getMaterialByCode(dto.getMaterialId())
+                        : null)
+                .quantity(dto.getQuantity())
+                .eventType(dto.getEventType().matches("^PTP\\d{3}$")
+                        ? sysDetailService.getDetailBySysCode(dto.getEventType())
+                        : LotType.getDescriptionByPrefix(dto.getEventType()))
+                .parentId(dto.getParentId())
+                .createdBy(dto.getCreatedBy())
+                .createdAt(dto.getCreatedAt())
+                .children(new ArrayList<>())
+                .build();
     }
 
 }

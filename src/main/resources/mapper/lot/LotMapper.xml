@@ -32,6 +32,7 @@
         ORDER BY created_at ASC
     </select>
 
+    <!-- LOT, LOT_STRUCTURE join해서 트리구조의 데이터 가져오기 -->
     <select id="getDetailLotTreeById" resultType="com.itwillbs.factron.dto.lot.LotTreeDTO" parameterType="string">
         SELECT
             cl.id,
