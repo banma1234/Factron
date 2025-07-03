@@ -237,6 +237,27 @@ const init = () => {
         });
     }
 
+
+    const inspSrhFrom = document.querySelector('form[name="inspSrhForm"]');
+
+    const stdSrhFrom = document.querySelector('form[name="stdSrhForm"]');
+
+    // 품질검사 Enter 검색
+    if(inspSrhFrom){
+        inspSrhFrom.addEventListener('submit', function(e) {
+            e.preventDefault();
+            getInspections();
+        });
+    }
+
+    // 제품별 검사 기준 Enter 검색
+    if(stdSrhFrom){
+        stdSrhFrom.addEventListener('submit', function(e) {
+            e.preventDefault();
+            getQualityStandards();
+        });
+    }
+
     function deleteInsp() {
         const focusedCell = inspGrid.getFocusedCell();
 
