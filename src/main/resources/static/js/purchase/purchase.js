@@ -35,28 +35,48 @@ const init = () => {
         ]
     );
 
-    // 권한 체크: user.authCode가 'ATH004'면 버튼 표시
+    // 권한 체크
     if (user.authCode === 'ATH004') {
         const btn = document.querySelector('.registPurchase');
         if (btn) btn.style.display = '';
     }
 
+    // 날짜 기본값 설정
     const today = getKoreaToday();
     const pastDate = new Date(today);
     pastDate.setDate(pastDate.getDate() - 30);
     document.querySelector('input[name="startDate"]').value = pastDate.toISOString().split('T')[0];
     document.querySelector('input[name="endDate"]').value = today;
 
+    // 검색 버튼 클릭
     document.querySelector(".srhBtn").addEventListener("click", e => {
         e.preventDefault();
         getData();
     });
 
+    // 폼 submit 시
     document.querySelector('.search__form').addEventListener('submit', e => {
         e.preventDefault();
         getData();
     });
 
+    // 거래처명 input에서 엔터 입력 시 검색
+    document.querySelector('input[name="clientName"]').addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            getData();
+        }
+    });
+
+    // 이름/사번 input에서 엔터 입력 시 검색
+    document.querySelector('input[name="srhName"]').addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            getData();
+        }
+    });
+
+    // 발주 등록 버튼 클릭 시
     document.querySelector('.registPurchase').addEventListener('click', () => {
         const popup = window.open('/purchaseRegister-form', '_blank', 'width=800,height=1000');
         if (!popup) {
@@ -72,10 +92,10 @@ const init = () => {
         window.addEventListener("message", messageHandler);
     });
 
+    // 그리드 더블클릭 시 상세
     purchaseGrid.on('dblclick', e => {
         const rowKey = e.rowKey;
         const rowData = purchaseGrid.getRow(rowKey);
-
         if (rowData && rowData.purchaseId) {
             const popup = window.open('/purchaseDetail-form', '_blank', 'width=800,height=1000');
             if (!popup) {
@@ -92,17 +112,20 @@ const init = () => {
         }
     });
 
+    // 데이터 조회 함수
     window.getData = async () => {
         const startDate = document.querySelector("input[name='startDate']").value;
         const endDate = document.querySelector("input[name='endDate']").value;
         const approvalStatusCode = document.querySelector("select[name='STP']").value;
         const approvalNameOrEmpId = document.querySelector("input[name='srhName']").value;
+        const clientName = document.querySelector("input[name='clientName']").value;
 
         const params = new URLSearchParams({
             startDate,
             endDate,
             approvalStatusCode,
-            approvalNameOrEmpId
+            approvalNameOrEmpId,
+            clientName
         });
 
         try {
