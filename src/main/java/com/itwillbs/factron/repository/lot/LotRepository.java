@@ -18,4 +18,6 @@ public interface LotRepository extends JpaRepository<Lot, String> {
     List<Lot> findByMaterialAndQuantityGreaterThanOrderByCreatedAtAsc(Material material, Long quantity);
 
     Optional<List<Lot>> findByIdContaining(String lotId);
+
+    Optional<List<Lot>> findByEventTypeOrderByCreatedAtDesc(String isp);
 }
