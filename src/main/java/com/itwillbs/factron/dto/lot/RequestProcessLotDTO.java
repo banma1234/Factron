@@ -8,6 +8,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
+/**
+ * (공정) LOT생성 요청 DTO
+ * */
 @Data
 public class RequestProcessLotDTO {
 
@@ -27,6 +30,9 @@ public class RequestProcessLotDTO {
         this.work_order_id = work_order_id;
     }
 
+    /**
+     * DTO => Entity 변환 메서드
+     * */
     public Lot toEntity(String LotId, Long currentUser) {
         return Lot.builder()
                 .id(LotId)

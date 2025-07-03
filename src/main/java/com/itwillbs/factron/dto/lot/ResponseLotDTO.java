@@ -9,6 +9,9 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+/**
+ * LOT 번호 반환 DTO
+ * */
 @Data
 public class ResponseLotDTO {
 
