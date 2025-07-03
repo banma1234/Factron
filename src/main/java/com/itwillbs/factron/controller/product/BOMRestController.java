@@ -30,6 +30,18 @@ public class BOMRestController {
     }
 
     /*
+     * BOM 등록 가능한 품목 목록 조회
+     * */
+    @GetMapping("/items")
+    public ResponseDTO<List<ResponseBOMDTO>> getPossibleProdList(RequestBOMDTO requestBOMDTO) {
+        try {
+            return ResponseDTO.success(bomService.getPossibleProdList(requestBOMDTO));
+        } catch (Exception e) {
+            return ResponseDTO.fail(800, "품목 목록 조회에 실패했습니다.", bomService.getPossibleProdList(requestBOMDTO));
+        }
+    }
+
+    /*
      * BOM 등록
      * */
     @PostMapping()

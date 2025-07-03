@@ -1,12 +1,12 @@
 package com.itwillbs.factron.mapper.material;
 
-import com.itwillbs.factron.dto.material.MaterialRequestDTO;
-import com.itwillbs.factron.dto.material.MaterialResponseDTO;
+import com.itwillbs.factron.dto.material.RequestMaterialDTO;
+import com.itwillbs.factron.dto.material.ResponseMaterialDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
 @Mapper
 public interface MaterialMapper {
-    List<MaterialResponseDTO> getMaterialList(MaterialRequestDTO dto);
+    List<ResponseMaterialDTO> getMaterialList(RequestMaterialDTO dto);
 }

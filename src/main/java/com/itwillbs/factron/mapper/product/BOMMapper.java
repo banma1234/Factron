@@ -15,6 +15,11 @@ public interface BOMMapper {
     List<ResponseBOMDTO> getBOMList(RequestBOMDTO requestBOMDTO);
 
     /*
+     * BOM 등록 가능한 품목 목록 조회
+     * */
+    List<ResponseBOMDTO> getPossibleProdList(RequestBOMDTO requestBOMDTO);
+
+    /*
      * 삭제할 BOM 모두 조회
      * */
     List<Long> findDelBomList(RequestBOMDTO requestBOMDTO);
