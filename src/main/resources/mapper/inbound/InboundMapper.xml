@@ -40,13 +40,14 @@
             </if>
 
             <if test="startDate != null and startDate != ''">
-                AND IBD.IN_DATE &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+                AND (IBD.IN_DATE IS NULL OR IBD.IN_DATE &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD'))
             </if>
 
             <if test="endDate != null and endDate != ''">
-                AND IBD.IN_DATE &lt;= TO_DATE(#{endDate}, 'YYYY-MM-DD')
+                AND (IBD.IN_DATE IS NULL OR IBD.IN_DATE &lt;= TO_DATE(#{endDate}, 'YYYY-MM-DD'))
             </if>
         </where>
+
 
         ORDER BY IBD.IN_DATE DESC
     </select>
