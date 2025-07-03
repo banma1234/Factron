@@ -108,6 +108,15 @@ public class SysDetailServiceImpl implements SysDetailService {
         return null;
     }
 
+    @Override
+    public String getDetailBySysCode(String sysCode) {
+
+        DetailSysCode code = detailSysCodeRepository.findByDetailCode(sysCode)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 sysCode가 없습니다."));
+
+        return code.getName();
+    }
+
     /**
     * Entity List -> DTO 변환
     * @param details 엔티티

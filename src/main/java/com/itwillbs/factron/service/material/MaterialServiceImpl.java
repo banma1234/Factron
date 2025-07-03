@@ -29,7 +29,7 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Override
     public Void addMaterial(RequestMaterialDTO dto) {
-        if (materialRepository.findById(dto.getMaterialId()).isPresent()){
+        if (materialRepository.findById(dto.getMaterialId()).isPresent()) {
             throw new IllegalArgumentException("이미 등록된 ID 입니다");
         }
 
@@ -59,5 +59,14 @@ public class MaterialServiceImpl implements MaterialService {
         material.updateMaterial(dto);
 
         return null;
+    }
+
+    @Override
+    public String getMaterialByCode(String code) {
+
+        Material material = materialRepository.findById(code)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 자재가 없습니다."));
+
+        return material.getName();
     }
 }
