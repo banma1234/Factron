@@ -17,4 +17,5 @@ public class ResponseWorkProdDTO {
     private String quantity;
     private Long stockQty;
     private String unit;
+    private Long employeeId;
 }

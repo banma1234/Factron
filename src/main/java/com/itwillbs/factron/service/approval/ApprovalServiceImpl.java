@@ -37,6 +37,12 @@ public class ApprovalServiceImpl implements ApprovalService {
     }
 
     @Override
+    public ResponseSearchApprovalDTO getApprovalById(Long approvalId) {
+        return approvalMapper.selectApprovalById(approvalId);
+    }
+
+
+    @Override
     @Transactional // 쓰기 작업이므로 트랜잭션 설정
     public void updateApproval(RequestApprovalDTO requestApprovalDTO) {
         // 1. 결재 내역 조회

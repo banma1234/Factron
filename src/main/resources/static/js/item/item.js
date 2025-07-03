@@ -1,3 +1,4 @@
+// 공통코드 조회
 const getSysCodeList = async (mainCode) => {
     try {
         const res = await fetch(`/api/sys/detail?mainCode=${mainCode}`, {
@@ -14,21 +15,35 @@ const getSysCodeList = async (mainCode) => {
     }
 };
 
+// 공통코드를 셀렉트 박스에 세팅
 const setSelectBox = async (mainCode, target) => {
     try {
         const data = await getSysCodeList(mainCode);
 
         if (data.status === 200 && Array.isArray(data.data)) {
             if (target === 'unit') {
+                // 단위 셀렉트 박스 옵션 저장
                 window.unitOptions = data.data.map((code) => ({
                     text: code.name,
                     value: code.detail_code
                 }));
             } else if (target === 'itemType') {
+                // 옵션 저장 및 화면 적용
                 window.itemTypeOptions = data.data.map((code) => ({
                     text: code.name,
                     value: code.detail_code
                 })) || [];
+
+                const itemTypeSelect = document.querySelector('.itemTypeSelect');
+                itemTypeSelect.innerHTML = '<option value="">전체</option>'; // 기존 option 초기화
+
+                // 셀렉트 박스에 옵션 추가
+                window.itemTypeOptions.forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt.value;
+                    option.text = opt.text;
+                    itemTypeSelect.appendChild(option);
+                });
             }
         } else {
             throw new Error(`공통코드(${mainCode}) 데이터 형식이 올바르지 않습니다.`);
@@ -40,73 +55,70 @@ const setSelectBox = async (mainCode, target) => {
 };
 
 
+// 페이지 초기화
 const init = async () => {
-
+    // 셀렉트 박스 데이터 세팅
     await setSelectBox("UNT","unit");
     await setSelectBox("ITP", "itemType");
 
+    // 그리드 초기화
     const itemGrid = initGrid(
-        document.getElementById('itemGrid'),
+        document.querySelector('.itemGrid'),
         400,
         [
             { header: 'ID', name: 'itemId', align: 'center', editable: false },
             { header: '제품명', name: 'name', align: 'center', editor: 'text' },
             { header: '단위', name: 'unit', align: 'center', editor: { type: 'select', options: { listItems: window.unitOptions } }, formatter: 'listItemText' },
-            { header: '가격', name: 'price', align: 'center', editor: 'text' },
+            { header: '가격', name: 'price', align: 'center', editor: 'text',  },
             { header: '제품 유형', name: 'typeCode', align: 'center', editor: { type: 'select', options: { listItems: window.itemTypeOptions } }, formatter: 'listItemText' },
             { header: '등록자', name: 'createdBy', align: 'center' },
             { header: '등록일', name: 'createdAt', align: 'center', formatter: ({ value }) => value ? value.substring(0, 10) : '' },
         ]
     );
 
-    document.querySelector("#searchBtn").addEventListener("click", function (e) {
+    // 검색 버튼
+    document.querySelector(".searchBtn").addEventListener("click", function (e) {
         e.preventDefault();
         e.stopPropagation();
 
-        fetchData().then(res => {
-            itemGrid.resetData(res.data);
-        });
+        refreshGrid();
     }, false);
 
-    document.querySelector(".search__form").addEventListener("submit", function (e) {
-        e.preventDefault();
-
-        fetchData().then(res => {
-            itemGrid.resetData(res.data);
-        });
+    // 엔터키 검색
+    document.querySelector("input[name='searchName']").addEventListener("keyup", function (e) {
+        if (e.key === 'Enter') {
+            refreshGrid();
+        }
     });
 
+    // 제품유형 변경 시 필터링
+    document.querySelector(".itemTypeSelect").addEventListener("change", function () {
+        refreshGrid();
+    });
+
+    // 항목 추가 버튼
+    document.querySelector(".addItemBtn").addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        addItem();
+    });
+
+    // 저장 버튼
+    document.querySelector(".saveItemBtn").addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        saveItems();
+    });
+
+    // 검색 데이터 조회
     async function fetchData() {
         const searchName = document.querySelector("input[name='searchName']").value;
-        const startDate = document.querySelector("input[name='startDate']").value;
-        const endDate = document.querySelector("input[name='endDate']").value;
+        const itemType = document.querySelector(".itemTypeSelect").value;
 
-
-        // 날짜 유효성 검사
-        if ((startDate && !endDate) || (!startDate && endDate)) {
-            alert("시작 및 종료 날짜를 모두 입력해주세요.");
-            return { data: [] };
-        }
-
-        if (startDate && endDate) {
-            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-
-            if (!dateRegex.test(startDate) || isNaN(Date.parse(startDate))
-                || !dateRegex.test(endDate) || isNaN(Date.parse(endDate))) {
-                alert("날짜 형식이 올바르지 않습니다.");
-                return { data: [] };
-            }
-
-            if (new Date(startDate) > new Date(endDate)) {
-                alert("시작 날짜는 종료 날짜보다 이전이어야 합니다.");
-                return { data: [] };
-            }
-        }
 
         const params = new URLSearchParams({
             itemName: searchName,
-            itemStartDate: startDate,
-            itemEndDate: endDate
+            itemTypeCode: itemType
         });
 
         try {
@@ -121,29 +133,19 @@ const init = async () => {
             return { data: [] };
         }
     }
-
-    document.querySelector("#addItemBtn").addEventListener("click", function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        addItem();
-    });
-
-    document.querySelector(".header-row button:nth-child(3)").addEventListener("click", function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        saveItems();
-    });
-
+    // 더블클릭 시 셀 편집
     itemGrid.on('dblclick', function (ev) {
         itemGrid.startEditing(ev.rowKey, ev.columnName);
     });
 
+    // 페이지 최초 그리드 데이터 로딩
     fetchData().then(res => {
+        res.data.forEach(row => {
+            row.price = formatNumber(row.price);
+        });
         itemGrid.resetData(res.data);
     });
-
+    // 항목 추가 함수
     const addItem = () => {
         const nextId = generateNextId();
         const newRow = {
@@ -158,41 +160,70 @@ const init = async () => {
         itemGrid.prependRow(newRow, { focus: true });
     };
 
+    // 저장 함수
     const saveItems = () => {
         itemGrid.finishEditing();
         const updatedData = itemGrid.getData();
 
+        const insertData = [];
+        const updateData = [];
+
+        // 데이터 분류 (post / put)
+        for (let row of updatedData) {
+            // 필수 항목 유효성 검사
+            if (!row.name || !row.unit || !row.price || !row.typeCode) {
+                continue;
+            }
+
+            // 가격 0원 이상
+            row.price = unformatNumber(row.price);
+            if (isNaN(row.price) || Number(row.price) < 0) {
+                alert('가격은 0원 이상이어야 합니다.');
+                return;
+            }
+
+            if (row.createdAt) {
+                updateData.push(row); // 수정
+            } else {
+                insertData.push(row); // 저장
+            }
+        }
+
+        if (insertData.length === 0 && updateData.length === 0) {
+            alert('입력된 데이터가 없습니다.');
+            return;
+        }
+
+        // 동시 저장
         (async () => {
             try {
-                for (let row of updatedData) {
-                    const method = row.createdAt ? 'PUT' : 'POST';
-
-                    const payload = {
-                        itemId: row.itemId,
-                        name: row.name,
-                        unit: row.unit,
-                        price: row.price,
-                        typeCode: row.typeCode,
-                        createdBy: !row.createdAt ? user.id : null,
-                        updatedBy: row.createdAt ? user.id : null
-                    };
-
+                // 신규 저장
+                if (insertData.length > 0) {
                     await fetch('/api/item', {
-                        method: method,
+                        method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
+                        body: JSON.stringify(insertData)
                     });
                 }
+
+                // 수정 자장
+                if (updateData.length > 0) {
+                    await fetch('/api/item', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(updateData)
+                    });
+                }
+
                 alert('저장 성공');
-                fetchData().then(res => {
-                    itemGrid.resetData(res.data);
-                });
+                refreshGrid();
             } catch (err) {
                 console.error('저장 실패', err);
             }
         })();
     };
 
+    // ID 자동 생성
     const generateNextId = () => {
         const data = itemGrid.getData();
         let maxId = 0;
@@ -209,8 +240,19 @@ const init = async () => {
         const nextIdNumber = maxId + 1;
         return 'P' + nextIdNumber.toString().padStart(7, '0');
     };
+
+    // 그리드 새로고침
+    const refreshGrid = async () => {
+        const res = await fetchData();
+        res.data.forEach(row => {
+            row.price = formatNumber(row.price);
+        });
+        itemGrid.resetData(res.data);
+    };
+
 };
 
+// 페이지 로드시 init 실행
 window.onload = () => {
     init();
 };

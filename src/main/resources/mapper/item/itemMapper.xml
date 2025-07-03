@@ -5,8 +5,8 @@
 <mapper namespace="com.itwillbs.factron.mapper.item.ItemMapper">
 
     <select id="getItemList"
-            parameterType="com.itwillbs.factron.dto.item.ItemRequestDTO"
-            resultType="com.itwillbs.factron.dto.item.ItemResponseDTO">
+            parameterType="com.itwillbs.factron.dto.item.RequestitemDTO"
+            resultType="com.itwillbs.factron.dto.item.ResponseItemDTO">
         SELECT
         id AS itemId,
         name,
@@ -20,15 +20,8 @@
             <if test="itemName != null and itemName != ''">
                 AND name LIKE '%' || #{itemName} || '%'
             </if>
-            <if test="itemStartDate != null and itemStartDate != ''">
-                AND created_at &gt;= TO_DATE(#{itemStartDate}, 'YYYY-MM-DD')
-            </if>
-            <if test="itemEndDate != null and itemEndDate != ''">
-                AND created_at &lt; TO_DATE(#{itemEndDate}, 'YYYY-MM-DD') + 1
-            </if>
-            <!-- 여기 추가 -->
-            <if test="typeCode != null and typeCode != ''">
-                AND type_code = #{typeCode}
+            <if test="itemTypeCode != null and itemTypeCode != ''">
+                AND type_code = #{itemTypeCode}
             </if>
         </where>
         ORDER BY created_at DESC
