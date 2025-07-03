@@ -45,7 +45,7 @@
             <input type="text" class="form-control" name="parentProdName" disabled>
           </div>
         </div>
-        <div class="row mb-3">
+        <div class="row mb-3 readProd">
           <div class="col-md-6">
             <span>품목코드</span>
             <input type="text" class="form-control" name="childProdId" readonly disabled>
@@ -55,13 +55,21 @@
             <input type="text" class="form-control" name="childProdName" readonly disabled>
           </div>
         </div>
+        <div class="row mb-3 addProd d-none">
+          <div class="col-md-12">
+            <span>하위 품목</span>
+            <select name="childProd" class="form-select w-100">
+              <option value="">선택</option>
+            </select>
+          </div>
+        </div>
         <div class="row mb-3">
           <div class="col-md-6">
             <span>품목 유형</span>
             <input type="text" class="form-control" name="prodType" readonly disabled>
           </div>
           <div class="col-md-6">
-            <label class="form-label d-block">소요량</label>
+            <span class="d-block">소요량</span>
             <div class="d-flex">
               <input type="text" class="form-control text-end me-2" name="consumption" disabled>
               <input type="text" class="form-control" name="unitName" readonly disabled>

@@ -1,19 +1,32 @@
 const init = () => {
     const form = document.querySelector("form");
+    const alertModal = new bootstrap.Modal(document.querySelector(".alertModal"));
+    const alertBtn = document.querySelector(".alertBtn");
+    const confirmApproveBtn = document.querySelector(".confirmApproveBtn");
+    const confirmRejectBtn = document.querySelector(".confirmRejectBtn");
     const approveModal = new bootstrap.Modal(document.querySelector(".approveModal"));
     const rejectModal = new bootstrap.Modal(document.querySelector(".rejectModal"));
-    const alertModal = new bootstrap.Modal(document.querySelector(".alertModal"));
 
     document.querySelector(".approveBtn").addEventListener("click", () => approveModal.show());
     document.querySelector(".rejectBtn").addEventListener("click", () => rejectModal.show());
 
-    document.querySelector(".confirmApproveBtn").addEventListener("click", async () => {
+    window.addEventListener("message", async function (event) {
+        const data = event.data;
+        if (!data || data?.source === 'react-devtools-content-script') return;
+
+        window.receivedData = data;
+        setUIState(data);
+        setFormData(data);
+        await fetchPurchase(data.approvalId);
+    });
+
+    confirmApproveBtn.addEventListener("click", async () => {
         const result = await sendApproval("APV002");
         approveModal.hide();
         handleAlert(result);
     });
 
-    document.querySelector(".confirmRejectBtn").addEventListener("click", async () => {
+    confirmRejectBtn.addEventListener("click", async () => {
         const reason = document.querySelector("textarea[name='rejectReasonInput']").value.trim();
         if (!reason) return alert("반려 사유를 입력해주세요.");
         form.querySelector("textarea[name='rejectionReason']").value = reason;
@@ -22,44 +35,44 @@ const init = () => {
         handleAlert(result);
     });
 
-    document.querySelector(".alertBtn").addEventListener("click", () => {
+    alertBtn.addEventListener("click", () => {
         alertModal.hide();
-        if (window.opener) window.opener.getData();
+        if (window.opener && !window.opener.closed) {
+            const approvalId = Number(form.querySelector("input[name='approvalId']").value);
+            if (typeof window.opener.refreshSingleApproval === 'function') {
+                window.opener.refreshSingleApproval(approvalId);
+            } else {
+                window.opener.getData();  // fallback
+            }
+        }
         window.close();
     });
 
-    window.addEventListener("message", async (event) => {
-        const data = event.data;
-        if (!data || data?.source === 'react-devtools-content-script') return;
-
-        window.receivedData = data;
-        setFormData(data);
-        setUIState(data);
-        await fetchPurchase(data.approvalId);
-    });
 
     async function fetchPurchase(approvalId) {
         try {
             const res = await fetch(`/api/purchase?srhApprovalId=${approvalId}`);
-            const { data: list } = await res.json();
-            if (!list || list.length === 0) return;
+            const { data: purchaseList } = await res.json();
+            if (!purchaseList || purchaseList.length === 0) return;
 
-            const purchase = list[0];
+            const purchase = purchaseList[0];
+            window.receivedPurchaseId = purchase.purchaseId;
 
             form.querySelector("input[name='employeeId']").value = purchase.employeeId || '';
             form.querySelector("input[name='employeeName']").value = purchase.employeeName || '';
             form.querySelector("input[name='clientName']").value = purchase.clientName || '';
             form.querySelector("input[name='createdAt']").value = purchase.createdAt || '';
 
-            document.querySelector("span[name='totalAmount']").textContent =
-                `₩${(purchase.totalAmount ?? 0).toLocaleString()}`;
-
-            window.receivedPurchaseId = purchase.purchaseId;
-
             const itemsRes = await fetch(`/api/purchase/${purchase.purchaseId}/items`);
             const { data: items } = await itemsRes.json();
             window.receivedPurchaseItems = items;
             renderPurchaseItems(items);
+
+            const totalAmountSpan = document.querySelector("span[name='totalAmount']");
+            const totalAmount = purchase.totalAmount ?? 0;
+            if (totalAmountSpan) {
+                totalAmountSpan.textContent = `₩${totalAmount.toLocaleString()}`;
+            }
         } catch (err) {
             console.error("발주 정보 조회 실패", err);
         }
@@ -140,7 +153,7 @@ const init = () => {
         const approvalResultSection = document.querySelector(".approval-result-section");
 
         const isPending = data.approvalStatusCode === "APV001";
-        const isAuthorized = user.authCode === "ATH004";
+        const isAuthorized = user.authCode === "ATH005";
 
         approveBtn.style.display = (isPending && isAuthorized) ? "inline-block" : "none";
         rejectBtn.style.display = (isPending && isAuthorized) ? "inline-block" : "none";

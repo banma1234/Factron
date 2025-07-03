@@ -28,6 +28,21 @@ public class SalesApprovalRestController {
         }
     }
 
+    @GetMapping("/{approvalId}")
+    public ResponseDTO<ResponseSearchSalesApprovalDTO> getSalesApprovalById(@PathVariable Long approvalId) {
+        try {
+            ResponseSearchSalesApprovalDTO approval = salesApprovalService.getSalesApprovalById(approvalId);
+            if (approval == null) {
+                return ResponseDTO.fail(404, "결재를 찾을 수 없습니다.", null);
+            }
+            return ResponseDTO.success(approval);
+        } catch (Exception e) {
+            log.error("단건 결재 조회 실패", e);
+            return ResponseDTO.fail(500, "서버 오류가 발생했습니다.", null);
+        }
+    }
+
+
     @PutMapping("")
     public ResponseDTO<Void> updateSalesApproval(@RequestBody RequestSalesApprovalDTO requestSalesApprovalDTO){
         try{
