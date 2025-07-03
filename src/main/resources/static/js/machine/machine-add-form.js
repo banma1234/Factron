@@ -33,7 +33,6 @@ const init = () => {
         const formattedDate = `${year}-${month}-${day}`;
 
         buyDateInput.value = formattedDate;
-        console.log("설정된 초기 날짜:", formattedDate);
 
         // 날짜 입력 최대값을 오늘로 제한
         buyDateInput.setAttribute('max', formattedDate);
@@ -134,8 +133,6 @@ async function saveData() {
         buyDate: buyDate
     };
 
-    console.log("전송 데이터:", data);
-
     try {
         const res = await fetch(`/api/machine`, {
             method: "POST",
@@ -154,7 +151,6 @@ async function saveData() {
 window.onload = async () => {
     try {
         await init();
-        console.log("페이지 초기화 완료");
     } catch (error) {
         console.error("초기화 오류:", error);
     }

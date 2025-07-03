@@ -89,9 +89,6 @@ const init = () => {
         }).then(res => res.json())
             .then(res => {
                 if(res.status === 200){
-
-                    console.log(res.data);
-
                     return machineGrid.resetData(res.data);
                 }else{
                     alert(res.message);
