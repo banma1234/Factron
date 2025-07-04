@@ -113,12 +113,10 @@ const init = () => {
     });
 
     // 초기 날짜 세팅 (예: 오늘, 30일 전)
-    const today = new Date().toISOString().split('T')[0];
-    const pastDate = new Date();
+    const today = getKoreaToday();
+    const pastDate = new Date(today);
     pastDate.setDate(pastDate.getDate() - 30);
-    const pastDateStr = pastDate.toISOString().split('T')[0];
-
-    document.querySelector("input[name='startDate']").value = pastDateStr;
+    document.querySelector("input[name='startDate']").value = pastDate.toISOString().split('T')[0];
     document.querySelector("input[name='endDate']").value = today;
 
     getData();

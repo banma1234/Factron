@@ -1,35 +1,8 @@
-// grid 초기화
-const initProcessGrid = () => {
-    const Grid = tui.Grid;
-
-    // 테마
-    Grid.applyTheme('default',  {
-        cell: {
-            normal: {
-                border: 'gray'
-            },
-            header: {
-                background: 'gray',
-                text: 'white',
-                border: 'gray'
-            },
-            rowHeaders: {
-                header: {
-                    background: 'gray',
-                    text: 'white'
-                }
-            }
-        }
-    });
-
-    // 세팅
-    return new Grid({
-        el: document.getElementById('srhDisconnectedProcessGrid'),
-        scrollX: false,
-        scrollY: true,
-        bodyHeight: 250,
-        rowHeaders: ['checkbox'], // 체크박스 추가
-        columns: [
+const initDisconnectedProcess = () => {
+    const srhProcessGrid = initGrid(
+        document.getElementById('srhDisconnectedProcessGrid'),
+        250,
+        [
             {
                 header: '공정번호',
                 name: 'processId',
@@ -62,12 +35,9 @@ const initProcessGrid = () => {
                     return `${upperValue==='Y' ? '보유' : '미보유'}`;
                 }
             }
-        ]
-    });
-}
-
-const initDisconnectedProcess = () => {
-    const srhProcessGrid = initProcessGrid();
+        ],
+        ['checkbox']
+    );
     const srhProcessForm = document.querySelector(".srhDisconnectedProcessForm");
 
     // 검색
