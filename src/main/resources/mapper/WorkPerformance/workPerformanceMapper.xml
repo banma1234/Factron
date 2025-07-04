@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwillbs.factron.mapper.workperformance.WorkPerformanceMapper">
+
+    <select id="getWorkPerformanceList"
+            parameterType="com.itwillbs.factron.dto.workperformance.RequestWorkPerformanceDTO"
+            resultType="com.itwillbs.factron.dto.workperformance.ResponseWorkPerformanceDTO">
+        SELECT
+        wp.id AS id,
+        wo.id AS workOrderId,
+        wo.start_date AS startDate,
+        wp.end_date AS endDate,
+        wo.status_code AS statusCode,
+        wo.quantity AS quantity,
+
+        -- 양품 개수
+        CASE
+            WHEN NOT EXISTS (
+                SELECT 1
+                FROM process_history ph
+                WHERE ph.work_order_id = wo.id
+                    AND ph.status_code != 'STS003'
+                )
+                THEN (
+                    SELECT ph.output_quantity
+                    FROM process_history ph
+                    WHERE ph.work_order_id = wo.id
+                        AND ph.status_code = 'STS003'
+                        AND ph.start_time = (
+                            SELECT MAX(ph2.start_time)
+                            FROM process_history ph2
+                            WHERE ph2.work_order_id = wo.id
+                                AND ph2.status_code = 'STS003'
+                        )
+                    )
+            ELSE NULL
+        END AS fectiveQuantity,
+
+        -- 마지막 공정 시작 시간
+        CASE
+            WHEN NOT EXISTS (
+                SELECT 1
+                FROM process_history ph
+                WHERE ph.work_order_id = wo.id
+                    AND ph.status_code != 'STS003'
+            )
+            THEN (
+                SELECT ph.start_time
+                FROM process_history ph
+                WHERE ph.work_order_id = wo.id
+                    AND ph.status_code = 'STS003'
+                    AND ph.start_time = (
+                        SELECT MAX(ph2.start_time)
+                        FROM process_history ph2
+                        WHERE ph2.work_order_id = wo.id
+                            AND ph2.status_code = 'STS003'
+                    )
+                )
+                ELSE NULL
+            END AS lastProcessStartTime,
+
+        wp.defective_quantity AS defectiveQuantity,
+        wp.employee_id AS employeeId
+
+        FROM work_order wo
+        LEFT JOIN work_performance wp ON wo.id = wp.work_order_id
+        WHERE wo.status_code IN ('WKS002', 'WKS003', 'WKS004')
+
+        <if test="workOrderId != null and workOrderId != ''">
+            AND wo.id = #{workOrderId}
+        </if>
+    </select>
+
+
+    <select id="countTotalProcess" parameterType="string" resultType="int">
+        SELECT COUNT(*)
+        FROM process_history
+        WHERE work_order_id = #{workOrderId}
+    </select>
+
+    <select id="countCompletedProcess" parameterType="string" resultType="int">
+        SELECT COUNT(*)
+        FROM process_history
+        WHERE work_order_id = #{workOrderId}
+          AND status_code = 'STS003'
+    </select>
+
+
+</mapper>
