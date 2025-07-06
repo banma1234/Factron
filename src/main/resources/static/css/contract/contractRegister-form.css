@@ -1,0 +1,31 @@
+/* materialGrid 영역 */
+.material-grid {
+    height: 300px;
+    border: 1px solid #ddd;
+}
+
+/* 검색창 고정 너비 */
+.search-box {
+    width: 300px;
+}
+
+/* 수주 품목 목록 라벨 */
+.contract-items-label {
+    position: relative;
+    z-index: 2;
+}
+
+/* 수주 품목 목록 박스 */
+.contract-items {
+    min-height: 200px;
+    max-height: 200px;
+    overflow-y: auto;
+    position: relative;
+    z-index: 1;
+}
+
+/* 총금액 표시 박스 */
+.contract-total {
+    position: relative;
+    z-index: 1;
+}

@@ -17,14 +17,34 @@ const init = () => {
     // 초기 값 세팅
     form.querySelector("input[name='startDate']").setAttribute("min", today);
     form.querySelector("input[name='endDate']").setAttribute("min", today);
-    // 하드코딩 (완제품만 등록 가능)
-    form.querySelector("input[name='itemId']").value = "P0000003";
-    form.querySelector("input[name='itemName']").value = "완제품 C(하드코딩)";
-    form.querySelector("input[name='unit']").value = "EA(하드코딩)";
+
+    // 완제품 목록 세팅
+    getItemList().then(res => {
+        const selectTag = document.querySelector(`select[name='item']`);
+        const products = res.data;
+
+        products.forEach((prod) => {
+            const optionElement = document.createElement("option");
+            optionElement.value = prod.itemId;
+            optionElement.textContent = `${prod.name} (${prod.itemId})`;
+
+            selectTag.appendChild(optionElement);
+        });
+
+        // 해당 제품 선택 시 단위 세팅
+        form.querySelector(`select[name='item']`).addEventListener("change", (e) => {
+            const selectedProd = products.find(prod => prod.itemId === e.target.value);
+
+            if (selectedProd) {
+                form.querySelector("input[name='unitName']").value = selectedProd.unitName;
+                form.querySelector("input[name='quantity']").focus();
+            }
+        });
+    });
 
     // 저장 버튼
     saveBtn.addEventListener("click", () => {
-        const itemId = form.querySelector("input[name='itemId']").value;
+        const itemId = form.querySelector("select[name='item']").value;
         const startDate = form.querySelector("input[name='startDate']").value;
         const endDate = form.querySelector("input[name='endDate']").value;
         const quantity = form.querySelector("input[name='quantity']").value.trim();
@@ -93,6 +113,24 @@ const init = () => {
 
         window.close();
     });
+
+    // 완제품 목록 조회
+    async function getItemList() {
+        const type = 'ITP003';
+
+        try {
+            const res = await fetch(`/api/item?itemTypeCode=${type}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            });
+            return res.json();
+
+        } catch (e) {
+            console.error(e);
+        }
+    }
 
     // 저장
     async function saveData() {

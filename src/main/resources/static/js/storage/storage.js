@@ -7,7 +7,7 @@ const init = () => {
             {
                 header: 'id',
                 name: 'id',
-                align: 'center',
+                hidden: true
             },
             {
                 header: '창고명',
@@ -26,7 +26,7 @@ const init = () => {
             },
             {
                 header: '창고유형',
-                name: 'type_code',
+                name: 'typeCode',
                 align: 'center',
             }
         ]
@@ -48,7 +48,6 @@ const init = () => {
     };
 
     getStorageInfo("").then(res => {
-        console.log(res);
         storageGrid.resetData(res.data);
     })
 }

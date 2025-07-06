@@ -5,6 +5,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * 업데이트 요청 DTO
+ * */
 @Data
 public class RequestLotUpdateDTO {
 

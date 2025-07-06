@@ -10,6 +10,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * LOT 트리 반환 DTO (LOT + LOT_STRUCTURE)
+ * */
 @Data
 public class ResponseLotTreeDTO {
 
@@ -31,6 +34,7 @@ public class ResponseLotTreeDTO {
     @NotNull(message = "생성자는 필수 입력값입니다.")
     private Long createdBy;
 
+    @NotNull(message = "생성일은 필수 입력값입니다.")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
 
