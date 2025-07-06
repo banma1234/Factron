@@ -27,7 +27,6 @@ public class LotCreateServiceImpl implements LotCreateService {
 
     private final LotRepository lotRepository;
     private final LotService lotService;
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.BASIC_ISO_DATE;
     private final AuthorizationChecker authorizationChecker;
 
     /**
@@ -39,7 +38,8 @@ public class LotCreateServiceImpl implements LotCreateService {
     @Transactional
     public Void CreateInboundLot(List<RequestInboundLotDTO> reqInbound) {
 
-        if (!authorizationChecker.hasAnyAuthority("ATH003", "ATH005","ATH006")) {
+        // 권한 검사 : 관리자, 재무팀, 생산팀, 작업반장
+        if (!authorizationChecker.hasAnyAuthority("ATH003", "ATH005","ATH006", "ATH007")) {
             throw new SecurityException("권한이 없습니다.");
         }
 
@@ -79,6 +79,7 @@ public class LotCreateServiceImpl implements LotCreateService {
     @Transactional
     public Lot CreateProcessLot(RequestProcessLotDTO reqInbound) {
 
+        // 권한 검사 : 관리자, 생산팀, 작업반장
         if (!authorizationChecker.hasAnyAuthority("ATH003", "ATH006", "ATH007")) {
             throw new SecurityException("권한이 없습니다.");
         }
@@ -108,6 +109,7 @@ public class LotCreateServiceImpl implements LotCreateService {
     @Transactional
     public Lot CreateQualityLot(RequestQualityLotDTO reqInbound) {
 
+        // 권한 검사 : 관리자, 생산팀, 작업반장
         if (!authorizationChecker.hasAnyAuthority("ATH003", "ATH006", "ATH007")) {
             throw new SecurityException("권한이 없습니다.");
         }
@@ -146,7 +148,7 @@ public class LotCreateServiceImpl implements LotCreateService {
      */
     private Map<String, Object> getSequenceForToday(String eventTypePrefix) {
 
-        String TODAY = LocalDateTime.now().format(DATE_FORMAT);
+        String TODAY = LocalDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE);
         Map<String, String> requiredElement = Map.of(
                 "dateToday", TODAY,
                 "eventType", eventTypePrefix

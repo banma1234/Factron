@@ -17,7 +17,5 @@ public class RequestMaterialDTO {
     //조회
     private Long empId;
     private String materialName;
-    private String materialStartDate;
-    private String materialEndDate;
 
 }

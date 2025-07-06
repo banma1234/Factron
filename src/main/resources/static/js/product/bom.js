@@ -154,7 +154,7 @@ function toggleEditButtons(mode) {
 
     } else {
         // 읽기 모드
-        form.querySelectorAll("input[name='childProdId'], input[name='childProdName'], input[name='prodType'], input[name='consumption'], input[name='unitName']").forEach(input => {
+        form.querySelectorAll("input[name='prodType'], input[name='consumption'], input[name='unitName']").forEach(input => {
             input.disabled = true;
         });
 
@@ -327,7 +327,7 @@ const init = () => {
 
         if (editMode === 'add') {
             // BOM 등록
-            if (form.querySelector("input[name='childProdId']").value === '') {
+            if (form.querySelector("select[name='childProd']").value === '') {
                 alert('품목을 선택해주세요.');
                 return;
             }

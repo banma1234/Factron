@@ -20,10 +20,16 @@ public class LotHistoryServiceImpl implements LotHistoryService {
     private final LotRepository lotRepository;
     private final AuthorizationChecker authorizationChecker;
 
+    /**
+     * LOT_HISTORY 기록
+     * @param reqLotHistoryDTO 입력 대상 DTO
+     * @return Void
+     * */
     @Override
     @Transactional
     public Void addHistory(RequestLotHistoryDTO reqLotHistoryDTO) {
 
+        // 권한 체크 : 관리자, 재무팀, 생산팀, 작업반장
         if (!authorizationChecker.hasAnyAuthority("ATH003", "ATH005", "ATH006", "ATH007")) {
             throw new SecurityException("권한이 없습니다.");
         }
