@@ -1,34 +1,8 @@
-// grid 초기화
-const initProcessGrid = () => {
-    const Grid = tui.Grid;
-
-    // 테마
-    Grid.applyTheme('default',  {
-        cell: {
-            normal: {
-                border: 'gray'
-            },
-            header: {
-                background: 'gray',
-                text: 'white',
-                border: 'gray'
-            },
-            rowHeaders: {
-                header: {
-                    background: 'gray',
-                    text: 'white'
-                }
-            }
-        }
-    });
-
-    // 세팅
-    return new Grid({
-        el: document.getElementById('srhProcessGrid'),
-        scrollX: false,
-        scrollY: true,
-        bodyHeight: 80,
-        columns: [
+const initProcess = () => {
+    const srhProcessGrid = initGrid(
+        document.getElementById('srhProcessGrid'),
+        80,
+        [
             {
                 header: '공정번호',
                 name: 'processId',
@@ -62,11 +36,7 @@ const initProcessGrid = () => {
                 }
             }
         ]
-    });
-}
-
-const initProcess = () => {
-    const srhProcessGrid = initProcessGrid();
+    );
     const srhProcessForm = document.querySelector(".srhProcessForm");
 
     // 검색
@@ -114,7 +84,6 @@ const initProcess = () => {
         });
 
         try {
-            const user = JSON.parse(localStorage.getItem("user") || "{}");
             const res = await fetch(`/api/process?${params.toString()}`, {
                 method: "GET",
                 headers: {
@@ -135,7 +104,7 @@ const initProcess = () => {
         }
     }
 
-// 초기 데이터 로드 부분
+    // 초기 데이터 로드 부분
     getData().then(res => {
         // 항상 배열이 전달되도록 보장
         const dataArray = Array.isArray(res) ? res : [];

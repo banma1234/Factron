@@ -322,7 +322,7 @@ const init = () => {
     });
 
     // 저장 버튼
-    saveBtn.addEventListener("click", function(e) {
+    saveBtn?.addEventListener("click", function(e) {
         e.preventDefault();
 
         if (editMode === 'add') {

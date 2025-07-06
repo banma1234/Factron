@@ -2,6 +2,7 @@
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout/popup-base.html}">
 <head>
     <title>Factron</title>
@@ -64,7 +65,7 @@
             <div id="workerGrid"></div>
         </article>
 
-        <div class="d-flex justify-content-end mt-4 gap-2 d-none btnGroup">
+        <div class="d-flex justify-content-end mt-4 gap-2 d-none btnGroup" sec:authorize="hasAnyAuthority('ATH007', 'ATH003')">
             <button type="button" class="btn btn-primary startBtn">시작</button>
             <button type="button" class="btn btn-secondary">취소</button>
         </div>

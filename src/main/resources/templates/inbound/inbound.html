@@ -4,9 +4,10 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base.html}">
 <head>
-    <title>입고 목록</title>
+    <title>Factron</title>
     <th:block layout:fragment="style">
         <link rel="stylesheet" th:href="@{/css/approval/approval.css}" />
+        <link rel="stylesheet" th:href="@{/css/inbound/inbound.css}" />
     </th:block>
 </head>
 <body>
@@ -26,12 +27,10 @@
                 <button class="btn btn-outline-secondary srhBtn" type="button">검색</button>
             </div>
         </form>
-
-
         <article>
             <div id="inboundGrid"></div>
-            <div style="display: flex; justify-content: flex-end; margin-top: 12px;">
-                <button id="btnCompleteInbound" class="btn btn-primary">입고 완료</button>
+            <div class="button-container">
+                <button class="btn btn-primary btnCompleteInbound">입고 완료</button>
             </div>
         </article>
     </section>
