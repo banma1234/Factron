@@ -86,7 +86,7 @@ const init = () => {
             div.className = "bg-white p-2 rounded border d-flex justify-content-between";
             const priceText = (item.amount ?? 0).toLocaleString();
             div.innerHTML = `
-                <span>${item.itemName} × ${item.quantity}개</span>
+                <span>${item.itemName} × ${item.quantity} ${item.unitName}</span>
                 <span>₩${priceText}</span>
             `;
             container.appendChild(div);
@@ -97,7 +97,7 @@ const init = () => {
     function setUIState() {
         const cancelBtn = document.querySelector(".cancelApprovalBtn");
         const isPending = window.statusCode === "STP001"; // 결재 대기 상태 체크
-        const isAuthorized = user.authCode === "ATH004"; // 권한 체크
+        const isAuthorized = user.authCode === "ATH004" || "ATH003"; // 권한 체크
 
         cancelBtn.style.display = (isPending && isAuthorized) ? "inline-block" : "none";
     }

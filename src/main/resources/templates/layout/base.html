@@ -227,7 +227,7 @@
                     </a></li>
                 </ul>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" sec:authorize="hasAnyAuthority('ATH003')">
                 <a class="nav-link menu-toggle" href="#">
                     <div class="nav-link menu-item" th:with="type='admin_manager'">
                         <div th:replace="~{layout/icon :: icon(${type})}"></div>

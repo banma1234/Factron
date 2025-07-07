@@ -100,7 +100,7 @@ const init = () => {
             totalAmount += price;
 
             div.innerHTML = `
-                <span>${item.itemName} × ${item.quantity}개</span>
+                <span>${item.itemName} × ${item.quantity} ${item.unitName}</span>
                 <span>₩${priceText}</span>
             `;
             container.appendChild(div);
@@ -196,7 +196,7 @@ const init = () => {
         const approvalResultSection = document.querySelector(".approval-result-section");
 
         const isPending = data.approvalStatusCode === "APV001"; // 결재대기 상태
-        const isAuthorized = user.authCode === "ATH005"; // 결재권한 있음
+        const isAuthorized = user.authCode === "ATH005" || "ATH003"; // 결재권한 있음
 
         approveBtn.style.display = (isPending && isAuthorized) ? "inline-block" : "none";
         rejectBtn.style.display = (isPending && isAuthorized) ? "inline-block" : "none";

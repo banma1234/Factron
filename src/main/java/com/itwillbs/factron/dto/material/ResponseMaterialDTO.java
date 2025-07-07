@@ -7,6 +7,7 @@ public class ResponseMaterialDTO {
     private String materialId;
     private String name;
     private String unit;
+    private String unitName;
     private String info;
     private String spec;
     private String createdAt;
