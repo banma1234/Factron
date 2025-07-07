@@ -38,7 +38,7 @@ const init = () => {
     );
 
     // 권한에 따른 등록 버튼 표시
-    if (user.authCode === 'ATH004') {
+    if (user.authCode === 'ATH004' || user.authCode === 'ATH003') {
         const btn = document.querySelector('.registContract');
         if (btn) btn.style.display = '';
     }
