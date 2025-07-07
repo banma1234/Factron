@@ -47,16 +47,39 @@ const init = async () => {
     await setSelectBox("UNT","unit");
     await setSelectBox("ITP", "itemType");
 
-    // 그리드 초기화
+    const canEdit = ['ATH003', 'ATH005'].includes(window.user.authCode);
+
+    // formatter 함수 정의
+    function safeListItemText({ value, column }) {
+        let options = [];
+        if (column.name === 'unit') options = window.unitOptions || [];
+        if (column.name === 'typeCode') options = window.itemTypeOptions || [];
+        const found = options.find(opt => opt.value === value);
+        return found ? found.text : value || '';
+    }
+
+    // 그리드 컬럼 정의에서 formatter 수정
     const itemGrid = initGrid(
         document.querySelector('.itemGrid'),
         400,
         [
             { header: '제품코드', name: 'itemId', align: 'center', editable: false },
-            { header: '제품명', name: 'name', align: 'center', editor: 'text' },
-            { header: '단위', name: 'unit', align: 'center', editor: { type: 'select', options: { listItems: window.unitOptions } }, formatter: 'listItemText' },
-            { header: '가격', name: 'price', align: 'center', editor: 'text',  },
-            { header: '제품 유형', name: 'typeCode', align: 'center', editor: { type: 'select', options: { listItems: window.itemTypeOptions } }, formatter: 'listItemText' },
+            { header: '제품명', name: 'name', align: 'center', editor: canEdit ? 'text' : false },
+            {
+                header: '단위',
+                name: 'unit',
+                align: 'center',
+                editor: canEdit ? { type: 'select', options: { listItems: window.unitOptions } } : false,
+                formatter: safeListItemText
+            },
+            { header: '가격', name: 'price', align: 'center', editor: canEdit ? 'text' : false },
+            {
+                header: '제품 유형',
+                name: 'typeCode',
+                align: 'center',
+                editor: canEdit ? { type: 'select', options: { listItems: window.itemTypeOptions } } : false,
+                formatter: safeListItemText
+            },
             { header: '등록자', name: 'createdBy', align: 'center' },
             { header: '등록일', name: 'createdAt', align: 'center', formatter: ({ value }) => value ? value.substring(0, 10) : '' },
         ]
