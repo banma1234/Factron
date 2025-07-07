@@ -1,5 +1,9 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.entity.Employee;
+import com.itwillbs.factron.entity.Item;
+import com.itwillbs.factron.entity.Line;
+import com.itwillbs.factron.entity.ProductionPlanning;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -186,7 +186,7 @@ const sysInit = () => {
                 popup.postMessage({
                     main_code: rowData.main_code ? rowData.main_code : "",
                     detail_code: rowData.detail_code && isEditMode ? rowData.detail_code : "",
-                    name: rowData.name,
+                    name:isEditMode ? rowData.name : "",
                     is_active: rowData.is_active,
                     is_edit_mode: isEditMode,
                 }, "*");
