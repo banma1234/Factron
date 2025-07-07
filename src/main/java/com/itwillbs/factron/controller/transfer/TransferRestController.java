@@ -40,7 +40,7 @@ public class TransferRestController {
     public ResponseDTO<Void> registTransfer(@RequestBody RequestTransferDTO requestTransferDTO) {
 
         try {
-            return ResponseDTO.success("인사발령 등록 결재 신청이 완료되었습니다!", transferService.registTransfer(requestTransferDTO));
+            return ResponseDTO.success("인사발령 결재 신청이 완료되었습니다!", transferService.registTransfer(requestTransferDTO));
         } catch (NoSuchElementException nse) {
 
             return ResponseDTO.fail(800, nse.getMessage(), null);

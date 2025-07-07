@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base.html}">>
+<head>
+    <meta charset="UTF-8">
+    <title>Factron</title>
+  <th:block layout:fragment="style">
+    <link rel="stylesheet" th:href="@{/css/sys/syscode.css}" />
+  </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+  <h4 class="page__name">거래처 관리</h4>
+  <form class="search__form mb-2">
+    <div class="input-group">
+      <input class="form-control" type="text" name="srhClient" placeholder="거래처명" />
+      <button class="btn btn-outline-secondary" name="srhBtn" type="button">검색</button>
+    </div>
+    <div class="select__container">
+      <button class="btn btn-primary" name="appendClientBtn" type="button">추가</button>
+      <button class="btn btn-outline-primary" name="saveClientBtn" type="button">저장</button>
+    </div>
+  </form>
+  <article>
+    <div id="grid_client"></div>
+  </article>
+
+  <!-- confirm modal -->
+  <div class="modal fade confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+          <form class="search__form mb-2">
+            <div class="input-group">
+              <input class="form-control" type="text" name="srchBusinessNumber" placeholder="사업자등록번호" />
+              <button class="btn btn-outline-secondary" name="modalSrchBtn" type="button">검색</button>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" name="confirmBtn">확인</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- alert modal -->
+  <div class="modal fade alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+          <p class="alert-modal-text">저장이 완료되었습니다</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" name="alertBtn">확인</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<th:block layout:fragment="javascript">
+  <!-- js import -->
+  <script th:src="@{/js/client/client.js}"></script>
+</th:block>
+</body>
+</html>

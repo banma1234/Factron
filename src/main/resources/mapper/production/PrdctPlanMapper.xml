@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itwillbs.factron.mapper.production.PrdctPlanMapper">
+
+    <!-- 생산계획 목록 조회 -->
+    <select id="getPrdctPlanList" parameterType="com.itwillbs.factron.dto.production.RequestPrdctPlanDTO" resultType="com.itwillbs.factron.dto.production.ResponsePrdctPlanDTO">
+        SELECT
+            pp.id,
+            pp.item_id,
+            i.name AS item_name,
+            pp.quantity,
+            s.name AS unit,
+            pp.start_date,
+            pp.end_date,
+            e.id AS emp_id,
+            e.name AS emp_name
+        FROM PRODUCTION_PLANNING pp
+        JOIN ITEM i ON pp.item_id = i.id
+        JOIN DETAIL_SYS_CODE s ON i.unit = s.detail_code
+        JOIN EMPLOYEE e ON pp.employee_id = e.id
+        <where>
+            <if test="srhId != null and srhId != ''">
+                AND pp.id LIKE '%' || #{srhId} || '%'
+            </if>
+            <if test="srhItemIdOrName != null and srhItemIdOrName != ''">
+                AND (i.id LIKE '%' || #{srhItemIdOrName} || '%'
+                OR i.name LIKE '%' || #{srhItemIdOrName} || '%')
+            </if>
+            <if test="srhEmpIdOrName != null and srhEmpIdOrName != ''">
+                AND (e.id LIKE '%' || #{srhEmpIdOrName} || '%'
+                OR e.name LIKE '%' || #{srhEmpIdOrName} || '%')
+            </if>
+        </where>
+        ORDER BY pp.id DESC
+    </select>
+
+</mapper>

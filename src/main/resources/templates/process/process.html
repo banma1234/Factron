@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/base.html}">
+<head>
+    <title>Factron</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section>
+        <div class="header-row">
+            <h4 class="page__name">공정 목록</h4>
+            <button class="btn btn-primary modBtn" name="addNewProcess" type="button" sec:authorize="hasAnyAuthority('ATH003', 'ATH007')">공정 추가</button>
+        </div>
+        <form class="search__form mb-2">
+            <div class="select__container">
+
+                <select class="form-select" name="processTypeCode">
+                    <option value="">공정 유형</option>
+                </select>
+                <select class="form-select" name="hasMachine">
+                    <option value="">설비 유무</option>
+                    <option value="Y">보유</option>
+                    <option value="N">미보유</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <input class="form-control" type="text" name="processIdOrName" placeholder="공정번호 또는 공정명"><br/>
+                <button class="btn btn-outline-secondary processSrhBtn" type="button">검색</button>
+            </div>
+        </form>
+
+        <!-- list grid -->
+        <article>
+            <div id="process_grid">
+
+            </div>
+        </article>
+    </section>
+</div>
+
+<th:block layout:fragment="javascript">
+    <!-- js import -->
+    <script th:src="@{/js/process/process.js}"></script>
+</th:block>
+</body>
+</html>

@@ -1,42 +1,18 @@
-// grid 초기화
-const initEmpGrid = () => {
-    const Grid = tui.Grid;
-
-    // 테마
-    Grid.applyTheme('default',  {
-        cell: {
-            normal: {
-                border: 'gray'
-            },
-            header: {
-                background: 'gray',
-                text: 'white',
-                border: 'gray'
-            },
-            rowHeaders: {
-                header: {
-                    background: 'gray',
-                    text: 'white'
-                }
-            }
-        }
-    });
-
-    // 세팅
-    return new Grid({
-        el: document.getElementById('srhEmpGrid'),
-        scrollX: false,
-        scrollY: true,
-        bodyHeight: 80,
-        columns: [
+const initEmp = () => {
+    const srhEmpForm = document.querySelector(".srhEmpForm");
+    // grid 초기화
+    const srhEmpGrid = initGrid(
+        document.getElementById('srhEmpGrid'),
+        80,
+        [
             {
                 header: '사원번호',
-                name: 'id',
+                name: 'empId',
                 align: 'center'
             },
             {
                 header: '이름',
-                name: 'name',
+                name: 'empName',
                 align: 'center'
             },
             {
@@ -54,23 +30,8 @@ const initEmpGrid = () => {
                 name: 'phone',
                 align: 'center'
             },
-        ],
-        data: [ // 예시
-            {
-                id: 1,
-                name: '홍길동',
-                deptCode: 'DEP001',
-                deptName: '인사',
-                positionCode: 'POS001',
-                positionName: '사원'
-            }
         ]
-    });
-}
-
-const initEmp = () => {
-    const srhEmpGrid = initEmpGrid();
-    const srhEmpForm = document.querySelector(".srhEmpForm");
+    );
 
     // 검색
     srhEmpForm.querySelector(".srhEmpBtn").addEventListener("click", function(e) {
@@ -83,15 +44,24 @@ const initEmp = () => {
         });
     }, false);
 
+    // 엔터 시 검색
+    srhEmpForm.addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        getData().then(res => {
+            srhEmpGrid.resetData(res.data); // grid에 세팅
+        });
+    });
+
     // 사원 선택
     srhEmpGrid.on('dblclick', (e) => {
         const rowKey = e.rowKey;
         const rowData = srhEmpGrid.getRow(rowKey);
 
-        if (rowData && rowData.id) {
+        if (rowData && rowData.empId) {
             // 부모 폼에 데이터 세팅
-            document.querySelector("input[name='empId']").value = rowData.id;
-            document.querySelector("input[name='empName']").value = rowData.name;
+            document.querySelector("input[name='empId']").value = rowData.empId;
+            document.querySelector("input[name='empName']").value = rowData.empName;
             document.querySelector("select[name='deptCode']").value = rowData.deptCode || "";
             document.querySelector("select[name='positionCode']").value = rowData.positionCode || "";
         }
@@ -120,84 +90,14 @@ const initEmp = () => {
         }
     }
 
-    // 부서 세팅
-    getSysCodeList("DEP").then(res => {
-        const selectElement = srhEmpForm.querySelector("select[name='srhDepCode']");
+    // 공통코드 세팅
+    setSelectBox("DEP", "srhDepCode");
+    setSelectBox("POS", "srhPosCode");
 
-        // 하드코딩
-        const data = [
-            {
-                "detailCode": "DEP001",
-                "name": "인사부"
-            },
-            {
-                "detailCode": "DEP002",
-                "name": "개발부"
-            },
-            {
-                "detailCode": "DEP003",
-                "name": "영업부"
-            },
-            {
-                "detailCode": "DEP004",
-                "name": "생산부"
-            }
-        ];
-
-        // for(const dept of res.data) {
-        for(const dept of data) {
-            const optionElement = document.createElement("option");
-            optionElement.value = dept.detailCode;  // 코드
-            optionElement.textContent = dept.name;  // 이름
-
-            selectElement.appendChild(optionElement);
-        }
-    }).catch(e => {
-        console.error(e);
+    // 페이지 진입 시 바로 리스트 호출
+    getData().then(res => {
+        srhEmpGrid.resetData(res.data);
     });
-
-    // 직급 세팅
-    getSysCodeList("POS").then(res => {
-        const selectElement = srhEmpForm.querySelector("select[name='srhPosCode']");
-
-        // 하드코딩
-        const data = [
-            {
-                "detailCode": "POS001",
-                "name": "사원"
-            },
-            {
-                "detailCode": "POS002",
-                "name": "주임"
-            },
-            {
-                "detailCode": "POS003",
-                "name": "대리"
-            }
-        ];
-
-        // for(const pos of res.data) {
-        for(const pos of data) {
-            const optionElement = document.createElement("option");
-            optionElement.value = pos.detailCode;  // 코드
-            optionElement.textContent = pos.name;  // 이름
-
-            selectElement.appendChild(optionElement);
-        }
-    }).catch(e => {
-        console.error(e);
-    });
-
-    // 공통코드 목록 조회
-    async function getSysCodeList(mainCode) {
-        const res = await fetch(`/api/sys/detail?mainCode=${mainCode}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        return res.json();
-    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {

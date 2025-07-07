@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,6 +17,14 @@
     <!-- COMMON CSS -->
     <link rel="stylesheet" th:href="@{/css/common.css}">
 
+    <!-- TOAST UI Time Picker-->
+    <link rel="stylesheet" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css">
+    <script src="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.js"></script>
+
+    <!-- TOAST UI Date Picker-->
+    <script src="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.js"></script>
+    <link rel="stylesheet" href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css" />
+
     <!-- TOAST UI -->
     <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
     <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
@@ -28,51 +37,205 @@
             <li class="nav-item">
                 <a class="nav-link menu-toggle" href="#">
                     <div class="nav-link menu-item" th:with="type='person_manager'">
-                        <div th:replace="layout/icon :: icon(${type})"></div>
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
                         <span>인사 관리</span>
                     </div>
                 </a>
                 <ul class="submenu nav flex-column">
-                    <li><a class="nav-link sub-link" href="#">
+                    <li><a class="nav-link sub-link" href="/employee">
                         <span>사원 목록</span>
                     </a></li>
-                    <li><a class="nav-link sub-link" href="#">
+                    <li><a class="nav-link sub-link" href="/trans">
                         <span>인사발령 관리</span>
                     </a></li>
                 </ul>
             </li>
             <li class="nav-item">
                 <a class="nav-link menu-toggle" href="#">
-                    <span>근태 관리</span>
+                    <div class="nav-link menu-item" th:with="type='commute_manager'">
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
+                        <span>근태 관리</span>
+                    </div>
                 </a>
                 <ul class="submenu nav flex-column">
-                    <li><a class="nav-link sub-link" href="#">
+                    <li><a class="nav-link sub-link" href="/commute">
                         <span>출퇴근 현황</span>
                     </a></li>
-                    <li><a class="nav-link sub-link" href="#">
+                    <li><a class="nav-link sub-link" href="/work">
                         <span>근무 현황</span>
                     </a></li>
-                    <li><a class="nav-link sub-link" href="#">
+                    <li><a class="nav-link sub-link" href="/vacation">
                         <span>휴가 관리</span>
                     </a></li>
                 </ul>
             </li>
             <li class="nav-item">
                 <a class="nav-link menu-toggle" href="#">
-                    <span>전자결재</span>
+                    <div class="nav-link menu-item" th:with="type='approval_manager'">
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
+                        <span>전자결재</span>
+                    </div>
                 </a>
                 <ul class="submenu nav flex-column">
-                    <li><a class="nav-link sub-link" href="#">
-                        <span>결재 목록</span>
+                    <li><a class="nav-link sub-link" href="/approval">
+                        <span>인사결재 목록</span>
+                    </a></li>
+                </ul>
+                <ul class="submenu nav flex-column">
+                    <li><a class="nav-link sub-link" href="/salesApproval">
+                        <span>영업결재 목록</span>
                     </a></li>
                 </ul>
             </li>
             <li class="nav-item">
                 <a class="nav-link menu-toggle" href="#">
-                    <span>관리자</span>
+                    <div class="nav-link menu-item" th:with="type='busniess'">
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
+                        <span>영업 관리</span>
+                    </div>
                 </a>
                 <ul class="submenu nav flex-column">
-                    <li><a class="nav-link sub-link" href="#">
+                    <li><a class="nav-link sub-link" href="/contract">
+                        <span>수주 관리</span>
+                    </a></li>
+                </ul>
+                <ul class="submenu nav flex-column">
+                    <li><a class="nav-link sub-link" href="/purchase">
+                        <span>발주 관리</span>
+                    </a></li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link menu-toggle" href="#">
+                    <div class="nav-link menu-item" th:with="type='master_data'">
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
+                        <span>기준 정보</span>
+                    </div>
+                </a>
+                <ul class="submenu nav flex-column">
+                    <li><a class="nav-link sub-link" href="/bom">
+                        <span>BOM 정보</span>
+                    </a></li>
+                </ul>
+                <ul class="submenu nav flex-column">
+                    <li><a class="nav-link sub-link" href="/client">
+                        <span>거래처 정보</span>
+                    </a></li>
+                </ul>
+                <ul class="submenu nav flex-column">
+                    <li><a class="nav-link sub-link" href="/item">
+                        <span>제품 정보</span>
+                    </a></li>
+                </ul>
+                <ul class="submenu nav flex-column">
+                    <li><a class="nav-link sub-link" href="/material">
+                        <span>자재 정보</span>
+                    </a></li>
+                </ul>
+                <ul class="submenu nav flex-column">
+                    <li><a class="nav-link sub-link" href="/process">
+                        <span>공정 정보</span>
+                    </a></li>
+                </ul>
+                <ul class="submenu nav flex-column">
+                    <li><a class="nav-link sub-link" href="/line">
+                        <span>라인 정보</span>
+                    </a></li>
+                </ul>
+                <ul class="submenu nav flex-column">
+                    <li><a class="nav-link sub-link" href="/machine">
+                        <span>설비 정보</span>
+                    </a></li>
+                </ul>
+                <ul class="submenu nav flex-column">
+                    <li><a class="nav-link sub-link" href="/quality">
+                        <span>품질 검사 정보</span>
+                    </a></li>
+                </ul>
+                <ul class="submenu nav flex-column">
+                    <li><a class="nav-link sub-link" href="/storage">
+                        <span>창고 정보</span>
+                    </a></li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link menu-toggle" href="#">
+                    <div class="nav-link menu-item" th:with="type='product'">
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
+                        <span>생산 관리</span>
+                    </div>
+                </a>
+                <ul class="submenu nav flex-column">
+                    <li><a class="nav-link sub-link" href="/production">
+                        <span>생산계획 관리</span>
+                    </a></li>
+                </ul>
+                <ul class="submenu nav flex-column">
+                    <li><a class="nav-link sub-link" href="/workorder">
+                        <span>작업지시 관리</span>
+                    </a></li>
+                </ul>
+                <ul class="submenu nav flex-column">
+                    <li><a class="nav-link sub-link" href="/performance">
+                        <span>작업실적 등록</span>
+                    </a></li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link menu-toggle" href="#">
+                    <div class="nav-link menu-item" th:with="type='process'">
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
+                        <span>공정 관리</span>
+                    </div>
+                </a>
+                <ul class="submenu nav flex-column">
+                    <li><a class="nav-link sub-link" href="/process/history">
+                        <span>공정 이력 관리</span>
+                    </a></li>
+                </ul>
+                <ul class="submenu nav flex-column">
+                    <li><a class="nav-link sub-link" href="/lot">
+                        <span>LOT 추적</span>
+                    </a></li>
+                </ul>
+                <ul class="submenu nav flex-column">
+                    <li><a class="nav-link sub-link" href="/quality/history">
+                        <span>품질검사 이력 관리</span>
+                    </a></li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link menu-toggle" href="#">
+                    <div class="nav-link menu-item" th:with="type='storage'">
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
+                        <span>창고 관리</span>
+                    </div>
+                </a>
+                <ul class="submenu nav flex-column">
+                    <li><a class="nav-link sub-link" href="/stock">
+                        <span>재고 관리</span>
+                    </a></li>
+                </ul>
+                <ul class="submenu nav flex-column">
+                    <li><a class="nav-link sub-link" href="/inbound">
+                        <span>입고 관리</span>
+                    </a></li>
+                </ul>
+                <ul class="submenu nav flex-column">
+                    <li><a class="nav-link sub-link" href="/outbound">
+                        <span>출고 관리</span>
+                    </a></li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link menu-toggle" href="#">
+                    <div class="nav-link menu-item" th:with="type='admin_manager'">
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
+                        <span>관리자</span>
+                    </div>
+                </a>
+                <ul class="submenu nav flex-column">
+                    <li><a class="nav-link sub-link" href="/sys">
                         <span>공통코드 관리</span>
                     </a></li>
                 </ul>
@@ -89,15 +252,16 @@
             <!-- 햄버거 버튼은 모바일에서만 보임 -->
             <button class="btn btn-outline-secondary d-xl-none me-2 border__none hamberger" type="button">
                 <div th:with="type='hamberger'">
-                    <div th:replace="layout/icon :: icon(${type})"></div>
+                    <div th:replace="~{layout/icon :: icon(${type})}"></div>
                 </div>
             </button>
-<!--            <a class="navbar-brand" href="#">Factron</a>-->
-            <img class="logo__title" th:src="@{/logo_title.svg}" alt="no logo title found" />
+            <a class="navbar-brand" href="/commute">
+                <img class="logo__title" th:src="@{/images/logo_title.svg}" alt="no logo title found" />
+            </a>
             <div class="d-flex ms-auto">
                 <span class="navbar-text user__name">test(20251234)</span>
                 <span class="navbar-text me-3">&nbsp;님 환영합니다!</span>
-                <button class="btn btn-primary btn-sm logout">로그아웃</button>
+                <a href="/logout" class="btn btn-primary btn-sm align-self-center p-2 logout">로그아웃</a>
             </div>
         </div>
     </nav>
@@ -111,8 +275,10 @@
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
             crossorigin="anonymous"></script>
 
+    <!-- globals JS -->
+    <script type="module" th:src="@{/js/layout/globals.js}"></script>
     <!-- COMMON JS -->
-    <script type="module" th:src="@{/js/common.js}"></script>
+    <script type="module" th:src="@{/js/layout/common.js}"></script>
     <th:block layout:fragment="javascript"></th:block>
 </main>
 

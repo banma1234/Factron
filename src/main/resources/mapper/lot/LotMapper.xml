@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itwillbs.factron.mapper.lot.LotMapper">
+    <!-- 라인 목록 조회 -->
+    <select id="getLotSequence" resultType="java.lang.Long" parameterType="map">
+        SELECT COUNT(*)
+        FROM LOT
+        WHERE id LIKE #{dateToday} || '-' || #{eventType} || '-%'
+    </select>
+
+    <!-- material_id로 입고 LOT 목록 조회 -->
+    <select id="getInboundLotById" resultType="com.itwillbs.factron.entity.Lot" parameterType="com.itwillbs.factron.dto.lot.RequestLotUpdateDTO">
+        SELECT id, item_id, material_id, quantity, event_type
+        FROM LOT
+        <where>
+            <choose>
+                <when test="item_id == null">
+                    material_id = #{material_id}
+                    AND
+                    UPPER(event_type) = 'INB'
+                </when>
+                <otherwise>
+                    item_id = #{item_id}
+                    AND
+                    UPPER(event_type) = 'ISP'
+                </otherwise>
+            </choose>
+        </where>
+        ORDER BY created_at ASC
+    </select>
+
+    <!-- LOT, LOT_STRUCTURE join해서 트리구조의 데이터 가져오기 -->
+    <select id="getDetailLotTreeById" resultType="com.itwillbs.factron.dto.lot.LotTreeDTO" parameterType="string">
+        SELECT
+            cl.id,
+            cl.item_id,
+            cl.material_id,
+            cl.quantity,
+            cl.event_type,
+            cl.created_by,
+            cl.created_at,
+            ls.parent_lot_id AS parent_id
+        FROM lot_structure ls
+                 JOIN lot cl ON cl.id = ls.child_lot_id
+            START WITH ls.parent_lot_id = #{lotId}
+        CONNECT BY PRIOR cl.id = ls.parent_lot_id
+        UNION ALL
+        SELECT
+            l.id,
+            l.item_id,
+            l.material_id,
+            l.quantity,
+            l.event_type,
+            l.created_by,
+            l.created_at,
+            NULL AS parent_id
+        FROM lot l
+        WHERE l.id = #{lotId}
+    </select>
+
+
+    <!-- LOT quantity 업데이트 -->
+    <update id="updateLotQuantity" parameterType="com.itwillbs.factron.entity.Lot">
+        UPDATE LOT
+        SET quantity = #{quantity}
+        WHERE id = #{id}
+    </update>
+</mapper>

@@ -2,7 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>사원 검색</title>
+    <title>Factron</title>
 </head>
 <body>
 <div th:fragment="searchEmployee" class="border rounded p-3 mt-5">
@@ -15,20 +15,20 @@
     <div class="row g-2 align-items-center srhEmpForm">
         <div class="col-md-2">
             <select class="form-select" name="srhDepCode">
-                <option value="">전체</option>
+                <option value="">부서</option>
             </select>
         </div>
         <div class="col-md-2">
             <select class="form-select" name="srhPosCode">
-                <option value="">전체</option>
+                <option value="">직급</option>
             </select>
         </div>
         <div class="col-md-6">
-            <input type="text" class="form-control" name="srhIdOrName" placeholder="사번 또는 이름을 입력해주세요">
+            <input type="text" class="form-control" name="srhIdOrName" placeholder="이름 또는 사원번호">
         </div>
 
         <div class="col-md-2">
-            <button type="button" class="btn btn-outline-secondary w-100 srhEmpBtn">검색</button>
+            <button type="submit" class="btn btn-outline-secondary w-100 srhEmpBtn">검색</button>
         </div>
     </div>
 
