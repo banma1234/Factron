@@ -45,7 +45,7 @@ public class ClientRestController {
         } catch (Exception e) {
             return ResponseDTO.fail(
                     800,
-                    "조회할 수 없습니다.",
+                    e.getMessage(),
                     null
             );
         }
@@ -64,7 +64,7 @@ public class ClientRestController {
         } catch (Exception e) {
             return ResponseDTO.fail(
                     800,
-                    "검증에 실패했습니다.",
+                    e.getMessage(),
                     false
             );
         }
@@ -83,7 +83,7 @@ public class ClientRestController {
         } catch (Exception e) {
             return ResponseDTO.fail(
                     800,
-                    "저장에 실패했습니다.",
+                    e.getMessage(),
                     null
             );
         }
@@ -102,7 +102,7 @@ public class ClientRestController {
         } catch (Exception e) {
             return ResponseDTO.fail(
                     800,
-                    "수정에 실패했습니다.",
+                    e.getMessage(),
                     null
             );
         }
