@@ -316,13 +316,45 @@ const init = () => {
         const newRows = allData.createdRows;
         const editedRows = allData.updatedRows;
 
+        // Validation 체크
+        const validationErrors = [];
+        newRows.forEach((row) => {
+            if (!row.inspectionName || row.inspectionName.trim() === '') {
+                validationErrors.push(`${row.rowKey + 1}번째 행: 품질검사명은 필수입니다.`);
+            }
+            if (!row.inspectionType || row.inspectionType.trim() === '') {
+                validationErrors.push(`${row.rowKey + 1}번째 행: 검사타입은 필수입니다.`);
+            }
+            if (!row.inspectionMethod || row.inspectionMethod.trim() === '') {
+                validationErrors.push(`${row.rowKey + 1}번째 행: 검사방법은 필수입니다.`);
+            }
+        });
+
+        editedRows.forEach((row, index) => {
+        if (!row.inspectionName || row.inspectionName.trim() === '') {
+            validationErrors.push(`${row.rowKey + 1}번째 행: 품질검사명은 필수입니다.`);
+        }
+        if (!row.inspectionType || row.inspectionType.trim() === '') {
+            validationErrors.push(`${row.rowKey + 1}번째 행: 검사타입은 필수입니다.`);
+        }
+        if (!row.inspectionMethod || row.inspectionMethod.trim() === '') {
+            validationErrors.push(`${row.rowKey + 1}번째 행: 검사방법은 필수입니다.`);
+        }
+        });
+
+        if (validationErrors.length > 0) {
+            alert('품질 검사 추가에 실패했습니다:\n' + validationErrors.join('\n'));
+            return;
+        }
+
+
         // 두 API를 병렬로 호출
         const promises = [];
 
         if (newRows.length > 0) {
             promises.push(saveNewInspections(newRows));
         }
-        
+
         if (editedRows.length > 0) {
             promises.push(updateInspections(editedRows));
         }
@@ -331,36 +363,19 @@ const init = () => {
             alert('데이터를 추가하거나 수정해주세요!');
             return;
         }
-        
+
         try {
             const results = await Promise.all(promises);
-            alert('모든 데이터가 성공적으로 저장되었습니다.');
             getInspections(); // 그리드 새로고침
+            alert('모든 데이터가 성공적으로 저장되었습니다.');
         } catch (error) {
             console.error('저장 중 오류:', error);
-            alert('저장 중 오류가 발생했습니다.');
+            alert('저장 중 오류가 발생했습니다: ' + error.message);
         }
     }
 
     // 새 품질검사 저장 함수
     async function saveNewInspections(newRows) {
-        // Validation 체크
-        const validationErrors = [];
-        newRows.forEach((row, index) => {
-            if (!row.inspectionName || row.inspectionName.trim() === '') {
-                validationErrors.push(`${index + 1}번째 행: 품질검사명은 필수입니다.`);
-            }
-            if (!row.inspectionType || row.inspectionType.trim() === '') {
-                validationErrors.push(`${index + 1}번째 행: 검사타입은 필수입니다.`);
-            }
-            if (!row.inspectionMethod || row.inspectionMethod.trim() === '') {
-                validationErrors.push(`${index + 1}번째 행: 검사방법은 필수입니다.`);
-            }
-        });
-
-        if (validationErrors.length > 0) {
-            throw new Error('다음 오류를 수정해주세요:\n' + validationErrors.join('\n'));
-        }
 
         // API 호출을 위한 데이터 변환
         const requestData = {
@@ -390,27 +405,6 @@ const init = () => {
     }
 
     async function updateInspections(editedRows) {
-        // Validation 체크
-        const validationErrors = [];
-        editedRows.forEach((row, index) => {
-            if (!row.inspectionId || row.inspectionId.trim() === '') {
-                validationErrors.push(`${index + 1}번째 행: 품질검사번호는 필수입니다.`);
-            }
-            if (!row.inspectionName || row.inspectionName.trim() === '') {
-                validationErrors.push(`${index + 1}번째 행: 품질검사명은 필수입니다.`);
-            }
-            if (!row.inspectionType || row.inspectionType.trim() === '') {
-                validationErrors.push(`${index + 1}번째 행: 검사타입은 필수입니다.`);
-            }
-            if (!row.inspectionMethod || row.inspectionMethod.trim() === '') {
-                validationErrors.push(`${index + 1}번째 행: 검사방법은 필수입니다.`);
-            }
-        });
-
-        if (validationErrors.length > 0) {
-            throw new Error('다음 오류를 수정해주세요:\n' + validationErrors.join('\n'));
-        }
-
         const requestData = {
             updateInspectionList: editedRows.map(row => ({
                 inspectionId: row.inspectionId,
@@ -443,6 +437,58 @@ const init = () => {
         const newRows = allData.createdRows;
         const editedRows = allData.updatedRows;
 
+        // Validation 체크
+        const validationErrors = [];
+
+        newRows.forEach((row, index) => {
+            if (!row.qualityInspectionId || row.qualityInspectionId.toString().trim() === '') {
+                validationErrors.push(`${row.rowKey + 1}번째 행: 품질검사번호는 필수입니다.`);
+            }
+            if (!row.itemId || row.itemId.toString().trim() === '') {
+                validationErrors.push(`${row.rowKey + 1}번째 행: 제품번호는 필수입니다.`);
+            }
+            if (!row.targetValue || row.targetValue.toString().trim() === '') {
+                validationErrors.push(`${row.rowKey + 1}번째 행: 목표값은 필수입니다.`);
+            }
+            if (!row.upperLimit || row.upperLimit.toString().trim() === '') {
+                validationErrors.push(`${row.rowKey + 1}번째 행: 상한값은 필수입니다.`);
+            }
+            if (!row.lowerLimit || row.lowerLimit.toString().trim() === '') {
+                validationErrors.push(`${row.rowKey + 1}번째 행: 하한값은 필수입니다.`);
+            }
+            if (!row.unit || row.unit.trim() === '') {
+                validationErrors.push(`${row.rowKey + 1}번째 행: 단위는 필수입니다.`);
+            }
+        });
+
+        editedRows.forEach((row, index) => {
+            if (!row.qualityInspectionStandardId) {
+                validationErrors.push(`${row.rowKey + 1}번째 행: 검사기준번호는 필수입니다.`);
+            }
+            if (!row.qualityInspectionId || row.qualityInspectionId.toString().trim() === '') {
+                validationErrors.push(`${row.rowKey + 1}번째 행: 품질검사번호는 필수입니다.`);
+            }
+            if (!row.itemId || row.itemId.toString().trim() === '') {
+                validationErrors.push(`${row.rowKey + 1}번째 행: 제품번호는 필수입니다.`);
+            }
+            if (!row.targetValue || row.targetValue.toString().trim() === '') {
+                validationErrors.push(`${row.rowKey + 1}번째 행: 목표값은 필수입니다.`);
+            }
+            if (!row.upperLimit || row.upperLimit.toString().trim() === '') {
+                validationErrors.push(`${row.rowKey + 1}번째 행: 상한값은 필수입니다.`);
+            }
+            if (!row.lowerLimit || row.lowerLimit.toString().trim() === '') {
+                validationErrors.push(`${row.rowKey + 1}번째 행: 하한값은 필수입니다.`);
+            }
+            if (!row.unit || row.unit.trim() === '') {
+                validationErrors.push(`${row.rowKey + 1}번째 행: 단위는 필수입니다.`);
+            }
+        });
+
+        if (validationErrors.length > 0) {
+            alert('다음 오류를 수정해주세요:\n' + validationErrors.join('\n'));
+            return;
+        }
 
         // 두 API를 병렬로 호출
         const promises = [];
@@ -471,33 +517,6 @@ const init = () => {
     }
 
     async function saveNewStdections(newRows) {
-        // Validation 체크
-        const validationErrors = [];
-        newRows.forEach((row, index) => {
-            if (!row.qualityInspectionId || row.qualityInspectionId.toString().trim() === '') {
-                validationErrors.push(`${index + 1}번째 행: 품질검사번호는 필수입니다.`);
-            }
-            if (!row.itemId || row.itemId.toString().trim() === '') {
-                validationErrors.push(`${index + 1}번째 행: 제품번호는 필수입니다.`);
-            }
-            if (!row.targetValue || row.targetValue.toString().trim() === '') {
-                validationErrors.push(`${index + 1}번째 행: 목표값은 필수입니다.`);
-            }
-            if (!row.upperLimit || row.upperLimit.toString().trim() === '') {
-                validationErrors.push(`${index + 1}번째 행: 상한값은 필수입니다.`);
-            }
-            if (!row.lowerLimit || row.lowerLimit.toString().trim() === '') {
-                validationErrors.push(`${index + 1}번째 행: 하한값은 필수입니다.`);
-            }
-            if (!row.unit || row.unit.trim() === '') {
-                validationErrors.push(`${index + 1}번째 행: 단위는 필수입니다.`);
-            }
-        });
-
-        if (validationErrors.length > 0) {
-            throw new Error('다음 오류를 수정해주세요:\n' + validationErrors.join('\n'));
-        }
-
         // API 호출을 위한 데이터 변환
         const requestData = {
             qualityInspectionStandard: newRows.map(row => ({
@@ -528,36 +547,6 @@ const init = () => {
     }
 
     async function updateStdections(editedRows) {
-        // Validation 체크
-        const validationErrors = [];
-        editedRows.forEach((row, index) => {
-            if (!row.qualityInspectionStandardId) {
-                validationErrors.push(`${index + 1}번째 행: 검사기준번호는 필수입니다.`);
-            }
-            if (!row.qualityInspectionId || row.qualityInspectionId.toString().trim() === '') {
-                validationErrors.push(`${index + 1}번째 행: 품질검사번호는 필수입니다.`);
-            }
-            if (!row.itemId || row.itemId.toString().trim() === '') {
-                validationErrors.push(`${index + 1}번째 행: 제품번호는 필수입니다.`);
-            }
-            if (!row.targetValue || row.targetValue.toString().trim() === '') {
-                validationErrors.push(`${index + 1}번째 행: 목표값은 필수입니다.`);
-            }
-            if (!row.upperLimit || row.upperLimit.toString().trim() === '') {
-                validationErrors.push(`${index + 1}번째 행: 상한값은 필수입니다.`);
-            }
-            if (!row.lowerLimit || row.lowerLimit.toString().trim() === '') {
-                validationErrors.push(`${index + 1}번째 행: 하한값은 필수입니다.`);
-            }
-            if (!row.unit || row.unit.trim() === '') {
-                validationErrors.push(`${index + 1}번째 행: 단위는 필수입니다.`);
-            }
-        });
-
-        if (validationErrors.length > 0) {
-            throw new Error('다음 오류를 수정해주세요:\n' + validationErrors.join('\n'));
-        }
-
         // API 호출을 위한 데이터 변환
         const requestData = {
             qualityInspectionStandard: editedRows.map(row => ({
