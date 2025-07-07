@@ -281,7 +281,6 @@ const init = () => {
                 if(res.status === 200){
                     // 데이터 매핑 처리
                     const mappedData = res.data.map(rowData => {
-                        console.log("서버에서 받은 원본 데이터:", rowData);
                         return {
                             id: rowData.id,                       // 번호 (hidden)
                             workOrderId: rowData.id,              // 작업지시 번호
@@ -401,8 +400,6 @@ const init = () => {
                 fectiveQuantity: currentSelectedLine.fectiveQuantity, // 유효 수량 추가
                 qualityHistoryList: qualityHistoryList
             };
-
-            console.log('품질 검사 결과 저장 요청 데이터:', requestData);
 
             // API 호출
             const response = await fetch('/api/quality/history', {

@@ -161,7 +161,6 @@ const sysInit = () => {
         let url = `/sys/sys-form?target=${type}`;
 
         if ((isEditMode && !rowData) || (type === "detail" && !rowData.detail_code && isEditMode)) {
-            console.log(type);
             alert("대상을 지정해주세요");
             return;
         }

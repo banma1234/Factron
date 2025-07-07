@@ -12,8 +12,8 @@ public class RequestRegisterPurchaseDTO {
 
     @Data
     public static class PurchaseItemDTO {
-        private String materialId;   // 자재 ID (String으로 사용)
-        private Long quantity;       // 수량
-        private Long price;          // 단가
+        private String materialId;      // 자재 ID (String으로 사용)
+        private Long quantity;          // 수량
+        private Long price;             // 단가
     }
 }

@@ -19,6 +19,7 @@ import java.util.List;
 public class PurchaseRestController {
     private final PurchaseServcie purchaseServcie;
 
+    // 발주 전체 조회
     @GetMapping("")
     public ResponseDTO<List<ResponseSearchPurchaseDTO>> getPurchasesList(RequestSearchPurchaseDTO requestSearchPurchaseDTO) {
         try{
@@ -29,6 +30,7 @@ public class PurchaseRestController {
         }
     }
 
+    // 발주 품목 조회
     @GetMapping("/{purchaseId}/items")
     public ResponseDTO<List<ResponsePurchaseItemDTO>> getPurchaseItems(@PathVariable Long purchaseId) {
         try {
@@ -38,7 +40,7 @@ public class PurchaseRestController {
         }
     }
 
-    // 단건 상세조회 (approvalId 없는 건도 포함)
+    // 발주 상세 조회
     @GetMapping("/{purchaseId}")
     public ResponseDTO<ResponseSearchPurchaseDTO> getPurchaseDetail(@PathVariable Long purchaseId) {
         try {
@@ -50,7 +52,7 @@ public class PurchaseRestController {
     }
 
 
-    // 발주 등록 (저장)
+    // 발주 등록
     @PostMapping("")
     public ResponseDTO<Void> registerPurchase(@RequestBody RequestRegisterPurchaseDTO requestDto) {
         try {

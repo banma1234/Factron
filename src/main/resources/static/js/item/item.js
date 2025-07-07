@@ -1,41 +1,26 @@
-// 공통코드 조회
-const getSysCodeList = async (mainCode) => {
-    try {
-        const res = await fetch(`/api/sys/detail?mainCode=${mainCode}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
-        });
-        if (!res.ok) {
-            throw new Error(`HTTP error! status: ${res.status}`);
-        }
-        return res.json();
-    } catch (error) {
-        console.error(`getSysCodeList 에러 (${mainCode}):`, error);
-        throw error;
-    }
-};
-
 // 공통코드를 셀렉트 박스에 세팅
 const setSelectBox = async (mainCode, target) => {
     try {
-        const data = await getSysCodeList(mainCode);
+        let data = await getSysCodeList(mainCode);
 
         if (data.status === 200 && Array.isArray(data.data)) {
+            data = data.data.filter((code) => code.detail_code !== "ITP001")
+
             if (target === 'unit') {
                 // 단위 셀렉트 박스 옵션 저장
-                window.unitOptions = data.data.map((code) => ({
+                window.unitOptions = data.map((code) => ({
                     text: code.name,
                     value: code.detail_code
                 }));
             } else if (target === 'itemType') {
                 // 옵션 저장 및 화면 적용
-                window.itemTypeOptions = data.data.map((code) => ({
+                window.itemTypeOptions = data.map((code) => ({
                     text: code.name,
                     value: code.detail_code
                 })) || [];
 
                 const itemTypeSelect = document.querySelector('.itemTypeSelect');
-                itemTypeSelect.innerHTML = '<option value="">전체</option>'; // 기존 option 초기화
+                itemTypeSelect.innerHTML = '<option value="">제품 유형</option>'; // 기존 option 초기화
 
                 // 셀렉트 박스에 옵션 추가
                 window.itemTypeOptions.forEach(opt => {
@@ -54,9 +39,10 @@ const setSelectBox = async (mainCode, target) => {
     }
 };
 
-
-// 페이지 초기화
 const init = async () => {
+    const alertModal = new bootstrap.Modal(document.getElementsByClassName("alertModal")[0]);
+    const alertBtn = document.getElementsByClassName("alertBtn")[0];
+
     // 셀렉트 박스 데이터 세팅
     await setSelectBox("UNT","unit");
     await setSelectBox("ITP", "itemType");
@@ -66,7 +52,7 @@ const init = async () => {
         document.querySelector('.itemGrid'),
         400,
         [
-            { header: 'ID', name: 'itemId', align: 'center', editable: false },
+            { header: '제품코드', name: 'itemId', align: 'center', editable: false },
             { header: '제품명', name: 'name', align: 'center', editor: 'text' },
             { header: '단위', name: 'unit', align: 'center', editor: { type: 'select', options: { listItems: window.unitOptions } }, formatter: 'listItemText' },
             { header: '가격', name: 'price', align: 'center', editor: 'text',  },
@@ -100,6 +86,7 @@ const init = async () => {
     document.querySelector(".addItemBtn").addEventListener("click", function (e) {
         e.preventDefault();
         e.stopPropagation();
+
         addItem();
     });
 
@@ -107,6 +94,7 @@ const init = async () => {
     document.querySelector(".saveItemBtn").addEventListener("click", function (e) {
         e.preventDefault();
         e.stopPropagation();
+
         saveItems();
     });
 
@@ -114,7 +102,6 @@ const init = async () => {
     async function fetchData() {
         const searchName = document.querySelector("input[name='searchName']").value;
         const itemType = document.querySelector(".itemTypeSelect").value;
-
 
         const params = new URLSearchParams({
             itemName: searchName,
@@ -133,8 +120,13 @@ const init = async () => {
             return { data: [] };
         }
     }
+
     // 더블클릭 시 셀 편집
     itemGrid.on('dblclick', function (ev) {
+        if (ev.columnName === 'price') {
+            itemGrid.setValue(ev.rowKey, 'price', unformatNumber(itemGrid.getValue(ev.rowKey, 'price')));
+        }
+
         itemGrid.startEditing(ev.rowKey, ev.columnName);
     });
 
@@ -145,6 +137,7 @@ const init = async () => {
         });
         itemGrid.resetData(res.data);
     });
+
     // 항목 추가 함수
     const addItem = () => {
         const nextId = generateNextId();
@@ -206,7 +199,7 @@ const init = async () => {
                     });
                 }
 
-                // 수정 자장
+                // 수정 저장
                 if (updateData.length > 0) {
                     await fetch('/api/item', {
                         method: 'PUT',
@@ -215,13 +208,19 @@ const init = async () => {
                     });
                 }
 
-                alert('저장 성공');
-                refreshGrid();
+                alertModal.show();
+
             } catch (err) {
                 console.error('저장 실패', err);
             }
         })();
     };
+
+    // alert 모달 확인 버튼
+    alertBtn.addEventListener("click", () => {
+        alertModal.hide();
+        refreshGrid();
+    });
 
     // ID 자동 생성
     const generateNextId = () => {
@@ -252,7 +251,6 @@ const init = async () => {
 
 };
 
-// 페이지 로드시 init 실행
 window.onload = () => {
     init();
 };

@@ -32,7 +32,7 @@ public class ContractServiceImpl implements ContractService {
     private final ClientRepository clientRepository;
     private final ItemRepository itemRepository;
 
-    // 수주 목록 조회
+    // 수주 전체 조회
     @Override
     public List<ResponseSearchContractDTO> getContractsList(RequestSearchContractDTO requestSearchContractDTO) {
         return contractMapper.getContractsList(requestSearchContractDTO);
@@ -44,11 +44,13 @@ public class ContractServiceImpl implements ContractService {
         return contractMapper.getContractItemsByContractId(contractId);
     }
 
+    // 수주 상세 조회
     @Override
     public ResponseSearchContractDTO getContractDetailByContractId(Long contractId){
         return contractMapper.getContractDetailByContractId(contractId);
     }
 
+    // 수주 등록
     @Transactional
     @Override
     public void registerContract(RequestRegisterContractDTO dto) {
@@ -89,6 +91,7 @@ public class ContractServiceImpl implements ContractService {
         }
     }
 
+    //수주 취소
     @Transactional
     @Override
     public void cancelContract(Long approvalId) {
