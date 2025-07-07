@@ -18,6 +18,7 @@ import java.util.List;
 public class SalesApprovalRestController {
     private final SalesApprovalService salesApprovalService;
 
+    // 영업결재 전체 조회
     @GetMapping("")
     public ResponseDTO<List<ResponseSearchSalesApprovalDTO>> getSalesApprovalsList(RequestSearchSalesApprovalDTO requestSearchSalesApprovalDTO){
         try {
@@ -28,6 +29,7 @@ public class SalesApprovalRestController {
         }
     }
 
+    // 영업결재 단일 조회
     @GetMapping("/{approvalId}")
     public ResponseDTO<ResponseSearchSalesApprovalDTO> getSalesApprovalById(@PathVariable Long approvalId) {
         try {
@@ -42,7 +44,7 @@ public class SalesApprovalRestController {
         }
     }
 
-
+    // 영업 결재 (승인, 반려)
     @PutMapping("")
     public ResponseDTO<Void> updateSalesApproval(@RequestBody RequestSalesApprovalDTO requestSalesApprovalDTO){
         try{

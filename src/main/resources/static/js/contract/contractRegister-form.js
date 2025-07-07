@@ -1,37 +1,39 @@
 const init = () => {
     const form = document.querySelector("form");
-    const confirmModal = new bootstrap.Modal(document.querySelector(".confirmModal"));
-    const alertModal = new bootstrap.Modal(document.querySelector(".alertModal"));
+    const confirmModal = new bootstrap.Modal(document.querySelector(".confirmModal")); // 등록 확인 모달
+    const alertModal = new bootstrap.Modal(document.querySelector(".alertModal"));     // 알림 모달
 
-    let materialGrid;
-    let selectedItems = [];
+    let itemGrid;
+    let selectedItems = []; // 선택된 품목 목록
 
-    form.addEventListener("submit", e => e.preventDefault());
+    form.addEventListener("submit", e => e.preventDefault()); // 폼 기본 제출 막기
 
-    materialGrid = initGrid(
-        document.getElementById("materialGrid"),
+    // 품목 그리드 초기화
+    itemGrid = initGrid(
+        document.getElementById("itemGrid"),
         300,
         [
-            { header: "자재 ID", name: "materialId", align: "center" },
-            { header: "자재명", name: "name", align: "center" },
+            { header: "품목 ID", name: "itemId", align: "center" },
+            { header: "품목명", name: "name", align: "center" },
             { header: "단위", name: "unit", align: "center" },
-            { header: "규격", name: "spec", align: "center" }
+            { header: "가격", name: "price", align: "center" }
         ]
     );
 
-    loadClients();
-    loadMaterials();
+    loadClients(); // 거래처 목록 불러오기
+    loadItems();   // 품목 목록 불러오기
 
     if (window.opener) {
-        window.opener.postMessage("ready", "*");
+        window.opener.postMessage("ready", "*"); // 부모창에 준비 완료 메시지 전송
     }
 
+    // 거래처 목록 API 호출 후 select 옵션으로 추가
     async function loadClients() {
         try {
             const res = await fetch('/api/client');
             const json = await res.json();
             const clients = json.data || [];
-            const select = form.querySelector("select.clientId");
+            const select = form.querySelector("select[name='clientId']");
             clients.forEach(client => {
                 const option = document.createElement('option');
                 option.value = client.id;
@@ -44,45 +46,53 @@ const init = () => {
         }
     }
 
-    async function loadMaterials(keyword = "") {
+    // 품목 목록 조회 (완제품 타입만) / 검색어 필터 적용
+    async function loadItems(keyword = "") {
         try {
-            const res = await fetch(`/api/material?materialName=${encodeURIComponent(keyword)}`);
+            const params = new URLSearchParams();
+            params.append('itemName', keyword);
+            params.append('typeCode', 'ITP003');  // 완제품 타입 코드
+
+            const res = await fetch(`/api/item?${params.toString()}`);
             const json = await res.json();
-            materialGrid.resetData(json.data || []);
+            itemGrid.resetData(json.data || []);
         } catch (e) {
-            console.error("자재 조회 실패", e);
-            alert("자재 목록 조회에 실패했습니다.");
+            console.error("품목 조회 실패", e);
+            alert("품목 목록 조회에 실패했습니다.");
         }
     }
 
-    form.querySelector("input.materialSearch").addEventListener("keyup", (e) => {
+    // 검색창 엔터 또는 검색 버튼 클릭 시 품목 리스트 갱신
+    form.querySelector("input[name='itemSearch']").addEventListener("keyup", (e) => {
         if (e.key === "Enter") {
             e.preventDefault();
-            loadMaterials(e.target.value.trim());
+            loadItems(e.target.value.trim());
         }
     });
-
-    form.querySelector(".materialSearchBtn").addEventListener("click", (e) => {
+    form.querySelector(".itemSearchBtn").addEventListener("click", (e) => {
         e.preventDefault();
-        loadMaterials(form.querySelector("input.materialSearch").value.trim());
+        loadItems(form.querySelector("input[name='itemSearch']").value.trim());
     });
 
-    materialGrid.on("dblclick", ev => {
+    // 품목 더블클릭 시 선택 목록에 추가
+    itemGrid.on("dblclick", ev => {
         if (ev.rowKey != null) {
-            const row = materialGrid.getRow(ev.rowKey);
-            addItemToPurchaseList(row);
+            const row = itemGrid.getRow(ev.rowKey);
+            addItemToContractList(row);
         }
     });
 
-    function addItemToPurchaseList(item) {
-        if (selectedItems.find(i => i.materialId === item.materialId)) {
-            alert("이미 추가된 자재입니다.");
+    // 품목을 선택 목록에 추가 (중복 방지, 기본 수량 1 설정)
+    function addItemToContractList(item) {
+        if (selectedItems.find(i => i.itemId === item.itemId)) {
+            alert("이미 추가된 품목입니다.");
             return;
         }
-        selectedItems.push({ ...item, quantity: 1, price: 1000 });
+        selectedItems.push({ ...item, quantity: 1, price: item.price });
         renderSelectedItems();
     }
 
+    // 선택한 품목 목록 화면에 렌더링 (수량/가격 수정, 삭제 기능 포함)
     function renderSelectedItems() {
         const container = document.querySelector(".contract-items");
         container.innerHTML = "";
@@ -103,28 +113,29 @@ const init = () => {
                 <button type="button" class="btn btn-sm btn-outline-danger remove-btn">X</button>
             `;
 
+            // 수량 입력 시 총합 업데이트
             const qtyInput = div.querySelector(".qty-input");
-            const priceInput = div.querySelector(".price-input");
-            const itemTotalSpan = div.querySelector(".item-total");
-
             qtyInput.addEventListener("input", (e) => {
                 let val = parseInt(e.target.value);
                 if (isNaN(val) || val < 1) val = 1;
                 selectedItems[index].quantity = val;
                 e.target.value = val;
-                itemTotalSpan.textContent = `₩${(val * selectedItems[index].price).toLocaleString()}`;
+                div.querySelector(".item-total").textContent = `₩${(val * selectedItems[index].price).toLocaleString()}`;
                 updateTotalAmount();
             });
 
+            // 가격 입력 시 총합 업데이트
+            const priceInput = div.querySelector(".price-input");
             priceInput.addEventListener("input", (e) => {
                 let val = parseInt(e.target.value);
                 if (isNaN(val) || val < 0) val = 0;
                 selectedItems[index].price = val;
                 e.target.value = val;
-                itemTotalSpan.textContent = `₩${(selectedItems[index].quantity * val).toLocaleString()}`;
+                div.querySelector(".item-total").textContent = `₩${(selectedItems[index].quantity * val).toLocaleString()}`;
                 updateTotalAmount();
             });
 
+            // 품목 삭제 버튼 클릭 처리
             div.querySelector(".remove-btn").addEventListener("click", () => {
                 selectedItems.splice(index, 1);
                 renderSelectedItems();
@@ -136,34 +147,41 @@ const init = () => {
         updateTotalAmount();
     }
 
+    // 선택된 품목 전체 금액 계산 후 표시
     function updateTotalAmount() {
         const total = selectedItems.reduce((sum, item) => sum + (item.quantity * item.price), 0);
-        document.querySelector("span.totalAmount").textContent = `₩${total.toLocaleString()}`;
+        document.querySelector("span[name='totalAmount']").textContent = `₩${total.toLocaleString()}`;
     }
 
+    // 저장 버튼 클릭 시 입력값 검증 후 확인 모달 표시
     document.querySelector(".saveBtn").addEventListener("click", () => {
-        const clientId = form.querySelector("select.clientId").value;
+        const clientId = form.querySelector("select[name='clientId']").value;
+        const deadline = form.querySelector("input[name='deadline']").value;
         if (!clientId) return alert("거래처를 선택해주세요.");
-        if (!selectedItems.length) return alert("발주 자재를 선택해주세요.");
+        if (!deadline) return alert("납기일을 선택해주세요.");
+        if (!selectedItems.length) return alert("수주 품목을 선택해주세요.");
         confirmModal.show();
     });
 
+    // 확인 모달 내 등록 버튼 클릭 시 서버에 수주 데이터 전송
     document.querySelector(".confirmRegisterBtn").addEventListener("click", async () => {
         confirmModal.hide();
-        const clientId = form.querySelector("select.clientId").value;
+        const clientId = form.querySelector("select[name='clientId']").value;
+        const deadline = form.querySelector("input[name='deadline']").value;
 
         const payload = {
             clientId,
+            deadline,
             employeeId: user.id || null,
             items: selectedItems.map(item => ({
-                materialId: item.materialId,
+                itemId: item.itemId,
                 quantity: item.quantity,
                 price: item.price
             }))
         };
 
         try {
-            const res = await fetch("/api/purchase", {
+            const res = await fetch("/api/contract", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
@@ -177,12 +195,14 @@ const init = () => {
         }
     });
 
+    // 알림 모달 닫기 버튼 클릭 시 부모창 갱신 후 창 닫기
     document.querySelector(".alertCloseBtn").addEventListener("click", () => {
         alertModal.hide();
         if (window.opener) window.opener.getData?.();
         window.close();
     });
 
+    // 취소 버튼 클릭 시 창 닫기
     document.querySelector(".cancelBtn").addEventListener("click", () => window.close());
 };
 
