@@ -1,5 +1,7 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.entity.Approval;
+import com.itwillbs.factron.entity.Employee;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +19,8 @@ import java.time.LocalDate;
 public class WorkHistory {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "work_history_seq")
+    @SequenceGenerator(name = "work_history_seq", sequenceName = "work_history_seq", allocationSize = 1)
     private Long id; // 작업 이력 ID (기본키)
 
     @Column(name = "work_date", nullable = false)

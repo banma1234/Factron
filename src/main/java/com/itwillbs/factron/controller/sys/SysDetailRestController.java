@@ -54,7 +54,10 @@ public class SysDetailRestController {
     public ResponseDTO<Void> saveSysDetail(@Valid @RequestBody RequestSysDetailDTO requestSysDetailDTO) {
 
         try {
-            return ResponseDTO.success(sysDetailService.saveSysDetail(requestSysDetailDTO));
+            return ResponseDTO.success(
+                    "상세코드 입력이 완료되었습니다.",
+                    sysDetailService.saveSysDetail(requestSysDetailDTO)
+            );
         } catch (Exception e) {
             return ResponseDTO.fail(
                     800,
@@ -73,7 +76,10 @@ public class SysDetailRestController {
     public ResponseDTO<Void> updateSysDetail(@Valid @RequestBody RequestSysDetailDTO requestSysDetailDTO) {
 
         try {
-            return ResponseDTO.success(sysDetailService.updateSysDetail(requestSysDetailDTO));
+            return ResponseDTO.success(
+                    "상세코드 수정이 완료되었습니다.",
+                    sysDetailService.updateSysDetail(requestSysDetailDTO)
+            );
         } catch (Exception e) {
             return ResponseDTO.fail(
                     800,

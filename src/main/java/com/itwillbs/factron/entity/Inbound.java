@@ -1,5 +1,9 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.entity.Item;
+import com.itwillbs.factron.entity.Material;
+import com.itwillbs.factron.entity.Purchase;
+import com.itwillbs.factron.entity.Storage;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +21,8 @@ import java.time.LocalDate;
 public class Inbound {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "inbound_seq")
+    @SequenceGenerator(name = "inbound_seq", sequenceName = "inbound_seq", allocationSize = 1)
     private Long id; // 입고 ID
 
     @ManyToOne(fetch = FetchType.LAZY)

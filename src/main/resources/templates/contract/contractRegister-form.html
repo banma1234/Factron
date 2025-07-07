@@ -33,15 +33,16 @@
         <!-- 품목 검색 -->
         <div class="d-flex justify-content-end mb-3">
             <div class="input-group search-box">
-                <input type="text" name="materialSearch" class="materialSearch form-control" placeholder="품목명 검색" autocomplete="off" />
-                <button class="btn btn-outline-secondary materialSearchBtn" type="button">검색</button>
+                <input type="text" name="itemSearch" class="itemSearch form-control" placeholder="품목명 검색" autocomplete="off" />
+                <button class="btn btn-outline-secondary itemSearchBtn" type="button">검색</button>
             </div>
         </div>
 
         <!-- 품목 그리드 -->
         <article class="mb-5">
-            <div id="materialGrid" class="material-grid"></div>
+            <div id="itemGrid" class="item-grid"></div>
         </article>
+
 
         <!-- 수주 품목 목록 -->
         <div class="mb-4">
@@ -49,7 +50,7 @@
             <div class="contract-items d-flex flex-column gap-1 border rounded p-2 bg-light"></div>
             <div class="bg-white p-2 rounded border d-flex justify-content-between mt-2 contract-total">
                 <span><strong>총금액</strong></span>
-                <span class="totalAmount fw-bold text-end">₩0</span>
+                <span name="totalAmount" class="totalAmount fw-bold text-end">₩0</span>
             </div>
         </div>
 

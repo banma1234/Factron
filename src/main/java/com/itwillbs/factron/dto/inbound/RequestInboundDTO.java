@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class RequestInboundDTO {
-    private String materialId;
-    private Long quantity;
-    private Long storageId;
+    private String materialId;  // 원자재id
+    private Long quantity;      // 수량
+    private Long storageId;     // 창고id
 }

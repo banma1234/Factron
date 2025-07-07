@@ -41,11 +41,13 @@ public class InboundServiceImpl implements InboundService {
     private final StorageService storageService;
     private final LotCreateService lotCreateService;
 
+    // 입고 전체 조회
     @Override
     public List<ResponseSearchInboundDTO> getInboundsList(RequestSearchInboundDTO requestSearchInboundDTO){
         return inboundMapper.getInboundsList(requestSearchInboundDTO);
     }
 
+    // 입고 처리
     @Override
     @Transactional
     public void updateInbound(RequestInboundCompleteDTO dto) {

@@ -149,7 +149,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
                         .quantity(product.getQuantity())
                         .outDate(LocalDate.now())
                         .categoryCode("ITP001")
-                        .statusCode("STS001") // 대기
+                        .statusCode("STS003") // 완료
                         .build());
 
                 updateLotList.add(new RequestLotUpdateDTO(material.getId(), null, product.getQuantity(), workOrder));
@@ -170,7 +170,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
                         .quantity(product.getQuantity())
                         .outDate(LocalDate.now())
                         .categoryCode("ITP002")
-                        .statusCode("STS001") // 대기
+                        .statusCode("STS003") // 완료
                         .build());
 
                 updateLotList.add(new RequestLotUpdateDTO(null, semiItem.getId(), product.getQuantity(), workOrder));

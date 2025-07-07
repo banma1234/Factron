@@ -109,7 +109,7 @@ const init = () => {
     }
 
     // 발령 팝업 오픈
-    document.querySelector(".registTrans").addEventListener("click", function(e) {
+    document.querySelector(".registTrans")?.addEventListener("click", function(e) {
         const popup = window.open('/trans/save', '_blank', 'width=800,height=750');
 
         // 자식 창으로부터 'ready' 먼저 수신 후 postMessage 실행

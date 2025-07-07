@@ -23,5 +23,10 @@
 }
 
 .grid__container {
-    width: 50%;
+    min-width: 420px;
+}
+
+#lot-tree {
+    width: 1000px;
+    height: 600px;
 }

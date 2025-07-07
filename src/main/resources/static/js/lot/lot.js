@@ -57,7 +57,7 @@ const init = () => {
      * */
     const buildTree = data => {
         const treeWrapper = document.getElementById("tree-wrapper");
-        treeWrapper.innerHTML = '<div id="lot-tree" style="width:800px; height: 600px"></div>';
+        treeWrapper.innerHTML = '<div id="lot-tree"></div>';
 
         const NEW_CONFIG = {
             chart: {
