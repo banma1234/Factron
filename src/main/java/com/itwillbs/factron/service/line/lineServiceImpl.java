@@ -29,21 +29,6 @@ public class lineServiceImpl implements lineService {
     private final AuthorizationChecker authorizationChecker;
 
     /**
-     * 관리자 권한 체크
-     *
-     * @param empId 사원 ID
-     */
-    private void checkAdminPermission(Long empId) {
-
-        boolean hasPermission = true; // TODO: 실제 권한 체크 로직으로 대체
-
-        // 관리자 권한이 없는 경우 예외 처리
-        if (!hasPermission) {
-            throw new SecurityException("관리자 권한이 없습니다.");
-        }
-    }
-
-    /**
      * 라인 목록 조회
      *
      * @param requestDto 요청 DTO

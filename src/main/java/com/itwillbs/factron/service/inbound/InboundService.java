@@ -8,6 +8,10 @@ import com.itwillbs.factron.dto.inbound.ResponseSearchInboundDTO;
 import java.util.List;
 
 public interface InboundService {
+
+    // 입고 전체 조회
     List<ResponseSearchInboundDTO> getInboundsList(RequestSearchInboundDTO requestSearchInboundDTO);
+
+    // 입고 처리
     void updateInbound(RequestInboundCompleteDTO dto);
 }
