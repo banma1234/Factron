@@ -45,6 +45,7 @@ const init = () => {
     // 기본 날짜: 오늘과 30일 전으로 초기화
     const today = new Date().toISOString().split('T')[0];
     const pastDate = new Date();
+
     pastDate.setDate(pastDate.getDate() - 30);
     const startDateDefault = pastDate.toISOString().split('T')[0];
 

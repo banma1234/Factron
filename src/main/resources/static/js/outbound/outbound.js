@@ -125,10 +125,9 @@ const init = () => {
     // 날짜 기본값 세팅 (오늘, 30일 전)
     const today = new Date().toISOString().split('T')[0];
     const pastDate = new Date();
-    pastDate.setDate(pastDate.getDate() - 30);
-    const pastDateStr = pastDate.toISOString().split('T')[0];
 
-    document.querySelector("input[name='startDate']").value = pastDateStr;
+    pastDate.setDate(pastDate.getDate() - 30);
+    document.querySelector("input[name='startDate']").value = pastDate.toISOString().split('T')[0];
     document.querySelector("input[name='endDate']").value = today;
 
     getData(); // 초기 데이터 조회
