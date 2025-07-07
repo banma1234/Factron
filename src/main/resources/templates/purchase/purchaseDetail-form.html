@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/popup-base.html}">
+<head>
+    <title>Factron</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <form>
+        <h2 class="mb-3">발주 상세</h2>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <span class="form-label">발주자 이름</span>
+                <input type="text" name="employeeName" class="form-control" disabled>
+            </div>
+            <div class="col-md-6">
+                <span class="form-label">사번</span>
+                <input type="text" name="employeeId" class="form-control" disabled>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <span class="form-label">거래처명</span>
+                <input type="text" name="clientName" class="form-control" disabled>
+            </div>
+            <div class="col-md-6">
+                <span class="form-label">등록일</span>
+                <input type="text" name="createdAt" class="form-control" disabled>
+            </div>
+        </div>
+
+        <!-- 발주 자재 목록 -->
+        <div class="mb-3">
+            <span class="form-label">발주 자재 목록</span>
+            <div class="purchase-items d-flex flex-column gap-1 border rounded p-2 bg-light"
+                 style="max-height: 180px; overflow-y: auto;"></div>
+
+            <div class="bg-white p-2 rounded border d-flex justify-content-between mt-2">
+                <span><strong>총금액</strong></span>
+                <span name="totalAmount" class="fw-bold text-end">₩0</span>
+            </div>
+        </div>
+    </form>
+    <div class="d-flex justify-content-end mt-3">
+        <button type="button" class="btn btn-danger cancelApprovalBtn" style="display: none;">
+            결재 취소
+        </button>
+    </div>
+</div>
+
+<th:block layout:fragment="javascript">
+    <script th:src="@{/js/purchase/purchaseDetail-form.js}"></script>
+</th:block>
+</body>
+</html>

@@ -1,5 +1,6 @@
 package com.itwillbs.factron.service.line;
 
+import com.itwillbs.factron.common.component.AuthorizationChecker;
 import com.itwillbs.factron.dto.line.*;
 import com.itwillbs.factron.entity.Line;
 import com.itwillbs.factron.entity.Process;
@@ -25,20 +26,7 @@ public class lineServiceImpl implements lineService {
     private final LineMapper lineMapper;
     private final ProcessRepository processRepository;
 
-    /**
-     * 관리자 권한 체크
-     *
-     * @param empId 사원 ID
-     */
-    private void checkAdminPermission(Long empId) {
-
-        boolean hasPermission = true; // TODO: 실제 권한 체크 로직으로 대체
-
-        // 관리자 권한이 없는 경우 예외 처리
-        if (!hasPermission) {
-            throw new SecurityException("관리자 권한이 없습니다.");
-        }
-    }
+    private final AuthorizationChecker authorizationChecker;
 
     /**
      * 라인 목록 조회
@@ -56,13 +44,18 @@ public class lineServiceImpl implements lineService {
      * 라인 추가 및 공정 연결
      *
      * @param requestDto 요청 DTO
-     * @param empId      사원 ID
      */
     @Override
     @Transactional
-    public void addLine(RequestAddLineDTO requestDto, Long empId) {
+    public void addLine(RequestAddLineDTO requestDto) {
+
+        // AuthorizationChecker를 사용하여 현재 로그인한 사용자 ID 가져오기
+        Long empId = authorizationChecker.getCurrentEmployeeId();
+
+        log.info("현재 로그인한 사원 ID: {}", empId);
+
         // 관리자 권한 체크
-        checkAdminPermission(empId);
+        authorizationChecker.checkAnyAuthority("ATH003", "ATH007");
 
         // 라인 생성
         Line line = Line.builder()
@@ -84,14 +77,13 @@ public class lineServiceImpl implements lineService {
      * 라인 수정
      *
      * @param requestDto 요청 DTO
-     * @param empId      사원 ID
      */
     @Override
     @Transactional
-    public void updateLine(RequestUpdateLineDTO requestDto, Long empId) {
+    public void updateLine(RequestUpdateLineDTO requestDto) {
 
         // 관리자 권한 체크
-        checkAdminPermission(empId);
+        authorizationChecker.checkAnyAuthority("ATH003", "ATH007");
 
         Line line = lineRepository.findById(requestDto.getLineId())
                 .orElseThrow(() -> new EntityNotFoundException("해당 라인이 존재하지 않습니다."));
@@ -106,13 +98,13 @@ public class lineServiceImpl implements lineService {
      * 라인에 여러 공정 한 번에 연결
      *
      * @param requestDto 요청 DTO
-     * @param empId     사원 ID
      */
     @Override
     @Transactional
-    public void connectProcessesToLine(RequestConnectProcessesToLineDTO requestDto, Long empId) {
+    public void connectProcessesToLine(RequestConnectProcessesToLineDTO requestDto) {
+
         // 관리자 권한 체크
-        checkAdminPermission(empId);
+        authorizationChecker.checkAnyAuthority("ATH003", "ATH007");
 
         // 라인 조회
         Line line = lineRepository.findById(requestDto.getLineId())
@@ -126,13 +118,13 @@ public class lineServiceImpl implements lineService {
      * 여러 공정을 라인에서 한 번에 연결 해제
      *
      * @param requestDto 요청 DTO
-     * @param empId     사원 ID
      */
     @Override
     @Transactional
-    public void disconnectProcessesFromLine(RequestDisconnectProcessesFromLineDTO requestDto, Long empId) {
+    public void disconnectProcessesFromLine(RequestDisconnectProcessesFromLineDTO requestDto) {
+
         // 관리자 권한 체크
-        checkAdminPermission(empId);
+        authorizationChecker.checkAnyAuthority("ATH003", "ATH007");
 
         // 공정 리스트 처리
         requestDto.getProcessIds().forEach(processId -> {

@@ -48,8 +48,9 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/", "/login", "/css/**", "/js/**", "/images/**", "/api/sys/**").permitAll()
-                .requestMatchers("/api/employee").permitAll()
+                .requestMatchers("/", "/**.ico", "/login", "/css/**", "/js/**", "/images/**", "/api/sys/**").permitAll()
+//                .requestMatchers("/api/employee").permitAll()
+                .requestMatchers("/api/**").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
@@ -100,7 +101,7 @@ public class SecurityConfig {
                 // 쿠키에 사용자 정보 저장
                 setUserInfoCookie(response, employee, authentication);
                 
-                log.info("로그인 성공 - 사용자: {}, 이름: {}, 권한: {}", 
+                log.debug("로그인 성공 - 사용자: {}, 이름: {}, 권한: {}",
                     authentication.getName(), 
                     employee.getName(),
                     authentication.getAuthorities());
@@ -143,7 +144,7 @@ public class SecurityConfig {
             
             response.addCookie(userInfoCookie);
             
-            log.info("사용자 정보 쿠키 설정 완료: {}", userInfoJson);
+            log.debug("사용자 정보 쿠키 설정 완료: {}", userInfoJson);
             
         } catch (Exception e) {
             log.error("쿠키 설정 실패 - 상세 에러: ", e);

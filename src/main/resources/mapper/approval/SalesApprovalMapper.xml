@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itwillbs.factron.mapper.approval.SalesApprovalMapper">
+
+    <!--
+        영업 결재 목록 조회
+        - 수주(SLS001) / 발주(SLS002) 구분
+        - 수발주 품목이 여러 개인 경우: "상품외 N건"
+    -->
+    <select id="getSalesApprovalList"
+            parameterType="com.itwillbs.factron.dto.approval.RequestSearchSalesApprovalDTO"
+            resultType="com.itwillbs.factron.dto.approval.ResponseSearchSalesApprovalDTO">
+
+        SELECT
+        APP.ID AS approvalId,
+        APP.APPROVAL_TYPE_CODE AS apprTypeCode,
+        TYPE_CODE.NAME AS apprTypeName,
+
+        REQ_EMP.ID AS requesterId,
+        REQ_EMP.NAME AS requesterName,
+
+        NVL(
+        CASE
+        WHEN APP.APPROVAL_TYPE_CODE = 'SLS001' THEN
+        (SELECT CASE WHEN COUNT(*) = 1 THEN MIN(I.NAME)
+        ELSE MIN(I.NAME) || '외 ' || (COUNT(*) - 1) || '건' END
+        FROM CONTRACT C
+        JOIN CONTRACT_LIST CL ON C.ID = CL.CONTRACT_ID
+        JOIN ITEM I ON CL.ITEM_ID = I.ID
+        WHERE C.APPROVAL_ID = APP.ID)
+        WHEN APP.APPROVAL_TYPE_CODE = 'SLS002' THEN
+        (SELECT CASE WHEN COUNT(*) = 1 THEN MIN(M.NAME)
+        ELSE MIN(M.NAME) || '외 ' || (COUNT(*) - 1) || '건' END
+        FROM PURCHASE P
+        JOIN PURCHASE_LIST PL ON P.ID = PL.PURCHASE_ID
+        JOIN MATERIAL M ON PL.MATERIAL_ID = M.ID
+        WHERE P.APPROVAL_ID = APP.ID)
+        END,
+        '-'
+        ) AS itemSummary,
+
+        NVL(
+        CASE
+        WHEN APP.APPROVAL_TYPE_CODE = 'SLS001' THEN
+        (SELECT CLT.NAME FROM CONTRACT C JOIN CLIENT CLT ON C.CLIENT_ID = CLT.ID WHERE C.APPROVAL_ID = APP.ID)
+        WHEN APP.APPROVAL_TYPE_CODE = 'SLS002' THEN
+        (SELECT CLT.NAME FROM PURCHASE P JOIN CLIENT CLT ON P.CLIENT_ID = CLT.ID WHERE P.APPROVAL_ID = APP.ID)
+        END,
+        '-'
+        ) AS clientName,
+
+        APP.REQUESTED_AT AS requestedAt,
+        APP.CONFIRMED_AT AS confirmedAt,
+
+        APRV_EMP.NAME AS approverName,
+        APP.APPROVER_ID AS approverId,
+
+        APP.APPROVAL_STATUS_CODE AS approvalStatusCode,
+        STATUS_CODE.NAME AS approvalStatusName,
+
+        APP.REJECT_REASON AS rejectionReason
+
+        FROM APPROVAL APP
+        LEFT JOIN EMPLOYEE REQ_EMP ON REQ_EMP.ID = APP.REQUESTER_ID
+        LEFT JOIN EMPLOYEE APRV_EMP ON APRV_EMP.ID = APP.APPROVER_ID
+        LEFT JOIN DETAIL_SYS_CODE TYPE_CODE ON APP.APPROVAL_TYPE_CODE = TYPE_CODE.DETAIL_CODE
+        LEFT JOIN DETAIL_SYS_CODE STATUS_CODE ON APP.APPROVAL_STATUS_CODE = STATUS_CODE.DETAIL_CODE
+
+        <where>
+            AND APP.APPROVAL_TYPE_CODE IN ('SLS001', 'SLS002')
+
+            <if test="startDate != null and startDate != ''">
+                AND APP.REQUESTED_AT &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+            </if>
+
+            <if test="endDate != null and endDate != ''">
+                AND APP.REQUESTED_AT &lt;= TO_DATE(#{endDate}, 'YYYY-MM-DD')
+            </if>
+
+            <if test="apprType != null and apprType != ''">
+                AND APP.APPROVAL_TYPE_CODE = #{apprType}
+            </if>
+
+            <if test="approvalNameOrEmpId != null and approvalNameOrEmpId != ''">
+                AND (
+                REQ_EMP.NAME LIKE '%' || #{approvalNameOrEmpId} || '%'
+                OR (
+                REGEXP_LIKE(#{approvalNameOrEmpId}, '^[0-9]+')
+                AND TO_CHAR(REQ_EMP.ID) LIKE '%' || #{approvalNameOrEmpId} || '%'
+                )
+                )
+            </if>
+
+            <if test="clientName != null and clientName != ''">
+                AND (
+                EXISTS (
+                SELECT 1 FROM CONTRACT C
+                JOIN CLIENT CLT ON C.CLIENT_ID = CLT.ID
+                WHERE C.APPROVAL_ID = APP.ID
+                AND CLT.NAME LIKE '%' || #{clientName} || '%'
+                )
+                OR EXISTS (
+                SELECT 1 FROM PURCHASE P
+                JOIN CLIENT CLT ON P.CLIENT_ID = CLT.ID
+                WHERE P.APPROVAL_ID = APP.ID
+                AND CLT.NAME LIKE '%' || #{clientName} || '%'
+                )
+                )
+            </if>
+        </where>
+
+        ORDER BY APP.ID DESC
+    </select>
+
+    <!-- 단일 결재 상세 -->
+    <select id="getSalesApprovalById" parameterType="long" resultType="com.itwillbs.factron.dto.approval.ResponseSearchSalesApprovalDTO">
+        SELECT
+            APP.ID AS approvalId,
+            APP.APPROVAL_TYPE_CODE AS apprTypeCode,
+            TYPE_CODE.NAME AS apprTypeName,
+
+            REQ_EMP.ID AS requesterId,
+            REQ_EMP.NAME AS requesterName,
+
+            NVL(
+                    CASE
+                        WHEN APP.APPROVAL_TYPE_CODE = 'SLS001' THEN
+                            (SELECT CASE WHEN COUNT(*) = 1 THEN MIN(I.NAME)
+                                         ELSE MIN(I.NAME) || '외 ' || (COUNT(*) - 1) || '건' END
+                             FROM CONTRACT C
+                                      JOIN CONTRACT_LIST CL ON C.ID = CL.CONTRACT_ID
+                                      JOIN ITEM I ON CL.ITEM_ID = I.ID
+                             WHERE C.APPROVAL_ID = APP.ID)
+                        WHEN APP.APPROVAL_TYPE_CODE = 'SLS002' THEN
+                            (SELECT CASE WHEN COUNT(*) = 1 THEN MIN(M.NAME)
+                                         ELSE MIN(M.NAME) || '외 ' || (COUNT(*) - 1) || '건' END
+                             FROM PURCHASE P
+                                      JOIN PURCHASE_LIST PL ON P.ID = PL.PURCHASE_ID
+                                      JOIN MATERIAL M ON PL.MATERIAL_ID = M.ID
+                             WHERE P.APPROVAL_ID = APP.ID)
+                        END,
+                    '-'
+            ) AS itemSummary,
+
+            NVL(
+                    CASE
+                        WHEN APP.APPROVAL_TYPE_CODE = 'SLS001' THEN
+                            (SELECT CLT.NAME FROM CONTRACT C JOIN CLIENT CLT ON C.CLIENT_ID = CLT.ID WHERE C.APPROVAL_ID = APP.ID)
+                        WHEN APP.APPROVAL_TYPE_CODE = 'SLS002' THEN
+                            (SELECT CLT.NAME FROM PURCHASE P JOIN CLIENT CLT ON P.CLIENT_ID = CLT.ID WHERE P.APPROVAL_ID = APP.ID)
+                        END,
+                    '-'
+            ) AS clientName,
+
+            APP.REQUESTED_AT AS requestedAt,
+            APP.CONFIRMED_AT AS confirmedAt,
+
+            APRV_EMP.NAME AS approverName,
+            APP.APPROVER_ID AS approverId,
+
+            APP.APPROVAL_STATUS_CODE AS approvalStatusCode,
+            STATUS_CODE.NAME AS approvalStatusName,
+
+            APP.REJECT_REASON AS rejectionReason
+
+        FROM APPROVAL APP
+                 LEFT JOIN EMPLOYEE REQ_EMP ON REQ_EMP.ID = APP.REQUESTER_ID
+                 LEFT JOIN EMPLOYEE APRV_EMP ON APRV_EMP.ID = APP.APPROVER_ID
+                 LEFT JOIN DETAIL_SYS_CODE TYPE_CODE ON APP.APPROVAL_TYPE_CODE = TYPE_CODE.DETAIL_CODE
+                 LEFT JOIN DETAIL_SYS_CODE STATUS_CODE ON APP.APPROVAL_STATUS_CODE = STATUS_CODE.DETAIL_CODE
+
+        WHERE APP.ID = #{approvalId}
+    </select>
+
+</mapper>

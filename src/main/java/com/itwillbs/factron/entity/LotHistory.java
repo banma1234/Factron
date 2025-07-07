@@ -1,5 +1,7 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.entity.Lot;
+import com.itwillbs.factron.entity.WorkOrder;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +19,8 @@ import java.time.LocalDateTime;
 public class LotHistory {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "lot_history_seq")
+    @SequenceGenerator(name = "lot_history_seq", sequenceName = "lot_history_seq", allocationSize = 1)
     private Long id; // LOT 이력 ID
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -1,5 +1,9 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.entity.Employee;
+import com.itwillbs.factron.entity.Item;
+import com.itwillbs.factron.entity.Line;
+import com.itwillbs.factron.entity.ProductionPlanning;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,4 +47,9 @@ public class WorkOrder {
 
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate; // 작업 시작일
+
+    // 작업 상태 변경
+    public void updateStatus(String statusCode) {
+        this.statusCode = statusCode;
+    }
 }

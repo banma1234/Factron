@@ -100,7 +100,7 @@ const init = () => {
 
     // 생산계획 등록 팝업 오픈
     document.querySelector(".registPrdctPlan")?.addEventListener("click", function(e) {
-        window.open('/production/save', '_blank', 'width=800,height=450');
+        window.open('/production/save', '_blank', 'width=800,height=400');
     });
 
     // 페이지 진입 시 바로 리스트 호출

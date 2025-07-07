@@ -1,5 +1,8 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.entity.Approval;
+import com.itwillbs.factron.entity.Client;
+import com.itwillbs.factron.entity.Employee;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,7 +22,8 @@ import java.time.LocalDate;
 public class Contract {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "contract_seq")
+    @SequenceGenerator(name = "contract_seq", sequenceName = "contract_seq", allocationSize = 1)
     private Long id; // 수주 ID
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -43,4 +47,12 @@ public class Contract {
     @JoinColumn(name = "approval_id", referencedColumnName = "id", nullable = true)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     private Approval approval; // 결재 정보 (수주 결재 정보)
+
+    public void updateStatus(String statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public void setApproval(Approval approval) {
+        this.approval = approval;
+    }
 }

@@ -1,5 +1,6 @@
 package com.itwillbs.factron.service.process;
 
+import com.itwillbs.factron.common.component.AuthorizationChecker;
 import com.itwillbs.factron.dto.process.RequestAddProcessDTO;
 import com.itwillbs.factron.dto.process.RequestProcessInfoDTO;
 import com.itwillbs.factron.dto.process.RequestUpdateProcessDTO;
@@ -25,32 +26,24 @@ public class ProcessServiceImpl implements ProcessService {
     private final ProcessRepository processRepository;
     private final ProcessMapper processMapper;
 
-    /**
-     * 관리자 권한 체크
-     *
-     * @param empId 사원 ID
-     */
-    private void checkAdminPermission(Long empId) {
-
-        boolean hasPermission = true; // TODO: 실제 권한 체크 로직으로 대체
-
-        // 관리자 권한이 없는 경우 예외 처리
-        if (!hasPermission) {
-            throw new SecurityException("관리자 권한이 없습니다.");
-        }
-    }
+    private final AuthorizationChecker authorizationChecker;
 
     /**
      * 공정 추가
      *
      * @param requestDto 요청 DTO
-     * @param empId      사원 ID
      */
     @Override
     @Transactional
-    public void addProcess(RequestAddProcessDTO requestDto, Long empId) {
+    public void addProcess(RequestAddProcessDTO requestDto) {
 
-        checkAdminPermission(empId); // 관리자 권한 체크
+        // AuthorizationChecker를 사용하여 현재 로그인한 사용자 ID 가져오기
+        Long empId = authorizationChecker.getCurrentEmployeeId();
+
+        log.info("현재 로그인한 사원 ID: {}", empId);
+
+        // 관리자 권한 체크
+        authorizationChecker.checkAnyAuthority("ATH003", "ATH007");
 
         Process process = Process.builder()
                 .name(requestDto.getProcessName())
@@ -68,23 +61,23 @@ public class ProcessServiceImpl implements ProcessService {
     /**
      * 공정 수정
      *
-     * @param dto   요청 DTO
-     * @param empId 사원 ID
+     * @param requestDto   요청 DTO
      */
     @Override
     @Transactional
-    public void updateProcess(RequestUpdateProcessDTO dto, Long empId) {
+    public void updateProcess(RequestUpdateProcessDTO requestDto) {
 
-        checkAdminPermission(empId); // 관리자 권한 체크
+        // 관리자 권한 체크
+        authorizationChecker.checkAnyAuthority("ATH003", "ATH007");
 
-        Process process = processRepository.findById(dto.getProcessId())
+        Process process = processRepository.findById(requestDto.getProcessId())
                 .orElseThrow(() -> new EntityNotFoundException("해당 공정을 찾을 수 없습니다."));
 
         process.updateProcessInfo(
-                dto.getProcessName(),
-                dto.getDescription(),
-                dto.getProcessTypeCode(),
-                dto.getStandardTime()
+                requestDto.getProcessName(),
+                requestDto.getDescription(),
+                requestDto.getProcessTypeCode(),
+                requestDto.getStandardTime()
         );
     }
 

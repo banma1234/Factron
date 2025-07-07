@@ -8,8 +8,6 @@ function toUpperCase(str) {
     return str.toUpperCase();
 }
 
-const test = true;
-
 // 공통코드 목록 조회
 const getSysCodeList = async (mainCode) => {
     try {
@@ -80,7 +78,7 @@ const validators = {
 };
 
 /**
- *
+ * 일반 사원이 수정 가능한 태그
  * @returns {[Element,Element,Element,Element,Element]}
  */
 const getNormAccess = () => {
@@ -93,6 +91,10 @@ const getNormAccess = () => {
     return [name, birth, rrnBack, email, address, phone];
 }
 
+/**
+ *
+ * @returns {Element[]}
+ */
 const getNormBody = () => {
     const name = document.querySelector("input[name='empName']");
     const birth = document.querySelector("input[name='birth']");
@@ -104,12 +106,20 @@ const getNormBody = () => {
     return [empId, name, birth, rrnBack, email, address, phone];
 }
 
+/**
+ * inputList들의 disabled 해제
+ * @param inputList
+ */
 const setFormAccess = (inputList) => {
     inputList.forEach((input)=>{
         input.disabled=false;
     })
 }
 
+/**
+ * 인사 권한 사용자의 수정 가능한 목록
+ * @returns {[Element,Element,Element,Element]}
+ */
 const getPernAccess = () => {
     const gender = document.querySelector("select[name='gender']");
     const isActive = document.querySelector("select[name='empIsActive']");
@@ -117,6 +127,7 @@ const getPernAccess = () => {
     const eduLevel = document.querySelector("select[name='eduLevelCode']");
     return [gender, isActive, employ, eduLevel];
 }
+
 
 const init = async () => {
     const form = document.querySelector("form");
@@ -126,6 +137,8 @@ const init = async () => {
     const alertModal = new bootstrap.Modal(document.getElementsByClassName("alertModal")[0]);
     const alertBtn = document.getElementsByClassName("alertBtn")[0];
     let isEditMode = false; // 수정모드
+    const hasAccess = user.authCode === 'ATH002' || user.authCode === 'ATH003'; // 인사 권한 체크
+    let isEditable = hasAccess; // 수정 권한 체크
 
     try {
         // 공통코드 세팅
@@ -157,6 +170,9 @@ const init = async () => {
             form.querySelector("select[name='empIsActive']").value = toUpperCase(data.empIsActive) || "";
             form.querySelector("select[name='employCode']").value = toUpperCase(data.employCode) || "";
             form.querySelector("select[name='deptCode']").value = toUpperCase(data.deptCode) || "";
+
+            // 본인 정보에 수정에대해 권한 부여
+            isEditable = isEditable || (user.id == data.empId);
         });
 
         // 주소 외부 API 연결
@@ -165,33 +181,42 @@ const init = async () => {
         });
 
         btnModify.addEventListener("click", () => {
+            // 수정 권한 체크
+            if(!isEditable){
+                alert("수정 권한이 없습니다!");
+                return;
+            }
+
+            // 수정모드 아닌 경우 수정 모드로 변경
             if (!isEditMode) {
-                // 수정모드 아닌 경우 수정 모드로 변경
                 toggleFormDisabled();
                 btnModify.textContent = "저장";
-                isEditMode = true;
-
-            } else {
-                // 수정모드인 경우
-                const [name, birth, rrnBack, email, address, phone] = getNormAccess();
-                const [gender, isActive, employ, eduLevel] = getPernAccess();
-
-                //validation
-                if(!validators.isValidName(name.value)) return alert("이름 형식이 올바르지 않습니다.");
-                if(!validators.isValidBirthDate(birth.value)) return alert("생년월일 형식이 올바르지 않습니다. (예: 990101)");
-                if(!validators.isValidRrnBack(rrnBack.value)) return alert("주민번호 뒷자리는 7자리여야 합니다.");
-                if(!validators.isValidEmail(email.value)) return alert("유효한 이메일 형식이 아닙니다.");
-                if(!validators.isValidPhone(phone.value)) return alert("전화번호 형식이 올바르지 않습니다.");
-                // 인사 권한체크
-                if(test){
-                    //validation
-                    if(!validators.isValidGender(gender.value)) return alert("성별을 선택해주세요.");
-                    if(!validators.isValidCommonCode(eduLevel.value)) return alert("최종학력을 선택해주세요.")
-                    if(!validators.isValidStatus(isActive.value)) return alert("재직 상태를 선택해주세요.")
-                    if(!validators.isValidCommonCode(employ.value)) return alert("고용유형을 선택해주세요.")
-                }
-                confirmModal.show();
+                isEditMode = !isEditMode;
+                return;
             }
+
+
+            // 일반 권한 수정 데이터
+            const [name, birth, rrnBack, email, address, phone] = getNormAccess();
+           // 인사 권한 수정 데이터
+            const [gender, isActive, employ, eduLevel] = getPernAccess();
+
+            //validation
+            if(!validators.isValidName(name.value)) return alert("이름 형식이 올바르지 않습니다.");
+            if(!validators.isValidBirthDate(birth.value)) return alert("생년월일 형식이 올바르지 않습니다. (예: 990101)");
+            if(!validators.isValidRrnBack(rrnBack.value)) return alert("주민번호 뒷자리는 7자리여야 합니다.");
+            if(!validators.isValidEmail(email.value)) return alert("유효한 이메일 형식이 아닙니다.");
+            if(!validators.isValidPhone(phone.value)) return alert("전화번호 형식이 올바르지 않습니다.");
+            // 인사 권한체크
+
+            //validation
+            if(hasAccess && !validators.isValidGender(gender.value)) return alert("성별을 선택해주세요.");
+            if(hasAccess && !validators.isValidCommonCode(eduLevel.value)) return alert("최종학력을 선택해주세요.")
+            if(hasAccess && !validators.isValidStatus(isActive.value)) return alert("재직 상태를 선택해주세요.")
+            if(hasAccess && !validators.isValidCommonCode(employ.value)) return alert("고용유형을 선택해주세요.")
+
+            confirmModal.show();
+
         });
 
         // 취소 버튼
@@ -202,7 +227,7 @@ const init = async () => {
         // 폼 disable 변경
         const toggleFormDisabled = () => {
             setFormAccess(getNormAccess());
-            if(test){
+            if(hasAccess){
                 setFormAccess(getPernAccess());
             }
         };
@@ -255,11 +280,11 @@ const init = async () => {
             inputs.forEach(input => {
                 data[input.name] = input.name !== 'phone' ? input.value: formatPhoneNumber(input.value)
             });
-            if(test){
-                pernInputs.forEach(input => {
-                    data[input.name] = input.value;
-                });
-            }
+
+            pernInputs.forEach(input => {
+                data[input.name] = input.value;
+            });
+
 
             try {
                 const res = await fetch(`/api/employee`, {

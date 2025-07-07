@@ -1,5 +1,7 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.dto.material.RequestMaterialDTO;
+import com.itwillbs.factron.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +14,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "material")
-public class Material extends BaseEntity {
+public class Material extends com.itwillbs.factron.entity.BaseEntity {
 
     @Id
     private String id; // 자재 ID (예: M0000001)
@@ -29,4 +31,10 @@ public class Material extends BaseEntity {
     @Column(name = "spec", length = 255, nullable = false)
     private String spec; // 자재 사양
 
+    public void updateMaterial(RequestMaterialDTO dto) {
+        this.unit = dto.getUnit();
+        this.name = dto.getName();
+        this.info = dto.getInfo();
+        this.spec = dto.getSpec();
+    }
 }

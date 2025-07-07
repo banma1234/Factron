@@ -1,5 +1,7 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.entity.Item;
+import com.itwillbs.factron.entity.QualityInspection;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +17,8 @@ import lombok.NoArgsConstructor;
 public class QualityInspectionStandard {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "quality_inspection_standard_seq")
+    @SequenceGenerator(name = "quality_inspection_standard_seq", sequenceName = "quality_inspection_standard_seq", allocationSize = 1)
     private Long id; // 품질 검사 제품별 기준 ID
 
     @ManyToOne(fetch = FetchType.LAZY)

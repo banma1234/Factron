@@ -27,11 +27,10 @@ public class lineRestController {
 
     // 라인 추가 API
     @PostMapping()
-    public ResponseDTO<Void> addLine(@RequestHeader("empId") Long empId,
-                                     @RequestBody @Valid RequestAddLineDTO requestDto) {
+    public ResponseDTO<Void> addLine(@RequestBody @Valid RequestAddLineDTO requestDto) {
 
         try {
-            lineService.addLine(requestDto, empId);
+            lineService.addLine(requestDto);
 
             return ResponseDTO.success("라인을 추가하였습니다", null);
         } catch (EntityNotFoundException e) {
@@ -48,12 +47,11 @@ public class lineRestController {
 
     // 라인 수정 API
     @PutMapping()
-    public ResponseDTO<Void> updateLine(@RequestHeader("empId") Long empId,
-                                        @RequestBody @Valid RequestUpdateLineDTO requestDto) {
+    public ResponseDTO<Void> updateLine(@RequestBody @Valid RequestUpdateLineDTO requestDto) {
 
         try {
 
-            lineService.updateLine(requestDto, empId);
+            lineService.updateLine(requestDto);
 
             return ResponseDTO.success("라인을 수정하였습니다", null);
         } catch (EntityNotFoundException e) {
@@ -64,11 +62,10 @@ public class lineRestController {
 
     // 라인에 공정 연결 API
     @PutMapping("/connect-process")
-    public ResponseDTO<Void> connectProcessesToLine(@RequestHeader("empId") Long empId,
-                                                  @RequestBody RequestConnectProcessesToLineDTO requestDto) {
+    public ResponseDTO<Void> connectProcessesToLine(@RequestBody RequestConnectProcessesToLineDTO requestDto) {
         try {
 
-            lineService.connectProcessesToLine(requestDto, empId);
+            lineService.connectProcessesToLine(requestDto);
 
             return ResponseDTO.success("공정을 라인에 연결하였습니다", null);
         } catch (EntityNotFoundException e) {
@@ -85,11 +82,10 @@ public class lineRestController {
 
     // 라인에서 공정 연결 해제 API
     @PutMapping("/disconnect-process")
-    public ResponseDTO<Void> disconnectProcessesFromLine(@RequestHeader("empId") Long empId,
-                                                       @RequestBody RequestDisconnectProcessesFromLineDTO requestDto) {
+    public ResponseDTO<Void> disconnectProcessesFromLine(@RequestBody RequestDisconnectProcessesFromLineDTO requestDto) {
         try {
 
-            lineService.disconnectProcessesFromLine(requestDto, empId);
+            lineService.disconnectProcessesFromLine(requestDto);
 
             return ResponseDTO.success("공정을 라인에서 연결 해제하였습니다", null);
         } catch (EntityNotFoundException e) {

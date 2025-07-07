@@ -25,24 +25,11 @@ const init = () => {
     // 구입 일자 기본값 설정 (오늘 날짜)
     const buyDateInput = document.querySelector("input[name='buyDate']");
     if (buyDateInput) {
-        // 오늘 날짜를 YYYY-MM-DD 형식으로 설정
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const day = String(today.getDate()).padStart(2, '0');
-        const formattedDate = `${year}-${month}-${day}`;
-
-        buyDateInput.value = formattedDate;
-        console.log("설정된 초기 날짜:", formattedDate);
+        const today = getKoreaToday();
+        buyDateInput.value = today;
 
         // 날짜 입력 최대값을 오늘로 제한
-        buyDateInput.setAttribute('max', formattedDate);
-
-        // 날짜 입력 디버깅을 위한 이벤트 리스너
-        buyDateInput.addEventListener("change", (e) => {
-            console.log("날짜 변경됨:", e.target.value);
-            console.log("검증 결과:", validators.isValidBuyDate(e.target.value));
-        });
+        buyDateInput.setAttribute('max', today);
     }
 
     setupEventListeners();
@@ -134,14 +121,11 @@ async function saveData() {
         buyDate: buyDate
     };
 
-    console.log("전송 데이터:", data);
-
     try {
         const res = await fetch(`/api/machine`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
-                empId: user.id // 사용자 ID를 헤더에 포함
+                "Content-Type": "application/json"
             },
             body: JSON.stringify(data),
         });
@@ -155,7 +139,6 @@ async function saveData() {
 window.onload = async () => {
     try {
         await init();
-        console.log("페이지 초기화 완료");
     } catch (error) {
         console.error("초기화 오류:", error);
     }

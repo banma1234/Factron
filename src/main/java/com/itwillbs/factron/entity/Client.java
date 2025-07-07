@@ -17,7 +17,8 @@ import lombok.NoArgsConstructor;
 public class Client {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "client_seq")
+    @SequenceGenerator(name = "client_seq", sequenceName = "client_seq", allocationSize = 1)
     private Long id; // 거래처 ID
 
     @Column(name = "name", length = 100, nullable = false)

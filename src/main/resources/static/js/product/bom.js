@@ -123,16 +123,20 @@ function buildTree(data) {
 
 // 버튼 모드 변경
 function toggleEditButtons(mode) {
+    const readProd = document.querySelector(".readProd");
+    const addProd = document.querySelector(".addProd");
     const editGroup = document.querySelector(".editBOM");
     const confirmGroup = document.querySelector(".confirmBOM");
 
     if (mode) {
         // 수정 모드
         if (mode === 'add') {
-            form.querySelectorAll("input[name='childProdId'], input[name='childProdName'], input[name='prodType'], input[name='consumption'], input[name='unitName']").forEach(input => {
+            form.querySelectorAll("input[name='prodType'], input[name='consumption'], input[name='unitName']").forEach(input => {
                 input.disabled = false;
             });
 
+            readProd.classList.add("d-none");
+            addProd.classList.remove("d-none");
             editGroup?.classList.add("d-none");
             confirmGroup?.classList.remove("d-none");
         }
@@ -150,7 +154,7 @@ function toggleEditButtons(mode) {
 
     } else {
         // 읽기 모드
-        form.querySelectorAll("input[name='childProdId'], input[name='childProdName'], input[name='prodType'], input[name='consumption'], input[name='unitName']").forEach(input => {
+        form.querySelectorAll("input[name='prodType'], input[name='consumption'], input[name='unitName']").forEach(input => {
             input.disabled = true;
         });
 
@@ -159,10 +163,13 @@ function toggleEditButtons(mode) {
         form.querySelector("input[name='parentProdName']").value = '';
         form.querySelector("input[name='childProdId']").value = '';
         form.querySelector("input[name='childProdName']").value = '';
+        form.querySelector("select[name='childProd']").value = '';
         form.querySelector("input[name='prodType']").value = '';
         form.querySelector("input[name='consumption']").value = '';
         form.querySelector("input[name='unitName']").value = '';
 
+        readProd.classList.remove("d-none");
+        addProd.classList.add("d-none");
         editGroup?.classList.remove("d-none");
         confirmGroup?.classList.add("d-none");
         editMode = false;
@@ -170,10 +177,10 @@ function toggleEditButtons(mode) {
 }
 
 // 소요량 validation
-const isValidPositiveNumber = (val) => {
-    const num = unformatNumber(val);
-    return /^(?:\d+|\d+\.\d+)$/.test(num); // 정수 또는 소수, 0 이상
-};
+function isValidPositiveInteger(value) {
+    const num = Number(value);
+    return Number.isInteger(num) && num >= 1; // 1 이상 정수
+}
 
 const init = () => {
     const saveBtn = document.querySelector("button.saveBtn");
@@ -233,18 +240,36 @@ const init = () => {
 
             // 입력창 초기화
             document.querySelector("input[name='id']").value = '';
-            document.querySelector("input[name='childProdId']").value = '';
-            document.querySelector("input[name='childProdName']").value = '';
             document.querySelector("input[name='prodType']").value = '';
             document.querySelector("input[name='consumption']").value = '';
             document.querySelector("input[name='unitName']").value = '';
-        }
 
-        // 하드코딩
-        form.querySelector("input[name='childProdId']").value = 'M0000007';
-        form.querySelector("input[name='childProdName']").value = '스티커 라벨(하드코딩)';
-        form.querySelector("input[name='prodType']").value = '원자재';
-        form.querySelector("input[name='unitName']").value = '개';
+            // BOM 등록 가능한 품목 목록 세팅
+            getPossibleProdList(raw.parentId ? raw.bomId : '', raw.id).then(res => {
+                const selectTag = document.querySelector(`select[name='childProd']`);
+                selectTag.innerHTML = '<option value="">선택</option>'; // 초기화
+                const products = res.data;
+
+                products.forEach((prod) => {
+                    const optionElement = document.createElement("option");
+                    optionElement.value = prod.childProdId;
+                    optionElement.textContent = `${prod.childProdName} (${prod.childProdId})`;
+
+                    selectTag.appendChild(optionElement);
+                });
+
+                // 해당 제품 선택 시 품목유형, 단위 세팅
+                form.querySelector(`select[name='childProd']`).addEventListener("change", (e) => {
+                    const selectedProd = products.find(prod => prod.childProdId === e.target.value);
+
+                    if (selectedProd) {
+                        form.querySelector("input[name='prodType']").value = selectedProd.prodType;
+                        form.querySelector("input[name='unitName']").value = selectedProd.unitName;
+                        form.querySelector("input[name='consumption']").focus();
+                    }
+                });
+            });
+        }
 
         toggleEditButtons("add");
     }, false);
@@ -297,12 +322,12 @@ const init = () => {
     });
 
     // 저장 버튼
-    saveBtn.addEventListener("click", function(e) {
+    saveBtn?.addEventListener("click", function(e) {
         e.preventDefault();
 
         if (editMode === 'add') {
             // BOM 등록
-            if (form.querySelector("input[name='childProdId']").value === '') {
+            if (form.querySelector("select[name='childProd']").value === '') {
                 alert('품목을 선택해주세요.');
                 return;
             }
@@ -312,8 +337,8 @@ const init = () => {
                 alert('소요량을 입력해주세요.');
                 return;
             }
-            if (!isValidPositiveNumber(consumption)) {
-                alert('소요량은 0 이상의 숫자만 입력 가능합니다.');
+            if (!isValidPositiveInteger(consumption)) {
+                alert('소요량은 1 이상의 정수만 입력 가능합니다.');
                 return;
             }
         }
@@ -324,8 +349,8 @@ const init = () => {
                 alert('소요량을 입력해주세요.');
                 return;
             }
-            if (!isValidPositiveNumber(consumption)) {
-                alert('소요량은 0 이상의 숫자만 입력 가능합니다.');
+            if (!isValidPositiveInteger(consumption)) {
+                alert('소요량은 1 이상의 정수만 입력 가능합니다.');
                 return;
             }
         }
@@ -378,6 +403,29 @@ const init = () => {
         }
     }
 
+    async function getPossibleProdList(id, parentItemId) {
+
+        // fetch data
+        const data = new URLSearchParams({
+            id,
+            parentItemId,
+        });
+
+        try {
+            const res = await fetch(`/api/bom/items?${data.toString()}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            });
+            return res.json();
+
+        } catch (e) {
+            alert("조회 중 오류가 발생했습니다.");
+            console.error(e);
+        }
+    }
+
     // 저장
     async function saveData() {
         let method = 'POST';
@@ -391,7 +439,7 @@ const init = () => {
         if (editMode === 'add') {
             // 등록일 경우 부모,자식 품목 정보 추가
             const prodType = form.querySelector("input[name='prodType']").value;
-            const childProdId = form.querySelector("input[name='childProdId']").value;
+            const childProdId = form.querySelector("select[name='childProd']").value;
             if (prodType === '원자재') {
                 data.childMaterialId = childProdId;
             } else {

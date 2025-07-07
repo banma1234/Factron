@@ -1,5 +1,6 @@
 package com.itwillbs.factron.service.machine;
 
+import com.itwillbs.factron.common.component.AuthorizationChecker;
 import com.itwillbs.factron.dto.machine.RequestAddMachineDTO;
 import com.itwillbs.factron.dto.machine.RequestMachineInfoDTO;
 import com.itwillbs.factron.dto.machine.RequestUpdateMachineDTO;
@@ -27,32 +28,19 @@ public class MachineServiceImpl implements MachineService {
     private final MachineMapper machineMapper;
     private final ProcessRepository processRepository;
 
-    /**
-     * 관리자 권한 체크
-     *
-     * @param empId 사원 ID
-     */
-    private void checkAdminPermission(Long empId) {
-
-        boolean hasPermission = true; // TODO: 실제 권한 체크 로직으로 대체
-
-        // 관리자 권한이 없는 경우 예외 처리
-        if (!hasPermission) {
-            throw new SecurityException("관리자 권한이 없습니다.");
-        }
-    }
+    private final AuthorizationChecker authorizationChecker;
 
     /**
      * 설비 추가
      *
      * @param requestDto 요청 DTO
-     * @param empId      사원 ID
      */
     @Override
     @Transactional
-    public void addMachine(RequestAddMachineDTO requestDto, Long empId) {
+    public void addMachine(RequestAddMachineDTO requestDto) {
 
-        checkAdminPermission(empId); // 관리자 권한 체크
+        // 관리자 권한 체크
+        authorizationChecker.checkAnyAuthority("ATH003", "ATH007");
 
         // 공정 조회
         Process process = processRepository.findById(requestDto.getProcessId())
@@ -81,13 +69,13 @@ public class MachineServiceImpl implements MachineService {
      * 설비 수정
      *
      * @param requestDto 요청 DTO
-     * @param empId      사원 ID
      */
     @Override
     @Transactional
-    public void updateMachine(RequestUpdateMachineDTO requestDto, Long empId) {
+    public void updateMachine(RequestUpdateMachineDTO requestDto) {
 
-        checkAdminPermission(empId); // 관리자 권한 체크
+        // 관리자 권한 체크
+        authorizationChecker.checkAnyAuthority("ATH003", "ATH007");
 
         // Machine 조회
         Machine machine = machineRepository.findById(requestDto.getMachineId())

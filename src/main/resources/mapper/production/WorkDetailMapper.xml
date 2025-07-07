@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itwillbs.factron.mapper.production.WorkDetailMapper">
+
+    <!-- 작업자 목록 조회 -->
+    <select id="getWorkerList" resultType="com.itwillbs.factron.dto.production.ResponseWorkerDTO">
+        SELECT
+            w.id,
+            w.work_order_id,
+            w.employee_id,
+            e.name AS employee_name,
+            s1.name AS dept_name,
+            s2.name AS pos_name
+        FROM WORKER w
+        JOIN EMPLOYEE e ON w.employee_id = e.id
+        JOIN DETAIL_SYS_CODE s1 ON e.dept_code = s1.detail_code
+        JOIN DETAIL_SYS_CODE s2 ON e.position_code = s2.detail_code
+        WHERE w.work_order_id = #{orderId}
+        ORDER BY w.id DESC
+    </select>
+
+    <!-- 투입된 품목 목록 조회 -->
+    <select id="getWorkProdList" resultType="com.itwillbs.factron.dto.production.ResponseWorkProdDTO">
+        WITH lot_summary AS (
+            SELECT
+                l.item_id,
+                l.material_id,
+                SUM(lh.quantity) AS quantity
+            FROM LOT_HISTORY lh
+            JOIN LOT l ON lh.lot_id = l.id
+            WHERE lh.work_order_id = #{orderId}
+            AND l.event_type IN ('INB', 'ISP')
+            GROUP BY l.item_id, l.material_id
+        )
+        SELECT
+            COALESCE(i.id, m.id) AS prod_id,
+            COALESCE(i.name, m.name) AS prod_name,
+            ls.quantity,
+            COALESCE(s1.name, s2.name) AS unit,
+            COALESCE(s3.name, '원자재') AS type
+        FROM LOT_SUMMARY ls
+        LEFT JOIN ITEM i ON ls.item_id = i.id
+        LEFT JOIN MATERIAL m ON ls.material_id = m.id
+        LEFT JOIN DETAIL_SYS_CODE s1 ON i.unit = s1.detail_code
+        LEFT JOIN DETAIL_SYS_CODE s2 ON m.unit = s2.detail_code
+        LEFT JOIN DETAIL_SYS_CODE s3 ON i.type_code = s3.detail_code
+        ORDER BY prod_id
+    </select>
+
+</mapper>

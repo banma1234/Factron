@@ -1,5 +1,6 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,10 +14,11 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "line")
-public class Line extends BaseEntity {
+public class Line extends com.itwillbs.factron.entity.BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "line_seq")
+    @SequenceGenerator(name = "line_seq", sequenceName = "line_seq", allocationSize = 1)
     private Long id; // 라인 ID
 
     @Column(name = "name", length = 100, nullable = false)

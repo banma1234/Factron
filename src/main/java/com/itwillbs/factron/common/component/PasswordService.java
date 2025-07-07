@@ -30,7 +30,6 @@ public class PasswordService {
     public String generateDefaultPassword(String phone) {
         // 전화번호에서 하이픈 제거
         String cleanPhone = phone.split("-")[2];
-        log.info("PasswordService phone: " + cleanPhone);
         return hashPassword(cleanPhone);
     }
 }

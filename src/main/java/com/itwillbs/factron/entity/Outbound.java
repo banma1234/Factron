@@ -1,5 +1,9 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.entity.Contract;
+import com.itwillbs.factron.entity.Item;
+import com.itwillbs.factron.entity.Material;
+import com.itwillbs.factron.entity.Storage;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +21,8 @@ import java.time.LocalDate;
 public class Outbound {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "outbound_seq")
+    @SequenceGenerator(name = "outbound_seq", sequenceName = "outbound_seq", allocationSize = 1)
     private Long id; // 출고 ID
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -47,4 +52,10 @@ public class Outbound {
 
     @Column(name = "status_code", length = 6, nullable = false)
     private String statusCode; // 상태 코드 (예: 완료, 대기 -> 완제품만 출고 대기 가능)
+
+    public void updateStatus() {
+        this.statusCode = "STS003";           // 출고 완료 상태
+        this.outDate = LocalDate.now();       // 출고일자
+    }
+
 }

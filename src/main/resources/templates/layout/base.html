@@ -17,6 +17,14 @@
     <!-- COMMON CSS -->
     <link rel="stylesheet" th:href="@{/css/common.css}">
 
+    <!-- TOAST UI Time Picker-->
+    <link rel="stylesheet" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css">
+    <script src="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.js"></script>
+
+    <!-- TOAST UI Date Picker-->
+    <script src="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.js"></script>
+    <link rel="stylesheet" href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css" />
+
     <!-- TOAST UI -->
     <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
     <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
@@ -74,15 +82,15 @@
                     </a></li>
                 </ul>
                 <ul class="submenu nav flex-column">
-                    <li><a class="nav-link sub-link" href="/financial">
-                        <span>재무결재 목록</span>
+                    <li><a class="nav-link sub-link" href="/salesApproval">
+                        <span>영업결재 목록</span>
                     </a></li>
                 </ul>
             </li>
             <li class="nav-item">
                 <a class="nav-link menu-toggle" href="#">
                     <div class="nav-link menu-item" th:with="type='busniess'">
-                        <div th:replace="layout/icon :: icon(${type})"></div>
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
                         <span>영업 관리</span>
                     </div>
                 </a>
@@ -100,7 +108,7 @@
             <li class="nav-item">
                 <a class="nav-link menu-toggle" href="#">
                     <div class="nav-link menu-item" th:with="type='master_data'">
-                        <div th:replace="layout/icon :: icon(${type})"></div>
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
                         <span>기준 정보</span>
                     </div>
                 </a>
@@ -153,7 +161,7 @@
             <li class="nav-item">
                 <a class="nav-link menu-toggle" href="#">
                     <div class="nav-link menu-item" th:with="type='product'">
-                        <div th:replace="layout/icon :: icon(${type})"></div>
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
                         <span>생산 관리</span>
                     </div>
                 </a>
@@ -176,12 +184,12 @@
             <li class="nav-item">
                 <a class="nav-link menu-toggle" href="#">
                     <div class="nav-link menu-item" th:with="type='process'">
-                        <div th:replace="layout/icon :: icon(${type})"></div>
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
                         <span>공정 관리</span>
                     </div>
                 </a>
                 <ul class="submenu nav flex-column">
-                    <li><a class="nav-link sub-link" href="/product/history">
+                    <li><a class="nav-link sub-link" href="/process/history">
                         <span>공정 이력 관리</span>
                     </a></li>
                 </ul>
@@ -199,7 +207,7 @@
             <li class="nav-item">
                 <a class="nav-link menu-toggle" href="#">
                     <div class="nav-link menu-item" th:with="type='storage'">
-                        <div th:replace="layout/icon :: icon(${type})"></div>
+                        <div th:replace="~{layout/icon :: icon(${type})}"></div>
                         <span>창고 관리</span>
                     </div>
                 </a>
@@ -248,12 +256,12 @@
                 </div>
             </button>
             <a class="navbar-brand" href="/commute">
-                <img class="logo__title" th:src="@{/logo_title.svg}" alt="no logo title found" />
+                <img class="logo__title" th:src="@{/images/logo_title.svg}" alt="no logo title found" />
             </a>
             <div class="d-flex ms-auto">
                 <span class="navbar-text user__name">test(20251234)</span>
                 <span class="navbar-text me-3">&nbsp;님 환영합니다!</span>
-                <a href="/logout" class="btn btn-primary btn-sm logout">로그아웃</a>
+                <a href="/logout" class="btn btn-primary btn-sm align-self-center p-2 logout">로그아웃</a>
             </div>
         </div>
     </nav>

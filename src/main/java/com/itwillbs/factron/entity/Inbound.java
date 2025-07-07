@@ -1,5 +1,9 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.entity.Item;
+import com.itwillbs.factron.entity.Material;
+import com.itwillbs.factron.entity.Purchase;
+import com.itwillbs.factron.entity.Storage;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +21,8 @@ import java.time.LocalDate;
 public class Inbound {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "inbound_seq")
+    @SequenceGenerator(name = "inbound_seq", sequenceName = "inbound_seq", allocationSize = 1)
     private Long id; // 입고 ID
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -47,4 +52,11 @@ public class Inbound {
 
     @Column(name = "status_code", length = 6, nullable = false)
     private String statusCode; // 상태 코드 (예: 완료, 대기 -> 자재만 입고 대기 가능)
+
+    //입고 완료
+    public void updateStatus() {
+        this.statusCode = "STS003"; // 입고 완료 상태 코드
+        this.inDate = LocalDate.now(); // 현재 날짜를 입고일로 설정
+    }
+
 }

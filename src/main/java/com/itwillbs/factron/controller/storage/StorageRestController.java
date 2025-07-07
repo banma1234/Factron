@@ -28,7 +28,6 @@ public class StorageRestController {
 
             return ResponseDTO.success(storageList);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return ResponseDTO.fail(
                     800,
                     "존재하지 않는 창고입니다.",
