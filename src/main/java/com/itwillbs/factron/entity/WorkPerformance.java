@@ -1,5 +1,7 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.entity.Employee;
+import com.itwillbs.factron.entity.WorkOrder;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +19,8 @@ import java.time.LocalDate;
 public class WorkPerformance {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "work_performance_seq")
+    @SequenceGenerator(name = "work_performance_seq", sequenceName = "work_performance_seq", allocationSize = 1)
     private Long id; // 작업 실적 ID
 
     @OneToOne(fetch = FetchType.LAZY)

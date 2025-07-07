@@ -1,5 +1,7 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.entity.BaseEntity;
+import com.itwillbs.factron.entity.Line;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,10 +16,11 @@ import org.hibernate.annotations.ColumnDefault;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "process")
-public class Process extends BaseEntity {
+public class Process extends com.itwillbs.factron.entity.BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "process_seq")
+    @SequenceGenerator(name = "process_seq", sequenceName = "process_seq", allocationSize = 1)
     private Long id; // 공정 ID
 
     @ManyToOne(fetch = FetchType.LAZY)

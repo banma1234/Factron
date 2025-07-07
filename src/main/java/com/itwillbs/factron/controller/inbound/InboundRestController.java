@@ -18,6 +18,7 @@ import java.util.List;
 public class InboundRestController {
     private final InboundService inboundService;
 
+    // 입고 전체 조회
     @GetMapping("")
     public ResponseDTO<List<ResponseSearchInboundDTO>> getInboundsList(RequestSearchInboundDTO requestSearchInboundDTO) {
         try {
@@ -27,6 +28,7 @@ public class InboundRestController {
         }
     }
 
+    // 입고 처리
     @PutMapping("")
     public ResponseDTO<Void> updateInbound(@RequestBody RequestInboundCompleteDTO  requestInboundCompleteDTO) {
         try{

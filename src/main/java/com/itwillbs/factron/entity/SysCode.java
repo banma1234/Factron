@@ -2,6 +2,7 @@ package com.itwillbs.factron.entity;
 
 
 import com.itwillbs.factron.dto.sys.RequestSysMainDTO;
+import com.itwillbs.factron.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -15,10 +16,11 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "sys_code")
-public class SysCode extends BaseEntity{
+public class SysCode extends com.itwillbs.factron.entity.BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sys_code_seq")
+    @SequenceGenerator(name = "sys_code_seq", sequenceName = "sys_code_seq", allocationSize = 1)
     private Long id;
 
     @Column(name = "main_code", length = 3, nullable = false, unique = true)

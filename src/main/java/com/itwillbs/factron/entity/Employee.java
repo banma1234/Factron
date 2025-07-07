@@ -2,6 +2,7 @@ package com.itwillbs.factron.entity;
 
 
 import com.itwillbs.factron.dto.employee.RequestEmployeeUpdateDTO;
+import com.itwillbs.factron.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +22,7 @@ import java.time.LocalDate;
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Employee extends BaseEntity {
+public class Employee extends com.itwillbs.factron.entity.BaseEntity {
 
     @Id
     private Long id;

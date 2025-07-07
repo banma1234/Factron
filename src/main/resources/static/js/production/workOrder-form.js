@@ -97,14 +97,14 @@ const init = () => {
     );
 
     // 시작 버튼
-    startBtn.addEventListener("click", () => {
+    startBtn?.addEventListener("click", () => {
         if (form.querySelector("input[name='orderId']").value) {
             confirmModal.show();
         }
     });
 
     // 취소 버튼
-    form.querySelector("button.btn-secondary").addEventListener("click", () => {
+    form.querySelector("button.btn-secondary")?.addEventListener("click", () => {
         window.close();
     });
 

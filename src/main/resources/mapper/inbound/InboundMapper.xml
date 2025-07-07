@@ -49,7 +49,7 @@
         </where>
 
 
-        ORDER BY IBD.IN_DATE DESC
+        ORDER BY IBD.ID DESC
     </select>
 
 </mapper>

@@ -1,5 +1,7 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.entity.Contract;
+import com.itwillbs.factron.entity.Item;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,8 +17,9 @@ import lombok.NoArgsConstructor;
 public class ContractList {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id; // 수주 품목 ID
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "contract_list_seq")
+    @SequenceGenerator(name = "contract_list_seq", sequenceName = "contract_list_seq", allocationSize = 1)
+    private Long id; // 수주 원자재 ID
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contract_id", referencedColumnName = "id", nullable = false)
