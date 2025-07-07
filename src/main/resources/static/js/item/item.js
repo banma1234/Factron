@@ -83,20 +83,24 @@ const init = async () => {
     });
 
     // 항목 추가 버튼
-    document.querySelector(".addItemBtn").addEventListener("click", function (e) {
-        e.preventDefault();
-        e.stopPropagation();
+    const addItemBtn = document.querySelector(".addItemBtn");
+    if (addItemBtn) {
+        addItemBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            addItem();
+        });
+    }
 
-        addItem();
-    });
-
-    // 저장 버튼
-    document.querySelector(".saveItemBtn").addEventListener("click", function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        saveItems();
-    });
+// 저장 버튼
+    const saveItemBtn = document.querySelector(".saveItemBtn");
+    if (saveItemBtn) {
+        saveItemBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            saveItems();
+        });
+    }
 
     // 검색 데이터 조회
     async function fetchData() {
@@ -105,7 +109,7 @@ const init = async () => {
 
         const params = new URLSearchParams({
             itemName: searchName,
-            itemTypeCode: itemType
+            typeCode: itemType
         });
 
         try {
