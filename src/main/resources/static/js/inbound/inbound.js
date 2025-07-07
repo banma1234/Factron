@@ -40,8 +40,8 @@ const init = () => {
     }
 
     // 기본 날짜 셋팅: 오늘, 30일 전
-    const today = new Date().toISOString().split('T')[0];
-    const pastDate = new Date();
+    const today = getKoreaToday();
+    const pastDate = new Date(today);
     pastDate.setDate(pastDate.getDate() - 30);
     const startDateDefault = pastDate.toISOString().split('T')[0];
 
