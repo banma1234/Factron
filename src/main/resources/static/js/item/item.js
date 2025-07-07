@@ -161,6 +161,7 @@ const init = async () => {
     const saveItems = () => {
         itemGrid.finishEditing();
         const updatedData = itemGrid.getData();
+        const updatedData2 = itemGrid.getModifiedRows();
 
         const insertData = [];
         const updateData = [];
@@ -186,8 +187,13 @@ const init = async () => {
             }
         }
 
-        if (insertData.length === 0 && updateData.length === 0) {
-            alert('입력된 데이터가 없습니다.');
+        console.log('updatedData2', updatedData2);
+
+        const createdRows = updatedData2.createdRows || [];
+        const updatedRows = updatedData2.updatedRows || [];
+
+        if (createdRows.length === 0 && updatedRows.length === 0) {
+            alert('저장 및 수정할 데이터가 없습니다.');
             return;
         }
 
