@@ -1,5 +1,7 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.entity.Employee;
+import com.itwillbs.factron.entity.WorkOrder;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +17,8 @@ import lombok.NoArgsConstructor;
 public class Worker {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "worker_seq")
+    @SequenceGenerator(name = "worker_seq", sequenceName = "worker_seq", allocationSize = 1)
     private Long id; // 작업 담당자 테이블 ID
 
     @ManyToOne(fetch = FetchType.LAZY)

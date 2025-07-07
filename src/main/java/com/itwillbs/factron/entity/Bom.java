@@ -1,5 +1,7 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.entity.Item;
+import com.itwillbs.factron.entity.Material;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,12 +17,13 @@ import lombok.NoArgsConstructor;
 public class Bom {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bom_seq")
+    @SequenceGenerator(name = "bom_seq", sequenceName = "bom_seq", allocationSize = 1)
     private Long id; // BOM ID
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_item_id", referencedColumnName = "id", nullable = false)
-    private Item parentItem; // 상위 제품
+    private com.itwillbs.factron.entity.Item parentItem; // 상위 제품
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "child_item_id", referencedColumnName = "id")

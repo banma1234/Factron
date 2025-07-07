@@ -1,5 +1,8 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.entity.BaseEntity;
+import com.itwillbs.factron.entity.Item;
+import com.itwillbs.factron.entity.Material;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +15,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "lot")
-public class Lot extends BaseEntity {
+public class Lot extends com.itwillbs.factron.entity.BaseEntity {
 
     @Id
     private String id; // LOT ID

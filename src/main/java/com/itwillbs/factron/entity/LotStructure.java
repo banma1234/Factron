@@ -1,5 +1,6 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.entity.Lot;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +16,8 @@ import lombok.NoArgsConstructor;
 public class LotStructure {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "lot_structure_seq")
+    @SequenceGenerator(name = "lot_structure_seq", sequenceName = "lot_structure_seq", allocationSize = 1)
     private Long id; // LOT 관계 ID
 
     @ManyToOne(fetch = FetchType.LAZY)
