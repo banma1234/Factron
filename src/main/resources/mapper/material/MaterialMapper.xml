@@ -8,21 +8,23 @@
             parameterType="com.itwillbs.factron.dto.material.RequestMaterialDTO"
             resultType="com.itwillbs.factron.dto.material.ResponseMaterialDTO">
         SELECT
-            id AS materialId,
-            name,
-            unit,
-            info,
-            spec,
-            created_at AS createdAt,
-            created_by AS createdBy
-        FROM material
+        m.id AS materialId,
+        m.name,
+        m.unit,
+        s.name AS unitName,
+        m.info,
+        m.spec,
+        m.created_at AS createdAt,
+        m.created_by AS createdBy
+        FROM material m
+        JOIN DETAIL_SYS_CODE s ON m.unit = s.detail_code
         <where>
             <if test="materialName != null and materialName != ''">
-                (UPPER(name) LIKE '%' || UPPER(#{materialName}) || '%'
-                OR UPPER(id) LIKE '%' || UPPER(#{materialName}) || '%')
+                (UPPER(m.name) LIKE '%' || UPPER(#{materialName}) || '%'
+                OR UPPER(m.id) LIKE '%' || UPPER(#{materialName}) || '%')
             </if>
         </where>
-        ORDER BY created_at DESC
+        ORDER BY m.created_at DESC
     </select>
 
 </mapper>

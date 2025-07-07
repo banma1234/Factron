@@ -2,7 +2,7 @@ let rawOutboundData = [];
 let outboundGrid;
 
 const init = () => {
-    const isAuthorized = user.authCode === 'ATH006'; // 출고 처리 권한 여부 확인
+    const isAuthorized = user.authCode === 'ATH006' || 'ATH003'; // 출고 처리 권한 여부 확인
 
     // 권한이 있을 때만 체크박스 옵션 활성화
     const gridOptions = isAuthorized ? ['checkbox'] : [];
@@ -122,13 +122,21 @@ const init = () => {
         getData();
     });
 
-    // 날짜 기본값 세팅 (오늘, 30일 전)
-    const today = new Date().toISOString().split('T')[0];
-    const pastDate = new Date();
-
+    // 기본 날짜: 오늘과 30일 전으로 초기화
+    const today = getKoreaToday();
+    const pastDate = new Date(today);
     pastDate.setDate(pastDate.getDate() - 30);
-    document.querySelector("input[name='startDate']").value = pastDate.toISOString().split('T')[0];
-    document.querySelector("input[name='endDate']").value = today;
+
+    // 날짜 input 요소에 기본값 설정
+    const startDateDefault = pastDate.toISOString().split('T')[0];
+    const endDateDefault = today; // getKoreaToday()가 이미 YYYY-MM-DD 형태라면 그대로 사용
+
+    const startDateInput = document.querySelector("input[name='startDate']");
+    const endDateInput = document.querySelector("input[name='endDate']");
+
+    if (startDateInput) startDateInput.value = startDateDefault;
+    if (endDateInput) endDateInput.value = endDateDefault;
+
 
     getData(); // 초기 데이터 조회
 };
