@@ -28,11 +28,13 @@ public class OutboundServiceImpl implements OutboundService {
     private final StockRepository stockRepository;
     private final LotRepository lotRepository;
 
+    // 출고 전체 조회
     @Override
     public List<ResponseSearchOutboundDTO> getOutboundsList(RequestSearchOutboundDTO requestSearchOutboundDTO) {
         return outboundMapper.getOutboundsList(requestSearchOutboundDTO);
     }
 
+    // 출고 처리
     @Override
     @Transactional
     public void updateOutbound(RequestOutboundCompleteDTO dto) {

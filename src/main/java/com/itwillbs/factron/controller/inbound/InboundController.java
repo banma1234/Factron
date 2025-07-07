@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class InboundController {
+
+    // 입고 페이지
     @GetMapping("/inbound")
     public String inbound() {
         return "inbound/inbound";

@@ -20,6 +20,7 @@ import java.util.List;
 public class ContractRestController {
     private final ContractService contractService;
 
+    // 수주 전체 조회
     @GetMapping("")
     public ResponseDTO<List<ResponseSearchContractDTO>> getContractsList(RequestSearchContractDTO requestSearchContractDTO) {
         try{
@@ -30,6 +31,7 @@ public class ContractRestController {
         }
     }
 
+    // 수주 품목 조회
     @GetMapping("/{contractId}/items")
     public ResponseDTO<List<ResponseContractItemDTO>> getContractItems(@PathVariable Long contractId) {
         try{
@@ -39,6 +41,7 @@ public class ContractRestController {
         }
     }
 
+    // 수주 상세 조회
     @GetMapping("/{contractId}")
     public ResponseDTO<ResponseSearchContractDTO> getContractDetails(@PathVariable Long contractId) {
         try {
@@ -49,6 +52,7 @@ public class ContractRestController {
         }
     }
 
+    // 수주 등록
     @PostMapping("")
     public ResponseDTO<Void> registerContract(@RequestBody RequestRegisterContractDTO requestRegisterContractDTO) {
         try {
@@ -59,6 +63,7 @@ public class ContractRestController {
         }
     }
 
+    // 수주 취소
     @PutMapping("/cancel")
     public ResponseDTO<Void> cancelContract(@RequestParam Long approvalId) {
         try{
