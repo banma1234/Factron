@@ -31,9 +31,52 @@ const init = () => {
         gridOptions
     );
 
+    const btn = document.querySelector(".btnCompleteOutbound");
+
+    // 권한 없으면 숨김 처리
     if (!isAuthorized) {
-        const btn = document.getElementById("btnCompleteOutbound");
         if (btn) btn.style.display = 'none';
+    }
+
+    // 권한 있으면 이벤트 등록
+    if (isAuthorized) {
+        if (btn) {
+            btn.addEventListener("click", async () => {
+                const checkedRows = outboundGrid.getCheckedRows();
+                if (checkedRows.length === 0) {
+                    alert("처리할 출고 데이터를 선택하세요.");
+                    return;
+                }
+
+                const hasCompleted = checkedRows.some(row => row.statusCode === 'STS003');
+                if (hasCompleted) {
+                    alert("이미 출고 완료된 데이터가 포함되어 있습니다. 다시 확인해주세요.");
+                    return;
+                }
+
+                const outboundIds = checkedRows.map(row => row.outboundId);
+
+                try {
+                    const res = await fetch('/api/outbound', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ outboundIds })
+                    });
+
+                    if (!res.ok) {
+                        const errorData = await res.json();
+                        alert(`출고 처리 실패: ${errorData.message || res.statusText}`);
+                        return;
+                    }
+
+                    alert("출고 처리가 완료되었습니다.");
+                    getData();
+                } catch (e) {
+                    console.error("출고 처리 오류:", e);
+                    alert("출고 처리 중 오류가 발생했습니다.");
+                }
+            });
+        }
     }
 
     async function getData() {
@@ -69,52 +112,11 @@ const init = () => {
         getData();
     });
 
-    // 출고 완료 버튼 이벤트 (권한 있을 때만)
-    if (isAuthorized) {
-        document.getElementById("btnCompleteOutbound").addEventListener("click", async function () {
-            const checkedRows = outboundGrid.getCheckedRows();
-            if (checkedRows.length === 0) {
-                alert("처리할 출고 데이터를 선택하세요.");
-                return;
-            }
-
-            const hasCompleted = checkedRows.some(row => row.statusCode === 'STS003');
-            if (hasCompleted) {
-                alert("이미 출고 완료된 데이터가 포함되어 있습니다. 다시 확인해주세요.");
-                return;
-            }
-
-            const outboundIds = checkedRows.map(row => row.outboundId);
-
-            try {
-                const res = await fetch('/api/outbound', {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ outboundIds })
-                });
-
-                if (!res.ok) {
-                    const errorData = await res.json();
-                    alert(`출고 처리 실패: ${errorData.message || res.statusText}`);
-                    return;
-                }
-
-                alert("출고 처리가 완료되었습니다.");
-                getData();
-            } catch (e) {
-                console.error("출고 처리 오류:", e);
-                alert("출고 처리 중 오류가 발생했습니다.");
-            }
-        });
-    }
-
     // 초기 날짜 세팅 (예: 오늘, 30일 전)
-    const today = new Date().toISOString().split('T')[0];
-    const pastDate = new Date();
+    const today = getKoreaToday();
+    const pastDate = new Date(today);
     pastDate.setDate(pastDate.getDate() - 30);
-    const pastDateStr = pastDate.toISOString().split('T')[0];
-
-    document.querySelector("input[name='startDate']").value = pastDateStr;
+    document.querySelector("input[name='startDate']").value = pastDate.toISOString().split('T')[0];
     document.querySelector("input[name='endDate']").value = today;
 
     getData();

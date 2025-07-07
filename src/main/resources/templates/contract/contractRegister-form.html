@@ -4,9 +4,10 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/popup-base.html}">
 <head>
-    <title>수주 등록</title>
+    <title>Factron</title>
     <th:block layout:fragment="style">
         <link rel="stylesheet" th:href="@{/css/approval/approval.css}" />
+        <link rel="stylesheet" th:href="@{/css/contract/contractRegister-form.css}" />
         <link rel="stylesheet" href="https://uicdn.toast.com/tui-grid/latest/tui-grid.min.css" />
     </th:block>
 </head>
@@ -18,41 +19,37 @@
         <!-- 거래처 선택 + 납기일 -->
         <div class="row mb-3">
             <div class="col-md-6">
-                <label for="clientId" class="form-label">거래처</label>
-                <select id="clientId" name="clientId" class="form-select">
+                <label class="form-label">거래처</label>
+                <select class="clientId form-select" name="clientId">
                     <option value="">-- 거래처 선택 --</option>
-                    <!-- 거래처 option들은 백엔드에서 채워짐 -->
                 </select>
             </div>
             <div class="col-md-6">
-                <label for="deadline" class="form-label">납기일</label>
-                <input type="date" id="deadline" name="deadline" class="form-control" />
+                <label class="form-label">납기일</label>
+                <input type="date" name="deadline" class="deadline form-control" />
             </div>
         </div>
 
-        <!-- 품목 검색 + 버튼 -->
+        <!-- 품목 검색 -->
         <div class="d-flex justify-content-end mb-3">
-            <div class="input-group" style="width: 300px;">
-                <input type="text" name="itemSearch" class="form-control" placeholder="품목명 검색" autocomplete="off" />
-                <button class="btn btn-outline-secondary itemSearchBtn" type="button">검색</button>
+            <div class="input-group search-box">
+                <input type="text" name="materialSearch" class="materialSearch form-control" placeholder="품목명 검색" autocomplete="off" />
+                <button class="btn btn-outline-secondary materialSearchBtn" type="button">검색</button>
             </div>
         </div>
 
         <!-- 품목 그리드 -->
         <article class="mb-5">
-            <div id="itemGrid" style="height: 300px; border: 1px solid #ddd;"></div>
+            <div id="materialGrid" class="material-grid"></div>
         </article>
 
         <!-- 수주 품목 목록 -->
         <div class="mb-4">
-            <label class="form-label mt-2" style="position: relative; z-index: 2;">수주 품목 목록</label>
-            <div class="contract-items d-flex flex-column gap-1 border rounded p-2 bg-light"
-                 style="min-height: 200px; max-height: 200px; overflow-y: auto; position: relative; z-index: 1;">
-            </div>
-            <div class="bg-white p-2 rounded border d-flex justify-content-between mt-2"
-                 style="position: relative; z-index: 1;">
+            <label class="form-label mt-2 contract-items-label">수주 품목 목록</label>
+            <div class="contract-items d-flex flex-column gap-1 border rounded p-2 bg-light"></div>
+            <div class="bg-white p-2 rounded border d-flex justify-content-between mt-2 contract-total">
                 <span><strong>총금액</strong></span>
-                <span name="totalAmount" class="fw-bold text-end">₩0</span>
+                <span class="totalAmount fw-bold text-end">₩0</span>
             </div>
         </div>
 

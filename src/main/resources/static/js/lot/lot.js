@@ -1,17 +1,16 @@
+/**
+ * 클릭한 `컬럼`의 데이터 저장하는 `전역변수`
+ * */
 let selectedRowData = null;
 
-// const formatDate = date => {
-//     const DATE = new Date(date);
-//
-//     const year = DATE.getFullYear();
-//     const month = String(DATE.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작
-//     const day = String(DATE.getDate()).padStart(2, '0');
-//
-//     return `${year}-${month}-${day}`;
-// }
-
+/**
+ * window 로드 후 실행할 스크립트
+ * @return void
+ * */
 const init = () => {
-
+    /**
+     * `LOT` 테이블 초기화
+     * */
     const lotGrid = initGrid(
         document.getElementById('grid_lot'),
         400,
@@ -35,6 +34,11 @@ const init = () => {
         ['rowNum']
     )
 
+    /**
+     * 입력받은 자식 노드 nodeStructure 포맷에 맞게 변환
+     * @param {Object} node 트리구조 데이터
+     * @return {Object} nodeStructure
+     * */
     const convertTreetoTreantNode = node => {
         return {
             text: {
@@ -47,9 +51,13 @@ const init = () => {
         }
     }
 
+    /**
+     * 입력받은 트리구조 데이터 Treant.js 포맷에 맞게 변환
+     * @param {Object} data 트리구조 데이터
+     * */
     const buildTree = data => {
         const treeWrapper = document.getElementById("tree-wrapper");
-        treeWrapper.innerHTML = '<div id="lot-tree" style="width:800px; height: 600px"></div>';
+        treeWrapper.innerHTML = '<div id="lot-tree"></div>';
 
         const NEW_CONFIG = {
             chart: {
@@ -62,9 +70,14 @@ const init = () => {
             nodeStructure: convertTreetoTreantNode(data)
         }
 
+        // 새로운 트리 생성
         new Treant(NEW_CONFIG);
     }
 
+    /**
+     * 최상위 node 요청 api
+     * @return JSON
+     * */
     const getRootData = async () => {
         try {
             const res = await fetch(`/api/lot/search`, {
@@ -80,6 +93,11 @@ const init = () => {
         }
     }
 
+    /**
+     * 대상 LOT 트리구조 데이터 요청 api
+     * @param {string} lotId LOT id
+     * @return JSON
+     * */
     const getTreeData = async (lotId) => {
         try {
             const res = await fetch(`/api/lot?lotId=${lotId}`, {
@@ -95,6 +113,9 @@ const init = () => {
         }
     }
 
+    /**
+     * LOT 그리드 클릭 이벤트 매핑
+     * */
     const setLotGridEvent = () => {
         lotGrid.on('click', e => {
             const rowKey = e.rowKey;

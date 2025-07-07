@@ -4,9 +4,10 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/base.html}">
 <head>
-    <title>출고 목록</title>
+    <title>Factron</title>
     <th:block layout:fragment="style">
         <link rel="stylesheet" th:href="@{/css/approval/approval.css}" />
+        <link rel="stylesheet" th:href="@{/css/outbound/outbound.css}" />
     </th:block>
 </head>
 <body>
@@ -29,8 +30,8 @@
 
         <article>
             <div id="outboundGrid"></div>
-            <div style="display: flex; justify-content: flex-end; margin-top: 12px;">
-                <button id="btnCompleteOutbound" class="btn btn-primary">출고 완료</button>
+            <div class="button-container">
+                <button class="btn btn-primary btnCompleteOutbound">출고 완료</button>
             </div>
         </article>
     </section>

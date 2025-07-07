@@ -5,8 +5,7 @@
       layout:decorate="~{layout/base.html}">>
 <head>
     <meta charset="UTF-8">
-    <title>LOT 추적</title>
-    <script src="https://uicdn.toast.com/tui-tree/latest/tui-tree.js"></script>
+    <title>Factron</title>
     <!-- Treant.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/treant-js/1.0/Treant.min.js"
             integrity="sha512-ADpWKsaOuAegRSoUObE1si2VF6HQJyQR3Zy44l7s6YsGA6BnPIrIwN9uKJ0rsMhtDAMFqnGZhQXMJcsWSp40pA=="
@@ -17,6 +16,7 @@
             integrity="sha512-tBzZQxySO5q5lqwLWfu8Q+o4VkTcRGOeQGVQ0ueJga4A1RKuzmAu5HXDOXLEjpbKyV7ow9ympVoa6wZLEzRzDg=="
             crossorigin="anonymous"
             referrerpolicy="no-referrer"></script>
+    <!-- Treant CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/treant-js/1.0/Treant.css"
           integrity="sha512-ySoXPqkgXC7K7IS5vOdi47uEpct2yJ3MkYVVVHiM7FOmdDnBUVSmB/D1ps2Pf6jBJnBMyh1EPJLpWh2uCzOLdg=="
           crossorigin="anonymous"
@@ -28,13 +28,14 @@
 <body>
 <div layout:fragment="content">
     <h4 class="page__name">LOT 추적</h4>
-    <!-- list grid -->
     <section class="lot__container">
+        <!-- LOT grid -->
         <article class="grid__container">
             <div id="grid_lot"></div>
         </article>
+        <!-- LOT Tree -->
         <article id="tree-wrapper">
-            <div id="lot-tree" style="width:800px; height: 800px"> </div>
+            <div id="lot-tree"> </div>
         </article>
     </section>
 </div>

@@ -49,7 +49,6 @@ public class ApprovalRestController {
     // 결재(승인, 반려)
     @PutMapping("")
     public ResponseDTO<Void> updateApproval(@RequestBody RequestApprovalDTO requestApprovalDTO) {
-        log.info("Received approval update DTO: {}", requestApprovalDTO);
         try {
             approvalService.updateApproval(requestApprovalDTO);
             return ResponseDTO.success("결재가 완료되었습니다!",null);
