@@ -1,5 +1,8 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.entity.Item;
+import com.itwillbs.factron.entity.Material;
+import com.itwillbs.factron.entity.Storage;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +18,8 @@ import lombok.NoArgsConstructor;
 public class Stock {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "stock_seq")
+    @SequenceGenerator(name = "stock_seq", sequenceName = "stock_seq", allocationSize = 1)
     private Long id; // 재고 ID
 
     @OneToOne(fetch = FetchType.LAZY)

@@ -1,0 +1,31 @@
+/* materialGrid 높이와 테두리 */
+.material-grid {
+    height: 300px;
+    border: 1px solid #ddd;
+}
+
+/* 검색창 너비 고정 */
+.search-box {
+    width: 300px;
+}
+
+/* 발주 자재 목록 라벨 위치 */
+.purchase-items-label {
+    position: relative;
+    z-index: 2;
+}
+
+/* 발주 자재 목록 영역 */
+.purchase-items {
+    min-height: 200px;
+    max-height: 200px;
+    overflow-y: auto;
+    position: relative;
+    z-index: 1;
+}
+
+/* 총금액 표시 박스 */
+.purchase-total {
+    position: relative;
+    z-index: 1;
+}

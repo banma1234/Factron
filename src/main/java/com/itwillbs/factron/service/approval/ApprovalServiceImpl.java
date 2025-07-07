@@ -30,12 +30,20 @@ public class ApprovalServiceImpl implements ApprovalService {
     private final TransferRepository transferRepository;             // 인사 발령 정보 저장소
     private final IntergratAuthRepository intergratAuthRepository;   // 통합 권한 정보 저장소
 
-    // 결재 목록 조회
+    // 인사결재 전체 조회
     @Override
     public List<ResponseSearchApprovalDTO> getApprovalsList(RequestSearchApprovalDTO requestSearchApprovalDTO){
         return approvalMapper.getApprovalList(requestSearchApprovalDTO);
     }
 
+    // 인사결재 단일 조회
+    @Override
+    public ResponseSearchApprovalDTO getApprovalById(Long approvalId) {
+        return approvalMapper.selectApprovalById(approvalId);
+    }
+
+
+    // 인사결재 (승인, 반려)
     @Override
     @Transactional // 쓰기 작업이므로 트랜잭션 설정
     public void updateApproval(RequestApprovalDTO requestApprovalDTO) {
@@ -88,7 +96,7 @@ public class ApprovalServiceImpl implements ApprovalService {
                     case "DEP005" -> "ATH005";           // 재무
                     case "DEP006" -> {
                         if ("POS005".equals(targetEmp.getPositionCode()))
-                            yield "ATH007";              // 생산팀장
+                            yield "ATH007";              // 작업반장(생산팀에 부장급이상)
                         else
                             yield "ATH006";              // 생산사원
                     }
@@ -110,7 +118,6 @@ public class ApprovalServiceImpl implements ApprovalService {
         else {
             throw new IllegalArgumentException("유효하지 않은 결재 상태 코드입니다.");
         }
-
         // ※ JPA 변경감지로 자동 저장 (별도 save 호출 불필요)
     }
 }

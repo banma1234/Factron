@@ -281,7 +281,6 @@ const init = () => {
                 if(res.status === 200){
                     // 데이터 매핑 처리
                     const mappedData = res.data.map(rowData => {
-                        console.log("서버에서 받은 원본 데이터:", rowData);
                         return {
                             id: rowData.id,                       // 번호 (hidden)
                             workOrderId: rowData.id,              // 작업지시 번호
@@ -402,8 +401,6 @@ const init = () => {
                 qualityHistoryList: qualityHistoryList
             };
 
-            console.log('품질 검사 결과 저장 요청 데이터:', requestData);
-
             // API 호출
             const response = await fetch('/api/quality/history', {
                 method: 'PUT',
@@ -421,10 +418,8 @@ const init = () => {
                 // 품질 검사 결과 저장 후 저장 버튼 비활성화
                 if (addInspectionResultBtn) addInspectionResultBtn.disabled = true;
 
-                // 현재 선택된 작업지시가 있으면 품질검사 이력 목록 새로고침
-                if (currentSelectedLine && currentSelectedLine.workOrderId) {
-                    getQualityInspectionHistories(currentSelectedLine.workOrderId, currentSelectedLine.workStatus);
-                }
+                // 작업지시 목록 새로고침
+                getWorkOrders();
 
                 // 현재 선택된 작업지시가 있으면 품질검사 이력 목록 새로고침
                 if (currentSelectedLine && currentSelectedLine.workOrderId) {

@@ -1,5 +1,7 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.entity.Material;
+import com.itwillbs.factron.entity.Purchase;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +17,8 @@ import lombok.NoArgsConstructor;
 public class PurchaseList {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "purchase_list_seq")
+    @SequenceGenerator(name = "purchase_list_seq", sequenceName = "purchase_list_seq", allocationSize = 1)
     private Long id; // 발주 원자재 ID
 
     @ManyToOne(fetch = FetchType.LAZY)

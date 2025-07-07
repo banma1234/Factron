@@ -1,5 +1,7 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.entity.Approval;
+import com.itwillbs.factron.entity.Employee;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +19,8 @@ import java.time.LocalDate;
 public class Transfer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "transfer_seq")
+    @SequenceGenerator(name = "transfer_seq", sequenceName = "transfer_seq", allocationSize = 1)
     private Long id; // 인사발령 ID
 
     @ManyToOne(fetch = FetchType.LAZY)

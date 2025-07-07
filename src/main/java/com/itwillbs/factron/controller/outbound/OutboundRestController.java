@@ -18,6 +18,7 @@ import java.util.List;
 public class OutboundRestController {
     private final OutboundService outboundService;
 
+    // 출고 전체 조회
     @GetMapping("")
     public ResponseDTO<List<ResponseSearchOutboundDTO>> getOutboundsList(RequestSearchOutboundDTO requestSearchOutboundDTO) {
         try {
@@ -27,6 +28,7 @@ public class OutboundRestController {
         }
     }
 
+    // 출고 처리
     @PutMapping("")
     public ResponseDTO<Void> updateOutbound(@RequestBody RequestOutboundCompleteDTO requestOutboundCompleteDTO) {
         try{

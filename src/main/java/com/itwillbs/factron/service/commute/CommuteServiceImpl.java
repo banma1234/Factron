@@ -45,8 +45,6 @@ public class CommuteServiceImpl implements CommuteService {
         // AuthorizationChecker를 사용하여 현재 로그인한 사용자 ID 가져오기
         Long empId = authorizationChecker.getCurrentEmployeeId();
 
-        log.info("출근 처리 : 현재 로그인한 사원 ID: {}", empId);
-
         // 1. 사원 조회
         Employee employee = employeeRepository.findById(empId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 사원이 존재하지 않습니다."));
@@ -80,8 +78,6 @@ public class CommuteServiceImpl implements CommuteService {
 
         // AuthorizationChecker를 사용하여 현재 로그인한 사용자 ID 가져오기
         Long empId = authorizationChecker.getCurrentEmployeeId();
-
-        log.info("퇴근 처리 : 현재 로그인한 사원 ID: {}", empId);
 
         // 1. 사원 조회
         Employee employee = employeeRepository.findById(empId)
@@ -158,8 +154,6 @@ public class CommuteServiceImpl implements CommuteService {
 
         // AuthorizationChecker를 사용하여 현재 로그인한 사용자 ID 가져오기
         Long empId = authorizationChecker.getCurrentEmployeeId();
-
-        log.info("현재 로그인한 사원 ID: {}", empId);
 
         // 1. 사원 정보 조회 (예: employeeRepository.findById)
         Employee employee = employeeRepository.findById(empId)

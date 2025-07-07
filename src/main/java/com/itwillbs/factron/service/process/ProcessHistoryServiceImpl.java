@@ -41,7 +41,7 @@ public class ProcessHistoryServiceImpl implements ProcessHistoryService {
     @Transactional
     public void updateProcessHistory(RequestProcessHistDTO requestDTO) {
         String workOrderId = requestDTO.getWorkOrderId();
-
+        Long inputQty = null;
         WorkOrder workOrder = workOrderRepository.findById(workOrderId).orElseThrow(
                 () -> new EntityNotFoundException("해당 작업지시가 없습니다.")
         );
@@ -63,7 +63,7 @@ public class ProcessHistoryServiceImpl implements ProcessHistoryService {
             if(currProcess > 0){ // 첫번째 공정이 아닐경우 가장 최근 LOT_HISTORY 가져오기
                 LotHistory prevLot = lotHistoryRepository.findFirstByWorkOrderIdOrderByCreatedAtDesc(workOrderId).orElseThrow(
                         () -> new EntityNotFoundException("해당 작업지시 로트번호가 존재하지 않습니다."));
-
+                inputQty = prevLot.getQuantity();
                 //Lot 가져오기
                 List<Lot> prevLotList = new ArrayList<>();
                 prevLotList.add(prevLot.getLot());
@@ -83,7 +83,7 @@ public class ProcessHistoryServiceImpl implements ProcessHistoryService {
                 if(prevLots.size() <= 0){
                     throw new EntityNotFoundException("해당 작업지시 로트번호가 존재하지 않습니다.");
                 }
-
+                inputQty = workOrder.getQuantity();
                 //Lot 가져오기
                 List<Lot> prevLotList = prevLots.stream().map(LotHistory::getLot).toList();
                 log.info("prevLotList : {}", prevLotList);
@@ -122,6 +122,7 @@ public class ProcessHistoryServiceImpl implements ProcessHistoryService {
             currProcHist.updateLot(newLot);
             currProcHist.updateOutputQuantity(process.getOutputQty());
             currProcHist.updateStatus("STS003");
+            if(inputQty != null) currProcHist.updateInputQuantity(inputQty);
             try{
                 processHistoryRepository.save(currProcHist);
                 log.info("Process History 연결 성공 id = {}", currProcHist.getId());

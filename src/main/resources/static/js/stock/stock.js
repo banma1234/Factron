@@ -94,23 +94,18 @@ const init = () => {
     // setStorage();
     getStockData();
 
-    const STOCK_DATA =  [
-        {
-            stockId: 1,
-            productId: 'ITEM0001',
-            productName: 'ITEM_NAME',
-            productTypeCode: 'ITEM_TYPE_CODE',
-            productTypeName: 'ITEM_TYPE_NAME',
-            quantity: 100,
-            storageId: 1,
-            storageName: 'STORAGE_NAME'
-        }
-    ]
-
     const srhBtn = document.querySelector("button[name='productSrhBtn']");
-
+    const srhFrom = document.querySelector('.search__form');
     if (srhBtn) {
         srhBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            getStockData();
+        })
+    }
+
+    if (srhFrom) {
+        srhFrom.addEventListener("submit", (e) => {
             e.preventDefault();
             e.stopPropagation();
             getStockData();

@@ -18,7 +18,7 @@ import java.util.List;
 public class ApprovalRestController {
     private final ApprovalService approvalService;
 
-    // 결재 조회
+    // 인사결재 전체 조회
     @GetMapping("")
     public ResponseDTO<List<ResponseSearchApprovalDTO>> getApprovalsList(RequestSearchApprovalDTO requestSearchApprovalDTO) {
         try {
@@ -29,10 +29,25 @@ public class ApprovalRestController {
         }
     }
 
-    // 결재(승인, 반려)
+    // 인사결재 단일 조회
+    @GetMapping("/{approvalId}")
+    public ResponseDTO<ResponseSearchApprovalDTO> getApproval(@PathVariable Long approvalId) {
+        try {
+            ResponseSearchApprovalDTO dto = approvalService.getApprovalById(approvalId);
+            if (dto != null) {
+                return ResponseDTO.success(dto);
+            } else {
+                return ResponseDTO.fail(404, "해당 결재를 찾을 수 없습니다.", null);
+            }
+        } catch (Exception e) {
+            log.error("단일 결재 조회 중 오류:", e);
+            return ResponseDTO.fail(500, "서버 오류가 발생했습니다.", null);
+        }
+    }
+
+    // 인사결재(승인, 반려)
     @PutMapping("")
     public ResponseDTO<Void> updateApproval(@RequestBody RequestApprovalDTO requestApprovalDTO) {
-        log.info("Received approval update DTO: {}", requestApprovalDTO);
         try {
             approvalService.updateApproval(requestApprovalDTO);
             return ResponseDTO.success("결재가 완료되었습니다!",null);

@@ -19,11 +19,9 @@ const setupEventListeners = () => {
     // 추가 버튼 클릭 이벤트
     if (confirmAddBtn) {
         confirmAddBtn.addEventListener('click', () => {
-            console.log("추가 버튼 클릭");
 
             // 선택된 공정 확인
             const selectedProcesses = window.getSelectedProcesses ? window.getSelectedProcesses() : [];
-            console.log("선택된 공정:", selectedProcesses);
 
             if (selectedProcesses.length === 0) {
                 alert('추가할 공정을 선택해주세요.');
@@ -38,7 +36,6 @@ const setupEventListeners = () => {
     const cancelBtn = document.querySelector('.btn-secondary');
     if (cancelBtn) {
         cancelBtn.addEventListener('click', () => {
-            console.log("취소 버튼 클릭");
             window.close();
         });
     }
@@ -46,7 +43,6 @@ const setupEventListeners = () => {
     // 확인 모달 - 확인 버튼 클릭
     if (confirmModalBtn) {
         confirmModalBtn.addEventListener('click', async () => {
-            console.log("확인 모달 버튼 클릭");
 
             try {
                 const res = await saveData();
@@ -64,7 +60,6 @@ const setupEventListeners = () => {
     // 알림 모달 - 확인 버튼 클릭
     if (alertBtn) {
         alertBtn.addEventListener('click', () => {
-            console.log("알림 버튼 클릭");
 
             alertModal.hide();
 
@@ -90,8 +85,6 @@ async function saveData() {
     // 선택된 공정 ID 추출
     const processIds = selectedProcesses.map(process => parseInt(process.processId));
 
-    console.log("연결할 공정 IDs:", processIds);
-
     try {
         const response = await fetch('/api/line/connect-process', {
             method: 'PUT',
@@ -114,7 +107,6 @@ async function saveData() {
 // 부모 창에서 라인 정보 수신
 window.addEventListener('message', function(event) {
     const data = event.data;
-    console.log("메시지 수신:", data);
 
     // 라인 정보 설정
     if (data.lineId && data.lineName) {
@@ -133,7 +125,6 @@ window.addEventListener('message', function(event) {
 window.addEventListener('DOMContentLoaded', async () => {
     try {
         await init();
-        console.log("페이지 초기화 완료");
     } catch (error) {
         console.error("초기화 오류:", error);
     }

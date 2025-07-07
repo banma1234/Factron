@@ -97,14 +97,22 @@ const init = () => {
     );
 
     // 시작 버튼
-    startBtn.addEventListener("click", () => {
+    startBtn?.addEventListener("click", () => {
         if (form.querySelector("input[name='orderId']").value) {
+            // 작업 시작일 validation
+            const startDate = form.querySelector("input[name='startDate']").value;
+            const today = getKoreaToday();
+            if (startDate > today) {
+                alert("작업 시작일 이후에만 시작할 수 있습니다.");
+                return;
+            }
+
             confirmModal.show();
         }
     });
 
     // 취소 버튼
-    form.querySelector("button.btn-secondary").addEventListener("click", () => {
+    form.querySelector("button.btn-secondary")?.addEventListener("click", () => {
         window.close();
     });
 

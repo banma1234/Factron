@@ -1,5 +1,8 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.entity.Approval;
+import com.itwillbs.factron.entity.Client;
+import com.itwillbs.factron.entity.Employee;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,7 +22,8 @@ import java.time.LocalDate;
 public class Purchase {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "purchase_seq")
+    @SequenceGenerator(name = "purchase_seq", sequenceName = "purchase_seq", allocationSize = 1)
     private Long id; // 발주 ID
 
     @ManyToOne(fetch = FetchType.LAZY)

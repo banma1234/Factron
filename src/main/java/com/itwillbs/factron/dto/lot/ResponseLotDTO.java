@@ -1,11 +1,17 @@
 package com.itwillbs.factron.dto.lot;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.itwillbs.factron.entity.Lot;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
+/**
+ * LOT 번호 반환 DTO
+ * */
 @Data
 public class ResponseLotDTO {
 
@@ -21,22 +27,22 @@ public class ResponseLotDTO {
     @NotBlank(message = "유형 구분은 필수 입력값입니다.")
     private String event_type;
 
+    @NotNull(message = "생성자는 필수 입력값입니다.")
+    private Long created_by;
+
+    @NotNull(message = "생성일은 필수 입력값입니다.")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
+    private LocalDateTime created_at;
+
     @Builder
-    public ResponseLotDTO(String id, String item_id, String material_id, Long quantity, String event_type) {
+    public ResponseLotDTO(String id, String item_id, String material_id, Long quantity, String event_type, Long created_by, LocalDateTime created_at) {
         this.id = id;
         this.item_id = item_id;
         this.material_id = material_id;
         this.quantity = quantity;
         this.event_type = event_type;
+        this.created_by = created_by;
+        this.created_at = created_at;
     }
 
-    public static ResponseLotDTO fromEntity(Lot entity) {
-        return ResponseLotDTO.builder()
-                .id(entity.getId())
-                .item_id(entity.getItem().getId())
-                .material_id(entity.getMaterial().getId())
-                .quantity(entity.getQuantity())
-                .event_type(entity.getEventType())
-                .build();
-    }
 }
