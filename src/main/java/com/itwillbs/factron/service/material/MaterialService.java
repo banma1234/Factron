@@ -9,4 +9,5 @@ public interface MaterialService {
     List<ResponseMaterialDTO> getMaterialList(RequestMaterialDTO dto);
     Void addMaterial(RequestMaterialDTO dto);
     Void updateMaterial(RequestMaterialDTO dto);
+    String getMaterialByCode(String code);
 }

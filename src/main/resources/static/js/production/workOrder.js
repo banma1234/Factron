@@ -125,7 +125,7 @@ const init = () => {
     });
 
     // 작업 추가
-    addWorkOrderBtn.addEventListener("click", function(e) {
+    addWorkOrderBtn?.addEventListener("click", function(e) {
         e.preventDefault();
 
         const rowKey = planningGrid.getFocusedCell()?.rowKey;
@@ -230,7 +230,9 @@ const init = () => {
             const data = await res.json();
             planningGrid.resetData(data.data); // grid에 세팅
             workOrderGrid.resetData([]); // 작업지시 grid 초기화
-            addWorkOrderBtn.disabled = true; // 작업 추가 버튼 비활성화
+            if(addWorkOrderBtn) {
+                addWorkOrderBtn.disabled = true; // 작업 추가 버튼 비활성화
+            }
 
         } catch (e) {
             console.error(e);
@@ -255,7 +257,9 @@ const init = () => {
 
             const data = await res.json();
             workOrderGrid.resetData(data.data); // grid에 세팅
-            addWorkOrderBtn.disabled = false; // 작업 추가 버튼 활성화
+            if(addWorkOrderBtn) {
+                addWorkOrderBtn.disabled = false; // 작업 추가 버튼 활성화
+            }
 
         } catch (e) {
             console.error(e);

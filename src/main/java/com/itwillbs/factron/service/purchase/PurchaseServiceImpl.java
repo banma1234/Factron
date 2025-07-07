@@ -32,20 +32,25 @@ public class PurchaseServiceImpl implements PurchaseServcie{
     private final ClientRepository clientRepository;
     private final MaterialRepository materialRepository;
 
+    // 발주 전체 조회
     @Override
     public List<ResponseSearchPurchaseDTO> getPurchaseList(RequestSearchPurchaseDTO requestSearchPurchaseDTO){
         return purchaseMapper.getPurchaseList(requestSearchPurchaseDTO);
     }
+
+    // 발주 품목 조회
     @Override
     public List<ResponsePurchaseItemDTO> getPurchaseItemsByPurchaseId(Long purchaseId) {
         return purchaseMapper.getPurchaseItemsByPurchaseId(purchaseId);
     }
 
+    // 발주 상세 조회
     @Override
     public ResponseSearchPurchaseDTO getPurchaseDetailByPurchaseId(Long purchaseId) {
         return purchaseMapper.getPurchaseDetailByPurchaseId(purchaseId);
     }
 
+    // 발주 등록
     @Transactional
     @Override
     public void registerPurchase(RequestRegisterPurchaseDTO dto) {
@@ -85,6 +90,7 @@ public class PurchaseServiceImpl implements PurchaseServcie{
         }
     }
 
+    // 발주 취소
     @Transactional
     @Override
     public void cancelPurchase(Long approvalId) {

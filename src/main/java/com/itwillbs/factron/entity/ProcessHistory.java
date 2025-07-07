@@ -1,5 +1,8 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.entity.Lot;
+import com.itwillbs.factron.entity.Process;
+import com.itwillbs.factron.entity.WorkOrder;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +21,8 @@ import java.time.LocalDateTime;
 public class ProcessHistory {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "process_history_seq")
+    @SequenceGenerator(name = "process_history_seq", sequenceName = "process_history_seq", allocationSize = 1)
     private Long id; // 공정 이력 ID
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -50,6 +54,10 @@ public class ProcessHistory {
 
     public void updateStatus(String statusCode) {
         this.statusCode = statusCode;
+    }
+
+    public void updateInputQuantity(Long inputQuantity) {
+        this.inputQuantity = inputQuantity;
     }
 
     public void updateOutputQuantity(Long outputQuantity) {

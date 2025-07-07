@@ -1,5 +1,6 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.entity.Employee;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,12 +18,13 @@ import java.time.LocalDate;
 public class Approval {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "approval_seq")
+    @SequenceGenerator(name = "approval_seq", sequenceName = "approval_seq", allocationSize = 1)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requester_id", referencedColumnName = "id")
-    private Employee requester; // 발행자
+    private com.itwillbs.factron.entity.Employee requester; // 발행자
 
     @Column(name = "requested_at", nullable = false)
     private LocalDate requestedAt; // 발행일
@@ -32,7 +34,7 @@ public class Approval {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "approver_id", referencedColumnName = "id")
-    private Employee approver; // 결재자
+    private com.itwillbs.factron.entity.Employee approver; // 결재자
 
     @Column(name = "confirmed_at")
     private LocalDate confirmedAt; // 결재일
@@ -43,7 +45,7 @@ public class Approval {
     @Column(name = "reject_reason", length = 2000)
     private String rejectReason; // 반려 사유
 
-    public void approve(Employee approver) {
+    public void approve(com.itwillbs.factron.entity.Employee approver) {
         this.approver = approver;
         this.confirmedAt = LocalDate.now();
         this.approvalStatusCode = "APV002"; // 승인

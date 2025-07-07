@@ -1,6 +1,7 @@
 package com.itwillbs.factron.entity;
 
 import com.itwillbs.factron.dto.material.RequestMaterialDTO;
+import com.itwillbs.factron.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +14,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "material")
-public class Material extends BaseEntity {
+public class Material extends com.itwillbs.factron.entity.BaseEntity {
 
     @Id
     private String id; // 자재 ID (예: M0000001)

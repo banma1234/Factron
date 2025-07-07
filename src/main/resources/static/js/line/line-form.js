@@ -48,9 +48,6 @@ const init = async () => {
             const data = event.data;
             if (data?.source === 'react-devtools-content-script') return;
 
-            // 받아온 데이터 로깅
-            console.log("받은 데이터:", data);
-
             // 받아온 데이터 저장
             lineData = data;
 

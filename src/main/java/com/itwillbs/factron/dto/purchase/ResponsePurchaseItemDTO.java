@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class ResponsePurchaseItemDTO {
-    private String materialId;
-    private String materialName;
-    private Long quantity;
-    private Long price;
-    private Long amount; // 또는 BigDecimal 등
+    private String materialId;      // 원자재id
+    private String materialName;    // 원자재명
+    private Long quantity;          // 수량
+    private Long price;             // 가격
+    private Long amount;            // 총금액
 }

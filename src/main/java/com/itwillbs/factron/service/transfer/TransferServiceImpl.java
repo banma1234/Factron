@@ -1,5 +1,6 @@
 package com.itwillbs.factron.service.transfer;
 
+import com.itwillbs.factron.common.component.AuthorizationChecker;
 import com.itwillbs.factron.dto.transfer.RequestTransferDTO;
 import com.itwillbs.factron.dto.transfer.ResponseTransferDTO;
 import com.itwillbs.factron.entity.Approval;
@@ -31,6 +32,8 @@ public class TransferServiceImpl implements TransferService {
     private final EmployeeRepository empRepository;
     private final ApprovalRepository appRepository;
 
+    private final AuthorizationChecker authorizationChecker;
+
     /**
      * 인사발령 목록 조회
      * @param requestTransferDTO 요청 DTO
@@ -50,6 +53,9 @@ public class TransferServiceImpl implements TransferService {
     @Transactional
     @Override
     public Void registTransfer(RequestTransferDTO requestTransferDTO) {
+
+        // 권한 검증
+        authorizationChecker.checkAnyAuthority("ATH002", "ATH003");
 
         // 인사발령 대상 직원 조회
         Employee employee = empRepository.findById(requestTransferDTO.getEmpId())

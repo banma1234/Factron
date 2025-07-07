@@ -9,6 +9,10 @@ import java.util.List;
 
 @Mapper
 public interface OutboundMapper {
+
+    // 출고 전체 조회
     List<ResponseSearchOutboundDTO> getOutboundsList(RequestSearchOutboundDTO requestSearchOutboundDTO);
+
+    // 출고 처리
     void updateOutbound(RequestOutboundCompleteDTO requestOutboundCompleteDTO);
 }

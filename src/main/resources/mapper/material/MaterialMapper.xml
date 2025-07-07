@@ -16,16 +16,10 @@
             created_at AS createdAt,
             created_by AS createdBy
         FROM material
-
         <where>
             <if test="materialName != null and materialName != ''">
-                AND name LIKE '%' || #{materialName} || '%'
-            </if>
-            <if test="materialStartDate != null and materialStartDate != ''">
-                AND created_at &gt;= TO_DATE(#{materialStartDate}, 'YYYY-MM-DD')
-            </if>
-            <if test="materialEndDate != null and materialEndDate != ''">
-                AND created_at &lt; TO_DATE(#{materialEndDate}, 'YYYY-MM-DD') + 1
+                (UPPER(name) LIKE '%' || UPPER(#{materialName}) || '%'
+                OR UPPER(id) LIKE '%' || UPPER(#{materialName}) || '%')
             </if>
         </where>
         ORDER BY created_at DESC

@@ -2,6 +2,7 @@
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout/base.html}">
 <head>
     <title>Factron</title>
@@ -13,7 +14,7 @@
     <section>
         <div class="header-row">
             <h4 class="page__name">인사발령 관리</h4>
-            <button class="btn btn-primary registTrans">발령</button>
+            <button class="btn btn-primary registTrans" sec:authorize="hasAnyAuthority('ATH002', 'ATH003')">발령</button>
         </div>
         <form class="search__form mb-2">
             <div class="select__container">

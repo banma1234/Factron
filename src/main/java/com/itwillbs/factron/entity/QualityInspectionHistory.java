@@ -1,5 +1,9 @@
 package com.itwillbs.factron.entity;
 
+import com.itwillbs.factron.entity.Item;
+import com.itwillbs.factron.entity.Lot;
+import com.itwillbs.factron.entity.QualityInspection;
+import com.itwillbs.factron.entity.WorkOrder;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +21,8 @@ import java.time.LocalDate;
 public class QualityInspectionHistory {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "quality_inspection_history_seq")
+    @SequenceGenerator(name = "quality_inspection_history_seq", sequenceName = "quality_inspection_history_seq", allocationSize = 1)
     private Long id; // 품질 검사 이력 ID
 
     @ManyToOne(fetch = FetchType.LAZY)

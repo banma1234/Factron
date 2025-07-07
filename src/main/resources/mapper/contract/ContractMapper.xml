@@ -34,7 +34,7 @@
         JOIN CLIENT CL ON C.CLIENT_ID = CL.ID
         LEFT JOIN APPROVAL A ON C.APPROVAL_ID = A.ID
         LEFT JOIN CONTRACT_LIST CLIST ON C.ID = CLIST.CONTRACT_ID
-        LEFT JOIN ITEM IT ON CLIST.ITEM_ID = IT.ID
+        LEFT JOIN ITEM IT ON CLIST.ITEM_ID = IT.ID AND IT.TYPE_CODE = 'ITP003'
         LEFT JOIN DETAIL_SYS_CODE STP ON C.STATUS_CODE = STP.DETAIL_CODE
 
         <where>
@@ -61,8 +61,11 @@
                 REGEXP_LIKE(#{approvalNameOrEmpId}, '^[0-9]+')
                 AND TO_CHAR(E.ID) LIKE '%' || #{approvalNameOrEmpId} || '%'
                 )
-                OR CL.NAME LIKE '%' || #{approvalNameOrEmpId} || '%'
                 )
+            </if>
+
+            <if test="clientName != null and clientName != ''">
+                AND CL.NAME LIKE '%' || #{clientName} || '%'
             </if>
         </where>
 
@@ -100,7 +103,7 @@
                  JOIN CLIENT CL ON C.CLIENT_ID = CL.ID
                  LEFT JOIN APPROVAL A ON C.APPROVAL_ID = A.ID
                  LEFT JOIN CONTRACT_LIST CLIST ON C.ID = CLIST.CONTRACT_ID
-                 LEFT JOIN ITEM IT ON CLIST.ITEM_ID = IT.ID
+                 LEFT JOIN ITEM IT ON CLIST.ITEM_ID = IT.ID AND IT.TYPE_CODE = 'ITP003'
                  LEFT JOIN DETAIL_SYS_CODE STP ON C.STATUS_CODE = STP.DETAIL_CODE
         WHERE C.ID = #{contractId}
         GROUP BY
@@ -121,7 +124,7 @@
             CLIST.PRICE,
             (CLIST.QUANTITY * CLIST.PRICE) AS amount
         FROM CONTRACT_LIST CLIST
-                 JOIN ITEM IT ON CLIST.ITEM_ID = IT.ID
+                 JOIN ITEM IT ON CLIST.ITEM_ID = IT.ID AND IT.TYPE_CODE = 'ITP003'
         WHERE CLIST.CONTRACT_ID = #{contractId}
         ORDER BY IT.NAME
     </select>
