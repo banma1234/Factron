@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.4.6'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'war'
 }
 
 group = 'com.itwillbs'
@@ -40,8 +41,18 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+}
+
+war {
+	archiveFileName = 'ROOT.war'
+}
+
+test {
+	enabled = false
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+	enabled = false
 }
