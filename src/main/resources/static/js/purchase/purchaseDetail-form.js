@@ -106,7 +106,7 @@ const init = () => {
     function setUIState() {
         const cancelBtn = document.querySelector(".cancelApprovalBtn");
 
-        const isPending = window.statusCode === "STP002";       // 대기 상태 여부 확인
+        const isPending = window.statusCode === "STP001";       // 대기 상태 여부 확인
         const isAuthorized = user.authCode === "ATH004" || "ATH003";          // 권한 확인
 
         // 결재 취소 버튼 노출 여부 결정
