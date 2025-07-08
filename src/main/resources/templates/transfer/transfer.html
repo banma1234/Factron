@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/base.html}">
+<head>
+    <title>Factron</title>
+    <th:block layout:fragment="style">
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <section>
+        <div class="header-row">
+            <h4 class="page__name">인사발령 관리</h4>
+            <button class="btn btn-primary registTrans" sec:authorize="hasAnyAuthority('ATH002', 'ATH003')">발령</button>
+        </div>
+        <form class="search__form mb-2">
+            <div class="select__container">
+                <input class="form-control" type="date" name="srhStrDate">
+                ~
+                <input class="form-control" type="date" name="srhEndDate"><br/>
+                <select class="form-select" name="srhTrsTypeCode">
+                    <option value="">발령유형</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <input class="form-control" type="text" name="srhIdOrName" placeholder="이름 또는 사원번호"><br/>
+                <button class="btn btn-outline-secondary srhBtn" type="button">검색</button>
+            </div>
+        </form>
+        <!-- list grid -->
+        <article>
+            <div id="transferGrid">
+
+            </div>
+        </article>
+    </section>
+</div>
+
+<th:block layout:fragment="javascript">
+    <!-- js import -->
+    <script th:src="@{/js/transfer/transfer.js}"></script>
+</th:block>
+</body>
+</html>

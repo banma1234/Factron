@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base.html}">
+<head>
+    <title>Factron</title>
+    <th:block layout:fragment="style">
+        <link rel="stylesheet" th:href="@{/css/approval/approval.css}" />
+        <link rel="stylesheet" th:href="@{/css/inbound/inbound.css}" />
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <section>
+        <h4 class="page__name">입고 목록</h4>
+        <form class="search__form mb-2">
+            <div class="select__container">
+                <!-- 날짜 필터 추가 -->
+                <input class="form-control" type="date" name="startDate">
+                ~
+                <input class="form-control" type="date" name="endDate">
+            </div>
+
+            <div class="input-group">
+                <input class="form-control" type="text" name="srhName" placeholder="제품명/자재명">
+                <button class="btn btn-outline-secondary srhBtn" type="button">검색</button>
+            </div>
+        </form>
+        <article>
+            <div id="inboundGrid"></div>
+            <div class="button-container">
+                <button class="btn btn-primary btnCompleteInbound">입고 완료</button>
+            </div>
+        </article>
+    </section>
+</div>
+
+<th:block layout:fragment="javascript">
+    <script th:src="@{/js/inbound/inbound.js}"></script>
+</th:block>
+</body>
+</html>

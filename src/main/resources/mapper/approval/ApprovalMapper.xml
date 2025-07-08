@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itwillbs.factron.mapper.approval.ApprovalMapper">
+
+    <!-- 결재 목록 조회 -->
+    <select id="getApprovalList"
+            parameterType="com.itwillbs.factron.dto.approval.RequestSearchApprovalDTO"
+            resultType="com.itwillbs.factron.dto.approval.ResponseSearchApprovalDTO">
+
+        SELECT
+        -- 기본 결재 정보
+        APP.ID AS approvalId,
+        APP.APPROVAL_TYPE_CODE AS apprTypeCode,
+        TYPE_CODE.NAME AS apprTypeName,
+
+        -- 요청자 정보
+        REQ_EMP.NAME AS requesterName,
+        APP.REQUESTER_ID AS requesterId,
+        APP.REQUESTED_AT AS requested_at,
+
+        -- 요청자 직급/부서
+        REQ_EMP.POSITION_CODE AS positionCode,
+        POS_CODE.NAME AS positionName,
+        REQ_EMP.DEPT_CODE AS deptCode,
+        DEPT_CODE.NAME AS deptName,
+
+        -- 결재 상태/완료일
+        APP.CONFIRMED_AT AS confirmedDate,
+        APP.APPROVAL_STATUS_CODE AS approvalStatusCode,
+        STATUS_CODE.NAME AS approvalStatusName,
+
+        -- 결재자 정보
+        APRV_EMP.NAME AS approverName,
+        APP.APPROVER_ID AS approverId,
+
+        -- 반려 사유
+        APP.REJECT_REASON AS rejectionReason,
+
+        -- 발령 정보
+        TRANS.EMPLOYEE_ID AS transferEmpId,
+        TRANS_EMP.NAME AS transferEmpName,
+        TRANS_EMP.POSITION_CODE AS transferPositionCode,
+        TRANS_POS.NAME AS transferPositionName,
+        TRANS_EMP.DEPT_CODE AS transferDeptCode,
+        TRANS_DEPT.NAME AS transferDeptName
+
+        FROM APPROVAL APP
+
+        -- 요청자/결재자
+        LEFT JOIN EMPLOYEE REQ_EMP ON REQ_EMP.ID = APP.REQUESTER_ID
+        LEFT JOIN EMPLOYEE APRV_EMP ON APRV_EMP.ID = APP.APPROVER_ID
+
+        -- 코드 테이블
+        LEFT JOIN DETAIL_SYS_CODE STATUS_CODE ON APP.APPROVAL_STATUS_CODE = STATUS_CODE.DETAIL_CODE
+        LEFT JOIN DETAIL_SYS_CODE TYPE_CODE ON APP.APPROVAL_TYPE_CODE = TYPE_CODE.DETAIL_CODE
+        LEFT JOIN DETAIL_SYS_CODE POS_CODE ON REQ_EMP.POSITION_CODE = POS_CODE.DETAIL_CODE
+        LEFT JOIN DETAIL_SYS_CODE DEPT_CODE ON REQ_EMP.DEPT_CODE = DEPT_CODE.DETAIL_CODE
+
+        -- 발령 대상자 정보
+        LEFT JOIN TRANSFER TRANS ON TRANS.APPROVAL_ID = APP.ID
+        LEFT JOIN EMPLOYEE TRANS_EMP ON TRANS.EMPLOYEE_ID = TRANS_EMP.ID
+        LEFT JOIN DETAIL_SYS_CODE TRANS_POS ON TRANS_EMP.POSITION_CODE = TRANS_POS.DETAIL_CODE
+        LEFT JOIN DETAIL_SYS_CODE TRANS_DEPT ON TRANS_EMP.DEPT_CODE = TRANS_DEPT.DETAIL_CODE
+
+        <where>
+            AND APP.APPROVAL_TYPE_CODE LIKE 'APR%'
+
+            <if test="startDate != null and startDate != ''">
+                AND APP.REQUESTED_AT &gt;= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND APP.REQUESTED_AT &lt;= TO_DATE(#{endDate}, 'YYYY-MM-DD')
+            </if>
+            <if test="apprType != null and apprType != ''">
+                AND APP.APPROVAL_TYPE_CODE = #{apprType}
+            </if>
+            <if test="dept != null and dept != ''">
+                AND REQ_EMP.DEPT_CODE = #{dept}
+            </if>
+            <if test="position != null and position != ''">
+                AND REQ_EMP.POSITION_CODE = #{position}
+            </if>
+            <if test="approvalNameOrEmpId != null and approvalNameOrEmpId != ''">
+                AND (
+                REQ_EMP.NAME LIKE '%' || #{approvalNameOrEmpId} || '%'
+                OR (
+                REGEXP_LIKE(#{approvalNameOrEmpId}, '^[0-9]+')
+                AND TO_CHAR(REQ_EMP.ID) LIKE '%' || #{approvalNameOrEmpId} || '%'
+                )
+                OR (
+                APP.APPROVAL_TYPE_CODE = 'APR003'
+                AND (
+                TRANS_EMP.NAME LIKE '%' || #{approvalNameOrEmpId} || '%'
+                OR (
+                REGEXP_LIKE(#{approvalNameOrEmpId}, '^[0-9]+')
+                AND TO_CHAR(TRANS_EMP.ID) LIKE '%' || #{approvalNameOrEmpId} || '%'
+                )
+                )
+                )
+                )
+            </if>
+        </where>
+
+        ORDER BY APP.ID DESC
+    </select>
+
+    <!-- ID로 단건 조회 -->
+    <select id="selectApprovalById" parameterType="long"
+            resultType="com.itwillbs.factron.dto.approval.ResponseSearchApprovalDTO">
+        SELECT
+            APP.ID AS approvalId,
+            APP.APPROVAL_TYPE_CODE AS apprTypeCode,
+            TYPE_CODE.NAME AS apprTypeName,
+
+            REQ_EMP.NAME AS requesterName,
+            APP.REQUESTER_ID AS requesterId,
+            APP.REQUESTED_AT AS requested_at,
+
+            REQ_EMP.POSITION_CODE AS positionCode,
+            POS_CODE.NAME AS positionName,
+            REQ_EMP.DEPT_CODE AS deptCode,
+            DEPT_CODE.NAME AS deptName,
+
+            APP.CONFIRMED_AT AS confirmedDate,
+            APP.APPROVAL_STATUS_CODE AS approvalStatusCode,
+            STATUS_CODE.NAME AS approvalStatusName,
+
+            APRV_EMP.NAME AS approverName,
+            APP.APPROVER_ID AS approverId,
+
+            APP.REJECT_REASON AS rejectionReason,
+
+            TRANS.EMPLOYEE_ID AS transferEmpId,
+            TRANS_EMP.NAME AS transferEmpName,
+            TRANS_EMP.POSITION_CODE AS transferPositionCode,
+            TRANS_POS.NAME AS transferPositionName,
+            TRANS_EMP.DEPT_CODE AS transferDeptCode,
+            TRANS_DEPT.NAME AS transferDeptName
+
+        FROM APPROVAL APP
+                 LEFT JOIN EMPLOYEE REQ_EMP ON REQ_EMP.ID = APP.REQUESTER_ID
+                 LEFT JOIN EMPLOYEE APRV_EMP ON APRV_EMP.ID = APP.APPROVER_ID
+                 LEFT JOIN DETAIL_SYS_CODE STATUS_CODE ON APP.APPROVAL_STATUS_CODE = STATUS_CODE.DETAIL_CODE
+                 LEFT JOIN DETAIL_SYS_CODE TYPE_CODE ON APP.APPROVAL_TYPE_CODE = TYPE_CODE.DETAIL_CODE
+                 LEFT JOIN DETAIL_SYS_CODE POS_CODE ON REQ_EMP.POSITION_CODE = POS_CODE.DETAIL_CODE
+                 LEFT JOIN DETAIL_SYS_CODE DEPT_CODE ON REQ_EMP.DEPT_CODE = DEPT_CODE.DETAIL_CODE
+                 LEFT JOIN TRANSFER TRANS ON TRANS.APPROVAL_ID = APP.ID
+                 LEFT JOIN EMPLOYEE TRANS_EMP ON TRANS.EMPLOYEE_ID = TRANS_EMP.ID
+                 LEFT JOIN DETAIL_SYS_CODE TRANS_POS ON TRANS_EMP.POSITION_CODE = TRANS_POS.DETAIL_CODE
+                 LEFT JOIN DETAIL_SYS_CODE TRANS_DEPT ON TRANS_EMP.DEPT_CODE = TRANS_DEPT.DETAIL_CODE
+
+        WHERE APP.ID = #{approvalId}
+    </select>
+
+</mapper>

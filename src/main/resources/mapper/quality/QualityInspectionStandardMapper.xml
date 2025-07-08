@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itwillbs.factron.mapper.quality.QualityInspectionStandardMapper">
+    <select id="getQualityInspectionByIdOrName" parameterType="com.itwillbs.factron.dto.quality.RequestInspStdSrhDTO" resultType="com.itwillbs.factron.dto.quality.ResponseQualityStandardDTO">
+        SELECT
+        qis.id AS qualityInspectionStandardId,
+        qis.quality_inspection_id AS qualityInspectionId,
+        qis.item_id AS itemId,
+        qis.target_value AS targetValue,
+        qis.upper_limit AS upperLimit,
+        qis.lower_limit AS lowerLimit,
+        qis.unit
+        FROM quality_inspection_standard qis
+        LEFT JOIN quality_inspection qi ON qis.quality_inspection_id = qi.id
+        LEFT JOIN item i ON qis.item_id = i.id
+        <where>
+            <if test="qualityInspectionStandardNameOrId != null and qualityInspectionStandardNameOrId != ''">
+                AND (
+                LOWER(qi.name) LIKE '%' || LOWER(#{qualityInspectionStandardNameOrId}) || '%'
+                OR qi.id LIKE '%' || #{qualityInspectionStandardNameOrId} || '%'
+                OR i.id LIKE'%' || #{qualityInspectionStandardNameOrId} || '%'
+                OR LOWER(i.name) LIKE '%' || LOWER(#{qualityInspectionStandardNameOrId}) || '%'
+                )
+            </if>
+
+        </where>
+        ORDER BY qis.id DESC
+    </select>
+</mapper>

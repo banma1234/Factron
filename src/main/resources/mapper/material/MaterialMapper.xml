@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwillbs.factron.mapper.material.MaterialMapper">
+
+    <select id="getMaterialList"
+            parameterType="com.itwillbs.factron.dto.material.RequestMaterialDTO"
+            resultType="com.itwillbs.factron.dto.material.ResponseMaterialDTO">
+        SELECT
+        m.id AS materialId,
+        m.name,
+        m.unit,
+        s.name AS unitName,
+        m.info,
+        m.spec,
+        m.created_at AS createdAt,
+        m.created_by AS createdBy
+        FROM material m
+        JOIN DETAIL_SYS_CODE s ON m.unit = s.detail_code
+        <where>
+            <if test="materialName != null and materialName != ''">
+                (UPPER(m.name) LIKE '%' || UPPER(#{materialName}) || '%'
+                OR UPPER(m.id) LIKE '%' || UPPER(#{materialName}) || '%')
+            </if>
+        </where>
+        ORDER BY m.created_at DESC
+    </select>
+
+</mapper>

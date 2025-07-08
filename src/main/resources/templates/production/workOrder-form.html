@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/popup-base.html}">
+<head>
+    <title>Factron</title>
+
+    <!-- TOAST UI import -->
+    <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+    <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+
+    <th:block layout:fragment="style">
+        <link rel="stylesheet" th:href="@{/css/production/production.css}" />
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2 class="mb-4">작업 정보</h2>
+    <!-- form -->
+    <form>
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <span class="form-label">생산계획 번호</span>
+                <input type="text" name="planId" class="form-control" disabled>
+            </div>
+            <div class="col-md-4">
+                <span class="form-label">작업지시 번호</span>
+                <input type="text" name="orderId" class="form-control" disabled>
+            </div>
+            <div class="col-md-4">
+                <span class="form-label">작업 제품</span>
+                <input type="text" name="orderItem" class="form-control" disabled>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <span class="form-label">작업량</span>
+                <div class="d-flex">
+                    <input type="text" class="form-control text-end me-2" name="quantity" disabled>
+                    <input type="text" class="form-control" name="unitName" disabled>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <span class="form-label">시작 날짜</span>
+                <input type="date" name="startDate" class="form-control" disabled>
+            </div>
+            <div class="col-md-4">
+                <span class="form-label">라인</span>
+                <input type="hidden" name="lineId" class="form-control" disabled>
+                <input type="text" name="lineName" class="form-control" disabled>
+            </div>
+        </div>
+
+        <!-- 투입 품목 grid -->
+        <article class="border rounded p-3 mt-4">
+            <h5 class="mb-3">투입 품목</h5>
+            <div id="productGrid"></div>
+        </article>
+
+        <!-- 작업자 grid -->
+        <article class="border rounded p-3 mt-4">
+            <h5 class="mb-3">작업자</h5>
+            <div id="workerGrid"></div>
+        </article>
+
+        <div class="d-flex justify-content-end mt-4 gap-2 d-none btnGroup" sec:authorize="hasAnyAuthority('ATH007', 'ATH003')">
+            <button type="button" class="btn btn-primary startBtn">시작</button>
+            <button type="button" class="btn btn-secondary">취소</button>
+        </div>
+    </form>
+
+    <!-- confirm modal -->
+    <div class="modal fade confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    작업을 시작하시겠습니까?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary confirmEditBtn">확인</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- alert modal -->
+    <div class="modal fade alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    작업이 시작되었습니다!
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary alertBtn">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- script 블록 -->
+<th:block layout:fragment="javascript">
+    <script th:src="@{/js/production/workOrder-form.js}"></script>
+</th:block>
+
+</body>
+</html>

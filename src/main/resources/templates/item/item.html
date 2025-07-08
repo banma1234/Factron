@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/base.html}">
+<head>
+  <title>Factron</title>
+</head>
+<body>
+<div layout:fragment="content">
+  <section>
+    <div class="header-row">
+      <h4 class="page__name">제품 관리</h4>
+      <button class="btn btn-primary addItemBtn" sec:authorize="hasAnyAuthority('ATH003', 'ATH005')">추가</button>
+      <button class="btn btn-primary saveItemBtn" sec:authorize="hasAnyAuthority('ATH003', 'ATH005')">저장</button>
+    </div>
+
+    <div class="search__form mb-2">
+      <select class="form-select itemTypeSelect">
+        <option value="">제품 유형</option>
+      </select>
+      <div class="input-group">
+        <input class="form-control" type="text" name="searchName" placeholder="제품코드 또는 제품명">
+        <button class="btn btn-outline-secondary searchBtn">검색</button>
+      </div>
+    </div>
+
+    <article>
+      <div class="itemGrid"></div>
+    </article>
+  </section>
+
+  <!-- alert modal -->
+  <div class="modal fade alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+          저장이 완료되었습니다!
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary alertBtn">확인</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<th:block layout:fragment="javascript">
+  <script th:src="@{/js/item/item.js}" type="module"></script>
+</th:block>
+</body>
+</html>

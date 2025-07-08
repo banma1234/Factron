@@ -1,0 +1,143 @@
+.sidebar {
+    width: 300px;
+    padding-top: 70px;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    transition: transform 0.3s ease;
+    z-index: 1040;
+    background-color: #fff;
+}
+.sidebar ul {
+    padding: 20px 0;
+}
+
+.sidebar.hidden {
+    transform: translateX(-300px);
+}
+
+.main-content {
+    margin-top: 70px;
+    margin-left: 300px;
+    padding: 1rem;
+    transition: margin-left 0.3s ease;
+}
+
+@media (max-width: 1200px) {
+    .sidebar {
+        transform: translateX(-300px);
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .overlay.active {
+        display: block;
+    }
+}
+
+@media (max-width: 700px) {
+    .logo__title {
+        display: none;
+    }
+}
+@media (max-width: 500px) {
+    .navbar-text {
+        display: none;
+    }
+}
+
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1050;
+    height: 70px;
+    padding: 0 20px;
+    border-bottom: 1px solid lightgray;
+}
+
+.navbar .container-fluid {
+    height: 100%;
+    align-items: center;
+}
+
+.nav-item.open > .submenu {
+    display: block;
+}
+
+.menu-item {
+    display: flex;
+    flex-direction: row;
+    padding: 5px 0;
+    gap: 10px;
+}
+
+.submenu {
+    display: none;
+    padding: 0 !important;
+}
+
+.nav-link {
+    transition: all 0.2s ease;
+    border-radius: 10px;
+    color: #2f2f2f;
+}
+.nav-link:hover {
+    background-color: #f0f0f0;
+    color: #000;
+}
+.nav-link span {
+    padding-left: 0.5rem;
+}
+.nav-item.open > .submenu {
+    display: block;
+}
+.nav-link.active {
+    background-color: #f0f0f0;
+}
+.sub-link.active {
+    background-color: #7D9BFF;
+}
+.sub-link.active span{
+    color: #ffffff;
+}
+
+.submenu .nav-link {
+    padding-left: 3.5rem;
+    font-size: 0.9rem;
+}
+
+.overlay {
+    position: fixed;
+    display: none;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1030;
+}
+
+.user__name {
+    font-weight: bold;
+}
+
+/* 상속할 속성값 */
+.border__none {
+    border: none;
+}
+.btn-primary {
+    background-color: #606E9C;
+    border: none;
+}
+.btn-primary:hover {
+    background-color: #7D9BFF;
+}
