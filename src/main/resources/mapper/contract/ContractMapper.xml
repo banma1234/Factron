@@ -34,7 +34,7 @@
         JOIN CLIENT CL ON C.CLIENT_ID = CL.ID
         LEFT JOIN APPROVAL A ON C.APPROVAL_ID = A.ID
         LEFT JOIN CONTRACT_LIST CLIST ON C.ID = CLIST.CONTRACT_ID
-        LEFT JOIN ITEM IT ON CLIST.ITEM_ID = IT.ID
+        LEFT JOIN ITEM IT ON CLIST.ITEM_ID = IT.ID AND IT.TYPE_CODE = 'ITP003'
         LEFT JOIN DETAIL_SYS_CODE STP ON C.STATUS_CODE = STP.DETAIL_CODE
 
         <where>
@@ -68,7 +68,6 @@
                 AND CL.NAME LIKE '%' || #{clientName} || '%'
             </if>
         </where>
-
 
         GROUP BY
         A.ID, C.ID, E.ID, E.NAME, CL.ID, CL.NAME,
@@ -104,7 +103,7 @@
                  JOIN CLIENT CL ON C.CLIENT_ID = CL.ID
                  LEFT JOIN APPROVAL A ON C.APPROVAL_ID = A.ID
                  LEFT JOIN CONTRACT_LIST CLIST ON C.ID = CLIST.CONTRACT_ID
-                 LEFT JOIN ITEM IT ON CLIST.ITEM_ID = IT.ID
+                 LEFT JOIN ITEM IT ON CLIST.ITEM_ID = IT.ID AND IT.TYPE_CODE = 'ITP003'
                  LEFT JOIN DETAIL_SYS_CODE STP ON C.STATUS_CODE = STP.DETAIL_CODE
         WHERE C.ID = #{contractId}
         GROUP BY
@@ -123,11 +122,15 @@
             IT.NAME AS itemName,
             CLIST.QUANTITY,
             CLIST.PRICE,
-            (CLIST.QUANTITY * CLIST.PRICE) AS amount
+            (CLIST.QUANTITY * CLIST.PRICE) AS amount,
+            IT.UNIT AS unitCode,
+            DSC.NAME AS unitName
         FROM CONTRACT_LIST CLIST
-                 JOIN ITEM IT ON CLIST.ITEM_ID = IT.ID
+                 JOIN ITEM IT ON CLIST.ITEM_ID = IT.ID AND IT.TYPE_CODE = 'ITP003'
+                 LEFT JOIN DETAIL_SYS_CODE DSC ON IT.UNIT = DSC.DETAIL_CODE
         WHERE CLIST.CONTRACT_ID = #{contractId}
         ORDER BY IT.NAME
     </select>
+
 
 </mapper>

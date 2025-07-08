@@ -15,7 +15,8 @@ import lombok.NoArgsConstructor;
 public class QualityInspection {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "quality_inspection_seq")
+    @SequenceGenerator(name = "quality_inspection_seq", sequenceName = "quality_inspection_seq", allocationSize = 1)
     private Long id; // 품질 검사 ID
 
     @Column(name = "name", length = 100, nullable = false)

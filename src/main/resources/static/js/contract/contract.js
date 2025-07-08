@@ -14,11 +14,18 @@ const init = () => {
             { header: '거래처명', name: 'clientName', align: 'center' },
             { header: '상태코드', name: 'statusCode', hidden: true },
             { header: '품목 요약', name: 'itemSummary', align: 'center' },
-            { header: '총금액', name: 'totalAmount', align: 'center', formatter: ({ value }) => value.toLocaleString() + '원' },
+            {
+                header: '총금액',
+                name: 'totalAmount',
+                align: 'center',
+                formatter: ({ value }) => value.toLocaleString() + '원'
+            },
             { header: '납기일', name: 'deadline', align: 'center' },
             { header: '등록일', name: 'createdAt', align: 'center' },
             {
-                header: '상태명', name: 'statusName', align: 'center',
+                header: '상태명',
+                name: 'statusName',
+                align: 'center',
                 formatter: ({ row }) => {
                     const code = row.statusCode;
                     if (code === 'STP001' || code === 'STP002') return `<span style="color:green;">${row.statusName}</span>`;
@@ -30,24 +37,26 @@ const init = () => {
         ]
     );
 
-    // 🔑 권한 체크
-    if (user.authCode === 'ATH004') {
+    // 권한에 따른 등록 버튼 표시
+    if (user.authCode === 'ATH004' || user.authCode === 'ATH003') {
         const btn = document.querySelector('.registContract');
         if (btn) btn.style.display = '';
     }
 
+    // 기본 날짜 셋팅 (30일 전 ~ 오늘)
     const today = getKoreaToday();
     const pastDate = new Date(today);
     pastDate.setDate(pastDate.getDate() - 30);
     document.querySelector('input[name="startDate"]').value = pastDate.toISOString().split('T')[0];
     document.querySelector('input[name="endDate"]').value = today;
 
+    // 검색 버튼 클릭 이벤트
     document.querySelector(".srhBtn").addEventListener("click", (e) => {
         e.preventDefault();
         getData();
     });
 
-    // 이름/사번, 거래처 입력창에서 엔터로 검색
+    // 이름/사번, 거래처 입력창 엔터키 검색 이벤트
     document.querySelectorAll('input[name="srhName"], input[name="clientName"]').forEach(input => {
         input.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
@@ -57,11 +66,13 @@ const init = () => {
         });
     });
 
+    // 검색 폼 제출 이벤트
     document.querySelector('.search__form').addEventListener('submit', (e) => {
         e.preventDefault();
         getData();
     });
 
+    // 등록 버튼 클릭 시 팝업 열기
     document.querySelector('.registContract').addEventListener('click', () => {
         const popup = window.open('/contractRegister-form', '_blank', 'width=800,height=1000');
         if (!popup) return alert('팝업 차단 해제 후 다시 시도하세요.');
@@ -75,6 +86,7 @@ const init = () => {
         window.addEventListener("message", messageHandler);
     });
 
+    // 그리드 행 더블클릭 시 상세 팝업 열기
     contractGrid.on('dblclick', (e) => {
         const rowData = contractGrid.getRow(e.rowKey);
         if (rowData && rowData.contractId) {
@@ -95,6 +107,7 @@ const init = () => {
     setSelectBox("STP", "STP");
 };
 
+// 데이터 조회 함수
 window.getData = async () => {
     const startDate = document.querySelector("input[name='startDate']").value;
     const endDate = document.querySelector("input[name='endDate']").value;

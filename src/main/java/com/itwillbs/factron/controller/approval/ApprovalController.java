@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class ApprovalController {
 
-    // 전자결재 페이지
+    // 인사결재 페이지
     @GetMapping ("/approval")
     public String approval() {
         return "approval/approval";
     }
 
-    // 공통 결재 폼 (데이터는 postMessage로 전달받음)
+    // 인사결재 상세 폼 (근무, 휴가, 인사발령)
     @GetMapping("/approval/{formType}-form")
     public String approvalForm(@PathVariable String formType) {
         // formType: transferApproval, vacationApproval, workApproval

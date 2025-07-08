@@ -117,59 +117,120 @@ const init = async () => {
     };
 
     // material 저장 함수
-    const saveMaterials = () => {
-        materialGrid.finishEditing();
-        const updatedData = materialGrid.getData();
+    const saveMaterials = async () => {
+        const allData = materialGrid.getModifiedRows();
+        const newRows = allData.createdRows;
+        const editedRows = allData.updatedRows;
 
-        const insertData = [];
-        const updateData = [];
+        console.log('allData', allData);
+        console.log('newRows', newRows);
+        console.log('editedRows', editedRows);
 
-        // 데이터 분류 (post / put)
-        for (let row of updatedData) {
-            // 필수 항목 유효성 검사
-            if (!row.name || !row.unit || !row.info || !row.spec) {
-                continue;
+        // Validation 체크
+        const validationErrors = [];
+
+        newRows.forEach((row, index) => {
+            if (!row.name || row.name.trim() === '') {
+                validationErrors.push(`새로 추가된 행 ${index + 1}: 자재명은 필수 입력 항목입니다.`);
             }
-
-            if (row.createdAt) {
-                updateData.push(row); // 수정
-            } else {
-                insertData.push(row); // 저장
+            if (!row.info || row.info.trim() === '') {
+                validationErrors.push(`새로 추가된 행 ${index + 1}: 자재 정보는 필수 입력 항목입니다.`);
             }
-        }
+            if (!row.unit || row.unit.trim() === '') {
+                validationErrors.push(`새로 추가된 행 ${index + 1}: 단위는 필수 입력 항목입니다.`);
+            }
+            if (!row.spec || row.spec.trim() === '') {
+                validationErrors.push(`새로 추가된 행 ${index + 1}: 자재 사양은 필수 입력 항목입니다.`);
+            }
+        });
 
-        if (insertData.length === 0 && updateData.length === 0) {
-            alert('입력된 데이터가 없습니다.');
+        editedRows.forEach((row, index) => {
+            if (!row.name || row.name.trim() === '') {
+                validationErrors.push(`수정된 행 ${index + 1}: 자재명은 필수 입력 항목입니다.`);
+            }
+            if (!row.info || row.info.trim() === '') {
+                validationErrors.push(`수정된 행 ${index + 1}: 자재 정보는 필수 입력 항목입니다.`);
+            }
+            if (!row.unit || row.unit.trim() === '') {
+                validationErrors.push(`수정된 행 ${index + 1}: 단위는 필수 입력 항목입니다.`);
+            }
+            if (!row.spec || row.spec.trim() === '') {
+                validationErrors.push(`수정된 행 ${index + 1}: 자재 사양은 필수 입력 항목입니다.`);
+            }
+        });
+
+        // 벨리데이션 에러가 있으면 알림 후 저장 중단
+        if (validationErrors.length > 0) {
+            alert('다음 항목들을 확인해주세요:\n\n' + validationErrors.join('\n'));
             return;
         }
 
-        // 동시 저장
-        (async () => {
-            try {
-                // 신규 저장
-                if (insertData.length > 0) {
-                    await fetch('/api/material', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(insertData)
-                    });
-                }
+        // 두 API를 병렬로 호출
+        const promises = [];
 
-                // 수정 저장
-                if (updateData.length > 0) {
-                    await fetch('/api/material', {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(updateData)
-                    });
-                }
+        if (newRows.length > 0) {
+            promises.push(saveNewMaterials(newRows));
+        }
 
-                alertModal.show();
+        if (editedRows.length > 0) {
+            promises.push(updateMaterials(editedRows));
+        }
 
-            } catch (err) {
-                console.error('저장 실패', err);
+        if(promises.length === 0) {
+            alert('데이터를 추가하거나 수정해주세요!');
+            return;
+        }
+
+        // 병렬로 저장 처리
+        try {
+            const results = await Promise.all(promises);
+            const res = await fetchData();
+            materialGrid.resetData(res.data);
+            alertModal.show();
+        } catch (error) {
+            console.error('저장 중 오류:', error);
+            alert('저장 중 오류가 발생했습니다: ' + error.message);
+        }
+    };
+
+    // 신규 자재 저장 함수
+    const saveNewMaterials = async (newRows) => {
+        try {
+            const response = await fetch('/api/material', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newRows)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`신규 저장 실패: ${response.status}`);
             }
-        })();
+            
+            return await response.json();
+        } catch (error) {
+            console.error('신규 저장 에러:', error);
+            throw error;
+        }
+    };
+
+    // 자재 수정 함수
+    const updateMaterials = async (editedRows) => {
+        try {
+            const response = await fetch('/api/material', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(editedRows)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`수정 저장 실패: ${response.status}`);
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('수정 저장 에러:', error);
+            throw error;
+        }
     };
 
     // alert 모달 확인 버튼

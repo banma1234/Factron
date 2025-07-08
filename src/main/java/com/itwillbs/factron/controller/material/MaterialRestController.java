@@ -28,12 +28,13 @@ public class MaterialRestController {
         }
     }
 
-
-
     @PostMapping
-    public ResponseDTO<Void> addMaterial(@RequestBody RequestMaterialDTO dto) {
+    public ResponseDTO<Void> addMaterials(@RequestBody List<RequestMaterialDTO> dtoList) {
         try {
-            return ResponseDTO.success("자재 등록이 완료되었습니다!",  materialService.addMaterial(dto));
+            for (RequestMaterialDTO dto : dtoList) {
+                materialService.addMaterial(dto);
+            }
+            return ResponseDTO.success("자재 등록이 완료되었습니다!", null);
         } catch (NoSuchElementException nse) {
             return ResponseDTO.fail(800, nse.getMessage(), null);
         } catch (Exception e) {
@@ -42,9 +43,12 @@ public class MaterialRestController {
     }
 
     @PutMapping
-    public ResponseDTO<Void> updateMaterial(@RequestBody RequestMaterialDTO dto) {
+    public ResponseDTO<Void> updateMaterials(@RequestBody List<RequestMaterialDTO> dtoList) {
         try {
-            return ResponseDTO.success("자재 정보 수정이 완료되었습니다!",  materialService.updateMaterial(dto));
+            for (RequestMaterialDTO dto : dtoList) {
+                materialService.updateMaterial(dto);
+            }
+            return ResponseDTO.success("자재 정보 수정이 완료되었습니다!", null);
         } catch (NoSuchElementException nse) {
             return ResponseDTO.fail(800, nse.getMessage(), null);
         } catch (Exception e) {

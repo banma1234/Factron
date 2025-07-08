@@ -1,6 +1,7 @@
 package com.itwillbs.factron.entity;
 
 
+import com.itwillbs.factron.entity.Employee;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +19,8 @@ import java.time.LocalDateTime;
 public class CommuteHistory {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "commute_history_seq")
+    @SequenceGenerator(name = "commute_history_seq", sequenceName = "commute_history_seq", allocationSize = 1)
     private Long id;
 
     @Column(name = "commute_in", nullable = false)

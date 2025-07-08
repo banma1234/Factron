@@ -59,7 +59,7 @@ const init = () => {
                 header: '거래처명',
                 name: 'name',
                 align: 'center',
-                editor: 'text'
+                editor: ['ATH003', 'ATH005'].includes(window.user.authCode) ? 'text' : false
             },
             {
                 header: '사업자등록번호',
@@ -70,31 +70,31 @@ const init = () => {
                 header: '주소',
                 name: 'address',
                 align: 'center',
-                editor: 'text'
+                editor: ['ATH003', 'ATH005'].includes(window.user.authCode) ? 'text' : false
             },
             {
                 header: '연락처',
                 name: 'contact',
                 align: 'center',
-                editor: 'text'
+                editor: ['ATH003', 'ATH005'].includes(window.user.authCode) ? 'text' : false
             },
             {
                 header: '대표자',
                 name: 'ceo',
                 align: 'center',
-                editor: 'text'
+                editor: ['ATH003', 'ATH005'].includes(window.user.authCode) ? 'text' : false
             },
             {
                 header: '담당자',
                 name: 'contact_manager',
                 align: 'center',
-                editor: 'text'
+                editor: ['ATH003', 'ATH005'].includes(window.user.authCode) ? 'text' : false
             },
             {
                 header: '비고',
                 name: 'remark',
                 align: 'center',
-                editor: 'text'
+                editor: ['ATH003', 'ATH005'].includes(window.user.authCode) ? 'text' : false
             },
         ]
     );
@@ -160,6 +160,37 @@ const init = () => {
         }
     }
 
+
+    /**
+     * 개별 셀 비어있는지 검사
+     * @param {any} row 셀
+     * */
+    const hasEmptyRequiredFields = row => {
+        return (
+            !row.name || row.name.trim() === "" ||
+            !row.business_number || row.business_number.trim() === "" ||
+            !row.address || row.address.trim() === "" ||
+            !row.contact_manager || row.contact_manager.trim() === "" ||
+            !row.contact || row.contact.trim() === "" ||
+            !row.ceo || row.ceo.trim() === ""
+        );
+    }
+
+
+    /**
+     * 입력받은 셀들 비어있는지 검사 후 에러 반환
+     * @param {any} rows 셀
+     * */
+    const validateRows = rows => {
+        rows.forEach(row => {
+            if (hasEmptyRequiredFields(row)) {
+                alertModalText.textContent = "빈칸 없이 모두 입력해야 합니다.";
+                alertModal.show();
+                throw new Error("빈칸 없이 모두 입력해야 합니다.");
+            }
+        });
+    }
+
     /**
      * client 테이블 변경값 수정 요청 api
      * @return JSON
@@ -167,13 +198,17 @@ const init = () => {
     const updateModifiedRows = () => {
         const { createdRows, updatedRows } = clientGrid.getModifiedRows();
 
-        // 수정된 데이터 없을시 에러
+        // 액션 없이 저장만 눌렀을 때 에러
         if (createdRows.length === 0 && updatedRows.length === 0) {
             alertModalText.textContent = "수정된 데이터가 없습니다.";
             alertModal.show();
 
             throw new Error("수정된 데이터가 없습니다.");
         }
+
+        // 비어있는 셀 검사
+        validateRows(createdRows);
+        validateRows(updatedRows);
 
         // 공백검사 함수
         const isEmpty = value =>
@@ -271,6 +306,10 @@ const init = () => {
      * 사업자 등록번호 클릭시 입력 모달 띄우기 이벤트
      * */
     clientGrid.on('click', e => {
+        if(!['ATH003', 'ATH005'].includes(window.user.authCode)) {
+            return;
+        }
+
         const { columnName, rowKey } = e;
 
         // 클릭한 셀의 컬럼명이 "사업자등록번호"일 경우 수행

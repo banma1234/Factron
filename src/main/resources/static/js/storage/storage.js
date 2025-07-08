@@ -26,7 +26,7 @@ const init = () => {
             },
             {
                 header: '창고유형',
-                name: 'type_code',
+                name: 'typeCode',
                 align: 'center',
             }
         ]

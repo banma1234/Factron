@@ -10,6 +10,10 @@ import java.util.List;
 
 @Mapper
 public interface InboundMapper {
+
+    // 입고 전체 조회
     List<ResponseSearchInboundDTO> getInboundsList(RequestSearchInboundDTO requestSearchInboundDTO);
+
+    //입고 처리
     void updateInbound(RequestInboundCompleteDTO dto);
 }

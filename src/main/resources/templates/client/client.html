@@ -2,6 +2,7 @@
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout/base.html}">>
 <head>
     <meta charset="UTF-8">
@@ -18,7 +19,7 @@
       <input class="form-control" type="text" name="srhClient" placeholder="거래처명" />
       <button class="btn btn-outline-secondary" name="srhBtn" type="button">검색</button>
     </div>
-    <div class="select__container">
+    <div class="select__container" sec:authorize="hasAnyAuthority('ATH005', 'ATH003')">
       <button class="btn btn-primary" name="appendClientBtn" type="button">추가</button>
       <button class="btn btn-outline-primary" name="saveClientBtn" type="button">저장</button>
     </div>

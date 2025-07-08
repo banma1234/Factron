@@ -1,6 +1,7 @@
 const init = () => {
     const form = document.querySelector("form");
 
+    // 부모창 등에서 데이터 받기
     window.addEventListener("message", async (event) => {
         const data = event.data;
         if (!data || data?.source === 'react-devtools-content-script') return;
@@ -12,47 +13,42 @@ const init = () => {
         } else if (data.contractId) {
             await fetchContractByContractId(data.contractId);
         } else {
-            console.warn("전달된 데이터에 approvalId나 contractId가 없음:", data);
+            console.warn("approvalId 또는 contractId 없음:", data);
         }
     });
 
+    // approvalId로 수주 리스트 조회 후 첫 데이터 표시
     async function fetchContractByApprovalId(approvalId) {
         try {
             const res = await fetch(`/api/contract?srhApprovalId=${approvalId}`);
             const { data: list } = await res.json();
-            if (!list || list.length === 0) {
-                console.warn("조회 결과가 없습니다.");
-                return;
-            }
+            if (!list || list.length === 0) return console.warn("조회 결과 없음");
 
-            const contract = list[0];
-            renderContractDetail(contract);
-            await fetchAndRenderItems(contract.contractId);
+            renderContractDetail(list[0]);
+            await fetchAndRenderItems(list[0].contractId);
         } catch (err) {
-            console.error("수주 상세 조회 실패:", err);
-            alert("수주 상세 조회 중 문제가 발생했습니다.");
+            console.error("수주 조회 실패:", err);
+            alert("수주 조회 중 오류 발생");
         }
     }
 
+    // contractId로 단건 수주 상세 조회
     async function fetchContractByContractId(contractId) {
         try {
             const res = await fetch(`/api/contract/${contractId}`);
             const { data: contract } = await res.json();
-            if (!contract) {
-                console.warn("조회 결과가 없습니다.");
-                return;
-            }
+            if (!contract) return console.warn("조회 결과 없음");
 
             renderContractDetail(contract);
             await fetchAndRenderItems(contract.contractId);
         } catch (err) {
-            console.error("단건 수주 상세 조회 실패:", err);
-            alert("수주 상세 조회 중 문제가 발생했습니다.");
+            console.error("수주 상세 조회 실패:", err);
+            alert("수주 상세 조회 중 오류 발생");
         }
     }
 
+    // 수주 상세 정보 폼에 표시
     function renderContractDetail(contract) {
-        // 폼 채우기
         form.querySelector("input[name='employeeId']").value = contract.employeeId || '';
         form.querySelector("input[name='employeeName']").value = contract.employeeName || '';
         form.querySelector("input[name='clientName']").value = contract.clientName || '';
@@ -68,6 +64,7 @@ const init = () => {
         setUIState();
     }
 
+    // 수주 품목 리스트 조회 및 렌더링
     async function fetchAndRenderItems(contractId) {
         try {
             const itemsRes = await fetch(`/api/contract/${contractId}/items`);
@@ -79,6 +76,7 @@ const init = () => {
         }
     }
 
+    // 품목 정보를 화면에 표시
     function renderContractItems(items) {
         const container = document.querySelector(".contract-items");
         container.innerHTML = "";
@@ -88,24 +86,23 @@ const init = () => {
             div.className = "bg-white p-2 rounded border d-flex justify-content-between";
             const priceText = (item.amount ?? 0).toLocaleString();
             div.innerHTML = `
-            <span>${item.itemName} × ${item.quantity}개</span>
-            <span>₩${priceText}</span>
-        `;
+                <span>${item.itemName} × ${item.quantity} ${item.unitName}</span>
+                <span>₩${priceText}</span>
+            `;
             container.appendChild(div);
         });
     }
 
-
+    // UI 상태 설정 (결재 취소 버튼 표시 여부 등)
     function setUIState() {
         const cancelBtn = document.querySelector(".cancelApprovalBtn");
-
-        const isPending = window.statusCode === "STP001";
-        const isAuthorized = user.authCode === "ATH004";
+        const isPending = window.statusCode === "STP001"; // 결재 대기 상태 체크
+        const isAuthorized = user.authCode === "ATH004" || "ATH003"; // 권한 체크
 
         cancelBtn.style.display = (isPending && isAuthorized) ? "inline-block" : "none";
     }
 
-    // 결재 취소 버튼 클릭 이벤트
+    // 결재 취소 버튼 클릭 처리
     document.querySelector(".cancelApprovalBtn").addEventListener("click", async () => {
         if (!confirm("결재를 취소하시겠습니까?")) return;
 

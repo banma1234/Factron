@@ -20,11 +20,11 @@
         JOIN DETAIL_SYS_CODE s ON i.unit = s.detail_code
         <where>
             <if test="itemName != null and itemName != ''">
-                (UPPER(i.name) LIKE '%' || UPPER(#{itemName}) || '%'
+                AND (UPPER(i.name) LIKE '%' || UPPER(#{itemName}) || '%'
                 OR UPPER(i.id) LIKE '%' || UPPER(#{itemName}) || '%')
             </if>
-            <if test="itemTypeCode != null and itemTypeCode != ''">
-                AND i.type_code = #{itemTypeCode}
+            <if test="typeCode != null and typeCode != ''">
+                AND i.type_code = #{typeCode}
             </if>
         </where>
         ORDER BY i.created_at DESC

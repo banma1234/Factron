@@ -15,7 +15,8 @@ import lombok.NoArgsConstructor;
 public class Storage {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "storage_seq")
+    @SequenceGenerator(name = "storage_seq", sequenceName = "storage_seq", allocationSize = 1)
     private Long id; // 창고 ID
 
     @Column(name = "name", length = 150, nullable = false)

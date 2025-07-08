@@ -49,7 +49,7 @@
         </where>
 
 
-        ORDER BY OBD.OUT_DATE DESC
+        ORDER BY OBD.ID DESC
     </select>
 
 </mapper>

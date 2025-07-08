@@ -92,3 +92,8 @@ a {
     align-items: center;
     gap: 10px;
 }
+
+.sidebar {
+    max-height: 100vh;
+    overflow-y: auto;
+}
