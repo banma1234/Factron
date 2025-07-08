@@ -95,12 +95,13 @@ const init = () => {
         items.forEach(item => {
             const div = document.createElement("div");
             div.className = "bg-white p-2 rounded border d-flex justify-content-between";
+            const quantityText = (item.quantity ?? 0).toLocaleString();
             const price = item.amount ?? 0; // amount: 단가 * 수량
             const priceText = price.toLocaleString();
             totalAmount += price;
 
             div.innerHTML = `
-                <span>${item.itemName} × ${item.quantity} ${item.unitName}</span>
+                <span>${item.itemName} × ${quantityText} ${item.unitName}</span>
                 <span>₩${priceText}</span>
             `;
             container.appendChild(div);

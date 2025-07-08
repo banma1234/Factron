@@ -108,8 +108,8 @@ const init = () => {
             div.innerHTML = `
                 <div class="d-flex align-items-center gap-2 flex-grow-1">
                     <span>${item.name} × </span>
-                    <input type="number" min="1" value="${item.quantity}" class="form-control form-control-sm qty-input" style="width:60px;" /> ${item.unitName}
-                    <input type="number" min="0" value="${item.price}" class="form-control form-control-sm price-input" style="width:80px;" /> 원 
+                    <input type="number" min="1" value="${item.quantity}" class="form-control form-control-sm qty-input" style="width:120px;" /> ${item.unitName}
+                    <input type="number" min="0" value="${item.price}" class="form-control form-control-sm price-input" style="width:160px;" /> 원 
                     = <span class="item-total">₩${itemTotal.toLocaleString()}</span>
                 </div>
                 <button type="button" class="btn btn-sm btn-outline-danger remove-btn">X</button>
