@@ -9,9 +9,9 @@ function CustomButtonRenderer(props) {
         button.addEventListener('click', () => registerWorkPerformance(props.rowKey));
         el.appendChild(button);
     } else if (props.value === 'WKS003') {
+        el.textContent = '검사대기';
+    } else if (props.value === 'WKS004') {
         el.textContent = '완료';
-    } else {
-        el.textContent = '';
     }
 
     this.el = el;
@@ -85,6 +85,10 @@ async function registerWorkPerformance(rowKey) {
                 lastProcessStartTime:rowData.lastProcessStartTime
             })
         });
+        if(res.status !== 200){
+            alert('실적 등록 중 오류 발생:', res.messages);
+            return;
+        }
         alert(`실적 등록이 완료 되었습니다.`);
         refreshGrid();
         return res.json();
