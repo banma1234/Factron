@@ -33,9 +33,9 @@ public class OutboundRestController {
     public ResponseDTO<Void> updateOutbound(@RequestBody RequestOutboundCompleteDTO requestOutboundCompleteDTO) {
         try{
             outboundService.updateOutbound(requestOutboundCompleteDTO);
-            return ResponseDTO.success("입고에 성공했습니다.",null);
+            return ResponseDTO.success("출고에 성공했습니다.",null);
         } catch (Exception e) {
-            return ResponseDTO.fail(800,"출고에 실패 했습니다.",null);
+            return ResponseDTO.fail(800,e.getMessage(),null);
         }
     }
 }
