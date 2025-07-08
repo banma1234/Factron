@@ -16,6 +16,7 @@ const init = () => {
             { header: '사번', name: 'requesterId', align: 'center' },
             { header: '발행일자', name: 'requestedAt', align: 'center' },
             { header: '결재 날짜', name: 'confirmedAt', align: 'center' },
+            { header: '승인 권자', name: 'approverName', align: 'center' },
             {
                 header: '상태', name: 'approvalStatusName', align: 'center',
                 // 상태코드에 따라 색상 다르게 표시
@@ -28,7 +29,6 @@ const init = () => {
                     }
                 }
             },
-            { header: '승인 권자', name: 'approverName', align: 'center' },
             { header: '반려 사유', name: 'rejectionReason', hidden: true }, // 숨겨진 컬럼
             { header: '결재 코드', name: 'apprTypeCode', hidden: true },
             { header: '승인 권자 사번', name: 'approverId', hidden: true },
