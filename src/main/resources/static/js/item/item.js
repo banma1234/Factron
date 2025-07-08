@@ -189,13 +189,16 @@ const init = async () => {
         const insertData = [];
         const updateData = [];
 
+        // 필수값 누락 체크
+        for (let row of updatedData) {
+            if (!row.name || !row.unit || !row.price || !row.typeCode) {
+                alert('제품명, 단위, 가격, 제품 유형을 모두 입력하세요.');
+                return;
+            }
+        }
+
         // 데이터 분류 (post / put)
         for (let row of updatedData) {
-            // 필수 항목 유효성 검사
-            if (!row.name || !row.unit || !row.price || !row.typeCode) {
-                continue;
-            }
-
             // 가격 0원 이상
             row.price = unformatNumber(row.price);
             if (isNaN(row.price) || Number(row.price) < 0) {
@@ -209,8 +212,6 @@ const init = async () => {
                 insertData.push(row); // 저장
             }
         }
-
-        console.log('updatedData2', updatedData2);
 
         const createdRows = updatedData2.createdRows || [];
         const updatedRows = updatedData2.updatedRows || [];

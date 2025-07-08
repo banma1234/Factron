@@ -172,7 +172,7 @@ const init = () => {
         const approvalResultSection = document.querySelector(".approval-result-section");
 
         const isStatusValid = data.approvalStatusCode === "APV001";  // 승인대기 상태인지 확인
-        const isAuthValid = user.authCode === "ATH002";  // 권한 확인
+        const isAuthValid = user.authCode === "ATH002" || user.authCode === "ATH003";  // 권한 확인
 
         approveBtn.style.display = (isStatusValid && isAuthValid) ? "inline-block" : "none";
         rejectBtn.style.display = (isStatusValid && isAuthValid) ? "inline-block" : "none";

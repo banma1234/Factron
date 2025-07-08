@@ -15,4 +15,6 @@ public class ResponsePurchaseItemDTO {
     private Long quantity;          // 수량
     private Long price;             // 가격
     private Long amount;            // 총금액
+    private String unitCode;        // 단위코드
+    private String unitName;        // 단위명
 }

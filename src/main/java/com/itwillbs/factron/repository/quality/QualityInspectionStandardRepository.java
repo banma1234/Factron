@@ -1,10 +1,7 @@
 package com.itwillbs.factron.repository.quality;
 
-import com.itwillbs.factron.entity.QualityInspection;
 import com.itwillbs.factron.entity.QualityInspectionStandard;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -20,4 +17,7 @@ public interface QualityInspectionStandardRepository extends JpaRepository<Quali
 
     // 품질검사 ID와 제품 ID로 품질검사 기준 조회
     Optional<QualityInspectionStandard> findByQualityInspectionIdAndItemId(Long qualityInspectionId, String itemId);
+
+    // 해당 제품의 품질검사 리스트 조회
+    List<QualityInspectionStandard> findByItemId(String itemId);
 }

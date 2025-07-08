@@ -135,7 +135,7 @@ const init = () => {
 
         // 승인대기 상태(APV001)이고 권한 코드 ATH002 일 경우 버튼 노출
         const isStatusValid = data.approvalStatusCode === "APV001";
-        const isAuthValid = user.authCode === "ATH002";
+        const isAuthValid = user.authCode === "ATH002" || user.authCode === "ATH003";  // 권한 확인
 
         approveBtn.style.display = (isStatusValid && isAuthValid) ? "inline-block" : "none";
         rejectBtn.style.display = (isStatusValid && isAuthValid) ? "inline-block" : "none";

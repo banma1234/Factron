@@ -38,7 +38,7 @@ public class SysMainRestController {
 
             return ResponseDTO.fail(
                     800,
-                    "조회할 수 없습니다.",
+                    e.getMessage(),
                     null
             );
         }
@@ -53,12 +53,15 @@ public class SysMainRestController {
     public ResponseDTO<Void> saveSysMain(@Valid @RequestBody RequestSysMainDTO requestSysMainDTO) {
 
         try {
-            return ResponseDTO.success(sysMainService.saveSysMain(requestSysMainDTO));
+            return ResponseDTO.success(
+                    "메인코드 입력이 완료되었습니다.",
+                    sysMainService.saveSysMain(requestSysMainDTO)
+            );
         } catch (Exception e) {
 
             return ResponseDTO.fail(
                     800,
-                    "잘못된 입력입니다.",
+                    e.getMessage(),
                     null
             );
         }
@@ -73,12 +76,15 @@ public class SysMainRestController {
     public ResponseDTO<Void> updateSysMain(@Valid @RequestBody RequestSysMainDTO requestSysMainDTO) {
 
         try {
-            return ResponseDTO.success(sysMainService.updateSysMain(requestSysMainDTO));
+            return ResponseDTO.success(
+                    "메인코드 수정이 완료되었습니다.",
+                    sysMainService.updateSysMain(requestSysMainDTO)
+            );
         } catch (Exception e) {
 
             return ResponseDTO.fail(
                     800,
-                    "잘못된 입력입니다.",
+                    e.getMessage(),
                     null
             );
         }

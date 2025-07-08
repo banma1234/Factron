@@ -8,6 +8,9 @@
         SELECT
         wp.id AS id,
         wo.id AS workOrderId,
+        i.id AS itemId,
+        i.name AS itemName,
+        s.name AS unitName,
         wo.start_date AS startDate,
         wp.end_date AS endDate,
         wo.status_code AS statusCode,
@@ -45,7 +48,7 @@
                     AND ph.status_code != 'STS003'
             )
             THEN (
-                SELECT ph.start_time
+                SELECT start_time + (coast_time / 1440) AS start_time   -- 24*60
                 FROM process_history ph
                 WHERE ph.work_order_id = wo.id
                     AND ph.status_code = 'STS003'
@@ -63,11 +66,13 @@
         wp.employee_id AS employeeId
 
         FROM work_order wo
+        JOIN item i ON wo.item_id = i.id
+        JOIN detail_sys_code s ON i.unit = s.detail_code
         LEFT JOIN work_performance wp ON wo.id = wp.work_order_id
         WHERE wo.status_code IN ('WKS002', 'WKS003', 'WKS004')
 
         <if test="workOrderId != null and workOrderId != ''">
-            AND wo.id = #{workOrderId}
+            AND wo.id LIKE '%' || #{workOrderId} || '%'
         </if>
     </select>
 

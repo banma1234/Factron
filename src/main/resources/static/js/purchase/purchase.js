@@ -41,7 +41,7 @@ const init = () => {
     );
 
     // 권한이 ATH004인 경우 발주 등록 버튼 노출
-    if (user.authCode === 'ATH004') {
+    if (user.authCode === 'ATH004' || user.authCode === 'ATH003') {
         const btn = document.querySelector('.registPurchase');
         if (btn) btn.style.display = '';
     }
