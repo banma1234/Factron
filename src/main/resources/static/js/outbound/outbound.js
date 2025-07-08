@@ -18,7 +18,7 @@ const init = () => {
                 // 제품명 또는 자재명 중 우선 표시
                 formatter: ({ row }) => row.itemName || row.materialName || ''
             },
-            { header: '수량', name: 'quantity', align: 'center' },
+            { header: '수량', name: 'quantity', align: 'center', formatter: ({ value }) => window.formatNumber(value)},
             { header: '구분', name: 'categoryName', align: 'center' },
             { header: '창고명', name: 'storageName', align: 'center' },
             { header: '출고일자', name: 'outDate', align: 'center' },
