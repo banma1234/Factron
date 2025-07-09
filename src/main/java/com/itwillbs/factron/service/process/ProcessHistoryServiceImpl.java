@@ -140,26 +140,27 @@ public class ProcessHistoryServiceImpl implements ProcessHistoryService {
 
     @Override
     public List<ResponseProcessHistoryStatDTO> getProcessStat(RequestProcessHistStatDTO requestDTO) {
-//        log.info("=== 공정 통계 조회 시작 ===");
-//        log.info("요청 파라미터: processNameOrId={}", requestDTO.getProcessNameOrId());
+        log.info("=== 공정 통계 조회 시작 ===");
+        log.info("요청 파라미터: processNameOrId={}", requestDTO.getProcessNameOrId());
 
-        LocalDateTime startDate = LocalDateTime.of(2025, 7, 17, 0, 0);
-        LocalDateTime endDate = LocalDateTime.of(2025, 12, 31, 23, 59);
+        // DTO에서 날짜 범위 가져오기 (기본값 포함)
+        LocalDateTime startDate = requestDTO.getStartDate();
+        LocalDateTime endDate = requestDTO.getEndDate();
         
-//        log.info("조회 기간: {} ~ {}", startDate, endDate);
+        log.info("조회 기간: {} ~ {}", startDate, endDate);
         
         String processNameOrId = requestDTO.getProcessNameOrId();
         
         try {
             List<ResponseProcessHistoryStatDTO> processStatList = processHistoryMapper.selectProcessStatByProcessNameOrId(processNameOrId, startDate, endDate);
             
-//            log.info("=== 조회 결과 ===");
-//            log.info("총 조회 건수: {}", processStatList.size());
+            log.info("=== 조회 결과 ===");
+            log.info("총 조회 건수: {}", processStatList.size());
             
-//            log.info("=== 공정 통계 조회 완료 ===");
+            log.info("=== 공정 통계 조회 완료 ===");
             return processStatList;
         } catch (Exception e) {
-//            log.error("공정 통계 조회 중 오류 발생: {}", e.getMessage(), e);
+            log.error("공정 통계 조회 중 오류 발생: {}", e.getMessage(), e);
             throw e;
         }
     }

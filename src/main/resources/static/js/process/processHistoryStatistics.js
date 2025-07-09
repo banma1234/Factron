@@ -4,7 +4,47 @@ const toUpperCase = (str) => {
     return str.toUpperCase();
 }
 
+// 날짜 포맷팅 함수 (날짜만)
+const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 const init = () => {
+    // 기본 날짜 설정 (최근 30일)
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 30);
+    
+    document.getElementById('startDate').value = formatDate(startDate);
+    document.getElementById('endDate').value = formatDate(endDate);
+
+    // 기간 선택 이벤트
+    document.getElementById('periodSelect').addEventListener('change', function() {
+        const days = parseInt(this.value);
+        if (days) {
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - days);
+            
+            document.getElementById('startDate').value = formatDate(startDate);
+            document.getElementById('endDate').value = formatDate(endDate);
+        }
+    });
+
+    // 검색 버튼 이벤트
+    document.getElementById('searchBtn').addEventListener('click', function() {
+        const processNameOrId = document.getElementById('processNameOrId').value;
+        if (!processNameOrId) {
+            alert('공정명 또는 ID를 입력해주세요.');
+            return;
+        }
+        // 검색 버튼으로 호출할 때는 processName을 null로 전달
+        getProcessStat(processNameOrId, null);
+    });
+
     const lineGrid = initGrid(
         document.getElementById('line_grid'),
         300,
@@ -103,19 +143,19 @@ const init = () => {
         }
     });
 
+    // 공정 선택 시 통계 조회
     lineProcessGrid.on('click', (e) => {
         const rowData = lineProcessGrid.getRow(e.rowKey);
         console.log(rowData.processId);
+        document.getElementById('processNameOrId').value = rowData.processId;
         getProcessStat(rowData.processId, rowData.processName);
-    })
-
-
+    });
 
     const el = document.getElementById('processHistoryGrid');
     
     // 기본 차트 옵션 설정
     const options = {
-        chart: { title: '수율 통계', width: 1000, height: 400 },
+        chart: { title: '수율 변동성 분석', width: 1000, height: 400 },
         xAxis: { pointOnColumn: false, title: { text: '날짜' } },
         yAxis: { title: '수율 (%)' },
         series: { eventDetectType: 'grouped' },
@@ -126,83 +166,85 @@ const init = () => {
             series: []
         }, options });
 
-    // const srhBtn = document.querySelector(`button[name="processSrhBtn"]`);
-    //
-    // if(srhBtn) {
-    //     srhBtn.addEventListener("click", function (e) {
-    //         e.preventDefault();
-    //         getProcessStat();
-    //     })
-    // }
-
     // 라인 목록 조회
     async function getLines() {
-
-        // 라인 목록 조회
-        fetch(`/api/line`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        }).then(res => res.json())
-            .then(res => {
-                if(res.status === 200){
-
-                    console.log(res.data);
-
-                    return lineGrid.resetData(res.data);
-                }else{
-                    alert(res.message);
+        try {
+            const response = await fetch(`/api/line`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
                 }
-                return lineGrid.resetData([]);
-            })
-            .catch(e => {
-                alert(e);
             });
+            
+            const result = await response.json();
+            
+            if(result.status === 200){
+                console.log(result.data);
+                lineGrid.resetData(result.data);
+            } else {
+                alert(result.message);
+                lineGrid.resetData([]);
+            }
+        } catch (e) {
+            alert(e);
+            lineGrid.resetData([]);
+        }
     }
 
     // 선택한 라인에 소속된 공정 목록 조회
-    function getLineProcesses(lineId, lineName) {
-        // params 생성
+    async function getLineProcesses(lineId, lineName) {
         const params = new URLSearchParams();
         params.append("lineId", lineId);
 
-        // 공정 목록 조회
-        fetch(`/api/process?${params.toString()}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        }).then(res => res.json())
-            .then(res => {
-                if(res.status === 200){
-                    // 데이터 리셋 후 삭제 버튼 상태도 업데이트
-                    lineProcessGrid.resetData(res.data);
-
-                    return;
-                } else {
-                    alert(res.message);
+        try {
+            const response = await fetch(`/api/process?${params.toString()}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
                 }
-                lineProcessGrid.resetData([]);
-            })
-            .catch(e => {
-                console.error("공정 목록 조회 실패:", e);
-                alert("공정 목록을 불러오는데 실패했습니다.");
-                lineProcessGrid.resetData([]);
             });
+            
+            const result = await response.json();
+            
+            if(result.status === 200){
+                lineProcessGrid.resetData(result.data);
+            } else {
+                alert(result.message);
+                lineProcessGrid.resetData([]);
+            }
+        } catch (e) {
+            console.error("공정 목록 조회 실패:", e);
+            alert("공정 목록을 불러오는데 실패했습니다.");
+            lineProcessGrid.resetData([]);
+        }
     }
 
     const getProcessStat = async (processId, processName) => {
-        const processNameOrId = processId
+        const processNameOrId = processId;
         
         if (!processNameOrId) {
             alert('공정명 또는 ID를 입력해주세요.');
             return;
         }
 
+        // 날짜 값 가져오기
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        if (!startDate || !endDate) {
+            alert('시작 날짜와 종료 날짜를 모두 입력해주세요.');
+            return;
+        }
+
+        // 날짜를 LocalDateTime으로 변환 (시작일은 00:00:00, 종료일은 23:59:59)
+        const startDateTime = startDate + 'T00:00:00';
+        const endDateTime = endDate + 'T23:59:59';
+
         // params 생성
         const params = new URLSearchParams();
         params.append("processNameOrId", processNameOrId);
+        params.append("startDate", startDateTime);
+        params.append("endDate", endDateTime);
 
         try {
             // 공정 통계 API 호출
@@ -218,23 +260,26 @@ const init = () => {
             if(result.status === 200 ){
                 // 차트 데이터 변환
                 const chartData = transformDataForChart(result.data) || [];
-                const chartTitle = processName;
+                
+                // 차트 제목 설정 로직 개선
+                let chartTitle = "수율 변동성 분석";
+                
+                if (processName) {
+                    // 공정명이 있는 경우 (그리드에서 클릭한 경우)
+                    chartTitle = processName + " 수율";
+                } else {
+                    // 검색으로 입력한 경우, 입력값을 그대로 사용
+                    const inputValue = document.getElementById('processNameOrId').value;
+                    if (inputValue) {
+                        chartTitle = inputValue + " 수율";
+                    }
+                }
 
                 const chartTitleEl = document.querySelector('.chart_title');
-
-                chartTitleEl.innerText = chartTitle + " 수율 통계";
+                chartTitleEl.innerText = chartTitle;
 
                 // 차트 생성
                 chart.setData(chartData);
-                // chart.updateOptions(
-                //     {
-                //         chart: { title: `${ chartTitle ? chartTitle: "공정별" } 수율 통계`, width: 1000, height: 400 },
-                //         xAxis: { pointOnColumn: false, title: { text: '날짜' } },
-                //         yAxis: { title: '수율 (%)' },
-                //         series: { eventDetectType: 'grouped' },
-                //     }
-                // )
-
                 
             } else {
                 console.error('API 오류:', result.message);
@@ -290,7 +335,7 @@ const init = () => {
                     const avg = item.movingAverageYieldRate || 0;
                     const stddev = item.movingStddevYieldRate || 0;
                     // 범위 데이터: [상한값, 하한값] 형태
-                    return [avg + stddev, avg - stddev];
+                    return [avg + stddev * 2, avg - stddev];
                 })
             }
         ];
