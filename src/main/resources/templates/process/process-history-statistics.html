@@ -42,34 +42,22 @@
         </div>
 
         <!-- 검색 폼을 차트 제목 밑으로 이동 -->
-        <div class="search-section mb-4">
-            <div class="row g-3 align-items-end">
-                <div class="col-md-3">
-                    <label class="form-label">공정명 또는 ID</label>
-                    <input type="text" class="form-control" id="processNameOrId" placeholder="공정명 또는 공정 ID">
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">시작 날짜</label>
-                    <input type="date" class="form-control" id="startDate">
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">종료 날짜</label>
-                    <input type="date" class="form-control" id="endDate">
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">기간 선택</label>
-                    <select class="form-select" id="periodSelect">
-                        <option value="">직접 입력</option>
-                        <option value="7">최근 7일</option>
-                        <option value="30">최근 30일</option>
-                        <option value="90">최근 90일</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <button type="button" class="btn btn-primary w-100" id="searchBtn">검색</button>
-                </div>
+
+        <div class="search__form mb-2">
+            <div class="select__container">
+                <input type="date" class="form-control" id="startDate">
+                <input type="date" class="form-control" id="endDate">
+                <select class="form-select" id="periodSelect">
+                    <option value="">직접 입력</option>
+                    <option value="7">최근 7일</option>
+                    <option value="30">최근 30일</option>
+                    <option value="90">최근 90일</option>
+                </select>
             </div>
+
+
         </div>
+
 
         <!-- statistics chart-->
         <article>

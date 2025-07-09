@@ -34,17 +34,6 @@ const init = () => {
         }
     });
 
-    // 검색 버튼 이벤트
-    document.getElementById('searchBtn').addEventListener('click', function() {
-        const processNameOrId = document.getElementById('processNameOrId').value;
-        if (!processNameOrId) {
-            alert('공정명 또는 ID를 입력해주세요.');
-            return;
-        }
-        // 검색 버튼으로 호출할 때는 processName을 null로 전달
-        getProcessStat(processNameOrId, null);
-    });
-
     const lineGrid = initGrid(
         document.getElementById('line_grid'),
         300,
@@ -147,7 +136,6 @@ const init = () => {
     lineProcessGrid.on('click', (e) => {
         const rowData = lineProcessGrid.getRow(e.rowKey);
         console.log(rowData.processId);
-        document.getElementById('processNameOrId').value = rowData.processId;
         getProcessStat(rowData.processId, rowData.processName);
     });
 
@@ -223,7 +211,7 @@ const init = () => {
         const processNameOrId = processId;
         
         if (!processNameOrId) {
-            alert('공정명 또는 ID를 입력해주세요.');
+            alert('공정 ID가 필요합니다.');
             return;
         }
 
@@ -261,18 +249,11 @@ const init = () => {
                 // 차트 데이터 변환
                 const chartData = transformDataForChart(result.data) || [];
                 
-                // 차트 제목 설정 로직 개선
+                // 차트 제목 설정
                 let chartTitle = "수율 변동성 분석";
                 
                 if (processName) {
-                    // 공정명이 있는 경우 (그리드에서 클릭한 경우)
                     chartTitle = processName + " 수율";
-                } else {
-                    // 검색으로 입력한 경우, 입력값을 그대로 사용
-                    const inputValue = document.getElementById('processNameOrId').value;
-                    if (inputValue) {
-                        chartTitle = inputValue + " 수율";
-                    }
                 }
 
                 const chartTitleEl = document.querySelector('.chart_title');
