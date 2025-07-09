@@ -7,6 +7,7 @@ import com.itwillbs.factron.dto.lot.RequestQualityLotDTO;
 import com.itwillbs.factron.entity.Lot;
 import com.itwillbs.factron.repository.lot.LotRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ import java.util.NoSuchElementException;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Log4j2
 public class LotCreateServiceImpl implements LotCreateService {
 
     private final LotRepository lotRepository;
@@ -147,15 +149,11 @@ public class LotCreateServiceImpl implements LotCreateService {
      * return Map
      */
     private Map<String, Object> getSequenceForToday(String eventTypePrefix) {
-
         String TODAY = LocalDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE);
-        Map<String, String> requiredElement = Map.of(
-                "dateToday", TODAY,
-                "eventType", eventTypePrefix
-        );
-
-        Long sequence = lotService.getLotSequence(requiredElement);
-
+        
+        // JPA Repository 사용 - 같은 트랜잭션 내에서 조회
+        Long sequence = lotRepository.countByDateAndEventType(TODAY, eventTypePrefix);
+        
         return Map.of("today", TODAY, "sequence", sequence);
     }
 

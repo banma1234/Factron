@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/base.html}">
+<head>
+    <link rel="stylesheet" href="https://uicdn.toast.com/chart/latest/toastui-chart.min.css" />
+    <script src="https://uicdn.toast.com/chart/latest/toastui-chart.min.js"></script>
+    <title>Factron</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section>
+        <div class="header-row">
+            <h4 class="page__name">공정별 수율 통계</h4>
+        </div>
+
+        <!-- line list grid -->
+        <article>
+            <div id="line_grid">
+
+            </div>
+        </article>
+
+        <div class="mt-4">
+            <div class="header-row">
+                <h5 class="page__name">라인 상세 공정</h5>
+            </div>
+        </div>
+
+        <!-- line process list grid -->
+        <article>
+            <div id="line_process_grid">
+            </div>
+        </article>
+
+        <div class="mt-4">
+            <div class="header-row">
+                <h5 class="page__name chart_title">수율 변동성 분석</h5>
+            </div>
+        </div>
+
+        <!-- 검색 폼을 차트 제목 밑으로 이동 -->
+
+        <div class="search__form mb-2">
+            <div class="select__container">
+                <input type="date" class="form-control" id="startDate">
+                <input type="date" class="form-control" id="endDate">
+                <select class="form-select" id="periodSelect">
+                    <option value="">직접 입력</option>
+                    <option value="7">최근 7일</option>
+                    <option value="30">최근 30일</option>
+                    <option value="90">최근 90일</option>
+                </select>
+            </div>
+
+
+        </div>
+
+
+        <!-- statistics chart-->
+        <article>
+            <div id="processHistoryGrid">
+            </div>
+        </article>
+    </section>
+</div>
+
+<th:block layout:fragment="javascript">
+    <!-- js import -->
+    <script th:src="@{/js/process/processHistoryStatistics.js}"></script>
+</th:block>
+</body>
+</html>
