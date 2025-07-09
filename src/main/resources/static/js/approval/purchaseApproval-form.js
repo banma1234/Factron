@@ -99,9 +99,10 @@ const init = () => {
         items.forEach(item => {
             const div = document.createElement("div");
             div.className = "bg-white p-2 rounded border d-flex justify-content-between";
+            const quantityText = (item.quantity ?? 0).toLocaleString();
             const priceText = (item.amount ?? 0).toLocaleString(); // amount: 단가*수량
             div.innerHTML = `
-                <span>${item.materialName} × ${item.quantity}개</span>
+                <span>${item.materialName} × ${quantityText} ${item.unitName}</span>
                 <span>₩${priceText}</span>
             `;
             container.appendChild(div);
@@ -180,7 +181,7 @@ const init = () => {
         const approvalResultSection = document.querySelector(".approval-result-section");
 
         const isPending = data.approvalStatusCode === "APV001"; // 결재대기 상태
-        const isAuthorized = user.authCode === "ATH005";       // 승인권한 여부
+        const isAuthorized = user.authCode === "ATH005" || "ATH003";       // 승인권한 여부
 
         approveBtn.style.display = (isPending && isAuthorized) ? "inline-block" : "none";
         rejectBtn.style.display = (isPending && isAuthorized) ? "inline-block" : "none";

@@ -47,16 +47,39 @@ const init = async () => {
     await setSelectBox("UNT","unit");
     await setSelectBox("ITP", "itemType");
 
-    // 그리드 초기화
+    const canEdit = ['ATH003', 'ATH005'].includes(window.user.authCode);
+
+    // formatter 함수 정의
+    function safeListItemText({ value, column }) {
+        let options = [];
+        if (column.name === 'unit') options = window.unitOptions || [];
+        if (column.name === 'typeCode') options = window.itemTypeOptions || [];
+        const found = options.find(opt => opt.value === value);
+        return found ? found.text : value || '';
+    }
+
+    // 그리드 컬럼 정의에서 formatter 수정
     const itemGrid = initGrid(
         document.querySelector('.itemGrid'),
         400,
         [
             { header: '제품코드', name: 'itemId', align: 'center', editable: false },
-            { header: '제품명', name: 'name', align: 'center', editor: 'text' },
-            { header: '단위', name: 'unit', align: 'center', editor: { type: 'select', options: { listItems: window.unitOptions } }, formatter: 'listItemText' },
-            { header: '가격', name: 'price', align: 'center', editor: 'text',  },
-            { header: '제품 유형', name: 'typeCode', align: 'center', editor: { type: 'select', options: { listItems: window.itemTypeOptions } }, formatter: 'listItemText' },
+            { header: '제품명', name: 'name', align: 'center', editor: canEdit ? 'text' : false },
+            {
+                header: '단위',
+                name: 'unit',
+                align: 'center',
+                editor: canEdit ? { type: 'select', options: { listItems: window.unitOptions } } : false,
+                formatter: safeListItemText
+            },
+            { header: '가격', name: 'price', align: 'center', editor: canEdit ? 'text' : false },
+            {
+                header: '제품 유형',
+                name: 'typeCode',
+                align: 'center',
+                editor: canEdit ? { type: 'select', options: { listItems: window.itemTypeOptions } } : false,
+                formatter: safeListItemText
+            },
             { header: '등록자', name: 'createdBy', align: 'center' },
             { header: '등록일', name: 'createdAt', align: 'center', formatter: ({ value }) => value ? value.substring(0, 10) : '' },
         ]
@@ -83,20 +106,24 @@ const init = async () => {
     });
 
     // 항목 추가 버튼
-    document.querySelector(".addItemBtn").addEventListener("click", function (e) {
-        e.preventDefault();
-        e.stopPropagation();
+    const addItemBtn = document.querySelector(".addItemBtn");
+    if (addItemBtn) {
+        addItemBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            addItem();
+        });
+    }
 
-        addItem();
-    });
-
-    // 저장 버튼
-    document.querySelector(".saveItemBtn").addEventListener("click", function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        saveItems();
-    });
+// 저장 버튼
+    const saveItemBtn = document.querySelector(".saveItemBtn");
+    if (saveItemBtn) {
+        saveItemBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            saveItems();
+        });
+    }
 
     // 검색 데이터 조회
     async function fetchData() {
@@ -105,7 +132,7 @@ const init = async () => {
 
         const params = new URLSearchParams({
             itemName: searchName,
-            itemTypeCode: itemType
+            typeCode: itemType
         });
 
         try {
@@ -157,17 +184,21 @@ const init = async () => {
     const saveItems = () => {
         itemGrid.finishEditing();
         const updatedData = itemGrid.getData();
+        const updatedData2 = itemGrid.getModifiedRows();
 
         const insertData = [];
         const updateData = [];
 
+        // 필수값 누락 체크
+        for (let row of updatedData) {
+            if (!row.name || !row.unit || !row.price || !row.typeCode) {
+                alert('제품명, 단위, 가격, 제품 유형을 모두 입력하세요.');
+                return;
+            }
+        }
+
         // 데이터 분류 (post / put)
         for (let row of updatedData) {
-            // 필수 항목 유효성 검사
-            if (!row.name || !row.unit || !row.price || !row.typeCode) {
-                continue;
-            }
-
             // 가격 0원 이상
             row.price = unformatNumber(row.price);
             if (isNaN(row.price) || Number(row.price) < 0) {
@@ -182,8 +213,11 @@ const init = async () => {
             }
         }
 
-        if (insertData.length === 0 && updateData.length === 0) {
-            alert('입력된 데이터가 없습니다.');
+        const createdRows = updatedData2.createdRows || [];
+        const updatedRows = updatedData2.updatedRows || [];
+
+        if (createdRows.length === 0 && updatedRows.length === 0) {
+            alert('저장 및 수정할 데이터가 없습니다.');
             return;
         }
 

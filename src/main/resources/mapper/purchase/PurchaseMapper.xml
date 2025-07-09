@@ -83,11 +83,14 @@
         SELECT
             M.ID AS materialId,
             M.NAME AS materialName,
+            M.UNIT AS unitCode,
+            DSC.NAME AS unitName,
             PLIST.QUANTITY,
             PLIST.PRICE,
             (PLIST.QUANTITY * PLIST.PRICE) AS amount
         FROM PURCHASE_LIST PLIST
                  JOIN MATERIAL M ON PLIST.MATERIAL_ID = M.ID
+                 LEFT JOIN DETAIL_SYS_CODE DSC ON M.UNIT = DSC.DETAIL_CODE
         WHERE PLIST.PURCHASE_ID = #{purchaseId}
         ORDER BY M.NAME
     </select>

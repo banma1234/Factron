@@ -42,9 +42,10 @@ const checkTimeLine = (data) => {
     return !data.some((row, i) => {
         const currStartTime = data[i].startTime;
         const currEndTime = data[i].endTime;
-
+        const workOrderDate = new Date(row.workOrderStartDate)
+        workOrderDate.setHours(0,0,0);
         // 현재 공정의 시작 시간과 작업지시 시작날짜 비교
-        if (compareDate(currStartTime, row.workOrderStartDate) < 0){
+        if (compareDate(currStartTime, workOrderDate) < 0){
             return true;
         }
 

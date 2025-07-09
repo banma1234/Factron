@@ -70,15 +70,19 @@ public class ResponseProcessHistoryInfoDTO {
     }
 
     /**
-     * startTime을 "yyyy-MM-dd hh:mm a" 형식으로 변환
-     * 예: 2025-07-01T15:00:00 → 2025-07-01 03:00 PM
+     * startTime을 한국 시간으로 변환하여 "yyyy-MM-dd hh:mm a" 형식으로 반환
+     * 예: 2025-07-01T15:00:00 → 2025-07-01 12:00 AM (한국시간)
      * @return 포맷된 날짜 문자열, startTime이 null이면 null 반환
      */
     private String getFormattedStartTime(LocalDateTime startTime) {
         if (startTime == null) {
             return null;
         }
+        
+        // UTC를 한국 시간으로 변환 (UTC+9)
+        LocalDateTime koreanTime = startTime.plusHours(9);
+        
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm a");
-        return startTime.format(formatter);
+        return koreanTime.format(formatter);
     }
 }

@@ -36,6 +36,10 @@ const init = () => {
         if(target === "detail" && isEditMode) {
             form.querySelector("input[name='detail_code']").disabled = true;
         }
+        if (target === "main" && !isEditMode) {
+            form.querySelector("input[name='main_code']").value = "";
+        }
+
     });
 
     /**

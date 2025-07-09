@@ -28,5 +28,9 @@ public class ResponseSearchApprovalDTO {
 
     private Long transferEmpId;     // 발령자 사번 (TRANSFER.EMPLOYEE_ID)
     private String transferEmpName; // 발령자 이름 (EMPLOYEE.NAME)
+    private String transferPositionCode; // 발령자 직급 코드
+    private String transferPositionName; // 발령자 직급 이름
+    private String transferDeptCode;     // 발령자 부서 코드
+    private String transferDeptName;     // 발령자 부서 이름
 
 }

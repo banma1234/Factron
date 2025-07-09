@@ -9,9 +9,9 @@ function CustomButtonRenderer(props) {
         button.addEventListener('click', () => registerWorkPerformance(props.rowKey));
         el.appendChild(button);
     } else if (props.value === 'WKS003') {
+        el.textContent = '검사대기';
+    } else if (props.value === 'WKS004') {
         el.textContent = '완료';
-    } else {
-        el.textContent = '';
     }
 
     this.el = el;
@@ -46,10 +46,8 @@ async function fetchWorkPerformanceData() {
 async function registerWorkPerformance(rowKey) {
     const rowData = performanceGrid.getRow(rowKey);
     const endDate = new Date(rowData.endDate);
+    endDate.setHours(23, 59, 59, 59);
     const lastProcessStartTime = new Date(rowData.lastProcessStartTime);
-    const now = new Date();
-    const today = new Date(now.getTime() + (9 * 60 * 60 * 1000)); //한국시간
-    today.setHours(0, 0, 0, 0);
 
     if (!rowData) {
         alert('데이터를 찾을 수 없습니다.');
@@ -71,10 +69,6 @@ async function registerWorkPerformance(rowKey) {
         alert('종료일은 마지막 공정 이후여야 합니다.');
         return;
     }
-    if (endDate > today) {
-        alert('종료일은 오늘 날짜 이내여야 합니다.');
-        return;
-    }
 
     // POST 요청
     try {
@@ -91,6 +85,10 @@ async function registerWorkPerformance(rowKey) {
                 lastProcessStartTime:rowData.lastProcessStartTime
             })
         });
+        if(res.status !== 200){
+            alert('실적 등록 중 오류 발생:', res.messages);
+            return;
+        }
         alert(`실적 등록이 완료 되었습니다.`);
         refreshGrid();
         return res.json();
@@ -123,11 +121,14 @@ const init = async () => {
         document.querySelector('.performanceGrid'),
         400,
         [
-            { header: '작업지시번호', name: 'workOrderId', align: 'center' },
-            { header: '작업수량', name: 'quantity', align: 'center' },
+            { header: '작업지시 번호', name: 'workOrderId', align: 'center' },
+            { header: '제품코드', name: 'itemId', align: 'center' },
+            { header: '제품명', name: 'itemName', align: 'center' },
             { header: '시작일', name: 'startDate', align: 'center'},
+            { header: '작업수량', name: 'quantity', align: 'center' },
             { header: '양품', name: 'fectiveQuantity', align: 'center' },
             { header: '불량품', name: 'defectiveQuantity', align: 'center' },
+            { header: '단위', name: 'unitName', align: 'center' },
             { header: '종료일', name: 'endDate', align: 'center', editor: {type: 'datePicker', options: { format: 'yyyy-MM-dd' }}},
             { header: '상태', name: 'statusCode', align: 'center', renderer: {type: CustomButtonRenderer} },
             { header: '마지막공정시작', name: 'lastProcessStartTime', hidden: true }
