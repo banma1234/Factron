@@ -2,8 +2,11 @@ package com.itwillbs.factron.service.process;
 
 import com.itwillbs.factron.dto.lot.RequestProcessLotDTO;
 import com.itwillbs.factron.dto.process.RequestProcessHistDTO;
+import com.itwillbs.factron.dto.process.RequestProcessHistStatDTO;
 import com.itwillbs.factron.dto.process.ResponseProcessHistoryInfoDTO;
+import com.itwillbs.factron.dto.process.ResponseProcessHistoryStatDTO;
 import com.itwillbs.factron.entity.*;
+import com.itwillbs.factron.mapper.process.ProcessHistoryMapper;
 import com.itwillbs.factron.repository.lot.LotHistoryRepository;
 import com.itwillbs.factron.repository.lot.LotRepository;
 import com.itwillbs.factron.repository.process.ProcessHistoryRepository;
@@ -31,6 +34,7 @@ public class ProcessHistoryServiceImpl implements ProcessHistoryService {
     private final LotRepository lotRepository;
     private final LotCreateService lotCreateService;
     private final LotStructureService lotStructureService;
+    private final ProcessHistoryMapper processHistoryMapper;
 
     @Override
     public List<ResponseProcessHistoryInfoDTO> getProcessHistoryList(String workOrderId) {
@@ -132,6 +136,33 @@ public class ProcessHistoryServiceImpl implements ProcessHistoryService {
 
         }
 
+    }
+
+    @Override
+    public List<ResponseProcessHistoryStatDTO> getProcessStat(RequestProcessHistStatDTO requestDTO) {
+        log.info("=== 공정 통계 조회 시작 ===");
+        log.info("요청 파라미터: processNameOrId={}", requestDTO.getProcessNameOrId());
+
+        // DTO에서 날짜 범위 가져오기 (기본값 포함)
+        LocalDateTime startDate = requestDTO.getStartDate();
+        LocalDateTime endDate = requestDTO.getEndDate();
+        
+        log.info("조회 기간: {} ~ {}", startDate, endDate);
+        
+        String processNameOrId = requestDTO.getProcessNameOrId();
+        
+        try {
+            List<ResponseProcessHistoryStatDTO> processStatList = processHistoryMapper.selectProcessStatByProcessNameOrId(processNameOrId, startDate, endDate);
+            
+            log.info("=== 조회 결과 ===");
+            log.info("총 조회 건수: {}", processStatList.size());
+            
+            log.info("=== 공정 통계 조회 완료 ===");
+            return processStatList;
+        } catch (Exception e) {
+            log.error("공정 통계 조회 중 오류 발생: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
 

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itwillbs.factron.mapper.process.ProcessHistoryMapper">
+
+    <!-- 공정별 통계 조회 -->
+    <select id="selectProcessStatByProcessNameOrId"
+            parameterType="map"
+            resultType="com.itwillbs.factron.dto.process.ResponseProcessHistoryStatDTO">
+        SELECT
+            process_id AS processId,
+            work_date AS workDate,
+            input_qty AS inputQty,
+            output_qty AS outputQty,
+            process_name AS processName,
+            ROUND(yield_rate, 2) AS yieldRate,
+            ROUND(AVG(yield_rate) OVER (
+                PARTITION BY process_id
+                ORDER BY work_date
+                ROWS BETWEEN 30 PRECEDING AND 1 PRECEDING
+            ), 2) AS movingAverageYieldRate,
+            ROUND(STDDEV(yield_rate) OVER (
+                PARTITION BY process_id
+                ORDER BY work_date
+                ROWS BETWEEN 30 PRECEDING AND 1 PRECEDING
+            ), 2) AS movingStddevYieldRate
+        FROM (
+            SELECT
+                ph.process_id,
+                TO_DATE(TO_CHAR(ph.start_time, 'YYYY-MM-DD'), 'YYYY-MM-DD') AS work_date,
+                SUM(NVL(ph.input_quantity, 0)) AS input_qty,
+                SUM(NVL(ph.output_quantity, 0)) AS output_qty,
+                l.name AS process_name,
+                CASE
+                    WHEN SUM(NVL(ph.input_quantity, 0)) > 0
+                        THEN SUM(NVL(ph.output_quantity, 0)) * 100.0 / SUM(NVL(ph.input_quantity, 0))
+                    ELSE 0
+                END AS yield_rate
+            FROM process_history ph
+                     JOIN process l ON ph.process_id = l.id
+            WHERE ph.start_time BETWEEN #{startDate,jdbcType=TIMESTAMP} AND #{endDate,jdbcType=TIMESTAMP}
+              AND (
+                TO_CHAR(ph.process_id) = #{processNameOrId,jdbcType=VARCHAR}
+                    OR l.name = #{processNameOrId,jdbcType=VARCHAR}
+                )
+            GROUP BY ph.process_id, TO_CHAR(ph.start_time, 'YYYY-MM-DD'), l.name
+        )
+        ORDER BY process_id, work_date
+    </select>
+
+<!--    &lt;!&ndash; 특정 공정의 특정 날짜 상세 데이터 조회 &ndash;&gt;-->
+<!--    <select id="selectProcessDetailByProcessAndDate"-->
+<!--            parameterType="map"-->
+<!--            resultType="com.itwillbs.factron.dto.process.ResponseProcessHistoryDetailDTO">-->
+<!--        SELECT-->
+<!--            ph.id AS historyId,-->
+<!--            ph.process_id AS processId,-->
+<!--            l.name AS processName,-->
+<!--            ph.start_time AS startTime,-->
+<!--            ph.end_time AS endTime,-->
+<!--            ph.input_quantity AS inputQuantity,-->
+<!--            ph.output_quantity AS outputQuantity,-->
+<!--            ROUND(-->
+<!--                CASE-->
+<!--                    WHEN ph.input_quantity > 0 -->
+<!--                        THEN ph.output_quantity * 100.0 / ph.input_quantity-->
+<!--                    ELSE 0-->
+<!--                END, 2-->
+<!--            ) AS yieldRate,-->
+<!--            ROUND(-->
+<!--                EXTRACT(EPOCH FROM (ph.end_time - ph.start_time)) / 3600, 2-->
+<!--            ) AS workHours,-->
+<!--            ph.employee_id AS employeeId,-->
+<!--            e.name AS employeeName,-->
+<!--            ph.machine_id AS machineId,-->
+<!--            m.name AS machineName,-->
+<!--            ph.lot_id AS lotId,-->
+<!--            ph.notes AS notes,-->
+<!--            ph.created_at AS createdAt-->
+<!--        FROM process_history ph-->
+<!--        LEFT JOIN process l ON ph.process_id = l.id-->
+<!--        LEFT JOIN employee e ON ph.employee_id = e.id-->
+<!--        LEFT JOIN machine m ON ph.machine_id = m.id-->
+<!--        WHERE TO_CHAR(ph.start_time, 'YYYY-MM-DD') = #{targetDate,jdbcType=VARCHAR}-->
+<!--        AND (-->
+<!--            ph.process_id = #{processId,jdbcType=NUMERIC}-->
+<!--            OR l.name = #{processName,jdbcType=VARCHAR}-->
+<!--        )-->
+<!--        ORDER BY ph.start_time ASC-->
+<!--    </select>-->
+
+<!--    &lt;!&ndash; 특정 공정의 특정 날짜 요약 정보 &ndash;&gt;-->
+<!--    <select id="selectProcessSummaryByProcessAndDate"-->
+<!--            parameterType="map"-->
+<!--            resultType="com.itwillbs.factron.dto.process.ResponseProcessSummaryDTO">-->
+<!--        SELECT-->
+<!--            ph.process_id AS processId,-->
+<!--            l.name AS processName,-->
+<!--            TO_CHAR(ph.start_time, 'YYYY-MM-DD') AS workDate,-->
+<!--            COUNT(*) AS executionCount,-->
+<!--            SUM(NVL(ph.input_quantity, 0)) AS totalInputQuantity,-->
+<!--            SUM(NVL(ph.output_quantity, 0)) AS totalOutputQuantity,-->
+<!--            ROUND(-->
+<!--                CASE-->
+<!--                    WHEN SUM(NVL(ph.input_quantity, 0)) > 0-->
+<!--                        THEN SUM(NVL(ph.output_quantity, 0)) * 100.0 / SUM(NVL(ph.input_quantity, 0))-->
+<!--                    ELSE 0-->
+<!--                END, 2-->
+<!--            ) AS totalYieldRate,-->
+<!--            ROUND(AVG(-->
+<!--                CASE-->
+<!--                    WHEN ph.input_quantity > 0 -->
+<!--                        THEN ph.output_quantity * 100.0 / ph.input_quantity-->
+<!--                    ELSE 0-->
+<!--                END-->
+<!--            ), 2) AS averageYieldRate,-->
+<!--            ROUND(-->
+<!--                SUM(EXTRACT(EPOCH FROM (ph.end_time - ph.start_time))) / 3600, 2-->
+<!--            ) AS totalWorkHours,-->
+<!--            ROUND(-->
+<!--                AVG(EXTRACT(EPOCH FROM (ph.end_time - ph.start_time))) / 3600, 2-->
+<!--            ) AS averageWorkHours,-->
+<!--            MIN(ph.start_time) AS firstStartTime,-->
+<!--            MAX(ph.end_time) AS lastEndTime,-->
+<!--            COUNT(DISTINCT ph.employee_id) AS employeeCount,-->
+<!--            COUNT(DISTINCT ph.machine_id) AS machineCount-->
+<!--        FROM process_history ph-->
+<!--        LEFT JOIN process l ON ph.process_id = l.id-->
+<!--        WHERE TO_CHAR(ph.start_time, 'YYYY-MM-DD') = #{targetDate,jdbcType=VARCHAR}-->
+<!--        AND (-->
+<!--            ph.process_id = #{processId,jdbcType=NUMERIC}-->
+<!--            OR l.name = #{processName,jdbcType=VARCHAR}-->
+<!--        )-->
+<!--        GROUP BY ph.process_id, l.name, TO_CHAR(ph.start_time, 'YYYY-MM-DD')-->
+<!--    </select>-->
+
+</mapper>
