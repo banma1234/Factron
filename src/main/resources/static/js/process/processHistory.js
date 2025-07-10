@@ -165,7 +165,14 @@ const init = () => {
             {
                 header: '작업상태',
                 name: 'status',
-                align: 'center'
+                align: 'center',
+                formatter: ({ value }) => {
+                    if (value === '대기') return `<span style="color:green;">대기</span>`;      // 대기 - 초록색
+                    if (value === '생산중') return `<span style="color:orange;">생산중</span>`;   // 생산중 - 주황색
+                    if (value === '검사중') return `<span style="color:purple;">검사중</span>`;   // 검사중 - 보라색
+                    if (value === '완료') return `<span style="color:blue;">완료</span>`;      // 완료 - 파란색
+                    return value;
+                }
             },
         ]
     );
@@ -230,7 +237,12 @@ const init = () => {
             {
                 header: '공정 상태',
                 name: 'processStatusName',
-                align: 'center'
+                align: 'center',
+                formatter: ({ value }) => {
+                    if (value === '대기') return `<span style="color:green;">대기</span>`;  // 대기 - 초록색
+                    if (value === '완료') return `<span style="color:blue;">완료</span>`;   // 완료 - 파란색
+                    return value;
+                }
             },
             {
                 header: '산출 LOT',
@@ -357,6 +369,8 @@ const init = () => {
                 const data = rawData.filter((row) => row.processStatusCode === 'STS001');
                 if(data.length === 0){
                     updateBtn.setAttribute("disabled", "true");
+                }else{
+                    updateBtn.removeAttribute("disabled");
                 }
             }
 
