@@ -59,7 +59,14 @@ const init = () => {
             {
                 header: '작업 상태',
                 name: 'workStatus',
-                align: 'center'
+                align: 'center',
+                formatter: ({ value }) => {
+                    if (value === '대기') return `<span style="color:green;">대기</span>`;      // 대기 - 초록색
+                    if (value === '생산중') return `<span style="color:orange;">생산중</span>`;   // 생산중 - 주황색
+                    if (value === '검사중') return `<span style="color:purple;">검사중</span>`;   // 검사중 - 보라색
+                    if (value === '완료') return `<span style="color:blue;">완료</span>`;      // 완료 - 파란색
+                    return value;
+                }
             }
         ]
     );
@@ -122,6 +129,8 @@ const init = () => {
                 formatter: function({ value }) {
                     if (value === '불합격') {
                         return `<span style="color: red; font-weight: bold;">${value}</span>`;
+                    }else{
+                        return `<span style="color: blue; font-weight: bold;">${value}</span>`;
                     }
                     return value || '-';
                 }
@@ -129,7 +138,13 @@ const init = () => {
             {
                 header: '상태',
                 name: 'historyStatus',
-                align: 'center'
+                align: 'center',
+                formatter: ({ value }) => {
+                    if (value === '대기') return `<span style="color:green;">대기</span>`;  // 대기 - 초록색
+                    if (value === '완료') return `<span style="color:blue;">완료</span>`;   // 완료 - 파란색
+                    if (value === '취소') return `<span style="color:red;">취소</span>`;   // 취소 - 빨간색
+                    return value;
+                }
             }
         ]
     );
