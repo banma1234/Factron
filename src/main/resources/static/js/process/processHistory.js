@@ -357,6 +357,8 @@ const init = () => {
                 const data = rawData.filter((row) => row.processStatusCode === 'STS001');
                 if(data.length === 0){
                     updateBtn.setAttribute("disabled", "true");
+                }else{
+                    updateBtn.removeAttribute("disabled");
                 }
             }
 
