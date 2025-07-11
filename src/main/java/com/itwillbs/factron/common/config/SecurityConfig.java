@@ -50,6 +50,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/", "/**.ico", "/login", "/css/**", "/js/**", "/images/**", "/api/sys/**").permitAll()
 //                .requestMatchers("/api/employee").permitAll()
+                            .requestMatchers("/api/sys","/sys").hasAuthority("ATH003")
                 .requestMatchers("/api/**").permitAll()
                 .anyRequest().authenticated()
             )
@@ -106,7 +107,7 @@ public class SecurityConfig {
                     employee.getName(),
                     authentication.getAuthorities());
                 
-                response.sendRedirect("/employee");
+                response.sendRedirect("/commute");
             }
         };
     }

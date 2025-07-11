@@ -58,21 +58,28 @@ const init = async () => {
         }
     });
 
-    // material 추가 버튼
-    document.querySelector(".addMaterialBtn").addEventListener("click", function (e) {
-        e.preventDefault();
-        e.stopPropagation();
+    const addMaterialBtn = document.querySelector(".addMaterialBtn");
+    const saveMaterialBtn = document.querySelector(".saveMaterialBtn");
 
-        addMaterial();
-    });
+    // material 추가 버튼
+    if(addMaterialBtn){
+        addMaterialBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            addMaterial();
+        });
+    }
 
     // material 저장 버튼
-    document.querySelector(".saveMaterialBtn").addEventListener("click", function (e) {
-        e.preventDefault();
-        e.stopPropagation();
+    if(saveMaterialBtn){
+        saveMaterialBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
 
-        saveMaterials();
-    });
+            saveMaterials();
+        });
+    }
 
     // material 데이터 조회 함수
     async function fetchData() {

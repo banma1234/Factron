@@ -31,24 +31,22 @@
             <div class="login__input__group">
                 <input class="form-control" type="text" name="employeeId" placeholder="사원번호" required>
                 <input class="form-control" type="password" name="password" placeholder="비밀번호" required>
+                <button class="btn btn-primary btn-lg" name="login_button" type="submit">로그인</button>
             </div>
-            <button class="btn btn-primary btn-lg" id="login__button" type="submit">로그인</button>
-            <br/>
-            <br/>
-            <hr/>
-            <div class="login__hotkey__container" th:with="type='person'">
-                <button class="login__hotkey" title="평사원 로그인">
-                    <div th:replace="~{layout/icon :: icon(${type})}"></div>
-                </button>
-                <button class="login__hotkey" title="인사팀 로그인">
-                    <div th:replace="~{layout/icon :: icon(${type})}"></div>
-                </button>
-                <button class="login__hotkey" title="관리자 로그인">
-                    <div th:replace="~{layout/icon :: icon(${type})}"></div>
-                </button>
+            <div class="hotkey__container">
+                <hr/>
+                <button class="btn btn-secondary" name="hotkey_hr" type="button">인사권한 로그인</button>
+                <button class="btn btn-secondary" name="hotkey_sales" type="button">영업권한 로그인</button>
+                <button class="btn btn-secondary" name="hotkey_finance" type="button">재무권한 로그인</button>
+                <button class="btn btn-outline-secondary" name="hotkey_foreman" type="button">작업반장 로그인</button>
+                <button class="btn btn-outline-primary" name="hotkey_admin" type="button">관리자 로그인</button>
             </div>
         </form>
     </div>
+    <th:block layout:fragment="javascript">
+        <!-- js import -->
+        <script th:src="@{/js/login/login.js}"></script>
+    </th:block>
     <!-- 배경 이미지 -->
     <img class="login__background" th:src="@{/images/login_background.webp}" alt="login background" />
 </main>

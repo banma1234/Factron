@@ -2,7 +2,7 @@ let rawInboundData = [];
 let inboundGrid;
 
 const init = () => {
-    const isAuthorized = user.authCode === 'ATH006' || 'ATH003'; // 입고 완료 권한 여부 체크
+    const isAuthorized = user.authCode === 'ATH006' || user.authCode === 'ATH003'; // 입고 완료 권한 여부 체크
 
     // 권한이 있을 때만 체크박스 옵션 활성화
     const gridOptions = isAuthorized ? ['checkbox'] : [];
