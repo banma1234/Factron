@@ -6,7 +6,7 @@
 
 .login__container {
     width: 450px;
-    height: 650px;
+    height: 700px;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -22,7 +22,7 @@
 }
 
 .login__input__group {
-    padding: 2rem 0;
+    padding-top: 5rem;
 }
 .login__input__group input {
     margin: 0.5rem 0;
@@ -31,36 +31,34 @@
     font-size: 0.9rem;
 }
 
-#login__button {
+.btn[name = "login_button"] {
     width: 100%;
     background-color: #7D9BFF;
     border: none;
+    margin-top: 2rem;
     font-size: 1.1rem;
 }
-#login__button:hover {
+.btn[name = "login_button"]:hover {
     background-color: #606E9C;
 }
 
-.login__hotkey__container {
+.hotkey__container {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    font-size: 2rem;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 0.4rem;
 }
-.login__hotkey {
-    width: 40px;
-    height: 40px;
+
+.btn[name = "hotkey_default"] {
+    width: 100%;
     border: none;
-    border-radius: 100%;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    font-size: 0.9rem;
+}
+.btn[name = "hotkey_admin"] {
+    width: 100%;
+    font-size: 0.9rem;
 }
 
-.login__overlay {
-
-}
 .login__background {
     position: absolute;
     z-index: 1;

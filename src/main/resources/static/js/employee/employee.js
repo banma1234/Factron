@@ -54,6 +54,8 @@ const init = () => {
                 align: 'center',
                 formatter: (value) => {
                     const upperValue = toUpperCase(value.value)
+                    if (upperValue === 'Y') return `<span style="color:green;">재직</span>`;  // 재직 - 초록색
+                    if (upperValue === 'N') return `<span style="color:red;">퇴직</span>`;   // 퇴직 - 빨간색
                     return `${upperValue==='Y' ? '재직' : '퇴직'}`
                 }
             }

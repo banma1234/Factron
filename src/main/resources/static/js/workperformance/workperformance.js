@@ -1,26 +1,3 @@
-// 버튼 정의
-function CustomButtonRenderer(props) {
-    const el = document.createElement('div');
-
-    if (props.value === 'WKS002') {
-        const button = document.createElement('button');
-        button.textContent = '실적 등록';
-        button.className = 'btn btn-warning btn-sm';
-        button.addEventListener('click', () => registerWorkPerformance(props.rowKey));
-        el.appendChild(button);
-    } else if (props.value === 'WKS003') {
-        el.textContent = '검사대기';
-    } else if (props.value === 'WKS004') {
-        el.textContent = '완료';
-    }
-
-    this.el = el;
-}
-// 버튼 렌더링
-CustomButtonRenderer.prototype.getElement = function () {
-    return this.el;
-};
-
 // 데이터 조회
 async function fetchWorkPerformanceData() {
     const workOrderId = document.querySelector("input[name='searchWorkOrderNo']").value;
@@ -130,7 +107,18 @@ const init = async () => {
             { header: '불량품', name: 'defectiveQuantity', align: 'center' },
             { header: '단위', name: 'unitName', align: 'center' },
             { header: '종료일', name: 'endDate', align: 'center', editor: {type: 'datePicker', options: { format: 'yyyy-MM-dd' }}},
-            { header: '상태', name: 'statusCode', align: 'center', renderer: {type: CustomButtonRenderer} },
+            { 
+                header: '상태', 
+                name: 'statusCode', 
+                align: 'center',
+                formatter: ({ value }) => {
+                    if (value === 'WKS001') return `<span style="color:green;">대기</span>`;      // 대기 - 초록색
+                    if (value === 'WKS002') return `<span style="color:orange;">생산중</span>`;   // 생산중 - 주황색
+                    if (value === 'WKS003') return `<span style="color:purple;">검사중</span>`;   // 검사중 - 보라색
+                    if (value === 'WKS004') return `<span style="color:blue;">완료</span>`;      // 완료 - 파란색
+                    return value;
+                }
+            },
             { header: '마지막공정시작', name: 'lastProcessStartTime', hidden: true }
         ]
     );
@@ -162,6 +150,20 @@ const init = async () => {
     document.querySelector("input[name='searchWorkOrderNo']").addEventListener("keyup", function (e) {
         if (e.key === 'Enter') {
             refreshGrid();
+        }
+    });
+
+    // 그리드 행 더블클릭 시 실적 등록
+    performanceGrid.on('dblclick', (e) => {
+        const rowData = performanceGrid.getRow(e.rowKey);
+        
+        if (rowData && rowData.statusCode === 'WKS002') {
+            // 생산중 상태일 때만 실적 등록 가능
+            if (confirm('실적을 등록하시겠습니까?')) {
+                registerWorkPerformance(e.rowKey);
+            }
+        } else if (rowData) {
+            alert('생산중 상태에서만 실적 등록이 가능합니다.');
         }
     });
 

@@ -56,7 +56,12 @@ const init = () => {
             {
                 header: '라인 가동 상태',
                 name: 'lineStatusName',
-                align: 'center'
+                align: 'center',
+                formatter: ({ value }) => {
+                    if (value === '가동') return `<span style="color:green;">가동</span>`;  // 가동 - 초록색
+                    if (value === '정지') return `<span style="color:red;">정지</span>`;   // 정지 - 빨간색
+                    return value;
+                }
             },
             {
                 header: '등록 일자',
